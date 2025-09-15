@@ -1,0 +1,3 @@
+SELECT الدعاوى.matterAR, الدعاوى.[client&Cap], الدعاوى.[opponent&Cap], الدعاوى.matterSubject, الجلسات.المحكمة, الجلسات.الدائرة, الجلسات.التاريخ, الدعاوى.lawyerA, الدعاوى.lawyerB, الجلسات.lastDecision, الجلسات.[حاضر 1], الجلسات.[حاضر 2], الجلسات.[حاضر 3], الجلسات.[حاضر 4], الدعاوى.matterCourt, الدعاوى.matterCircut, الدعاوى.matterCourt, الدعاوى.matterCircut, الجلسات.الإجراء, الجلسات.nextHearing, الجلسات.shortDecision, الدعاوى.matterStatus
+FROM الدعاوى INNER JOIN الجلسات ON الدعاوى.matterID=الجلسات.matterID
+WHERE (((الجلسات.nextHearing) Between Forms!Dashboard!التقارير.Form!txtFrom And Forms!Dashboard!التقارير.Form!txtTo) And ((الدعاوى.matterStatus)="سارية"));

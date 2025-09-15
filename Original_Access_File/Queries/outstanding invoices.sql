@@ -1,0 +1,3 @@
+SELECT الفواتير.[Inv-No], الفواتير.[Inv-Date], الفواتير.Amount, الفواتير.[Currency], الفواتير.[Inv-Details], الفواتير.[Inv-Status], الفواتير.[R-#], العملاء.Client_en, المحامين.Lawyer_EN
+FROM العملاء INNER JOIN (المحامين INNER JOIN (([خطابات الأتعاب] INNER JOIN الفواتير ON [خطابات الأتعاب].[mfilesID]=الفواتير.[Cont-No]) INNER JOIN الدعاوى ON [خطابات الأتعاب].Matter.Value=الدعاوى.[matterAR]) ON المحامين.lawyer_name=الدعاوى.محامي) ON (العملاء.العميل=الدعاوى.العميل) AND (العملاء.العميل=[خطابات الأتعاب].[Client])
+WHERE (((الفواتير.[Inv-Status])="Unpaid" Or (الفواتير.[Inv-Status])="Partially Paid"));

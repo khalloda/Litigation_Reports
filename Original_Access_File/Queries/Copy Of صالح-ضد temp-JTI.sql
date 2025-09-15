@@ -1,0 +1,3 @@
+SELECT العملاء.العميل, الدعاوى.matterAR, الجلسات.المحكمة, الجلسات.الدائرة, الدعاوى.[client&Cap], الدعاوى.[opponent&Cap], الدعاوى.matterSubject, الجلسات.التاريخ, الجلسات.القرار, الجلسات.[صالح/ضد], الدعاوى.lawyerA, الدعاوى.matterAskedAmount, الدعاوى.matterJudgedAmount
+FROM العملاء INNER JOIN (الدعاوى INNER JOIN الجلسات ON الدعاوى.matterID=الجلسات.matterID) ON العملاء.ID_client=الدعاوى.clientID
+WHERE (((العملاء.العميل)=Forms!Dashboard!التقارير.Form!Combo46) And ((الجلسات.التاريخ) Between Forms!Dashboard!التقارير.Form!Text185 And Forms!Dashboard!التقارير.Form!Text187) And ((الجلسات.[صالح/ضد])<>""));

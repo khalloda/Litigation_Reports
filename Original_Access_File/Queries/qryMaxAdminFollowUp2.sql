@@ -1,0 +1,2 @@
+SELECT [إجراءات المهام].ID_Task, [إجراءات المهام].[تاريخ الإجراء], [إجراءات المهام].[القائم بالعمل], [إجراءات المهام].النتيجة
+FROM ([admin work table] INNER JOIN [إجراءات المهام] ON [admin work table].ID_Task=[إجراءات المهام].ID_Task) INNER JOIN qryMaxAdminFollowUp ON ([admin work table].ID_Task=qryMaxAdminFollowUp.ID_Task) AND (qryMaxAdminFollowUp.[MaxOfتاريخ الإجراء]=[إجراءات المهام].[تاريخ الإجراء]);

@@ -1,0 +1,3 @@
+SELECT العملاء.Client_en, الفواتير.[Inv-No], الفواتير.[Inv-Date], الفواتير.Amount, الفواتير.Currency, الفواتير.[Inv-Status], الفواتير.[Inv-Type], الفواتير.[VAT?], الفواتير.[Pay-Date], المحامين.Lawyer_EN
+FROM المحامين INNER JOIN (العملاء INNER JOIN ((الدعاوى INNER JOIN [خطابات الأتعاب] ON الدعاوى.[رقم الدعوى]=[خطابات الأتعاب].[Matter].Value) INNER JOIN الفواتير ON [خطابات الأتعاب].[mfilesID]=الفواتير.[خطاب الأتعاب]) ON (العملاء.العميل = الدعاوى.العميل) AND (العملاء.العميل=[خطابات الأتعاب].[Client])) ON المحامين.lawyer_name = الدعاوى.محامي
+WHERE (((الفواتير.[Pay-Date]) Between #1/11/2018# And #11/30/2018#));

@@ -1,0 +1,4 @@
+SELECT الفواتير.[Inv-No], الفواتير.[Inv-Date], الفواتير.Amount, الفواتير.[Currency], الفواتير.[Inv-Details], الفواتير.[Inv-Status], الدعاوى.[lawyerA], Sum(السداد.Credit) AS SumOfCredit, [amount]-[sumofcredit] AS [المبلغ المتبقي], الفواتير.[Inv-Type], العملاء.العميل
+FROM العملاء INNER JOIN (((الدعاوى INNER JOIN [خطابات الأتعاب] ON الدعاوى.[matterAR]=[خطابات الأتعاب].Matter.Value) INNER JOIN الفواتير ON [خطابات الأتعاب].[mfilesID]=الفواتير.[Cont-No]) INNER JOIN السداد ON الفواتير.[Inv-No]=السداد.[رقم الفاتورة]) ON العملاء.العميل=الدعاوى.العميل
+GROUP BY الفواتير.[Inv-No], الفواتير.[Inv-Date], الفواتير.Amount, الفواتير.[Currency], الفواتير.[Inv-Details], الفواتير.[Inv-Status], الدعاوى.[lawyerA], [amount]-[sumofcredit], الفواتير.[Inv-Type], العملاء.العميل
+HAVING (((الفواتير.[Inv-Status])<>"paid"));

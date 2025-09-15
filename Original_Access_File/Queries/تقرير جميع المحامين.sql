@@ -1,0 +1,3 @@
+SELECT العملاء.العميل, الدعاوى.[matterAR], الدعاوى.[client&Cap], الدعاوى.[opponent&Cap], الدعاوى.[matterSubject], الجلسات.المحكمة, الجلسات.الدائرة, الجلسات.التاريخ, الدعاوى.[matterPartner], الدعاوى.[matterNotes2], الدعاوى.[matterCategory], الدعاوى.[matterImportance], الدعاوى.[matterDegree], الدعاوى.[lawyerA], الدعاوى.[lawyerB], [فريق العمل].المراجع, الجلسات.القرار
+FROM العملاء INNER JOIN ([فريق العمل] INNER JOIN (الدعاوى INNER JOIN الجلسات ON الدعاوى.[matterID]=الجلسات.[matterID]) ON [فريق العمل].ID=الدعاوى.[فريق العمل]) ON العملاء.[ID_client]=الدعاوى.clientID
+WHERE (((الدعاوى.[matterSelect])=Yes) And ((الجلسات.تقرير)=Yes) And ((الدعاوى.[matterStatus])="سارية"));

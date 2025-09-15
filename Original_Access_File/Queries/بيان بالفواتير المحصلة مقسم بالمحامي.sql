@@ -1,0 +1,3 @@
+SELECT الفواتير.[Inv-No], [تقسيم التحصيلات].Lawyer, [تقسيم التحصيلات].Percent, السداد.Credit, السداد.التاريخ, [Credit]*[Percent] AS Expr1, العملاء.Client_en, الفواتير.[Inv-Details], lawyers.LawyerID, [تقسيم التحصيلات].LawyerAs
+FROM العملاء INNER JOIN ((([خطابات الأتعاب] INNER JOIN (الفواتير INNER JOIN [تقسيم التحصيلات] ON الفواتير.[Inv-No]=[تقسيم التحصيلات].InvNo) ON [خطابات الأتعاب].[mfilesID]=الفواتير.[Cont-No]) INNER JOIN السداد ON الفواتير.[Inv-No]=السداد.[رقم الفاتورة]) INNER JOIN lawyers ON [تقسيم التحصيلات].Lawyer=lawyers.LawyerName) ON العملاء.العميل=[خطابات الأتعاب].Client
+WHERE (((السداد.التاريخ) Between [Forms]![Dashboard]![التقارير].[Form]![Text500] And [Forms]![Dashboard]![التقارير].[Form]![Text600]));

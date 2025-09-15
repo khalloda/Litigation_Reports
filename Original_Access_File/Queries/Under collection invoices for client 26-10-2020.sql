@@ -1,0 +1,4 @@
+SELECT DISTINCT العملاء.العميل, الفواتير.[Inv-No], الفواتير.[Inv-Date], الفواتير.Amount, الفواتير.[Currency], الفواتير.[Inv-Details], الفواتير.[Inv-Status], الدعاوى.[lawyerA], الفواتير.[Inv-Type], Sum(السداد.Credit) AS SumOfCredit
+FROM العملاء INNER JOIN (المحامين INNER JOIN (الدعاوى INNER JOIN (([خطابات الأتعاب] INNER JOIN الفواتير ON [خطابات الأتعاب].[mfilesID]=الفواتير.[Cont-No]) INNER JOIN السداد ON الفواتير.[Inv-No]=السداد.[رقم الفاتورة]) ON الدعاوى.[matterAR]=[خطابات الأتعاب].Matter.Value) ON المحامين.lawyer_name=الدعاوى.[lawyerA]) ON العملاء.[ID_client]=[خطابات الأتعاب].clientID
+GROUP BY العملاء.العميل, الفواتير.[Inv-No], الفواتير.[Inv-Date], الفواتير.Amount, الفواتير.[Currency], الفواتير.[Inv-Details], الفواتير.[Inv-Status], الدعاوى.[lawyerA], الفواتير.[Inv-Type]
+HAVING (((العملاء.العميل)=Forms!Dashboard!التقارير.Form!Combo245) And ((الفواتير.[Inv-Status])<>"paid"));

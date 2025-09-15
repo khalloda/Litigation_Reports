@@ -1,0 +1,3 @@
+SELECT الدعاوى.matterAR, الدعاوى.[client&Cap], الدعاوى.[opponent&Cap], [admin work table].المحكمة, [admin work table].الدائرة, [admin work table].الجهة, الجلسات.التاريخ, الجلسات.القرار, [admin work table].[العمل المطلوب], [admin work table].الحالة, [admin work table].[تاريخ الإنشاء], [إجراءات المهام].النتيجة, [إجراءات المهام].[تاريخ الإجراء]
+FROM ((الدعاوى INNER JOIN [admin work table] ON الدعاوى.matterAR=[admin work table].matterID) LEFT JOIN [إجراءات المهام] ON [admin work table].ID_Task=[إجراءات المهام].ID_Task) INNER JOIN الجلسات ON الدعاوى.matterID=الجلسات.matterID
+WHERE ((([admin work table].الحالة)<>"منجزة") AND ((الجلسات.تقرير)=Yes) AND (([إجراءات المهام].تقرير)=Yes));

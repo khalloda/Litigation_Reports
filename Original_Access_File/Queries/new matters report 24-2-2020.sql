@@ -1,0 +1,4 @@
+SELECT العملاء.Client_en, العملاء.[Cash/probono], الدعاوى.[matterStartDate], الدعاوى.[matterEN], المحامين.Lawyer_EN, [خطابات الأتعاب].[mfilesID], [خطابات الأتعاب].[Cont-Type], [خطابات الأتعاب].[Cont-Date], [خطابات الأتعاب].[Cont-Structure], [خطابات الأتعاب].Status, الفواتير.[Inv-No], الفواتير.[Inv-Date], الفواتير.Amount, الفواتير.[Currency], الفواتير.[Inv-Details], الفواتير.[VAT?], الفواتير.[Inv-Status], السداد.التاريخ, السداد.Credit, السداد.العملة
+FROM العملاء INNER JOIN ((((المحامين INNER JOIN الدعاوى ON المحامين.lawyer_name=الدعاوى.[lawyerA]) LEFT JOIN [خطابات الأتعاب] ON الدعاوى.[matterAR]=[خطابات الأتعاب].Matter.Value) LEFT JOIN الفواتير ON [خطابات الأتعاب].[mfilesID]=الفواتير.[Cont-No]) LEFT JOIN السداد ON الفواتير.[Inv-No] = السداد.[رقم الفاتورة]) ON العملاء.العميل = الدعاوى.العميل
+WHERE (((الدعاوى.[matterStartDate]) Between #1/10/2019# And #2/29/2020#) And ((الدعاوى.[matterEN]) Is Not Null))
+ORDER BY العملاء.Client_en, الدعاوى.[matterStartDate];

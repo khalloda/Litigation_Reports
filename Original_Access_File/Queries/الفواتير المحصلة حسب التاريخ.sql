@@ -1,0 +1,3 @@
+SELECT العملاء.Client_en, الفواتير.[Inv-No], الفواتير.[Inv-Details], السداد.التاريخ, الفواتير.[Inv-Date], [Currency] & " " & Format([Amount],"#,##0") AS [Inv-Amount], [العملة] & " " & Format([Credit],"#,##0") AS [Col-Amount], الفواتير.[Inv-Type], السداد.Credit, السداد.العملة
+FROM العملاء INNER JOIN (([خطابات الأتعاب] INNER JOIN الفواتير ON [خطابات الأتعاب].[mfilesID]=الفواتير.[Cont-No]) INNER JOIN السداد ON الفواتير.[Inv-No]=السداد.[رقم الفاتورة]) ON العملاء.العميل=[خطابات الأتعاب].Client
+WHERE (((السداد.التاريخ) Between Forms!Dashboard!التقارير.Form!Text500 And Forms!Dashboard!التقارير.Form!Text600) And ((الفواتير.[Inv-Type])="service"));

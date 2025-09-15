@@ -1,0 +1,3 @@
+SELECT الدعاوى.[matterAR], الجلسات.المحكمة, الجلسات.الدائرة, الدعاوى.[client&Cap], الدعاوى.[opponent&Cap], الدعاوى.[matterSubject], الجلسات.التاريخ, الجلسات.القرار, العملاء.العميل, الدعاوى.[matterCategory], [فريق العمل].الفريق, [فريق العمل].Code, [فريق العمل].المراجع, الدعاوى.[lawyerA], الدعاوى.[lawyerB]
+FROM العملاء INNER JOIN ([فريق العمل] INNER JOIN (الدعاوى INNER JOIN الجلسات ON الدعاوى.[matterAR]=الجلسات.[رقم الدعوى]) ON [فريق العمل].ID=الدعاوى.[فريق العمل]) ON العملاء.[ID_client]=الدعاوى.clientID
+WHERE (((الدعاوى.[lawyerB]) Like "*" & Forms!Dashboard!التقارير.Form!Combo181 & "*") And ((الدعاوى.[matterStatus])="سارية") And ((الجلسات.تقرير)=Yes));

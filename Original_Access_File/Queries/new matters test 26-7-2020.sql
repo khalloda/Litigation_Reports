@@ -1,0 +1,4 @@
+SELECT DISTINCTROW العملاء.Client_en, الدعاوى.[matterStartDate], الدعاوى.[matterEN], المحامين.Lawyer_EN, [خطابات الأتعاب].[mfilesID], [خطابات الأتعاب].[Cont-Type], [خطابات الأتعاب].[Cont-Date], [خطابات الأتعاب].[Cont-Structure], الفواتير.[Inv-No], الفواتير.[Inv-Date], الفواتير.Amount, الفواتير.[Currency], الفواتير.[Inv-Details], الفواتير.[Inv-Status]
+FROM العملاء INNER JOIN (((المحامين INNER JOIN الدعاوى ON المحامين.lawyer_name=الدعاوى.[lawyerA]) LEFT JOIN [خطابات الأتعاب] ON الدعاوى.[matterAR]=[خطابات الأتعاب].Matter.Value) LEFT JOIN الفواتير ON [خطابات الأتعاب].[mfilesID]=الفواتير.[Cont-No]) ON العملاء.العميل=الدعاوى.العميل
+WHERE (((الدعاوى.[matterStartDate]) Between Forms!Dashboard!التقارير.Form!Text131 And Forms!Dashboard!التقارير.Form!Text133) And ((الفواتير.[Inv-Status])<>"later") And ((الفواتير.[Inv-Type])="service"))
+ORDER BY الدعاوى.[matterStartDate], الدعاوى.[matterEN];
