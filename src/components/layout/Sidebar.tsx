@@ -4,9 +4,12 @@ import { Link, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useRTL } from '@hooks/useRTL'
 import { useLanguage } from '@hooks/useLanguage'
+import { usePermissions } from '@hooks/usePermissions'
+import { PermissionGate } from '@components/auth/PermissionGate'
 import { 
   LayoutDashboard, 
   Users, 
+  UserCheck,
   FileText, 
   Calendar, 
   Receipt, 
@@ -27,49 +30,72 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const location = useLocation()
   const { isRTL } = useRTL()
   const { currentLanguage } = useLanguage()
+  const {
+    canViewDashboard,
+    canViewClients,
+    canViewCases,
+    canViewHearings,
+    canViewInvoices,
+    canViewReports,
+    canViewUsers
+  } = usePermissions()
 
   const menuItems = [
     {
       path: '/dashboard',
       icon: LayoutDashboard,
       label: t('nav.dashboard'),
-      labelAr: 'لوحة التحكم'
+      labelAr: 'لوحة التحكم',
+      permission: 'dashboard:view'
     },
     {
       path: '/clients',
       icon: Users,
       label: t('nav.clients'),
-      labelAr: 'العملاء'
+      labelAr: 'العملاء',
+      permission: 'clients:view'
     },
     {
       path: '/cases',
       icon: FileText,
       label: t('nav.cases'),
-      labelAr: 'القضايا'
+      labelAr: 'القضايا',
+      permission: 'cases:view'
     },
     {
       path: '/hearings',
       icon: Calendar,
       label: t('nav.hearings'),
-      labelAr: 'الجلسات'
+      labelAr: 'الجلسات',
+      permission: 'hearings:view'
     },
     {
       path: '/invoices',
       icon: Receipt,
       label: t('nav.invoices'),
-      labelAr: 'الفواتير'
+      labelAr: 'الفواتير',
+      permission: 'invoices:view'
     },
     {
       path: '/reports',
       icon: BarChart3,
       label: t('nav.reports'),
-      labelAr: 'التقارير'
+      labelAr: 'التقارير',
+      permission: 'reports:view'
+    },
+    {
+      path: '/users',
+      icon: UserCheck,
+      label: t('nav.users'),
+      labelAr: 'المستخدمين',
+      permission: 'users:view'
     },
     {
       path: '/settings',
       icon: Settings,
       label: t('nav.settings'),
-      labelAr: 'الإعدادات'
+      labelAr: 'الإعدادات',
+      permission: 'system_settings:view'
     }
   ]
 
@@ -113,37 +139,42 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
           const active = isActive(item.path)
           
           return (
-            <Nav.Item key={item.path}>
-              <Nav.Link
-                as={Link}
-                to={item.path}
-                className={clsx(
-                  'sidebar-link d-flex align-items-center',
-                  active && 'active'
-                )}
-                dir={isRTL ? 'rtl' : 'ltr'}
-              >
-                <Icon 
-                  size={20} 
+            <PermissionGate 
+              key={item.path}
+              requiredPermission={item.permission as any}
+            >
+              <Nav.Item>
+                <Nav.Link
+                  as={Link}
+                  to={item.path}
                   className={clsx(
-                    'sidebar-icon',
-                    isRTL ? 'me-0 ms-2' : 'me-2'
+                    'sidebar-link d-flex align-items-center',
+                    active && 'active'
                   )}
-                />
-                
-                {!collapsed && (
-                  <span className="sidebar-text">
-                    {currentLanguage === 'ar' ? item.labelAr : item.label}
-                  </span>
-                )}
-                
-                {active && (
-                  <span className="visually-hidden">
-                    {currentLanguage === 'ar' ? '(الصفحة الحالية)' : '(current page)'}
-                  </span>
-                )}
-              </Nav.Link>
-            </Nav.Item>
+                  dir={isRTL ? 'rtl' : 'ltr'}
+                >
+                  <Icon 
+                    size={20} 
+                    className={clsx(
+                      'sidebar-icon',
+                      isRTL ? 'me-0 ms-2' : 'me-2'
+                    )}
+                  />
+                  
+                  {!collapsed && (
+                    <span className="sidebar-text">
+                      {currentLanguage === 'ar' ? item.labelAr : item.label}
+                    </span>
+                  )}
+                  
+                  {active && (
+                    <span className="visually-hidden">
+                      {currentLanguage === 'ar' ? '(الصفحة الحالية)' : '(current page)'}
+                    </span>
+                  )}
+                </Nav.Link>
+              </Nav.Item>
+            </PermissionGate>
           )
         })}
       </Nav>

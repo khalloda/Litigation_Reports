@@ -12,6 +12,7 @@ import { Hearings } from '@pages/Hearings'
 import { Invoices } from '@pages/Invoices'
 import { Reports } from '@pages/Reports'
 import { Settings } from '@pages/Settings'
+import { Users } from '@pages/Users'
 import { NotFound } from '@pages/NotFound'
 import { useRTL } from '@hooks/useRTL'
 import { useLanguage } from '@hooks/useLanguage'
@@ -65,9 +66,10 @@ function App() {
             <Route path="invoices/new" element={<Invoices />} />
             <Route path="invoices/:id" element={<Invoices />} />
             <Route path="invoices/:id/edit" element={<Invoices />} />
-            <Route path="reports" element={<Reports />} />
-            <Route path="settings" element={<Settings />} />
-          </Route>
+                <Route path="reports" element={<Reports />} />
+                <Route path="settings" element={<Settings />} />
+                <Route path="users" element={<Users />} />
+              </Route>
           
           {/* 404 route */}
           <Route path="*" element={<NotFound />} />

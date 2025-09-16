@@ -1,13 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
-
-interface User {
-  id: number
-  email: string
-  name: string
-  arabicName?: string
-  role: 'admin' | 'lawyer' | 'staff'
-}
+import { User, UserRole, Permission, Resource, Action, hasPermission, hasRole, canAccess } from '@types/auth'
 
 interface AuthContextType {
   user: User | null
@@ -15,6 +8,9 @@ interface AuthContextType {
   logout: () => void
   isLoading: boolean
   isAuthenticated: boolean
+  hasPermission: (permission: Permission) => boolean
+  hasRole: (role: UserRole | UserRole[]) => boolean
+  canAccess: (resource: Resource, action: Action) => boolean
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -94,12 +90,31 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setUser(null)
   }
 
+  // Permission checking methods
+  const checkPermission = (permission: Permission): boolean => {
+    if (!user) return false
+    return hasPermission(user.role, permission)
+  }
+
+  const checkRole = (role: UserRole | UserRole[]): boolean => {
+    if (!user) return false
+    return hasRole(user.role, role)
+  }
+
+  const checkAccess = (resource: Resource, action: Action): boolean => {
+    if (!user) return false
+    return canAccess(user.role, resource, action)
+  }
+
   const value: AuthContextType = {
     user,
     login,
     logout,
     isLoading,
-    isAuthenticated: !!user
+    isAuthenticated: !!user,
+    hasPermission: checkPermission,
+    hasRole: checkRole,
+    canAccess: checkAccess
   }
 
   return (
