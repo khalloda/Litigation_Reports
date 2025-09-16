@@ -51,14 +51,51 @@ class Auth {
     }
     
     public static function check() {
-        return isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
+        // Check session first (for web requests)
+        if (isset($_SESSION['user_id']) && !empty($_SESSION['user_id'])) {
+            return true;
+        }
+        
+        // Check JWT token (for API requests)
+        $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+        if (strpos($authHeader, 'Bearer ') === 0) {
+            $token = substr($authHeader, 7);
+            $payload = self::validateToken($token);
+            if ($payload) {
+                // Set current user from token
+                $user = User::findById($payload['user_id']);
+                if ($user) {
+                    self::$currentUser = self::sanitizeUser($user);
+                    return true;
+                }
+            }
+        }
+        
+        return false;
     }
     
     public static function user() {
         if (self::$currentUser === null && self::check()) {
-            $user = User::findById($_SESSION['user_id']);
-            if ($user) {
-                self::$currentUser = self::sanitizeUser($user);
+            // Try session first
+            if (isset($_SESSION['user_id'])) {
+                $user = User::findById($_SESSION['user_id']);
+                if ($user) {
+                    self::$currentUser = self::sanitizeUser($user);
+                }
+            }
+            // If no session, try JWT token
+            else {
+                $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+                if (strpos($authHeader, 'Bearer ') === 0) {
+                    $token = substr($authHeader, 7);
+                    $payload = self::validateToken($token);
+                    if ($payload) {
+                        $user = User::findById($payload['user_id']);
+                        if ($user) {
+                            self::$currentUser = self::sanitizeUser($user);
+                        }
+                    }
+                }
             }
         }
         
@@ -66,11 +103,41 @@ class Auth {
     }
     
     public static function id() {
-        return $_SESSION['user_id'] ?? null;
+        // Try session first
+        if (isset($_SESSION['user_id'])) {
+            return $_SESSION['user_id'];
+        }
+        
+        // Try JWT token
+        $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+        if (strpos($authHeader, 'Bearer ') === 0) {
+            $token = substr($authHeader, 7);
+            $payload = self::validateToken($token);
+            if ($payload) {
+                return $payload['user_id'];
+            }
+        }
+        
+        return null;
     }
     
     public static function role() {
-        return $_SESSION['user_role'] ?? null;
+        // Try session first
+        if (isset($_SESSION['user_role'])) {
+            return $_SESSION['user_role'];
+        }
+        
+        // Try JWT token
+        $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
+        if (strpos($authHeader, 'Bearer ') === 0) {
+            $token = substr($authHeader, 7);
+            $payload = self::validateToken($token);
+            if ($payload) {
+                return $payload['role'];
+            }
+        }
+        
+        return null;
     }
     
     public static function hasRole($role) {

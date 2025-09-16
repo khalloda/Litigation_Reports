@@ -1,6 +1,6 @@
 <?php
 /**
- * Simple API Test Endpoint
+ * Simple API Test Endpoint with Real Authentication
  */
 
 // Enable CORS
@@ -14,6 +14,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit();
 }
+
+// Include configuration and database
+require_once __DIR__ . '/config/config.php';
+require_once __DIR__ . '/config/database.php';
+require_once __DIR__ . '/src/Core/Auth.php';
+require_once __DIR__ . '/src/Models/User.php';
 
 // Get the request path
 $path = $_SERVER['REQUEST_URI'] ?? '/';
@@ -56,24 +62,24 @@ switch ($path) {
                 break;
             }
             
-            // Simple hardcoded authentication for testing
-            if ($input['email'] === 'admin@litigation.com' && $input['password'] === 'admin123') {
-                echo json_encode([
-                    'success' => true,
-                    'message' => 'Login successful',
-                    'data' => [
-                        'user' => [
-                            'id' => 1,
-                            'name' => 'Super Admin',
-                            'email' => 'admin@litigation.com',
-                            'role' => 'super_admin'
-                        ],
-                        'token' => 'test-token-123'
-                    ]
-                ]);
-            } else {
-                http_response_code(401);
-                echo json_encode(['error' => 'Invalid credentials']);
+            try {
+                // Use real authentication system
+                $result = Auth::login($input['email'], $input['password']);
+                
+                if ($result) {
+                    echo json_encode([
+                        'success' => true,
+                        'message' => 'Login successful',
+                        'data' => $result
+                    ]);
+                } else {
+                    http_response_code(401);
+                    echo json_encode(['error' => 'Invalid credentials']);
+                }
+            } catch (Exception $e) {
+                error_log("Login error: " . $e->getMessage());
+                http_response_code(500);
+                echo json_encode(['error' => 'Login failed']);
             }
         } else {
             http_response_code(405);
@@ -116,34 +122,25 @@ switch ($path) {
         
     case '/api/auth/me':
         if ($method === 'GET') {
-            // Check for authorization header using $_SERVER
-            $authHeader = $_SERVER['HTTP_AUTHORIZATION'] ?? '';
-            
-            if (strpos($authHeader, 'Bearer ') === 0) {
-                $token = substr($authHeader, 7);
-                
-                // Simple token validation (in real app, validate JWT)
-                if ($token === 'test-token-123') {
-                    echo json_encode([
-                        'success' => true,
-                        'data' => [
-                            'id' => 1,
-                            'name' => 'Super Admin',
-                            'email' => 'admin@litigation.com',
-                            'role' => 'super_admin',
-                            'status' => 'active',
-                            'created_at' => '2025-01-01T00:00:00Z',
-                            'updated_at' => '2025-01-01T00:00:00Z',
-                            'last_login_at' => date('c')
-                        ]
-                    ]);
-                } else {
+            try {
+                // Check if user is authenticated
+                if (!Auth::check()) {
                     http_response_code(401);
-                    echo json_encode(['error' => 'Invalid token']);
+                    echo json_encode(['error' => 'Not authenticated']);
+                    break;
                 }
-            } else {
-                http_response_code(401);
-                echo json_encode(['error' => 'Authorization header required']);
+                
+                // Get current user
+                $user = Auth::user();
+                
+                echo json_encode([
+                    'success' => true,
+                    'data' => $user
+                ]);
+            } catch (Exception $e) {
+                error_log("Get user error: " . $e->getMessage());
+                http_response_code(500);
+                echo json_encode(['error' => 'Failed to get user information']);
             }
         } else {
             http_response_code(405);

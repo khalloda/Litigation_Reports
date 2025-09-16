@@ -33,8 +33,8 @@ session_start();
 // Include configuration
 require_once __DIR__ . '/../config/config.php';
 
-// Include database connection (SQLite for development)
-require_once __DIR__ . '/../config/database_sqlite.php';
+// Include database connection (MySQL)
+require_once __DIR__ . '/../config/database.php';
 
 // Include core classes
 require_once __DIR__ . '/../src/Core/Router.php';

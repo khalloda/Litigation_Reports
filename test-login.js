@@ -53,7 +53,7 @@ test('Login to Litigation Management System', async ({ page }) => {
   await expect(page.locator('h1.h3')).toContainText('لوحة التحكم');
   
   // Check for user information in the dashboard
-  await expect(page.locator('.nav-link.dropdown-toggle')).toContainText('Super Admin');
+  await expect(page.locator('.nav-link.dropdown-toggle')).toContainText('System Administrator');
   
   // Check for the status check component
   await expect(page.locator('.alert-success')).toContainText('النظام يعمل بشكل طبيعي');

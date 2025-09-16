@@ -10,12 +10,30 @@ class User {
     
     public static function findById($id) {
         $db = Database::getInstance();
-        return $db->fetch("SELECT * FROM " . self::$table . " WHERE id = :id", ['id' => $id]);
+        $user = $db->fetch("SELECT * FROM " . self::$table . " WHERE id = :id", ['id' => $id]);
+        
+        if ($user) {
+            // Map database columns to expected format
+            $user['name'] = $user['full_name_en'] ?: $user['full_name_ar'] ?: $user['username'];
+            $user['password'] = $user['password_hash'];
+            $user['status'] = $user['is_active'] ? 'active' : 'inactive';
+        }
+        
+        return $user;
     }
     
     public static function findByEmail($email) {
         $db = Database::getInstance();
-        return $db->fetch("SELECT * FROM " . self::$table . " WHERE email = :email", ['email' => $email]);
+        $user = $db->fetch("SELECT * FROM " . self::$table . " WHERE email = :email", ['email' => $email]);
+        
+        if ($user) {
+            // Map database columns to expected format
+            $user['name'] = $user['full_name_en'] ?: $user['full_name_ar'] ?: $user['username'];
+            $user['password'] = $user['password_hash'];
+            $user['status'] = $user['is_active'] ? 'active' : 'inactive';
+        }
+        
+        return $user;
     }
     
     public static function findByPasswordResetToken($token) {
@@ -87,7 +105,7 @@ class User {
     
     public static function updateLastLogin($id) {
         $db = Database::getInstance();
-        return $db->update(self::$table, ['last_login_at' => date('Y-m-d H:i:s')], 'id = :id', ['id' => $id]);
+        return $db->update(self::$table, ['last_login' => date('Y-m-d H:i:s')], 'id = :id', ['id' => $id]);
     }
     
     public static function setPasswordResetToken($email, $token) {
