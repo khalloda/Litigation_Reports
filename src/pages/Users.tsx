@@ -9,7 +9,7 @@ import { usePermissions } from '@hooks/usePermissions'
 import { PermissionGate, AdminGate, SuperAdminGate, CanManageUsersGate } from '@components/auth/PermissionGate'
 import { ProtectedRoute } from '@components/auth/ProtectedRoute'
 import { User, UserRole, getRoleDisplayName } from '@types/auth'
-import { Plus, Edit, Trash2, Eye, Shield, User as UserIcon, Users } from 'lucide-react'
+import { Plus, Edit, Trash2, Eye, Shield, User as UserIcon, Users as UsersIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 export function Users() {
@@ -187,7 +187,7 @@ export function Users() {
           <div className="d-flex justify-content-between align-items-center mb-4">
             <div>
               <h2 className="mb-1">
-                <Users className="me-2" />
+                <UsersIcon className="me-2" />
                 إدارة المستخدمين
               </h2>
               <p className="text-muted mb-0">User Management</p>

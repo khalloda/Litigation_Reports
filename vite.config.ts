@@ -26,7 +26,8 @@ export default defineConfig({
         additionalData: `
           @import "@styles/variables.scss";
           @import "@styles/mixins.scss";
-        `
+        `,
+        silenceDeprecations: ['legacy-js-api', 'import', 'global-builtin', 'color-functions']
       }
     }
   },
