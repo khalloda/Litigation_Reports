@@ -147,6 +147,11 @@ class Request {
         return $this->session[$key] ?? $default;
     }
     
+    public function set($key, $value) {
+        $this->query[$key] = $value;
+        return $this;
+    }
+    
     public function setSession($key, $value) {
         $_SESSION[$key] = $value;
         $this->session[$key] = $value;

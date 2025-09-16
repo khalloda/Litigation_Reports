@@ -19,7 +19,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 require_once __DIR__ . '/config/config.php';
 require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/src/Core/Auth.php';
+require_once __DIR__ . '/src/Core/Request.php';
+require_once __DIR__ . '/src/Core/Response.php';
+require_once __DIR__ . '/src/Core/Validator.php';
 require_once __DIR__ . '/src/Models/User.php';
+require_once __DIR__ . '/src/Models/Case.php';
+require_once __DIR__ . '/src/Controllers/CaseController.php';
 
 // Get the request path
 $path = $_SERVER['REQUEST_URI'] ?? '/';
@@ -148,9 +153,130 @@ switch ($path) {
         }
         break;
         
+    // Case Management Endpoints
+    case '/api/cases':
+        if ($method === 'GET') {
+            try {
+                $controller = new CaseController();
+                $request = new Request();
+                $response = $controller->index($request);
+                $response->send();
+            } catch (Exception $e) {
+                http_response_code(500);
+                echo json_encode(['error' => 'Internal server error']);
+            }
+        } elseif ($method === 'POST') {
+            try {
+                $controller = new CaseController();
+                $request = new Request();
+                $response = $controller->store($request);
+                $response->send();
+            } catch (Exception $e) {
+                http_response_code(500);
+                echo json_encode(['error' => 'Internal server error']);
+            }
+        } else {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method not allowed']);
+        }
+        break;
+        
+    case '/api/cases/stats':
+        if ($method === 'GET') {
+            try {
+                $controller = new CaseController();
+                $request = new Request();
+                $response = $controller->stats($request);
+                $response->send();
+            } catch (Exception $e) {
+                http_response_code(500);
+                echo json_encode(['error' => 'Internal server error']);
+            }
+        } else {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method not allowed']);
+        }
+        break;
+        
+    case '/api/cases/search':
+        if ($method === 'GET') {
+            try {
+                $controller = new CaseController();
+                $request = new Request();
+                $response = $controller->search($request);
+                $response->send();
+            } catch (Exception $e) {
+                http_response_code(500);
+                echo json_encode(['error' => 'Internal server error']);
+            }
+        } else {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method not allowed']);
+        }
+        break;
+        
+    case '/api/cases/options':
+        if ($method === 'GET') {
+            try {
+                $controller = new CaseController();
+                $request = new Request();
+                $response = $controller->options($request);
+                $response->send();
+            } catch (Exception $e) {
+                http_response_code(500);
+                echo json_encode(['error' => 'Internal server error']);
+            }
+        } else {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method not allowed']);
+        }
+        break;
+        
     default:
-        http_response_code(404);
-        echo json_encode(['error' => 'Endpoint not found', 'path' => $path]);
+        // Handle dynamic case ID routes
+        if (preg_match('/^\/api\/cases\/(\d+)$/', $path, $matches)) {
+            $caseId = $matches[1];
+            if ($method === 'GET') {
+                try {
+                    $controller = new CaseController();
+                    $request = new Request();
+                    $request->set('id', $caseId);
+                    $response = $controller->show($request);
+                    $response->send();
+                } catch (Exception $e) {
+                    http_response_code(500);
+                    echo json_encode(['error' => 'Internal server error']);
+                }
+            } elseif ($method === 'PUT' || $method === 'PATCH') {
+                try {
+                    $controller = new CaseController();
+                    $request = new Request();
+                    $request->set('id', $caseId);
+                    $response = $controller->update($request);
+                    $response->send();
+                } catch (Exception $e) {
+                    http_response_code(500);
+                    echo json_encode(['error' => 'Internal server error']);
+                }
+            } elseif ($method === 'DELETE') {
+                try {
+                    $controller = new CaseController();
+                    $request = new Request();
+                    $request->set('id', $caseId);
+                    $response = $controller->destroy($request);
+                    $response->send();
+                } catch (Exception $e) {
+                    http_response_code(500);
+                    echo json_encode(['error' => 'Internal server error']);
+                }
+            } else {
+                http_response_code(405);
+                echo json_encode(['error' => 'Method not allowed']);
+            }
+        } else {
+            http_response_code(404);
+            echo json_encode(['error' => 'Endpoint not found', 'path' => $path]);
+        }
         break;
 }
 ?>
