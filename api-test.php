@@ -24,7 +24,9 @@ require_once __DIR__ . '/src/Core/Response.php';
 require_once __DIR__ . '/src/Core/Validator.php';
 require_once __DIR__ . '/src/Models/User.php';
 require_once __DIR__ . '/src/Models/Case.php';
+require_once __DIR__ . '/src/Models/Client.php';
 require_once __DIR__ . '/src/Controllers/CaseController.php';
+require_once __DIR__ . '/src/Controllers/ClientController.php';
 
 // Get the request path
 $path = $_SERVER['REQUEST_URI'] ?? '/';
@@ -232,9 +234,163 @@ switch ($path) {
         }
         break;
         
+    // Client Management Endpoints
+    case '/api/clients':
+        if ($method === 'GET') {
+            try {
+                $controller = new ClientController();
+                $request = new Request();
+                $response = $controller->index($request);
+                $response->send();
+            } catch (Exception $e) {
+                http_response_code(500);
+                echo json_encode(['error' => 'Internal server error']);
+            }
+        } elseif ($method === 'POST') {
+            try {
+                $controller = new ClientController();
+                $request = new Request();
+                $response = $controller->store($request);
+                $response->send();
+            } catch (Exception $e) {
+                http_response_code(500);
+                echo json_encode(['error' => 'Internal server error']);
+            }
+        } else {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method not allowed']);
+        }
+        break;
+        
+    case '/api/clients/stats':
+        if ($method === 'GET') {
+            try {
+                $controller = new ClientController();
+                $request = new Request();
+                $response = $controller->stats($request);
+                $response->send();
+            } catch (Exception $e) {
+                http_response_code(500);
+                echo json_encode(['error' => 'Internal server error']);
+            }
+        } else {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method not allowed']);
+        }
+        break;
+        
+    case '/api/clients/search':
+        if ($method === 'GET') {
+            try {
+                $controller = new ClientController();
+                $request = new Request();
+                $response = $controller->search($request);
+                $response->send();
+            } catch (Exception $e) {
+                http_response_code(500);
+                echo json_encode(['error' => 'Internal server error']);
+            }
+        } else {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method not allowed']);
+        }
+        break;
+        
+    case '/api/clients/options':
+        if ($method === 'GET') {
+            try {
+                $controller = new ClientController();
+                $request = new Request();
+                $response = $controller->options($request);
+                $response->send();
+            } catch (Exception $e) {
+                http_response_code(500);
+                echo json_encode(['error' => 'Internal server error']);
+            }
+        } else {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method not allowed']);
+        }
+        break;
+        
+    case '/api/clients/active':
+        if ($method === 'GET') {
+            try {
+                $controller = new ClientController();
+                $request = new Request();
+                $response = $controller->active($request);
+                $response->send();
+            } catch (Exception $e) {
+                http_response_code(500);
+                echo json_encode(['error' => 'Internal server error']);
+            }
+        } else {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method not allowed']);
+        }
+        break;
+        
+    case '/api/clients/for-select':
+        if ($method === 'GET') {
+            try {
+                $controller = new ClientController();
+                $request = new Request();
+                $response = $controller->forSelect($request);
+                $response->send();
+            } catch (Exception $e) {
+                http_response_code(500);
+                echo json_encode(['error' => 'Internal server error']);
+            }
+        } else {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method not allowed']);
+        }
+        break;
+        
     default:
+        // Handle dynamic client ID routes
+        if (preg_match('/^\/api\/clients\/(\d+)$/', $path, $matches)) {
+            $clientId = $matches[1];
+            if ($method === 'GET') {
+                try {
+                    $controller = new ClientController();
+                    $request = new Request();
+                    $request->set('id', $clientId);
+                    $response = $controller->show($request);
+                    $response->send();
+                } catch (Exception $e) {
+                    http_response_code(500);
+                    echo json_encode(['error' => 'Internal server error']);
+                }
+            } elseif ($method === 'PUT' || $method === 'PATCH') {
+                try {
+                    $controller = new ClientController();
+                    $request = new Request();
+                    $request->set('id', $clientId);
+                    $response = $controller->update($request);
+                    $response->send();
+                } catch (Exception $e) {
+                    http_response_code(500);
+                    echo json_encode(['error' => 'Internal server error']);
+                }
+            } elseif ($method === 'DELETE') {
+                try {
+                    $controller = new ClientController();
+                    $request = new Request();
+                    $request->set('id', $clientId);
+                    $response = $controller->destroy($request);
+                    $response->send();
+                } catch (Exception $e) {
+                    http_response_code(500);
+                    echo json_encode(['error' => 'Internal server error']);
+                }
+            } else {
+                http_response_code(405);
+                echo json_encode(['error' => 'Method not allowed']);
+            }
+        }
         // Handle dynamic case ID routes
-        if (preg_match('/^\/api\/cases\/(\d+)$/', $path, $matches)) {
+        elseif (preg_match('/^\/api\/cases\/(\d+)$/', $path, $matches)) {
             $caseId = $matches[1];
             if ($method === 'GET') {
                 try {
