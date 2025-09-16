@@ -25,8 +25,10 @@ require_once __DIR__ . '/src/Core/Validator.php';
 require_once __DIR__ . '/src/Models/User.php';
 require_once __DIR__ . '/src/Models/Case.php';
 require_once __DIR__ . '/src/Models/Client.php';
+require_once __DIR__ . '/src/Models/Hearing.php';
 require_once __DIR__ . '/src/Controllers/CaseController.php';
 require_once __DIR__ . '/src/Controllers/ClientController.php';
+require_once __DIR__ . '/src/Controllers/HearingController.php';
 
 // Get the request path
 $path = $_SERVER['REQUEST_URI'] ?? '/';
@@ -347,6 +349,136 @@ switch ($path) {
         }
         break;
         
+    // Hearing Management Endpoints
+    case '/api/hearings':
+        if ($method === 'GET') {
+            try {
+                $controller = new HearingController();
+                $request = new Request();
+                $response = $controller->index($request);
+                $response->send();
+            } catch (Exception $e) {
+                http_response_code(500);
+                echo json_encode(['error' => 'Internal server error']);
+            }
+        } elseif ($method === 'POST') {
+            try {
+                $controller = new HearingController();
+                $request = new Request();
+                $response = $controller->store($request);
+                $response->send();
+            } catch (Exception $e) {
+                http_response_code(500);
+                echo json_encode(['error' => 'Internal server error']);
+            }
+        } else {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method not allowed']);
+        }
+        break;
+        
+    case '/api/hearings/stats':
+        if ($method === 'GET') {
+            try {
+                $controller = new HearingController();
+                $request = new Request();
+                $response = $controller->stats($request);
+                $response->send();
+            } catch (Exception $e) {
+                http_response_code(500);
+                echo json_encode(['error' => 'Internal server error']);
+            }
+        } else {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method not allowed']);
+        }
+        break;
+        
+    case '/api/hearings/search':
+        if ($method === 'GET') {
+            try {
+                $controller = new HearingController();
+                $request = new Request();
+                $response = $controller->search($request);
+                $response->send();
+            } catch (Exception $e) {
+                http_response_code(500);
+                echo json_encode(['error' => 'Internal server error']);
+            }
+        } else {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method not allowed']);
+        }
+        break;
+        
+    case '/api/hearings/options':
+        if ($method === 'GET') {
+            try {
+                $controller = new HearingController();
+                $request = new Request();
+                $response = $controller->options($request);
+                $response->send();
+            } catch (Exception $e) {
+                http_response_code(500);
+                echo json_encode(['error' => 'Internal server error']);
+            }
+        } else {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method not allowed']);
+        }
+        break;
+        
+    case '/api/hearings/upcoming':
+        if ($method === 'GET') {
+            try {
+                $controller = new HearingController();
+                $request = new Request();
+                $response = $controller->upcoming($request);
+                $response->send();
+            } catch (Exception $e) {
+                http_response_code(500);
+                echo json_encode(['error' => 'Internal server error']);
+            }
+        } else {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method not allowed']);
+        }
+        break;
+        
+    case '/api/hearings/by-case':
+        if ($method === 'GET') {
+            try {
+                $controller = new HearingController();
+                $request = new Request();
+                $response = $controller->byCase($request);
+                $response->send();
+            } catch (Exception $e) {
+                http_response_code(500);
+                echo json_encode(['error' => 'Internal server error']);
+            }
+        } else {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method not allowed']);
+        }
+        break;
+        
+    case '/api/hearings/by-date-range':
+        if ($method === 'GET') {
+            try {
+                $controller = new HearingController();
+                $request = new Request();
+                $response = $controller->byDateRange($request);
+                $response->send();
+            } catch (Exception $e) {
+                http_response_code(500);
+                echo json_encode(['error' => 'Internal server error']);
+            }
+        } else {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method not allowed']);
+        }
+        break;
+        
     default:
         // Handle dynamic client ID routes
         if (preg_match('/^\/api\/clients\/(\d+)$/', $path, $matches)) {
@@ -419,6 +551,47 @@ switch ($path) {
                     $controller = new CaseController();
                     $request = new Request();
                     $request->set('id', $caseId);
+                    $response = $controller->destroy($request);
+                    $response->send();
+                } catch (Exception $e) {
+                    http_response_code(500);
+                    echo json_encode(['error' => 'Internal server error']);
+                }
+            } else {
+                http_response_code(405);
+                echo json_encode(['error' => 'Method not allowed']);
+            }
+        }
+        // Handle dynamic hearing ID routes
+        elseif (preg_match('/^\/api\/hearings\/(\d+)$/', $path, $matches)) {
+            $hearingId = $matches[1];
+            if ($method === 'GET') {
+                try {
+                    $controller = new HearingController();
+                    $request = new Request();
+                    $request->set('id', $hearingId);
+                    $response = $controller->show($request);
+                    $response->send();
+                } catch (Exception $e) {
+                    http_response_code(500);
+                    echo json_encode(['error' => 'Internal server error']);
+                }
+            } elseif ($method === 'PUT' || $method === 'PATCH') {
+                try {
+                    $controller = new HearingController();
+                    $request = new Request();
+                    $request->set('id', $hearingId);
+                    $response = $controller->update($request);
+                    $response->send();
+                } catch (Exception $e) {
+                    http_response_code(500);
+                    echo json_encode(['error' => 'Internal server error']);
+                }
+            } elseif ($method === 'DELETE') {
+                try {
+                    $controller = new HearingController();
+                    $request = new Request();
+                    $request->set('id', $hearingId);
                     $response = $controller->destroy($request);
                     $response->send();
                 } catch (Exception $e) {

@@ -10,10 +10,11 @@ import LoginForm from './components/LoginForm';
 import Dashboard from './components/Dashboard';
 import CasesPage from './pages/CasesPage';
 import ClientsPage from './pages/ClientsPage';
+import HearingsPage from './pages/HearingsPage';
 import { Container, Nav, Navbar, NavDropdown } from 'react-bootstrap';
-import { Gavel, Users, Home, LogOut } from 'lucide-react';
+import { Gavel, Users, Home, LogOut, Calendar } from 'lucide-react';
 
-type Page = 'dashboard' | 'cases' | 'clients';
+type Page = 'dashboard' | 'cases' | 'clients' | 'hearings';
 
 const AppContent: React.FC = () => {
   const { isAuthenticated, isLoading, user, logout } = useAuth();
@@ -42,6 +43,8 @@ const AppContent: React.FC = () => {
         return <CasesPage />;
       case 'clients':
         return <ClientsPage />;
+      case 'hearings':
+        return <HearingsPage />;
       default:
         return <Dashboard />;
     }
@@ -83,6 +86,14 @@ const AppContent: React.FC = () => {
               >
                 <Users className="me-1" size={16} />
                 العملاء
+              </Nav.Link>
+              <Nav.Link 
+                href="#" 
+                onClick={(e) => { e.preventDefault(); setCurrentPage('hearings'); }}
+                className={currentPage === 'hearings' ? 'active' : ''}
+              >
+                <Calendar className="me-1" size={16} />
+                الجلسات
               </Nav.Link>
             </Nav>
             
