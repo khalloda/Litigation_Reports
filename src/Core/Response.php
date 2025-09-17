@@ -170,21 +170,7 @@ class Response {
             'Content-Length' => filesize($filePath)
         ];
         
-        $response = new self(null, 200, $headers);
-        
-        // Override send method for file download
-        $response->send = function() use ($filePath) {
-            http_response_code(200);
-            
-            foreach ($this->headers as $name => $value) {
-                header("{$name}: {$value}");
-            }
-            
-            readfile($filePath);
-            exit();
-        };
-        
-        return $response;
+        return new FileResponse($filePath, $headers);
     }
     
     public static function redirect($url, $statusCode = 302) {
@@ -262,5 +248,33 @@ class Response {
         $this->headers['Content-Security-Policy'] = "default-src 'self'";
         
         return $this;
+    }
+}
+
+/**
+ * FileResponse Class
+ * 
+ * Specialized response class for file downloads.
+ */
+class FileResponse extends Response {
+    private $filePath;
+    
+    public function __construct($filePath, $headers = []) {
+        parent::__construct(null, 200, $headers);
+        $this->filePath = $filePath;
+    }
+    
+    public function send() {
+        // Set status code
+        http_response_code($this->getStatusCode());
+        
+        // Set headers
+        foreach ($this->getHeaders() as $name => $value) {
+            header("{$name}: {$value}");
+        }
+        
+        // Send file content
+        readfile($this->filePath);
+        exit();
     }
 }
