@@ -85,9 +85,9 @@ const HearingsPage: React.FC = () => {
 
       const response = await api.get(`/hearings?${params}`);
       
-      if (response.data.success) {
-        setHearings(response.data.data.data);
-        setPagination(response.data.data.pagination);
+      if (response.success) {
+        setHearings(response.data.data);
+        setPagination(response.data.pagination);
       } else {
         setError('Failed to load hearings');
       }
@@ -102,8 +102,8 @@ const HearingsPage: React.FC = () => {
   const loadOptions = async () => {
     try {
       const response = await api.get('/hearings/options');
-      if (response.data.success) {
-        setOptions(response.data.data);
+      if (response.success) {
+        setOptions(response.data);
       }
     } catch (err) {
       console.error('Error loading options:', err);

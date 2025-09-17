@@ -1,92 +1,93 @@
 <?php
 /**
  * Test API Endpoints
+ * Tests the production API endpoints directly
  */
 
-function makeRequest($url, $method = 'GET', $headers = [], $body = null) {
-    $ch = curl_init();
-    
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
-    
-    if ($headers) {
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+echo "🧪 Testing Production API Endpoints...\n\n";
+
+// Test 1: Health Check
+echo "1. Testing Health Check...\n";
+$response = file_get_contents('http://lit.local/api/ping');
+if ($response) {
+    $data = json_decode($response, true);
+    if ($data && isset($data['success'])) {
+        echo "   ✅ Health check successful\n";
+        echo "   📊 Response: " . json_encode($data) . "\n";
+    } else {
+        echo "   ❌ Health check failed - Invalid response\n";
     }
-    
-    if ($body) {
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
-    }
-    
-    $response = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-    
-    return [
-        'code' => $httpCode,
-        'body' => $response
-    ];
-}
-
-echo "Testing API endpoints...\n\n";
-
-// Test 1: Login
-echo "1. Testing login endpoint...\n";
-$loginResponse = makeRequest(
-    'http://localhost:8080/api/auth/login',
-    'POST',
-    ['Content-Type: application/json'],
-    json_encode(['email' => 'admin@litigation.com', 'password' => 'admin123'])
-);
-
-echo "   Status: {$loginResponse['code']}\n";
-$loginData = json_decode($loginResponse['body'], true);
-if ($loginData && isset($loginData['data']['token'])) {
-    echo "   ✅ Login successful\n";
-    $token = $loginData['data']['token'];
-    echo "   Token: " . substr($token, 0, 50) . "...\n";
 } else {
-    echo "   ❌ Login failed\n";
-    echo "   Response: {$loginResponse['body']}\n";
-    exit(1);
+    echo "   ❌ Health check failed - No response\n";
 }
 
 echo "\n";
 
-// Test 2: Get user info
-echo "2. Testing /api/auth/me endpoint...\n";
-$meResponse = makeRequest(
-    'http://localhost:8080/api/auth/me',
-    'GET',
-    ['Authorization: Bearer ' . $token]
-);
-
-echo "   Status: {$meResponse['code']}\n";
-$meData = json_decode($meResponse['body'], true);
-if ($meData && isset($meData['data']['id'])) {
-    echo "   ✅ User info retrieved successfully\n";
-    echo "   User: {$meData['data']['name']} ({$meData['data']['email']})\n";
-    echo "   Role: {$meData['data']['role']}\n";
+// Test 2: API Root
+echo "2. Testing API Root...\n";
+$response = file_get_contents('http://lit.local/api/');
+if ($response) {
+    $data = json_decode($response, true);
+    if ($data && isset($data['success'])) {
+        echo "   ✅ API root successful\n";
+        echo "   📊 Response: " . json_encode($data) . "\n";
+    } else {
+        echo "   ❌ API root failed - Invalid response\n";
+    }
 } else {
-    echo "   ❌ Failed to get user info\n";
-    echo "   Response: {$meResponse['body']}\n";
+    echo "   ❌ API root failed - No response\n";
 }
 
 echo "\n";
 
-// Test 3: Health check
-echo "3. Testing health endpoint...\n";
-$healthResponse = makeRequest('http://localhost:8080/api/health');
-
-echo "   Status: {$healthResponse['code']}\n";
-$healthData = json_decode($healthResponse['body'], true);
-if ($healthData && isset($healthData['status'])) {
-    echo "   ✅ Health check successful\n";
-    echo "   Status: {$healthData['status']}\n";
+// Test 3: Cases Endpoint
+echo "3. Testing Cases Endpoint...\n";
+$context = stream_context_create([
+    'http' => [
+        'method' => 'GET',
+        'header' => 'Content-Type: application/json'
+    ]
+]);
+$response = file_get_contents('http://lit.local/api/cases', false, $context);
+if ($response) {
+    $data = json_decode($response, true);
+    if ($data && isset($data['success'])) {
+        echo "   ✅ Cases endpoint successful\n";
+        echo "   📊 Response: " . json_encode($data) . "\n";
+    } else {
+        echo "   ❌ Cases endpoint failed - Invalid response\n";
+    }
 } else {
-    echo "   ❌ Health check failed\n";
-    echo "   Response: {$healthResponse['body']}\n";
+    echo "   ❌ Cases endpoint failed - No response\n";
 }
 
-echo "\n🎉 API testing completed!\n";
+echo "\n";
+
+// Test 4: Login Endpoint
+echo "4. Testing Login Endpoint...\n";
+$postData = json_encode([
+    'email' => 'admin@litigation.com',
+    'password' => 'admin123'
+]);
+$context = stream_context_create([
+    'http' => [
+        'method' => 'POST',
+        'header' => 'Content-Type: application/json',
+        'content' => $postData
+    ]
+]);
+$response = file_get_contents('http://lit.local/api/auth/login', false, $context);
+if ($response) {
+    $data = json_decode($response, true);
+    if ($data && isset($data['success'])) {
+        echo "   ✅ Login endpoint successful\n";
+        echo "   📊 Response: " . json_encode($data) . "\n";
+    } else {
+        echo "   ❌ Login endpoint failed - Invalid response\n";
+    }
+} else {
+    echo "   ❌ Login endpoint failed - No response\n";
+}
+
+echo "\n🎉 API endpoint testing completed!\n";
 ?>

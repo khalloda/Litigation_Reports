@@ -38,10 +38,7 @@
   },
   "include": [
     "src",
-    "tests",
-    "**/*.ts",
-    "**/*.tsx",
-    "vite.config.ts"
+    "tests"
   ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

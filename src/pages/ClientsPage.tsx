@@ -74,9 +74,9 @@ const ClientsPage: React.FC = () => {
 
       const response = await api.get(`/clients?${params}`);
       
-      if (response.data.success) {
-        setClients(response.data.data.data);
-        setPagination(response.data.data.pagination);
+      if (response.success) {
+        setClients(response.data.data);
+        setPagination(response.data.pagination);
       } else {
         setError('Failed to load clients');
       }
@@ -91,8 +91,8 @@ const ClientsPage: React.FC = () => {
   const loadOptions = async () => {
     try {
       const response = await api.get('/clients/options');
-      if (response.data.success) {
-        setOptions(response.data.data);
+      if (response.success) {
+        setOptions(response.data);
       }
     } catch (err) {
       console.error('Error loading options:', err);

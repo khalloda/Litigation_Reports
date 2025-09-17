@@ -36,7 +36,7 @@ export default defineConfig({
     host: 'lit.local',
     proxy: {
       '/api': {
-        target: 'http://lit.local:8080',
+        target: 'http://localhost:8080',
         changeOrigin: true,
         secure: false
       }

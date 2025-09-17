@@ -5,7 +5,7 @@
  */
 
 // API Configuration
-const API_BASE_URL = ''; // Use relative URLs to go through Vite proxy
+const API_BASE_URL = (import.meta as any).env?.VITE_API_BASE || '/api'; // Use environment variable or default to /api
 const API_TIMEOUT = 5000; // Reduced timeout for faster fallback to mock data
 
 // API Response Types
@@ -92,16 +92,24 @@ class ApiService {
     this.timeout = timeout;
     
     // Load token from localStorage
-    this.token = localStorage.getItem('auth_token');
+    this.loadToken();
+  }
+  
+  private loadToken() {
+    if (typeof window !== 'undefined') {
+      this.token = localStorage.getItem('auth_token');
+    }
   }
 
   // Set authentication token
   setToken(token: string | null) {
     this.token = token;
-    if (token) {
-      localStorage.setItem('auth_token', token);
-    } else {
-      localStorage.removeItem('auth_token');
+    if (typeof window !== 'undefined') {
+      if (token) {
+        localStorage.setItem('auth_token', token);
+      } else {
+        localStorage.removeItem('auth_token');
+      }
     }
   }
 
@@ -109,12 +117,20 @@ class ApiService {
   getToken(): string | null {
     return this.token;
   }
+  
+  // Refresh token from localStorage
+  refreshToken() {
+    this.loadToken();
+  }
 
   // Make HTTP request
   private async request<T>(
     endpoint: string,
     options: RequestInit = {}
   ): Promise<ApiResponse<T>> {
+    // Refresh token from localStorage before making request
+    this.refreshToken();
+    
     const url = `${this.baseUrl}${endpoint}`;
     
     const defaultHeaders: HeadersInit = {
@@ -123,6 +139,9 @@ class ApiService {
 
     if (this.token) {
       defaultHeaders['Authorization'] = `Bearer ${this.token}`;
+      console.log('API request with token:', url, 'Token:', this.token.substring(0, 20) + '...');
+    } else {
+      console.warn('No authentication token available for request:', url);
     }
 
     const config: RequestInit = {
@@ -143,6 +162,19 @@ class ApiService {
       });
 
       clearTimeout(timeoutId);
+
+      // Check if response is HTML (error page)
+      const contentType = response.headers.get('content-type');
+      if (contentType && !contentType.includes('application/json')) {
+        const text = await response.text();
+        console.error('API request failed: Non-JSON response', {
+          url,
+          status: response.status,
+          contentType,
+          response: text.substring(0, 200)
+        });
+        throw new Error(`API request failed: Expected JSON but got ${contentType}`);
+      }
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -231,28 +263,48 @@ class ApiService {
       case '/api/clients':
         return {
           success: true,
-          data: [],
-          pagination: {
-            current_page: 1,
-            per_page: 20,
-            total: 0,
-            total_pages: 0,
-            has_next: false,
-            has_prev: false
+          data: {
+            data: [],
+            pagination: {
+              current_page: 1,
+              per_page: 20,
+              total: 0,
+              total_pages: 0,
+              has_next: false,
+              has_prev: false
+            }
           }
         } as ApiResponse<T>;
 
       case '/api/cases':
         return {
           success: true,
-          data: [],
-          pagination: {
-            current_page: 1,
-            per_page: 20,
-            total: 0,
-            total_pages: 0,
-            has_next: false,
-            has_prev: false
+          data: {
+            data: [],
+            pagination: {
+              current_page: 1,
+              per_page: 20,
+              total: 0,
+              total_pages: 0,
+              has_next: false,
+              has_prev: false
+            }
+          }
+        } as ApiResponse<T>;
+
+      case '/api/hearings':
+        return {
+          success: true,
+          data: {
+            data: [],
+            pagination: {
+              current_page: 1,
+              per_page: 20,
+              total: 0,
+              total_pages: 0,
+              has_next: false,
+              has_prev: false
+            }
           }
         } as ApiResponse<T>;
 
@@ -283,7 +335,7 @@ class ApiService {
 
   // Authentication methods
   async login(credentials: LoginRequest): Promise<ApiResponse<LoginResponse>> {
-    return this.request<LoginResponse>('/api/auth/login', {
+    return this.request<LoginResponse>('/auth/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
     });
@@ -291,13 +343,13 @@ class ApiService {
 
   async logout(): Promise<ApiResponse> {
     this.setToken(null);
-    return this.request('/api/auth/logout', {
+    return this.request('/auth/logout', {
       method: 'POST',
     });
   }
 
   async getCurrentUser(): Promise<ApiResponse<User>> {
-    return this.request<User>('/api/auth/me');
+    return this.request<User>('/auth/me');
   }
 
   // User management methods
@@ -343,6 +395,36 @@ class ApiService {
   // Health check
   async healthCheck(): Promise<ApiResponse<any>> {
     return this.request('/api/health');
+  }
+
+  // Generic HTTP methods
+  async get(endpoint: string): Promise<ApiResponse<any>> {
+    return this.request(endpoint, { method: 'GET' });
+  }
+
+  async post(endpoint: string, data?: any): Promise<ApiResponse<any>> {
+    return this.request(endpoint, {
+      method: 'POST',
+      body: data ? JSON.stringify(data) : undefined,
+    });
+  }
+
+  async put(endpoint: string, data?: any): Promise<ApiResponse<any>> {
+    return this.request(endpoint, {
+      method: 'PUT',
+      body: data ? JSON.stringify(data) : undefined,
+    });
+  }
+
+  async patch(endpoint: string, data?: any): Promise<ApiResponse<any>> {
+    return this.request(endpoint, {
+      method: 'PATCH',
+      body: data ? JSON.stringify(data) : undefined,
+    });
+  }
+
+  async delete(endpoint: string): Promise<ApiResponse<any>> {
+    return this.request(endpoint, { method: 'DELETE' });
   }
 }
 
