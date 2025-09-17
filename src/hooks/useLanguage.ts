@@ -24,14 +24,18 @@ export function useLanguage(): UseLanguageReturn {
   const setLanguage = useCallback((language: SupportedLanguage) => {
     setCurrentLanguage(language)
     localStorage.setItem('language', language)
-    i18n.changeLanguage(language)
-    
+
+    // Only call i18n.changeLanguage if it's available
+    if (i18n && typeof i18n.changeLanguage === 'function') {
+      i18n.changeLanguage(language)
+    }
+
     // Update document language
     document.documentElement.lang = language
-    
+
     // Trigger custom event for RTL hook to listen to
-    window.dispatchEvent(new CustomEvent('languageChange', { 
-      detail: { language } 
+    window.dispatchEvent(new CustomEvent('languageChange', {
+      detail: { language }
     }))
   }, [i18n])
 
@@ -45,7 +49,7 @@ export function useLanguage(): UseLanguageReturn {
 
   // Initialize language on mount
   useEffect(() => {
-    if (i18n.language !== currentLanguage) {
+    if (i18n && typeof i18n.changeLanguage === 'function' && i18n.language !== currentLanguage) {
       i18n.changeLanguage(currentLanguage)
     }
   }, [i18n, currentLanguage])

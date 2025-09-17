@@ -22,7 +22,11 @@
       "mcp__playwright__browser_click",
       "Bash(mkdir:*)",
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(git pull:*)",
+      "mcp__github__create_pull_request",
+      "Bash(gh pr create:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": [],
     "ask": []

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Button, Form, InputGroup, Badge, Spinner, Alert } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Form, InputGroup, Badge, Spinner, Alert, Modal } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
-import { Plus, Search, Filter, Eye, Edit, Trash, Users, Building, User } from 'lucide-react';
+import { Plus, Search, Filter, Eye, Edit, Trash, Users, Building, User, AlertTriangle } from 'lucide-react';
 import { apiService as api } from '../services/api';
+import { ClientModal } from '../components/modals/ClientModal';
+import { useLanguage } from '../hooks/useLanguage';
 
 interface Client {
   id: number;
@@ -16,6 +18,33 @@ interface Client {
   cases_count: number;
   last_case_date: string;
   created_at: string;
+  phone?: string;
+  email?: string;
+  address_ar?: string;
+  address_en?: string;
+  notes_ar?: string;
+  notes_en?: string;
+  logo_url?: string;
+  logo_file_name?: string;
+  logo_file_size?: number;
+}
+
+interface ClientFormData {
+  client_name_ar: string;
+  client_name_en: string;
+  client_type: 'individual' | 'company';
+  cash_pro_bono: 'cash' | 'probono';
+  status: 'active' | 'inactive' | 'disabled';
+  contact_lawyer: string;
+  phone: string;
+  email: string;
+  address_ar: string;
+  address_en: string;
+  notes_ar: string;
+  notes_en: string;
+  client_start_date: string;
+  logo_file?: File;
+  logo_url?: string;
 }
 
 interface ClientFilters {
@@ -33,6 +62,7 @@ interface ClientOptions {
 
 const ClientsPage: React.FC = () => {
   const { t } = useTranslation();
+  const { currentLanguage } = useLanguage();
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -55,6 +85,17 @@ const ClientsPage: React.FC = () => {
     has_next: false,
     has_prev: false
   });
+
+  // Modal states
+  const [showModal, setShowModal] = useState(false);
+  const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
+  const [modalLoading, setModalLoading] = useState(false);
+
+  // Delete confirmation state
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [clientToDelete, setClientToDelete] = useState<Client | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     loadClients();
@@ -106,6 +147,113 @@ const ClientsPage: React.FC = () => {
 
   const handlePageChange = (page: number) => {
     setPagination(prev => ({ ...prev, current_page: page }));
+  };
+
+  // CRUD operations
+  const handleCreateClient = () => {
+    setSelectedClient(null);
+    setModalMode('create');
+    setShowModal(true);
+  };
+
+  const handleEditClient = async (client: Client) => {
+    setModalLoading(true);
+    try {
+      // Fetch full client details for editing
+      const response = await api.get(`/clients/${client.id}`);
+      if (response.success) {
+        setSelectedClient(response.data);
+        setModalMode('edit');
+        setShowModal(true);
+      } else {
+        setError('Failed to load client details');
+      }
+    } catch (err) {
+      setError('Error loading client details');
+      console.error('Error loading client:', err);
+    } finally {
+      setModalLoading(false);
+    }
+  };
+
+  const handleViewClient = async (client: Client) => {
+    setModalLoading(true);
+    try {
+      // Fetch full client details for viewing
+      const response = await api.get(`/clients/${client.id}`);
+      if (response.success) {
+        setSelectedClient(response.data);
+        setModalMode('view');
+        setShowModal(true);
+      } else {
+        setError('Failed to load client details');
+      }
+    } catch (err) {
+      setError('Error loading client details');
+      console.error('Error loading client:', err);
+    } finally {
+      setModalLoading(false);
+    }
+  };
+
+  const handleSaveClient = async (clientData: ClientFormData) => {
+    try {
+      let response;
+      if (modalMode === 'create') {
+        response = await api.post('/clients', clientData);
+      } else {
+        response = await api.put(`/clients/${selectedClient?.id}`, clientData);
+      }
+
+      if (response.success) {
+        await loadClients(); // Refresh the list
+        setShowModal(false);
+      } else {
+        throw new Error(response.message || 'Failed to save client');
+      }
+    } catch (err) {
+      console.error('Error saving client:', err);
+      throw err; // Re-throw to show error in modal
+    }
+  };
+
+  const handleDeleteClient = (client: Client) => {
+    setClientToDelete(client);
+    setShowDeleteModal(true);
+  };
+
+  const confirmDeleteClient = async () => {
+    if (!clientToDelete) return;
+
+    try {
+      setDeleting(true);
+      const response = await api.delete(`/clients/${clientToDelete.id}`);
+
+      if (response.success) {
+        await loadClients(); // Refresh the list
+        setShowDeleteModal(false);
+        setClientToDelete(null);
+      } else {
+        setError('Failed to delete client');
+      }
+    } catch (err) {
+      setError('Error deleting client');
+      console.error('Error deleting client:', err);
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedClient(null);
+    setModalLoading(false);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setShowDeleteModal(false);
+    setClientToDelete(null);
+    setDeleting(false);
   };
 
   const getStatusBadge = (status: string) => {
@@ -168,7 +316,7 @@ const ClientsPage: React.FC = () => {
               </h2>
               <p className="text-muted mb-0">إدارة وتتبع جميع العملاء والشركات</p>
             </div>
-            <Button variant="primary" size="lg">
+            <Button variant="primary" size="lg" onClick={handleCreateClient}>
               <Plus className="me-2" />
               إضافة عميل جديد
             </Button>
@@ -298,13 +446,45 @@ const ClientsPage: React.FC = () => {
                     <tr key={client.id}>
                       <td>
                         <div className="d-flex align-items-center">
+                          {/* Client Logo or Type Icon */}
                           <div className="me-2">
-                            {getTypeIcon(client.client_type)}
+                            {client.logo_url ? (
+                              <img
+                                src={client.logo_url}
+                                alt={`${client.client_name_ar} Logo`}
+                                style={{
+                                  width: '32px',
+                                  height: '32px',
+                                  objectFit: 'contain',
+                                  borderRadius: '4px',
+                                  border: '1px solid #dee2e6'
+                                }}
+                                onError={(e) => {
+                                  // Fallback to type icon if logo fails to load
+                                  e.currentTarget.style.display = 'none';
+                                  e.currentTarget.nextElementSibling?.classList.remove('d-none');
+                                }}
+                              />
+                            ) : null}
+                            <div className={client.logo_url ? 'd-none' : ''}>
+                              {getTypeIcon(client.client_type)}
+                            </div>
                           </div>
-                          <div>
+
+                          {/* Client Name */}
+                          <div className="flex-grow-1">
                             <div className="fw-bold">{client.client_name_ar}</div>
                             {client.client_name_en && (
                               <small className="text-muted">{client.client_name_en}</small>
+                            )}
+                            {/* Show logo indicator for companies */}
+                            {client.logo_url && (
+                              <div>
+                                <small className="text-success">
+                                  <FileImage size={12} className="me-1" />
+                                  {currentLanguage === 'ar' ? 'يحتوي على شعار' : 'Has Logo'}
+                                </small>
+                              </div>
                             )}
                           </div>
                         </div>
@@ -324,13 +504,28 @@ const ClientsPage: React.FC = () => {
                       <td>{formatDate(client.last_case_date)}</td>
                       <td>
                         <div className="btn-group btn-group-sm">
-                          <Button variant="outline-primary" size="sm">
+                          <Button
+                            variant="outline-primary"
+                            size="sm"
+                            onClick={() => handleViewClient(client)}
+                            title={currentLanguage === 'ar' ? 'عرض التفاصيل' : 'View Details'}
+                          >
                             <Eye size={14} />
                           </Button>
-                          <Button variant="outline-secondary" size="sm">
+                          <Button
+                            variant="outline-secondary"
+                            size="sm"
+                            onClick={() => handleEditClient(client)}
+                            title={currentLanguage === 'ar' ? 'تعديل' : 'Edit'}
+                          >
                             <Edit size={14} />
                           </Button>
-                          <Button variant="outline-danger" size="sm">
+                          <Button
+                            variant="outline-danger"
+                            size="sm"
+                            onClick={() => handleDeleteClient(client)}
+                            title={currentLanguage === 'ar' ? 'حذف' : 'Delete'}
+                          >
                             <Trash size={14} />
                           </Button>
                         </div>
@@ -384,6 +579,80 @@ const ClientsPage: React.FC = () => {
           </Card.Footer>
         )}
       </Card>
+
+      {/* Client Modal */}
+      <ClientModal
+        show={showModal}
+        onHide={handleCloseModal}
+        onSave={handleSaveClient}
+        client={selectedClient}
+        mode={modalMode}
+        loading={modalLoading}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        show={showDeleteModal}
+        onHide={handleCloseDeleteModal}
+        centered
+        size="sm"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title className="d-flex align-items-center text-danger">
+            <AlertTriangle className="me-2" size={20} />
+            {currentLanguage === 'ar' ? 'تأكيد الحذف' : 'Confirm Delete'}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <p className="mb-3">
+            {currentLanguage === 'ar'
+              ? 'هل أنت متأكد من حذف هذا العميل؟ لا يمكن التراجع عن هذا الإجراء.'
+              : 'Are you sure you want to delete this client? This action cannot be undone.'
+            }
+          </p>
+          {clientToDelete && (
+            <div className="bg-light p-3 rounded">
+              <strong>
+                {currentLanguage === 'ar'
+                  ? clientToDelete.client_name_ar
+                  : clientToDelete.client_name_en || clientToDelete.client_name_ar
+                }
+              </strong>
+              <br />
+              <small className="text-muted">
+                {currentLanguage === 'ar' ? 'عدد القضايا:' : 'Cases:'} {clientToDelete.cases_count}
+              </small>
+            </div>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="outline-secondary"
+            onClick={handleCloseDeleteModal}
+            disabled={deleting}
+          >
+            {currentLanguage === 'ar' ? 'إلغاء' : 'Cancel'}
+          </Button>
+          <Button
+            variant="danger"
+            onClick={confirmDeleteClient}
+            disabled={deleting}
+            className="d-flex align-items-center"
+          >
+            {deleting ? (
+              <>
+                <Spinner size="sm" animation="border" className="me-1" />
+                {currentLanguage === 'ar' ? 'جاري الحذف...' : 'Deleting...'}
+              </>
+            ) : (
+              <>
+                <Trash size={16} className="me-1" />
+                {currentLanguage === 'ar' ? 'حذف' : 'Delete'}
+              </>
+            )}
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 };
