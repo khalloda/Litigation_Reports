@@ -335,7 +335,7 @@ class ApiService {
 
   // Authentication methods
   async login(credentials: LoginRequest): Promise<ApiResponse<LoginResponse>> {
-    return this.request<LoginResponse>('/auth/login', {
+    return this.request<LoginResponse>('/api/auth/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
     });
@@ -343,13 +343,13 @@ class ApiService {
 
   async logout(): Promise<ApiResponse> {
     this.setToken(null);
-    return this.request('/auth/logout', {
+    return this.request('/api/auth/logout', {
       method: 'POST',
     });
   }
 
   async getCurrentUser(): Promise<ApiResponse<User>> {
-    return this.request<User>('/auth/me');
+    return this.request<User>('/api/auth/me');
   }
 
   // User management methods
