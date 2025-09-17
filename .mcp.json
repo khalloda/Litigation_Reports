@@ -1,31 +1,30 @@
 {
   "mcpServers": {
     "context7": {
-      "type": "stdio",
-      "command": "npx",
-      "args": [
-        "-y",
-        "@upstash/context7-mcp"
-      ],
-      "env": {}
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp",
+      "headers": {
+        "CONTEXT7_API_KEY": "ctx7sk-1d55f8cd-5239-4e44-805e-fb12e0634a95"
+      }
     },
     "playwright": {
-      "type": "stdio",
-      "command": "npx",
-      "args": [
-        "@playwright/mcp@latest"
-      ],
-      "env": {}
+      "command": "cmd",
+      "args": ["/c", "npx", "@playwright/mcp@latest"]
     },
     "memory-bank": {
-      "type": "stdio",
-      "command": "npx",
-      "args": [
-        "-y",
-        "@allpepper/memory-bank-mcp"
-      ],
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "@allpepper/memory-bank-mcp"],
       "env": {
-        "MEMORY_BANK_ROOT": "/abs/path/to/memory-bank"
+        "MEMORY_BANK_ROOT": "memorybank"
+      }
+    },
+    "github": {
+      "command": "cmd",
+      "args": ["/c", "npx", "-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_TOKEN": "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",
+        "GITHUB_OWNER": "khalloda",
+        "GITHUB_REPO": "Litigation_Reports"
       }
     }
   }

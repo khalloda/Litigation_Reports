@@ -8,9 +8,28 @@
       "Bash(findstr:*)",
       "Bash(taskkill:*)",
       "Bash(node:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(claude mcp)",
+      "Bash(claude mcp:*)",
+      "Bash(npx -y @upstash/context7-mcp:*)",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__get-library-docs",
+      "mcp__memory-bank__memory_bank_write",
+      "mcp__memory-bank__memory_bank_read",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_evaluate",
+      "mcp__playwright__browser_fill_form",
+      "mcp__playwright__browser_click",
+      "Bash(mkdir:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []
-  }
+  },
+  "enabledMcpjsonServers": [
+    "context7",
+    "playwright",
+    "memory-bank",
+    "github"
+  ]
 }
