@@ -1,7 +1,7 @@
 name: Update Memory Bank on Merge
 on:
   push:
-    branches: [ main ]   # <<< change to your default branch
+    branches: [ feature/client-crud-implementation ]   # <<< change to your default branch
 jobs:
   update-memory:
     runs-on: ubuntu-latest
