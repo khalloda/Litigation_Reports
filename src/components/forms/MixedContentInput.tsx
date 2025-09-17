@@ -17,6 +17,9 @@ interface MixedContentInputProps {
   maxLength?: number
   'aria-label'?: string
   'aria-describedby'?: string
+  isInvalid?: boolean
+  dir?: 'ltr' | 'rtl' | 'auto'
+  id?: string
 }
 
 export function MixedContentInput({
@@ -29,7 +32,10 @@ export function MixedContentInput({
   required = false,
   maxLength,
   'aria-label': ariaLabel,
-  'aria-describedby': ariaDescribedBy
+  'aria-describedby': ariaDescribedBy,
+  isInvalid = false,
+  dir,
+  id
 }: MixedContentInputProps) {
   const { t } = useTranslation()
   const { isRTL } = useRTL()
@@ -40,7 +46,7 @@ export function MixedContentInput({
 
   // Determine input direction based on field type and content
   useEffect(() => {
-    const direction = getInputDirection(type, value)
+    const direction = dir || getInputDirection(type, value)
     setInputDirection(direction)
     
     // Check for mixed content
@@ -58,7 +64,7 @@ export function MixedContentInput({
         inputRef.current.removeAttribute('data-mixed-content')
       }
     }
-  }, [type, value])
+  }, [type, value, dir])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value
@@ -101,6 +107,7 @@ export function MixedContentInput({
   return (
     <FormControl
       ref={inputRef}
+      id={id}
       type={type}
       value={value}
       onChange={handleChange}
@@ -121,6 +128,7 @@ export function MixedContentInput({
       data-field-type={type}
       data-language={currentLanguage}
       data-direction={inputDirection}
+      isInvalid={isInvalid}
     />
   )
 }
