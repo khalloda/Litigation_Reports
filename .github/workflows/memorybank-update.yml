@@ -1,0 +1,37 @@
+name: Update Memory Bank on Merge
+on:
+  push:
+    branches: [ main ]   # <<< change to your default branch
+jobs:
+  update-memory:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Claude Code CLI
+        run: npm i -g @anthropic-ai/claude-code
+
+      - name: Run Claude to update Memory Bank
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}   # <<< add in GitHub Secrets
+        run: |
+          claude -p --dangerously-skip-permissions --max-turns 3 \
+            --cwd "$GITHUB_WORKSPACE" \
+            "Use the Memory Bank MCP to:
+             1) Append a concise merged-changes entry to memorybank/DecisionLog.md (parse recent commits).
+             2) Update memorybank/Progress.md: tests (Playwright/axe) summary, any RTL/i18n changes.
+             3) If new UI rules were introduced, reflect them in memorybank/UI-Rules-RTL.md."
+
+      - name: Commit & push Memory Bank updates (if any)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add memorybank/*.md || true
+          git commit -m "chore(memorybank): auto-update on merge" || echo "No changes"
+          git push || true
