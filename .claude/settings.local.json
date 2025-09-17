@@ -21,7 +21,8 @@
       "mcp__playwright__browser_fill_form",
       "mcp__playwright__browser_click",
       "Bash(mkdir:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []
