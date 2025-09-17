@@ -29,7 +29,10 @@
       "Bash(git checkout:*)",
       "Bash(npm run lint)",
       "Bash(npm run typecheck:*)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "WebFetch(domain:github.com)",
+      "mcp__memory-bank__memory_bank_update",
+      "mcp__memory-bank__list_project_files"
     ],
     "deny": [],
     "ask": []

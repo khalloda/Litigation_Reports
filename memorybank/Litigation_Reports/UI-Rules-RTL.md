@@ -247,6 +247,81 @@ Comprehensive UI/UX rules for the bilingual Litigation Reports System with prima
 - **Footer**: Secondary actions or metadata
 - **Visual Hierarchy**: Clear information architecture
 
+### File Upload Components (New - 2025-09-17)
+
+#### Logo Upload Component
+```css
+.logo-upload-container {
+  border: 2px dashed var(--gray-300);
+  border-radius: 0.375rem;
+  background: var(--gray-50);
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 200ms ease;
+}
+
+.logo-upload-container:hover {
+  border-color: var(--primary-500);
+  background: var(--primary-50);
+}
+
+.logo-preview {
+  max-width: 200px;
+  max-height: 100px;
+  object-fit: contain;
+  border: 1px solid var(--gray-300);
+  border-radius: 0.375rem;
+}
+```
+
+#### File Upload Guidelines
+- **Drag-and-Drop Area**: Visual feedback for hover and active states
+- **Preview Display**: Proper aspect ratio maintenance
+- **Remove Functionality**: Clear removal button with confirmation
+- **Validation Messages**: Error messages in current language
+- **Progress Indicators**: Upload progress when applicable
+
+#### File Upload Accessibility
+- **Keyboard Navigation**: Full keyboard support for file selection
+- **Screen Reader Support**: Proper ARIA labels and descriptions
+- **Focus Management**: Clear focus indicators
+- **Error Announcements**: Screen reader announcements for validation errors
+
+### Modal Components (Enhanced - 2025-09-17)
+
+#### Modal Layout
+```css
+.modal-content {
+  direction: inherit; /* Inherit from html direction */
+  text-align: start; /* Logical alignment */
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--gray-300);
+  padding: 1rem 1.5rem;
+}
+
+.modal-footer {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end; /* Logical end */
+  border-top: 1px solid var(--gray-300);
+  padding: 1rem 1.5rem;
+}
+```
+
+#### Multi-Mode Modal Pattern
+- **Create Mode**: Empty form with validation
+- **Edit Mode**: Pre-filled form with existing data
+- **View Mode**: Read-only display with disabled inputs
+- **Mode Indication**: Clear visual indication of current mode
+- **Action Buttons**: Mode-appropriate button text and functionality
+
 ## Responsive Design Rules
 
 ### Breakpoint System
@@ -265,11 +340,13 @@ Comprehensive UI/UX rules for the bilingual Litigation Reports System with prima
 - **Tables**: Horizontal scroll with sticky first column
 - **Forms**: Single column layout on mobile
 - **Touch Targets**: Minimum 44px for accessibility
+- **File Upload**: Touch-friendly upload areas
 
 ### Tablet Adaptations
 - **Sidebar**: Collapsible with overlay on smaller screens
 - **Grid Layouts**: Reduce columns on medium screens
 - **Typography**: Maintain readability at all sizes
+- **Modal Sizing**: Appropriate modal sizes for tablet screens
 
 ## Accessibility Standards
 
@@ -295,6 +372,11 @@ Comprehensive UI/UX rules for the bilingual Litigation Reports System with prima
 <!-- Form semantics -->
 <label for="email">البريد الإلكتروني</label>
 <input id="email" type="email" required>
+
+<!-- File upload semantics -->
+<label for="logo-upload">رفع الشعار</label>
+<input id="logo-upload" type="file" accept="image/*" aria-describedby="logo-help">
+<div id="logo-help">الحد الأقصى: 5 ميجابايت، صيغ مدعومة: JPEG, PNG, GIF, WebP</div>
 
 <!-- Button semantics -->
 <button type="submit">حفظ</button>
@@ -328,6 +410,13 @@ Comprehensive UI/UX rules for the bilingual Litigation Reports System with prima
 
 .dropdown-open .dropdown-arrow {
   transform: rotate(180deg); /* Same rotation in both directions */
+}
+
+/* File upload animations */
+.file-upload-progress {
+  transform-origin: left; /* LTR progress bar */
+  transform: scaleX(var(--progress-percent));
+  transition: transform 200ms ease-out;
 }
 ```
 
@@ -364,6 +453,7 @@ Comprehensive UI/UX rules for the bilingual Litigation Reports System with prima
 - **Responsive Images**: Proper srcset implementation
 - **Lazy Loading**: Improve initial page load
 - **Compression**: Optimized file sizes
+- **Client Logos**: Proper sizing and compression for uploaded logos
 
 ## Testing Requirements
 
@@ -376,12 +466,23 @@ Comprehensive UI/UX rules for the bilingual Litigation Reports System with prima
 - [ ] Animations respect RTL direction
 - [ ] Keyboard navigation follows RTL order
 - [ ] Screen readers work with Arabic content
+- [ ] File upload works in RTL context
+- [ ] Modal dialogs display correctly
+- [ ] Logo display respects RTL layout
 
 ### Browser Testing
 - **Primary**: Chrome, Firefox, Safari (latest 2 versions)
 - **Mobile**: iOS Safari, Chrome Android
 - **RTL Support**: Test in browsers with Arabic OS settings
 - **Font Rendering**: Verify Arabic font rendering quality
+- **File Upload**: Test drag-and-drop functionality across browsers
+
+### Component Testing Standards (2025-09-17)
+- **Unit Tests**: React Testing Library for component behavior
+- **E2E Tests**: Playwright for complete user workflows
+- **Visual Regression**: Screenshot testing for UI consistency
+- **Accessibility Tests**: Automated a11y testing with axe-core
+- **Performance Tests**: Core Web Vitals monitoring
 
 ## Maintenance Guidelines
 
@@ -397,8 +498,15 @@ Comprehensive UI/UX rules for the bilingual Litigation Reports System with prima
 - **Style Guide**: Keep RTL guidelines updated
 - **Review Process**: Include RTL in design reviews
 
+### Component Library Standards (2025-09-17)
+- **Storybook Integration**: RTL stories for all components
+- **TypeScript Definitions**: Complete interface definitions
+- **Accessibility Documentation**: A11y requirements for each component
+- **Usage Examples**: Real-world implementation examples
+
 ---
 **Created**: 2025-09-17  
 **Last Updated**: 2025-09-17  
 **System**: Litigation Reports Management  
-**Scope**: Complete UI/RTL Guidelines
+**Scope**: Complete UI/RTL Guidelines  
+**Recent Additions**: File upload components, modal patterns, testing standards, component library guidelines
