@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Simple Router for PHP Development Server
  */
@@ -8,8 +9,8 @@ $path = parse_url($uri, PHP_URL_PATH);
 
 // Handle API routes
 if (strpos($path, '/api/') === 0) {
-    // Include the API test file
-    include 'api-test.php';
+    // Include the proper API endpoint
+    include 'api/index.php';
     return true;
 }
 
@@ -25,4 +26,3 @@ if (strpos($path, '/src/') !== 0 && strpos($path, '/node_modules/') !== 0) {
 }
 
 return false;
-?>

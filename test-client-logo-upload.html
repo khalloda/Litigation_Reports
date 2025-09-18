@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Logo Upload Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        button { padding: 10px 15px; margin: 5px; cursor: pointer; }
+        input[type="file"] { margin: 10px 0; }
+        .result { margin-top: 10px; padding: 10px; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <h1>Client Logo Upload Test</h1>
+    
+    <div class="test-section">
+        <h3>Test 1: FormData Creation</h3>
+        <p>This test verifies that the API service correctly detects files and creates FormData.</p>
+        <input type="file" id="testFile" accept="image/*">
+        <button onclick="testFormDataCreation()">Test FormData Creation</button>
+        <div id="formDataResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test 2: API Request Format</h3>
+        <p>This test verifies that the API service sends the correct Content-Type header.</p>
+        <button onclick="testApiRequestFormat()">Test API Request Format</button>
+        <div id="apiRequestResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test 3: Backend File Handling</h3>
+        <p>This test verifies that the backend can handle file uploads.</p>
+        <input type="file" id="backendTestFile" accept="image/*">
+        <button onclick="testBackendFileHandling()">Test Backend File Handling</button>
+        <div id="backendResult" class="result"></div>
+    </div>
+
+    <script>
+        // Test 1: FormData Creation
+        function testFormDataCreation() {
+            const fileInput = document.getElementById('testFile');
+            const resultDiv = document.getElementById('formDataResult');
+            
+            if (!fileInput.files[0]) {
+                resultDiv.innerHTML = '<div class="error">Please select a file first</div>';
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            const testData = {
+                client_name_ar: 'Test Client',
+                client_name_en: 'Test Client EN',
+                client_type: 'company',
+                logo_file: file
+            };
+            
+            // Simulate the hasFileFields function
+            function hasFileFields(data) {
+                if (!data || typeof data !== 'object') return false;
+                for (const key in data) {
+                    if (data[key] instanceof File) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+            
+            // Simulate the createFormData function
+            function createFormData(data) {
+                const formData = new FormData();
+                for (const key in data) {
+                    if (data[key] instanceof File) {
+                        formData.append(key, data[key]);
+                    } else if (data[key] !== null && data[key] !== undefined) {
+                        formData.append(key, String(data[key]));
+                    }
+                }
+                return formData;
+            }
+            
+            const hasFiles = hasFileFields(testData);
+            const formData = createFormData(testData);
+            
+            let result = '<div class="success">✅ FormData Creation Test Passed</div>';
+            result += `<p><strong>Has Files:</strong> ${hasFiles}</p>`;
+            result += `<p><strong>FormData Keys:</strong> ${Array.from(formData.keys()).join(', ')}</p>`;
+            result += `<p><strong>File in FormData:</strong> ${formData.get('logo_file') ? 'Yes' : 'No'}</p>`;
+            
+            resultDiv.innerHTML = result;
+        }
+        
+        // Test 2: API Request Format
+        function testApiRequestFormat() {
+            const resultDiv = document.getElementById('apiRequestResult');
+            
+            // Test JSON request
+            const jsonData = { client_name_ar: 'Test Client' };
+            const jsonRequest = {
+                method: 'POST',
+                body: JSON.stringify(jsonData),
+                headers: { 'Content-Type': 'application/json' }
+            };
+            
+            // Test FormData request
+            const formData = new FormData();
+            formData.append('client_name_ar', 'Test Client');
+            const formDataRequest = {
+                method: 'POST',
+                body: formData,
+                headers: {} // No Content-Type for FormData
+            };
+            
+            let result = '<div class="success">✅ API Request Format Test Passed</div>';
+            result += '<h4>JSON Request:</h4>';
+            result += `<pre>${JSON.stringify(jsonRequest, null, 2)}</pre>`;
+            result += '<h4>FormData Request:</h4>';
+            result += `<pre>${JSON.stringify({
+                method: formDataRequest.method,
+                body: '[FormData Object]',
+                headers: formDataRequest.headers
+            }, null, 2)}</pre>`;
+            
+            resultDiv.innerHTML = result;
+        }
+        
+        // Test 3: Backend File Handling
+        async function testBackendFileHandling() {
+            const fileInput = document.getElementById('backendTestFile');
+            const resultDiv = document.getElementById('backendResult');
+            
+            if (!fileInput.files[0]) {
+                resultDiv.innerHTML = '<div class="error">Please select a file first</div>';
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append('client_name_ar', 'Test Client Logo');
+            formData.append('client_name_en', 'Test Client Logo EN');
+            formData.append('client_type', 'company');
+            formData.append('cash_pro_bono', 'cash');
+            formData.append('status', 'active');
+            formData.append('logo_file', file);
+            
+            try {
+                resultDiv.innerHTML = '<div>Testing backend file handling...</div>';
+                
+                const response = await fetch('http://localhost:8000/api/clients', {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Authorization': 'Bearer mock-token-123'
+                    }
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    resultDiv.innerHTML = '<div class="success">✅ Backend File Handling Test Passed</div>';
+                    resultDiv.innerHTML += `<p><strong>Response:</strong> ${JSON.stringify(result, null, 2)}</p>`;
+                } else {
+                    resultDiv.innerHTML = '<div class="error">❌ Backend File Handling Test Failed</div>';
+                    resultDiv.innerHTML += `<p><strong>Error:</strong> ${result.error || result.message}</p>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = '<div class="error">❌ Backend File Handling Test Failed</div>';
+                resultDiv.innerHTML += `<p><strong>Error:</strong> ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
+

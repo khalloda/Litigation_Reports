@@ -38,6 +38,7 @@ const LoginForm: React.FC = () => {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
+    console.log('LoginForm: handleSubmit called');
     e.preventDefault();
     setError('');
 
@@ -46,6 +47,7 @@ const LoginForm: React.FC = () => {
     setFieldErrors(validationErrors);
 
     if (Object.keys(validationErrors).length > 0) {
+      console.log('LoginForm: Validation errors found:', validationErrors);
       // Force a small delay to ensure validation errors are visible
       setTimeout(() => {
         const firstErrorField = document.querySelector('.is-invalid');
@@ -56,14 +58,17 @@ const LoginForm: React.FC = () => {
       return;
     }
 
+    console.log('LoginForm: Starting login process');
     setIsLoading(true);
 
     try {
       const success = await login(email, password);
+      console.log('LoginForm: Login result:', success);
       if (!success) {
         setError('بيانات غير صحيحة / Invalid email or password');
       }
     } catch (err) {
+      console.error('LoginForm: Login error:', err);
       setError('فشل تسجيل الدخول. حاول مرة أخرى / Login failed. Please try again.');
     } finally {
       setIsLoading(false);
