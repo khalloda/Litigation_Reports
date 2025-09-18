@@ -1,6 +1,6 @@
 /**
  * Authentication Context
- * 
+ *
  * Provides authentication state and methods throughout the application.
  */
 
@@ -57,7 +57,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setIsLoading(true);
       const response = await apiService.login({ email, password });
-      
+
       if (response.success && response.data) {
         setUser(response.data.user);
         apiService.setToken(response.data.token);
@@ -100,11 +100,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     refreshUser,
   };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = (): AuthContextType => {

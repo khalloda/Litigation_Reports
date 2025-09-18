@@ -1,10 +1,10 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react';
 
 interface UseRTLReturn {
-  direction: 'ltr' | 'rtl'
-  setDirection: (direction: 'ltr' | 'rtl') => void
-  isRTL: boolean
-  toggleDirection: () => void
+  direction: 'ltr' | 'rtl';
+  setDirection: (direction: 'ltr' | 'rtl') => void;
+  isRTL: boolean;
+  toggleDirection: () => void;
 }
 
 /**
@@ -13,49 +13,51 @@ interface UseRTLReturn {
  */
 export function useRTL(): UseRTLReturn {
   const [direction, setDirectionState] = useState<'ltr' | 'rtl'>(
-    document.documentElement.dir as 'ltr' | 'rtl' || 'rtl'
-  )
+    (document.documentElement.dir as 'ltr' | 'rtl') || 'rtl'
+  );
 
   const setDirection = useCallback((newDirection: 'ltr' | 'rtl') => {
-    setDirectionState(newDirection)
-    document.documentElement.dir = newDirection
-    
+    setDirectionState(newDirection);
+    document.documentElement.dir = newDirection;
+
     // Update CSS custom property for dynamic styling
-    document.documentElement.style.setProperty('--direction', newDirection)
-    
+    document.documentElement.style.setProperty('--direction', newDirection);
+
     // Trigger custom event for other components to listen to
-    window.dispatchEvent(new CustomEvent('directionChange', { 
-      detail: { direction: newDirection } 
-    }))
-  }, [])
+    window.dispatchEvent(
+      new CustomEvent('directionChange', {
+        detail: { direction: newDirection },
+      })
+    );
+  }, []);
 
   const toggleDirection = useCallback(() => {
-    const newDirection = direction === 'rtl' ? 'ltr' : 'rtl'
-    setDirection(newDirection)
-  }, [direction, setDirection])
+    const newDirection = direction === 'rtl' ? 'ltr' : 'rtl';
+    setDirection(newDirection);
+  }, [direction, setDirection]);
 
-  const isRTL = direction === 'rtl'
+  const isRTL = direction === 'rtl';
 
   // Listen for external direction changes
   useEffect(() => {
     const handleDirectionChange = (event: CustomEvent) => {
-      const { direction: newDirection } = event.detail
+      const { direction: newDirection } = event.detail;
       if (newDirection !== direction) {
-        setDirectionState(newDirection)
+        setDirectionState(newDirection);
       }
-    }
+    };
 
-    window.addEventListener('directionChange', handleDirectionChange as EventListener)
-    
+    window.addEventListener('directionChange', handleDirectionChange as EventListener);
+
     return () => {
-      window.removeEventListener('directionChange', handleDirectionChange as EventListener)
-    }
-  }, [direction])
+      window.removeEventListener('directionChange', handleDirectionChange as EventListener);
+    };
+  }, [direction]);
 
   return {
     direction,
     setDirection,
     isRTL,
-    toggleDirection
-  }
+    toggleDirection,
+  };
 }

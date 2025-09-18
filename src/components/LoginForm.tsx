@@ -16,7 +16,7 @@ const LoginForm: React.FC = () => {
   const [error, setError] = useState('');
   const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({});
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const { login } = useAuth();
 
   const validateFields = () => {
@@ -71,64 +71,64 @@ const LoginForm: React.FC = () => {
   };
 
   return (
-    <div className="container-fluid vh-100 d-flex align-items-center justify-content-center bg-light">
-      <div className="card shadow-lg" style={{ width: '450px' }}>
-        <div className="card-body p-5">
+    <div className='container-fluid vh-100 d-flex align-items-center justify-content-center bg-light'>
+      <div className='card shadow-lg' style={{ width: '450px' }}>
+        <div className='card-body p-5'>
           {/* Language Switcher */}
-          <div className="d-flex justify-content-end mb-3">
-            <LanguageSwitcher variant="minimal" size="sm" />
+          <div className='d-flex justify-content-end mb-3'>
+            <LanguageSwitcher variant='minimal' size='sm' />
           </div>
 
           {/* Logo and Title */}
-          <div className="text-center mb-4">
-            <Logo size="lg" showText={false} variant="primary" type="full" language="ar" />
-            <div className="mt-3">
-              <h2 className="card-title text-primary mb-2">نظام إدارة التقاضي</h2>
-              <p className="text-muted">Litigation Management System</p>
+          <div className='text-center mb-4'>
+            <Logo size='lg' showText={false} variant='primary' type='full' language='ar' />
+            <div className='mt-3'>
+              <h2 className='card-title text-primary mb-2'>نظام إدارة التقاضي</h2>
+              <p className='text-muted'>Litigation Management System</p>
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} data-testid="login-form">
+          <form onSubmit={handleSubmit} data-testid='login-form'>
             {error && (
-              <div className="alert alert-danger" role="alert">
+              <div className='alert alert-danger' role='alert'>
                 {error}
               </div>
             )}
 
             <FormInput
-              id="email"
-              type="email"
-              label="البريد الإلكتروني / Email"
+              id='email'
+              type='email'
+              label='البريد الإلكتروني / Email'
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required={false}
-              placeholder="admin@litigation.com"
-              dir="ltr"
+              placeholder='admin@litigation.com'
+              dir='ltr'
               error={fieldErrors.email}
-              autoComplete="username"
+              autoComplete='username'
             />
 
             <FormInput
-              id="password"
-              type="password"
-              label="كلمة المرور / Password"
+              id='password'
+              type='password'
+              label='كلمة المرور / Password'
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required={false}
-              placeholder="admin123"
-              dir="ltr"
+              placeholder='admin123'
+              dir='ltr'
               error={fieldErrors.password}
-              autoComplete="current-password"
+              autoComplete='current-password'
             />
 
-            <button
-              type="submit"
-              className="btn btn-primary w-100"
-              disabled={isLoading}
-            >
+            <button type='submit' className='btn btn-primary w-100' disabled={isLoading}>
               {isLoading ? (
                 <>
-                  <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  <span
+                    className='spinner-border spinner-border-sm me-2'
+                    role='status'
+                    aria-hidden='true'
+                  ></span>
                   جاري تسجيل الدخول...
                 </>
               ) : (
@@ -137,11 +137,14 @@ const LoginForm: React.FC = () => {
             </button>
           </form>
 
-          <div className="mt-4 text-center">
-            <small className="text-muted">
-              <strong>Test Accounts:</strong><br />
-              Admin: admin@litigation.com / admin123<br />
-              Lawyer: lawyer@litigation.com / admin123<br />
+          <div className='mt-4 text-center'>
+            <small className='text-muted'>
+              <strong>Test Accounts:</strong>
+              <br />
+              Admin: admin@litigation.com / admin123
+              <br />
+              Lawyer: lawyer@litigation.com / admin123
+              <br />
               Staff: staff@litigation.com / admin123
             </small>
           </div>

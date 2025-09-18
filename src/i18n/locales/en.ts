@@ -8,7 +8,7 @@ export const en = {
     invoices: 'Invoices',
     reports: 'Reports',
     settings: 'Settings',
-    logout: 'Logout'
+    logout: 'Logout',
   },
 
   // Authentication
@@ -21,7 +21,7 @@ export const en = {
     loginButton: 'Sign In',
     invalidCredentials: 'Invalid credentials',
     loginSuccess: 'Login successful',
-    logoutSuccess: 'Logout successful'
+    logoutSuccess: 'Logout successful',
   },
 
   // Dashboard
@@ -33,7 +33,7 @@ export const en = {
     upcomingHearings: 'Upcoming Hearings',
     pendingInvoices: 'Pending Invoices',
     recentActivity: 'Recent Activity',
-    quickActions: 'Quick Actions'
+    quickActions: 'Quick Actions',
   },
 
   // Clients
@@ -57,7 +57,7 @@ export const en = {
     noClientsFound: 'No clients found',
     clientAdded: 'Client added successfully',
     clientUpdated: 'Client updated successfully',
-    clientDeleted: 'Client deleted successfully'
+    clientDeleted: 'Client deleted successfully',
   },
 
   // Cases
@@ -86,7 +86,7 @@ export const en = {
     noCasesFound: 'No cases found',
     caseAdded: 'Case added successfully',
     caseUpdated: 'Case updated successfully',
-    caseDeleted: 'Case deleted successfully'
+    caseDeleted: 'Case deleted successfully',
   },
 
   // Hearings
@@ -108,7 +108,7 @@ export const en = {
     noHearingsFound: 'No hearings found',
     hearingAdded: 'Hearing added successfully',
     hearingUpdated: 'Hearing updated successfully',
-    hearingDeleted: 'Hearing deleted successfully'
+    hearingDeleted: 'Hearing deleted successfully',
   },
 
   // Invoices
@@ -132,7 +132,7 @@ export const en = {
     noInvoicesFound: 'No invoices found',
     invoiceAdded: 'Invoice added successfully',
     invoiceUpdated: 'Invoice updated successfully',
-    invoiceDeleted: 'Invoice deleted successfully'
+    invoiceDeleted: 'Invoice deleted successfully',
   },
 
   // Common
@@ -189,7 +189,7 @@ export const en = {
     supportedFormats: 'Supported formats',
     dateFormat: 'MM/DD/YYYY',
     timeFormat: 'HH:mm',
-    dateTimeFormat: 'MM/DD/YYYY HH:mm'
+    dateTimeFormat: 'MM/DD/YYYY HH:mm',
   },
 
   // Form validation
@@ -211,7 +211,7 @@ export const en = {
     confirmPassword: 'Passwords do not match',
     acceptTerms: 'You must accept the terms and conditions',
     unique: 'This value already exists',
-    invalidFormat: 'Invalid format'
+    invalidFormat: 'Invalid format',
   },
 
   // Status values
@@ -223,7 +223,7 @@ export const en = {
     cancelled: 'Cancelled',
     draft: 'Draft',
     published: 'Published',
-    archived: 'Archived'
+    archived: 'Archived',
   },
 
   // Priority values
@@ -231,7 +231,7 @@ export const en = {
     low: 'Low',
     medium: 'Medium',
     high: 'High',
-    urgent: 'Urgent'
+    urgent: 'Urgent',
   },
 
   // Case types
@@ -243,7 +243,7 @@ export const en = {
     family: 'Family',
     administrative: 'Administrative',
     constitutional: 'Constitutional',
-    international: 'International'
+    international: 'International',
   },
 
   // Hearing types
@@ -254,7 +254,7 @@ export const en = {
     arbitration: 'Arbitration',
     settlement: 'Settlement',
     appeal: 'Appeal',
-    cassation: 'Cassation'
+    cassation: 'Cassation',
   },
 
   // Invoice status
@@ -263,7 +263,7 @@ export const en = {
     sent: 'Sent',
     paid: 'Paid',
     overdue: 'Overdue',
-    cancelled: 'Cancelled'
+    cancelled: 'Cancelled',
   },
 
   // Language switcher
@@ -271,7 +271,7 @@ export const en = {
     switchTo: 'Switch to',
     arabic: 'العربية',
     english: 'English',
-    currentLanguage: 'Current Language'
+    currentLanguage: 'Current Language',
   },
 
   // Accessibility
@@ -293,6 +293,6 @@ export const en = {
     requiredField: 'Required field',
     optionalField: 'Optional field',
     invalidInput: 'Invalid input',
-    validInput: 'Valid input'
-  }
-}
+    validInput: 'Valid input',
+  },
+};

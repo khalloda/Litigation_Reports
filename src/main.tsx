@@ -1,11 +1,11 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import { BrowserRouter } from 'react-router-dom'
-import { QueryClient, QueryClientProvider } from 'react-query'
-import { Toaster } from 'react-hot-toast'
-import App from './App'
-import './styles/main.scss'
-import './i18n'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { Toaster } from 'react-hot-toast';
+import App from './App';
+import './styles/main.scss';
+import './i18n';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -16,7 +16,7 @@ const queryClient = new QueryClient({
       staleTime: 5 * 60 * 1000, // 5 minutes
     },
   },
-})
+});
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -24,7 +24,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <BrowserRouter>
         <App />
         <Toaster
-          position="top-end"
+          position='top-end'
           toastOptions={{
             duration: 4000,
             className: 'toast-rtl',
@@ -35,5 +35,5 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         />
       </BrowserRouter>
     </QueryClientProvider>
-  </React.StrictMode>,
-)
+  </React.StrictMode>
+);

@@ -1,99 +1,90 @@
-import React from 'react'
-import { Dropdown, Nav } from 'react-bootstrap'
-import { useAuth } from '@components/auth/AuthProvider'
-import { useLanguage } from '@hooks/useLanguage'
-import { useRTL } from '@hooks/useRTL'
-import { User, LogOut, Settings } from 'lucide-react'
-import clsx from 'clsx'
+import React from 'react';
+import { Dropdown, Nav } from 'react-bootstrap';
+import { useAuth } from '@components/auth/AuthProvider';
+import { useLanguage } from '@hooks/useLanguage';
+import { useRTL } from '@hooks/useRTL';
+import { User, LogOut, Settings } from 'lucide-react';
+import clsx from 'clsx';
 
 interface UserMenuProps {
   user: {
-    id: number
-    email: string
-    name: string
-    arabicName?: string
-    role: 'admin' | 'lawyer' | 'staff'
-  }
+    id: number;
+    email: string;
+    full_name_en: string;
+    full_name_ar: string;
+    role: 'super_admin' | 'admin' | 'lawyer' | 'staff';
+  };
 }
 
 export function UserMenu({ user }: UserMenuProps) {
-  const { logout } = useAuth()
-  const { currentLanguage } = useLanguage()
-  const { isRTL } = useRTL()
+  const { logout } = useAuth();
+  const { currentLanguage } = useLanguage();
+  const { isRTL } = useRTL();
 
   const handleLogout = () => {
-    logout()
-  }
+    logout();
+  };
 
   const getUserDisplayName = () => {
-    if (currentLanguage === 'ar' && user.arabicName) {
-      return user.arabicName
+    if (currentLanguage === 'ar' && user.full_name_ar) {
+      return user.full_name_ar;
     }
-    return user.name
-  }
+    return user.full_name_en;
+  };
 
   const getRoleDisplayName = () => {
     if (currentLanguage === 'ar') {
       switch (user.role) {
+        case 'super_admin':
+          return 'مدير عام';
         case 'admin':
-          return 'مدير'
+          return 'مدير';
         case 'lawyer':
-          return 'محامي'
+          return 'محامي';
         case 'staff':
-          return 'موظف'
+          return 'موظف';
         default:
-          return user.role
+          return user.role;
       }
     } else {
-      return user.role.charAt(0).toUpperCase() + user.role.slice(1)
+      return user.role.charAt(0).toUpperCase() + user.role.slice(1).replace('_', ' ');
     }
-  }
+  };
 
   return (
     <Dropdown align={isRTL ? 'start' : 'end'}>
       <Dropdown.Toggle
-        variant="outline-light"
-        size="sm"
-        className="d-flex align-items-center user-menu-toggle"
-        id="user-menu"
-        aria-label="User menu"
+        variant='outline-light'
+        size='sm'
+        className='d-flex align-items-center user-menu-toggle'
+        id='user-menu'
+        aria-label='User menu'
       >
-        <User size={16} className="me-1" />
-        <span className="d-none d-lg-inline">
-          {getUserDisplayName()}
-        </span>
+        <User size={16} className='me-1' />
+        <span className='d-none d-lg-inline'>{getUserDisplayName()}</span>
       </Dropdown.Toggle>
 
-      <Dropdown.Menu 
-        dir={isRTL ? 'rtl' : 'ltr'}
-        className="user-dropdown"
-      >
-        <Dropdown.Header className="user-info">
-          <div className="fw-bold">{getUserDisplayName()}</div>
-          <small className="text-muted">{user.email}</small>
-          <small className="text-muted d-block">{getRoleDisplayName()}</small>
+      <Dropdown.Menu dir={isRTL ? 'rtl' : 'ltr'} className='user-dropdown'>
+        <Dropdown.Header className='user-info'>
+          <div className='fw-bold'>{getUserDisplayName()}</div>
+          <small className='text-muted'>{user.email}</small>
+          <small className='text-muted d-block'>{getRoleDisplayName()}</small>
         </Dropdown.Header>
-        
+
         <Dropdown.Divider />
-        
-        <Dropdown.Item
-          href="/settings"
-          className="d-flex align-items-center"
-        >
+
+        <Dropdown.Item href='/settings' className='d-flex align-items-center'>
           <Settings size={16} className={clsx(isRTL ? 'ms-2' : 'me-2')} />
           {currentLanguage === 'ar' ? 'الإعدادات' : 'Settings'}
         </Dropdown.Item>
-        
+
         <Dropdown.Divider />
-        
-        <Dropdown.Item
-          onClick={handleLogout}
-          className="d-flex align-items-center text-danger"
-        >
+
+        <Dropdown.Item onClick={handleLogout} className='d-flex align-items-center text-danger'>
           <LogOut size={16} className={clsx(isRTL ? 'ms-2' : 'me-2')} />
           {currentLanguage === 'ar' ? 'تسجيل الخروج' : 'Logout'}
         </Dropdown.Item>
       </Dropdown.Menu>
     </Dropdown>
-  )
+  );
 }

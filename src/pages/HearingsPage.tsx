@@ -1,7 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Button, Form, InputGroup, Badge, Spinner, Alert } from 'react-bootstrap';
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Button,
+  Form,
+  InputGroup,
+  Badge,
+  Spinner,
+  Alert,
+} from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
-import { Plus, Search, Filter, Eye, Edit, Trash, Calendar, Clock, Gavel, Users } from 'lucide-react';
+import {
+  Plus,
+  Search,
+  Filter,
+  Eye,
+  Edit,
+  Trash,
+  Calendar,
+  Clock,
+  Gavel,
+  Users,
+} from 'lucide-react';
 import { apiService as api } from '../services/api';
 
 interface Hearing {
@@ -51,12 +73,12 @@ const HearingsPage: React.FC = () => {
     hearing_type: '',
     date_from: '',
     date_to: '',
-    search: ''
+    search: '',
   });
   const [options, setOptions] = useState<HearingOptions>({
     result: {},
     type: {},
-    duration: {}
+    duration: {},
   });
   const [pagination, setPagination] = useState({
     current_page: 1,
@@ -64,7 +86,7 @@ const HearingsPage: React.FC = () => {
     total: 0,
     total_pages: 0,
     has_next: false,
-    has_prev: false
+    has_prev: false,
   });
 
   useEffect(() => {
@@ -76,15 +98,15 @@ const HearingsPage: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const params = new URLSearchParams({
         page: pagination.current_page.toString(),
         limit: pagination.per_page.toString(),
-        ...Object.fromEntries(Object.entries(filters).filter(([_, value]) => value))
+        ...Object.fromEntries(Object.entries(filters).filter(([_, value]) => value)),
       });
 
       const response = await api.get(`/hearings?${params}`);
-      
+
       if (response.success) {
         setHearings(response.data.data);
         setPagination(response.data.pagination);
@@ -111,12 +133,12 @@ const HearingsPage: React.FC = () => {
   };
 
   const handleFilterChange = (key: keyof HearingFilters, value: string) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
-    setPagination(prev => ({ ...prev, current_page: 1 }));
+    setFilters((prev) => ({ ...prev, [key]: value }));
+    setPagination((prev) => ({ ...prev, current_page: 1 }));
   };
 
   const handlePageChange = (page: number) => {
-    setPagination(prev => ({ ...prev, current_page: page }));
+    setPagination((prev) => ({ ...prev, current_page: page }));
   };
 
   const getResultBadge = (result: string) => {
@@ -124,13 +146,11 @@ const HearingsPage: React.FC = () => {
       won: 'success',
       lost: 'danger',
       postponed: 'warning',
-      pending: 'info'
+      pending: 'info',
     };
-    
+
     return (
-      <Badge bg={resultColors[result] || 'secondary'}>
-        {options.result[result] || result}
-      </Badge>
+      <Badge bg={resultColors[result] || 'secondary'}>{options.result[result] || result}</Badge>
     );
   };
 
@@ -143,14 +163,10 @@ const HearingsPage: React.FC = () => {
       expert: 'secondary',
       final: 'dark',
       appeal: 'danger',
-      execution: 'light'
+      execution: 'light',
     };
-    
-    return (
-      <Badge bg={typeColors[type] || 'secondary'}>
-        {options.type[type] || type}
-      </Badge>
-    );
+
+    return <Badge bg={typeColors[type] || 'secondary'}>{options.type[type] || type}</Badge>;
   };
 
   const formatDate = (dateString: string) => {
@@ -164,30 +180,30 @@ const HearingsPage: React.FC = () => {
 
   if (loading && hearings.length === 0) {
     return (
-      <Container className="py-4">
-        <div className="text-center">
-          <Spinner animation="border" />
-          <p className="mt-2">Loading hearings...</p>
+      <Container className='py-4'>
+        <div className='text-center'>
+          <Spinner animation='border' />
+          <p className='mt-2'>Loading hearings...</p>
         </div>
       </Container>
     );
   }
 
   return (
-    <Container fluid className="py-4">
+    <Container fluid className='py-4'>
       {/* Header */}
-      <Row className="mb-4">
+      <Row className='mb-4'>
         <Col>
-          <div className="d-flex justify-content-between align-items-center">
+          <div className='d-flex justify-content-between align-items-center'>
             <div>
-              <h2 className="mb-1">
-                <Gavel className="me-2" />
+              <h2 className='mb-1'>
+                <Gavel className='me-2' />
                 إدارة الجلسات
               </h2>
-              <p className="text-muted mb-0">إدارة وتتبع جميع جلسات المحكمة</p>
+              <p className='text-muted mb-0'>إدارة وتتبع جميع جلسات المحكمة</p>
             </div>
-            <Button variant="primary" size="lg">
-              <Plus className="me-2" />
+            <Button variant='primary' size='lg'>
+              <Plus className='me-2' />
               إضافة جلسة جديدة
             </Button>
           </div>
@@ -195,7 +211,7 @@ const HearingsPage: React.FC = () => {
       </Row>
 
       {/* Filters */}
-      <Card className="mb-4">
+      <Card className='mb-4'>
         <Card.Body>
           <Row>
             <Col md={3}>
@@ -206,8 +222,8 @@ const HearingsPage: React.FC = () => {
                     <Search size={16} />
                   </InputGroup.Text>
                   <Form.Control
-                    type="text"
-                    placeholder="البحث في الجلسات..."
+                    type='text'
+                    placeholder='البحث في الجلسات...'
                     value={filters.search}
                     onChange={(e) => handleFilterChange('search', e.target.value)}
                   />
@@ -221,9 +237,11 @@ const HearingsPage: React.FC = () => {
                   value={filters.hearing_result}
                   onChange={(e) => handleFilterChange('hearing_result', e.target.value)}
                 >
-                  <option value="">جميع النتائج</option>
+                  <option value=''>جميع النتائج</option>
                   {Object.entries(options.result).map(([key, value]) => (
-                    <option key={key} value={key}>{value}</option>
+                    <option key={key} value={key}>
+                      {value}
+                    </option>
                   ))}
                 </Form.Select>
               </Form.Group>
@@ -235,9 +253,11 @@ const HearingsPage: React.FC = () => {
                   value={filters.hearing_type}
                   onChange={(e) => handleFilterChange('hearing_type', e.target.value)}
                 >
-                  <option value="">جميع الأنواع</option>
+                  <option value=''>جميع الأنواع</option>
                   {Object.entries(options.type).map(([key, value]) => (
-                    <option key={key} value={key}>{value}</option>
+                    <option key={key} value={key}>
+                      {value}
+                    </option>
                   ))}
                 </Form.Select>
               </Form.Group>
@@ -246,7 +266,7 @@ const HearingsPage: React.FC = () => {
               <Form.Group>
                 <Form.Label>من تاريخ</Form.Label>
                 <Form.Control
-                  type="date"
+                  type='date'
                   value={filters.date_from}
                   onChange={(e) => handleFilterChange('date_from', e.target.value)}
                 />
@@ -256,15 +276,15 @@ const HearingsPage: React.FC = () => {
               <Form.Group>
                 <Form.Label>إلى تاريخ</Form.Label>
                 <Form.Control
-                  type="date"
+                  type='date'
                   value={filters.date_to}
                   onChange={(e) => handleFilterChange('date_to', e.target.value)}
                 />
               </Form.Group>
             </Col>
-            <Col md={1} className="d-flex align-items-end">
-              <Button variant="outline-secondary" onClick={loadHearings}>
-                <Filter className="me-1" />
+            <Col md={1} className='d-flex align-items-end'>
+              <Button variant='outline-secondary' onClick={loadHearings}>
+                <Filter className='me-1' />
                 تطبيق
               </Button>
             </Col>
@@ -274,7 +294,7 @@ const HearingsPage: React.FC = () => {
 
       {/* Error Alert */}
       {error && (
-        <Alert variant="danger" className="mb-4">
+        <Alert variant='danger' className='mb-4'>
           {error}
         </Alert>
       )}
@@ -282,29 +302,27 @@ const HearingsPage: React.FC = () => {
       {/* Hearings Table */}
       <Card>
         <Card.Header>
-          <div className="d-flex justify-content-between align-items-center">
-            <h5 className="mb-0">قائمة الجلسات</h5>
-            <div className="text-muted">
-              إجمالي: {pagination.total} جلسة
-            </div>
+          <div className='d-flex justify-content-between align-items-center'>
+            <h5 className='mb-0'>قائمة الجلسات</h5>
+            <div className='text-muted'>إجمالي: {pagination.total} جلسة</div>
           </div>
         </Card.Header>
-        <Card.Body className="p-0">
+        <Card.Body className='p-0'>
           {loading ? (
-            <div className="text-center py-4">
-              <Spinner animation="border" />
-              <p className="mt-2">جاري التحميل...</p>
+            <div className='text-center py-4'>
+              <Spinner animation='border' />
+              <p className='mt-2'>جاري التحميل...</p>
             </div>
           ) : hearings.length === 0 ? (
-            <div className="text-center py-5">
-              <Gavel size={48} className="text-muted mb-3" />
+            <div className='text-center py-5'>
+              <Gavel size={48} className='text-muted mb-3' />
               <h5>لا توجد جلسات</h5>
-              <p className="text-muted">لم يتم العثور على جلسات تطابق المعايير المحددة</p>
+              <p className='text-muted'>لم يتم العثور على جلسات تطابق المعايير المحددة</p>
             </div>
           ) : (
-            <div className="table-responsive">
-              <table className="table table-hover mb-0">
-                <thead className="table-light">
+            <div className='table-responsive'>
+              <table className='table table-hover mb-0'>
+                <thead className='table-light'>
                   <tr>
                     <th>تاريخ الجلسة</th>
                     <th>القضية</th>
@@ -321,42 +339,42 @@ const HearingsPage: React.FC = () => {
                   {hearings.map((hearing) => (
                     <tr key={hearing.id}>
                       <td>
-                        <div className="d-flex align-items-center">
-                          <Calendar className="me-2" size={16} />
+                        <div className='d-flex align-items-center'>
+                          <Calendar className='me-2' size={16} />
                           {formatDate(hearing.hearing_date)}
                         </div>
                       </td>
                       <td>
                         <div>
-                          <div className="fw-bold">{hearing.matter_id}</div>
-                          <div className="text-muted small">{hearing.matter_ar}</div>
+                          <div className='fw-bold'>{hearing.matter_id}</div>
+                          <div className='text-muted small'>{hearing.matter_ar}</div>
                         </div>
                       </td>
                       <td>
                         <div>
                           <div>{hearing.client_name_ar}</div>
                           {hearing.client_name_en && (
-                            <small className="text-muted">{hearing.client_name_en}</small>
+                            <small className='text-muted'>{hearing.client_name_en}</small>
                           )}
                         </div>
                       </td>
                       <td>{getTypeBadge(hearing.hearing_type)}</td>
                       <td>{getResultBadge(hearing.hearing_result)}</td>
                       <td>
-                        <div className="d-flex align-items-center">
-                          <Clock className="me-1" size={14} />
+                        <div className='d-flex align-items-center'>
+                          <Clock className='me-1' size={14} />
                           {formatDuration(hearing.hearing_duration)}
                         </div>
                       </td>
                       <td>
-                        <div className="text-truncate" style={{ maxWidth: '200px' }}>
+                        <div className='text-truncate' style={{ maxWidth: '200px' }}>
                           {hearing.hearing_decision || hearing.short_decision || '-'}
                         </div>
                       </td>
                       <td>
                         {hearing.next_hearing ? (
-                          <div className="d-flex align-items-center">
-                            <Calendar className="me-1" size={14} />
+                          <div className='d-flex align-items-center'>
+                            <Calendar className='me-1' size={14} />
                             {formatDate(hearing.next_hearing)}
                           </div>
                         ) : (
@@ -364,14 +382,14 @@ const HearingsPage: React.FC = () => {
                         )}
                       </td>
                       <td>
-                        <div className="btn-group btn-group-sm">
-                          <Button variant="outline-primary" size="sm">
+                        <div className='btn-group btn-group-sm'>
+                          <Button variant='outline-primary' size='sm'>
                             <Eye size={14} />
                           </Button>
-                          <Button variant="outline-secondary" size="sm">
+                          <Button variant='outline-secondary' size='sm'>
                             <Edit size={14} />
                           </Button>
-                          <Button variant="outline-danger" size="sm">
+                          <Button variant='outline-danger' size='sm'>
                             <Trash size={14} />
                           </Button>
                         </div>
@@ -383,20 +401,20 @@ const HearingsPage: React.FC = () => {
             </div>
           )}
         </Card.Body>
-        
+
         {/* Pagination */}
         {pagination.total_pages > 1 && (
           <Card.Footer>
-            <div className="d-flex justify-content-between align-items-center">
-              <div className="text-muted">
-                عرض {((pagination.current_page - 1) * pagination.per_page) + 1} إلى{' '}
+            <div className='d-flex justify-content-between align-items-center'>
+              <div className='text-muted'>
+                عرض {(pagination.current_page - 1) * pagination.per_page + 1} إلى{' '}
                 {Math.min(pagination.current_page * pagination.per_page, pagination.total)} من{' '}
                 {pagination.total} جلسة
               </div>
-              <div className="btn-group">
+              <div className='btn-group'>
                 <Button
-                  variant="outline-secondary"
-                  size="sm"
+                  variant='outline-secondary'
+                  size='sm'
                   disabled={!pagination.has_prev}
                   onClick={() => handlePageChange(pagination.current_page - 1)}
                 >
@@ -406,15 +424,15 @@ const HearingsPage: React.FC = () => {
                   <Button
                     key={page}
                     variant={page === pagination.current_page ? 'primary' : 'outline-secondary'}
-                    size="sm"
+                    size='sm'
                     onClick={() => handlePageChange(page)}
                   >
                     {page}
                   </Button>
                 ))}
                 <Button
-                  variant="outline-secondary"
-                  size="sm"
+                  variant='outline-secondary'
+                  size='sm'
                   disabled={!pagination.has_next}
                   onClick={() => handlePageChange(pagination.current_page + 1)}
                 >

@@ -3,7 +3,7 @@
  * Provides functions to determine text direction and handle mixed content
  */
 
-export type TextDirection = 'ltr' | 'rtl' | 'auto'
+export type TextDirection = 'ltr' | 'rtl' | 'auto';
 
 /**
  * Determines the text direction based on the first character
@@ -11,27 +11,27 @@ export type TextDirection = 'ltr' | 'rtl' | 'auto'
  * @returns 'ltr' for Latin characters, 'rtl' for Arabic/Hebrew characters
  */
 export function getTextDirection(text: string): TextDirection {
-  if (!text || text.length === 0) return 'auto'
-  
-  const firstChar = text.charAt(0)
-  
+  if (!text || text.length === 0) return 'auto';
+
+  const firstChar = text.charAt(0);
+
   // Arabic Unicode ranges
-  const arabicRegex = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/
-  
+  const arabicRegex = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+
   // Hebrew Unicode ranges
-  const hebrewRegex = /[\u0590-\u05FF\u200F\u202B\u202D\u202E\u202C\u202A\u2028\u2029]/
-  
+  const hebrewRegex = /[\u0590-\u05FF\u200F\u202B\u202D\u202E\u202C\u202A\u2028\u2029]/;
+
   if (arabicRegex.test(firstChar) || hebrewRegex.test(firstChar)) {
-    return 'rtl'
+    return 'rtl';
   }
-  
+
   // Latin characters
-  const latinRegex = /[a-zA-Z0-9]/
+  const latinRegex = /[a-zA-Z0-9]/;
   if (latinRegex.test(firstChar)) {
-    return 'ltr'
+    return 'ltr';
   }
-  
-  return 'auto'
+
+  return 'auto';
 }
 
 /**
@@ -40,15 +40,15 @@ export function getTextDirection(text: string): TextDirection {
  * @returns true if text contains both Arabic and Latin characters
  */
 export function hasMixedContent(text: string): boolean {
-  if (!text || text.length === 0) return false
-  
-  const arabicRegex = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/
-  const latinRegex = /[a-zA-Z0-9]/
-  
-  const hasArabic = arabicRegex.test(text)
-  const hasLatin = latinRegex.test(text)
-  
-  return hasArabic && hasLatin
+  if (!text || text.length === 0) return false;
+
+  const arabicRegex = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+  const latinRegex = /[a-zA-Z0-9]/;
+
+  const hasArabic = arabicRegex.test(text);
+  const hasLatin = latinRegex.test(text);
+
+  return hasArabic && hasLatin;
 }
 
 /**
@@ -57,41 +57,41 @@ export function hasMixedContent(text: string): boolean {
  * @returns Array of segments with direction information
  */
 export function segmentMixedContent(text: string): Array<{
-  text: string
-  direction: TextDirection
-  isArabic: boolean
-  isLatin: boolean
+  text: string;
+  direction: TextDirection;
+  isArabic: boolean;
+  isLatin: boolean;
 }> {
-  if (!text || text.length === 0) return []
-  
+  if (!text || text.length === 0) return [];
+
   const segments: Array<{
-    text: string
-    direction: TextDirection
-    isArabic: boolean
-    isLatin: boolean
-  }> = []
-  
-  let currentSegment = ''
-  let currentDirection: TextDirection | null = null
-  
-  const arabicRegex = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/
-  const latinRegex = /[a-zA-Z0-9]/
-  
+    text: string;
+    direction: TextDirection;
+    isArabic: boolean;
+    isLatin: boolean;
+  }> = [];
+
+  let currentSegment = '';
+  let currentDirection: TextDirection | null = null;
+
+  const arabicRegex = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+  const latinRegex = /[a-zA-Z0-9]/;
+
   for (let i = 0; i < text.length; i++) {
-    const char = text[i]
-    const isArabic = arabicRegex.test(char)
-    const isLatin = latinRegex.test(char)
-    
-    let charDirection: TextDirection
-    
+    const char = text[i];
+    const isArabic = arabicRegex.test(char);
+    const isLatin = latinRegex.test(char);
+
+    let charDirection: TextDirection;
+
     if (isArabic) {
-      charDirection = 'rtl'
+      charDirection = 'rtl';
     } else if (isLatin) {
-      charDirection = 'ltr'
+      charDirection = 'ltr';
     } else {
-      charDirection = 'auto'
+      charDirection = 'auto';
     }
-    
+
     // If direction changes or we encounter a space, create a new segment
     if (currentDirection && currentDirection !== charDirection && charDirection !== 'auto') {
       if (currentSegment.trim()) {
@@ -99,30 +99,30 @@ export function segmentMixedContent(text: string): Array<{
           text: currentSegment,
           direction: currentDirection,
           isArabic: currentDirection === 'rtl',
-          isLatin: currentDirection === 'ltr'
-        })
+          isLatin: currentDirection === 'ltr',
+        });
       }
-      currentSegment = char
-      currentDirection = charDirection
+      currentSegment = char;
+      currentDirection = charDirection;
     } else {
-      currentSegment += char
+      currentSegment += char;
       if (currentDirection === null || currentDirection === 'auto') {
-        currentDirection = charDirection
+        currentDirection = charDirection;
       }
     }
   }
-  
+
   // Add the last segment
   if (currentSegment.trim()) {
     segments.push({
       text: currentSegment,
       direction: currentDirection || 'auto',
       isArabic: currentDirection === 'rtl',
-      isLatin: currentDirection === 'ltr'
-    })
+      isLatin: currentDirection === 'ltr',
+    });
   }
-  
-  return segments
+
+  return segments;
 }
 
 /**
@@ -133,14 +133,14 @@ export function segmentMixedContent(text: string): Array<{
  */
 export function getInputDirection(fieldType: string, defaultValue?: string): TextDirection {
   // Fields that should always be LTR
-  const ltrFields = ['email', 'url', 'tel', 'password']
-  
+  const ltrFields = ['email', 'url', 'tel', 'password'];
+
   if (ltrFields.includes(fieldType)) {
-    return 'ltr'
+    return 'ltr';
   }
-  
+
   // For other fields, use auto to let browser determine direction
-  return 'auto'
+  return 'auto';
 }
 
 /**
@@ -152,35 +152,35 @@ export function getInputDirection(fieldType: string, defaultValue?: string): Tex
 export function formatTextWithDirection(
   text: string,
   options: {
-    preserveWhitespace?: boolean
-    maxLength?: number
-    ellipsis?: string
+    preserveWhitespace?: boolean;
+    maxLength?: number;
+    ellipsis?: string;
   } = {}
 ): {
-  text: string
-  direction: TextDirection
-  isMixed: boolean
+  text: string;
+  direction: TextDirection;
+  isMixed: boolean;
 } {
-  const { preserveWhitespace = true, maxLength, ellipsis = '...' } = options
-  
-  let processedText = text
-  
+  const { preserveWhitespace = true, maxLength, ellipsis = '...' } = options;
+
+  let processedText = text;
+
   if (!preserveWhitespace) {
-    processedText = processedText.trim().replace(/\s+/g, ' ')
+    processedText = processedText.trim().replace(/\s+/g, ' ');
   }
-  
+
   if (maxLength && processedText.length > maxLength) {
-    processedText = processedText.substring(0, maxLength) + ellipsis
+    processedText = processedText.substring(0, maxLength) + ellipsis;
   }
-  
-  const direction = getTextDirection(processedText)
-  const isMixed = hasMixedContent(processedText)
-  
+
+  const direction = getTextDirection(processedText);
+  const isMixed = hasMixedContent(processedText);
+
   return {
     text: processedText,
     direction,
-    isMixed
-  }
+    isMixed,
+  };
 }
 
 /**
@@ -189,21 +189,21 @@ export function formatTextWithDirection(
  * @returns Object with text direction utilities
  */
 export function useTextDirection(initialText: string = '') {
-  const [text, setText] = React.useState(initialText)
-  
-  const direction = getTextDirection(text)
-  const isMixed = hasMixedContent(text)
-  const segments = segmentMixedContent(text)
-  
+  const [text, setText] = React.useState(initialText);
+
+  const direction = getTextDirection(text);
+  const isMixed = hasMixedContent(text);
+  const segments = segmentMixedContent(text);
+
   return {
     text,
     setText,
     direction,
     isMixed,
     segments,
-    getInputDirection: (fieldType: string) => getInputDirection(fieldType, text)
-  }
+    getInputDirection: (fieldType: string) => getInputDirection(fieldType, text),
+  };
 }
 
 // Import React for the hook
-import React from 'react'
+import React from 'react';

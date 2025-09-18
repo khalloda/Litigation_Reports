@@ -39,7 +39,7 @@ test.describe('Client CRUD Operations', () => {
       addressAr: 'الرياض، المملكة العربية السعودية',
       addressEn: 'Riyadh, Saudi Arabia',
       notesAr: 'عميل جديد - فرد',
-      notesEn: 'New client - individual'
+      notesEn: 'New client - individual',
     };
 
     await clientHelpers.createClient(page, clientData);
@@ -63,7 +63,7 @@ test.describe('Client CRUD Operations', () => {
       addressEn: 'Jeddah, Saudi Arabia',
       notesAr: 'شركة تقنية كبيرة',
       notesEn: 'Large technology company',
-      logoPath: 'tests/fixtures/company-logo.png'
+      logoPath: 'tests/fixtures/company-logo.png',
     };
 
     await clientHelpers.createClient(page, clientData);
@@ -86,7 +86,7 @@ test.describe('Client CRUD Operations', () => {
       status: 'active',
       contactLawyer: 'محامي تجريبي',
       phone: '+966501111111',
-      email: 'edit@test.com'
+      email: 'edit@test.com',
     };
 
     await clientHelpers.createClient(page, originalData);
@@ -97,7 +97,7 @@ test.describe('Client CRUD Operations', () => {
       nameAr: 'عميل تم تعديله',
       nameEn: 'Edited Client',
       phone: '+966502222222',
-      status: 'inactive'
+      status: 'inactive',
     };
 
     await clientHelpers.editClient(page, originalData.nameAr, updatedData);
@@ -118,7 +118,7 @@ test.describe('Client CRUD Operations', () => {
       phone: '+966503333333',
       email: 'view@test.com',
       addressAr: 'الدمام، السعودية',
-      notesAr: 'ملاحظات تجريبية'
+      notesAr: 'ملاحظات تجريبية',
     };
 
     await clientHelpers.createClient(page, clientData);
@@ -139,14 +139,14 @@ test.describe('Client CRUD Operations', () => {
       status: 'active',
       contactLawyer: 'محامي الحذف',
       phone: '+966504444444',
-      email: 'delete@test.com'
+      email: 'delete@test.com',
     };
 
     await clientHelpers.createClient(page, clientData);
     await clientHelpers.deleteClient(page, clientData.nameAr);
 
     // Verify client is removed from list
-    await expect(page.locator(`text=${clientData.nameAr}`)).not.toBeVisible();
+    await expect(page.locator(`text=${clientData.nameAr}`)).toBeHidden();
   });
 
   test('should upload and display client logo', async ({ page }) => {
@@ -185,7 +185,10 @@ test.describe('Client CRUD Operations', () => {
     await fileInput.setInputFiles('tests/fixtures/invalid-file.txt');
 
     // Verify error message appears
-    await expect(page.locator('.invalid-feedback')).toContainText(['يرجى اختيار ملف صورة صحيح', 'Please select a valid image file']);
+    await expect(page.locator('.invalid-feedback')).toContainText([
+      'يرجى اختيار ملف صورة صحيح',
+      'Please select a valid image file',
+    ]);
   });
 
   test('should search and filter clients', async ({ page }) => {
@@ -193,7 +196,7 @@ test.describe('Client CRUD Operations', () => {
     const clients = [
       { nameAr: 'أحمد السعيد', nameEn: 'Ahmed Alsaeed', type: 'individual' },
       { nameAr: 'شركة التقنية', nameEn: 'Tech Company', type: 'company' },
-      { nameAr: 'محمد علي', nameEn: 'Mohammed Ali', type: 'individual' }
+      { nameAr: 'محمد علي', nameEn: 'Mohammed Ali', type: 'individual' },
     ];
 
     for (const client of clients) {
@@ -203,7 +206,7 @@ test.describe('Client CRUD Operations', () => {
         status: 'active',
         contactLawyer: 'محامي تجريبي',
         phone: '+966501111111',
-        email: `${client.nameEn.toLowerCase().replace(' ', '')}@test.com`
+        email: `${client.nameEn.toLowerCase().replace(' ', '')}@test.com`,
       });
     }
 
@@ -212,7 +215,7 @@ test.describe('Client CRUD Operations', () => {
     await page.waitForTimeout(500);
 
     await expect(page.locator('text=أحمد السعيد')).toBeVisible();
-    await expect(page.locator('text=شركة التقنية')).not.toBeVisible();
+    await expect(page.locator('text=شركة التقنية')).toBeHidden();
 
     // Clear search
     await page.fill('[data-testid="search-input"]', '');
@@ -220,7 +223,7 @@ test.describe('Client CRUD Operations', () => {
     // Test type filter
     await page.selectOption('[data-testid="type-filter"]', 'company');
     await expect(page.locator('text=شركة التقنية')).toBeVisible();
-    await expect(page.locator('text=أحمد السعيد')).not.toBeVisible();
+    await expect(page.locator('text=أحمد السعيد')).toBeHidden();
   });
 
   test('should handle bilingual display correctly', async ({ page }) => {
@@ -232,7 +235,7 @@ test.describe('Client CRUD Operations', () => {
       status: 'active',
       contactLawyer: 'سارة أحمد',
       phone: '+966505555555',
-      email: 'future@tech.com'
+      email: 'future@tech.com',
     };
 
     await clientHelpers.createClient(page, clientData);
@@ -260,8 +263,14 @@ test.describe('Client CRUD Operations', () => {
     await page.click('button[type="submit"]');
 
     // Verify validation messages
-    await expect(page.locator('.invalid-feedback')).toContainText(['اسم العميل بالعربية مطلوب', 'Arabic client name is required']);
-    await expect(page.locator('.invalid-feedback')).toContainText(['المحامي المسؤول مطلوب', 'Contact lawyer is required']);
+    await expect(page.locator('.invalid-feedback')).toContainText([
+      'اسم العميل بالعربية مطلوب',
+      'Arabic client name is required',
+    ]);
+    await expect(page.locator('.invalid-feedback')).toContainText([
+      'المحامي المسؤول مطلوب',
+      'Contact lawyer is required',
+    ]);
   });
 
   test('should handle logo removal', async ({ page }) => {
@@ -282,7 +291,7 @@ test.describe('Client CRUD Operations', () => {
     await page.click('[title*="إزالة الشعار"], [title*="Remove Logo"]');
 
     // Verify preview is removed
-    await expect(page.locator('img[alt="Client Logo Preview"]')).not.toBeVisible();
+    await expect(page.locator('img[alt="Client Logo Preview"]')).toBeHidden();
     await expect(page.locator('text*="اضغط لرفع الشعار"')).toBeVisible();
   });
 });

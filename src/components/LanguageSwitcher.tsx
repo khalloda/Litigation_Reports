@@ -13,7 +13,7 @@ interface LanguageSwitcherProps {
 
 const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
   variant = 'default',
-  size = 'md'
+  size = 'md',
 }) => {
   const [currentLanguage, setCurrentLanguage] = useState<'ar' | 'en'>('ar');
 
@@ -40,28 +40,28 @@ const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
   if (variant === 'minimal') {
     return (
       <div
-        className="language-switcher d-flex align-items-center gap-1"
-        data-testid="language-switcher"
-        role="group"
-        aria-label="Language selector"
+        className='language-switcher d-flex align-items-center gap-1'
+        data-testid='language-switcher'
+        role='group'
+        aria-label='Language selector'
       >
         <button
-          type="button"
+          type='button'
           className={`btn btn-sm ${currentLanguage === 'ar' ? 'btn-primary' : 'btn-outline-primary'}`}
           onClick={() => switchLanguage('ar')}
-          data-lang="ar"
+          data-lang='ar'
           aria-pressed={currentLanguage === 'ar'}
-          title="العربية"
+          title='العربية'
         >
           ع
         </button>
         <button
-          type="button"
+          type='button'
           className={`btn btn-sm ${currentLanguage === 'en' ? 'btn-primary' : 'btn-outline-primary'}`}
           onClick={() => switchLanguage('en')}
-          data-lang="en"
+          data-lang='en'
           aria-pressed={currentLanguage === 'en'}
-          title="English"
+          title='English'
         >
           En
         </button>
@@ -72,51 +72,42 @@ const LanguageSwitcher: React.FC<LanguageSwitcherProps> = ({
   const buttonSize = size === 'sm' ? 'btn-sm' : '';
 
   return (
-    <div
-      className="language-switcher dropdown"
-      data-testid="language-switcher"
-    >
+    <div className='language-switcher dropdown' data-testid='language-switcher'>
       <button
         className={`btn btn-outline-secondary dropdown-toggle ${buttonSize}`}
-        type="button"
-        id="languageDropdown"
-        data-bs-toggle="dropdown"
-        aria-expanded="false"
-        aria-label="Select language"
+        type='button'
+        id='languageDropdown'
+        data-bs-toggle='dropdown'
+        aria-expanded='false'
+        aria-label='Select language'
       >
-        <span className="me-2">
-          {currentLanguage === 'ar' ? '🇸🇦' : '🇺🇸'}
-        </span>
+        <span className='me-2'>{currentLanguage === 'ar' ? '🇸🇦' : '🇺🇸'}</span>
         {currentLanguage === 'ar' ? 'العربية' : 'English'}
       </button>
 
-      <ul className="dropdown-menu" aria-labelledby="languageDropdown">
+      <ul className='dropdown-menu' aria-labelledby='languageDropdown'>
         <li>
           <button
             className={`dropdown-item d-flex align-items-center ${currentLanguage === 'ar' ? 'active' : ''}`}
-            type="button"
+            type='button'
             onClick={() => switchLanguage('ar')}
-            data-lang="ar"
+            data-lang='ar'
           >
-            <span className="me-2">🇸🇦</span>
+            <span className='me-2'>🇸🇦</span>
             العربية
-            {currentLanguage === 'ar' && (
-              <i className="bi bi-check-lg ms-auto text-primary" />
-            )}
+            {currentLanguage === 'ar' && <i className='bi bi-check-lg ms-auto text-primary' />}
           </button>
         </li>
         <li>
           <button
             className={`dropdown-item d-flex align-items-center ${currentLanguage === 'en' ? 'active' : ''}`}
-            type="button"
+            type='button'
             onClick={() => switchLanguage('en')}
-            data-lang="en"
+            data-lang='en'
           >
-            <span className="me-2">🇺🇸</span>
+            <span className='me-2'>🇺🇸</span>
             English
-            {currentLanguage === 'en' && (
-              <i className="bi bi-check-lg ms-auto text-primary" />
-            )}
+            {currentLanguage === 'en' && <i className='bi bi-check-lg ms-auto text-primary' />}
           </button>
         </li>
       </ul>

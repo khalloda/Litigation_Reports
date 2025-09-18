@@ -1,7 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Button, Form, InputGroup, Badge, Spinner, Alert, Modal } from 'react-bootstrap';
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Button,
+  Form,
+  InputGroup,
+  Badge,
+  Spinner,
+  Alert,
+  Modal,
+} from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
-import { Plus, Search, Filter, Eye, Edit, Trash, Users, Building, User, AlertTriangle } from 'lucide-react';
+import {
+  Plus,
+  Search,
+  Filter,
+  Eye,
+  Edit,
+  Trash,
+  Users,
+  Building,
+  User,
+  AlertTriangle,
+} from 'lucide-react';
 import { apiService as api } from '../services/api';
 import { ClientModal } from '../components/modals/ClientModal';
 import { useLanguage } from '../hooks/useLanguage';
@@ -70,12 +93,12 @@ const ClientsPage: React.FC = () => {
     status: '',
     type: '',
     cash_pro_bono: '',
-    search: ''
+    search: '',
   });
   const [options, setOptions] = useState<ClientOptions>({
     status: {},
     type: {},
-    cash_pro_bono: {}
+    cash_pro_bono: {},
   });
   const [pagination, setPagination] = useState({
     current_page: 1,
@@ -83,7 +106,7 @@ const ClientsPage: React.FC = () => {
     total: 0,
     total_pages: 0,
     has_next: false,
-    has_prev: false
+    has_prev: false,
   });
 
   // Modal states
@@ -106,15 +129,15 @@ const ClientsPage: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const params = new URLSearchParams({
         page: pagination.current_page.toString(),
         limit: pagination.per_page.toString(),
-        ...Object.fromEntries(Object.entries(filters).filter(([_, value]) => value))
+        ...Object.fromEntries(Object.entries(filters).filter(([_, value]) => value)),
       });
 
       const response = await api.get(`/clients?${params}`);
-      
+
       if (response.success) {
         setClients(response.data.data);
         setPagination(response.data.pagination);
@@ -141,12 +164,12 @@ const ClientsPage: React.FC = () => {
   };
 
   const handleFilterChange = (key: keyof ClientFilters, value: string) => {
-    setFilters(prev => ({ ...prev, [key]: value }));
-    setPagination(prev => ({ ...prev, current_page: 1 }));
+    setFilters((prev) => ({ ...prev, [key]: value }));
+    setPagination((prev) => ({ ...prev, current_page: 1 }));
   };
 
   const handlePageChange = (page: number) => {
-    setPagination(prev => ({ ...prev, current_page: page }));
+    setPagination((prev) => ({ ...prev, current_page: page }));
   };
 
   // CRUD operations
@@ -260,13 +283,11 @@ const ClientsPage: React.FC = () => {
     const statusColors: Record<string, string> = {
       active: 'success',
       disabled: 'danger',
-      inactive: 'secondary'
+      inactive: 'secondary',
     };
-    
+
     return (
-      <Badge bg={statusColors[status] || 'secondary'}>
-        {options.status[status] || status}
-      </Badge>
+      <Badge bg={statusColors[status] || 'secondary'}>{options.status[status] || status}</Badge>
     );
   };
 
@@ -277,9 +298,9 @@ const ClientsPage: React.FC = () => {
   const getCashProBonoBadge = (cashProBono: string) => {
     const colors: Record<string, string> = {
       cash: 'success',
-      probono: 'info'
+      probono: 'info',
     };
-    
+
     return (
       <Badge bg={colors[cashProBono] || 'secondary'}>
         {options.cash_pro_bono[cashProBono] || cashProBono}
@@ -294,30 +315,30 @@ const ClientsPage: React.FC = () => {
 
   if (loading && clients.length === 0) {
     return (
-      <Container className="py-4">
-        <div className="text-center">
-          <Spinner animation="border" />
-          <p className="mt-2">Loading clients...</p>
+      <Container className='py-4'>
+        <div className='text-center'>
+          <Spinner animation='border' />
+          <p className='mt-2'>Loading clients...</p>
         </div>
       </Container>
     );
   }
 
   return (
-    <Container fluid className="py-4">
+    <Container fluid className='py-4'>
       {/* Header */}
-      <Row className="mb-4">
+      <Row className='mb-4'>
         <Col>
-          <div className="d-flex justify-content-between align-items-center">
+          <div className='d-flex justify-content-between align-items-center'>
             <div>
-              <h2 className="mb-1">
-                <Users className="me-2" />
+              <h2 className='mb-1'>
+                <Users className='me-2' />
                 إدارة العملاء
               </h2>
-              <p className="text-muted mb-0">إدارة وتتبع جميع العملاء والشركات</p>
+              <p className='text-muted mb-0'>إدارة وتتبع جميع العملاء والشركات</p>
             </div>
-            <Button variant="primary" size="lg" onClick={handleCreateClient}>
-              <Plus className="me-2" />
+            <Button variant='primary' size='lg' onClick={handleCreateClient}>
+              <Plus className='me-2' />
               إضافة عميل جديد
             </Button>
           </div>
@@ -325,7 +346,7 @@ const ClientsPage: React.FC = () => {
       </Row>
 
       {/* Filters */}
-      <Card className="mb-4">
+      <Card className='mb-4'>
         <Card.Body>
           <Row>
             <Col md={3}>
@@ -336,8 +357,8 @@ const ClientsPage: React.FC = () => {
                     <Search size={16} />
                   </InputGroup.Text>
                   <Form.Control
-                    type="text"
-                    placeholder="البحث في العملاء..."
+                    type='text'
+                    placeholder='البحث في العملاء...'
                     value={filters.search}
                     onChange={(e) => handleFilterChange('search', e.target.value)}
                   />
@@ -351,9 +372,11 @@ const ClientsPage: React.FC = () => {
                   value={filters.status}
                   onChange={(e) => handleFilterChange('status', e.target.value)}
                 >
-                  <option value="">جميع الحالات</option>
+                  <option value=''>جميع الحالات</option>
                   {Object.entries(options.status).map(([key, value]) => (
-                    <option key={key} value={key}>{value}</option>
+                    <option key={key} value={key}>
+                      {value}
+                    </option>
                   ))}
                 </Form.Select>
               </Form.Group>
@@ -365,9 +388,11 @@ const ClientsPage: React.FC = () => {
                   value={filters.type}
                   onChange={(e) => handleFilterChange('type', e.target.value)}
                 >
-                  <option value="">جميع الأنواع</option>
+                  <option value=''>جميع الأنواع</option>
                   {Object.entries(options.type).map(([key, value]) => (
-                    <option key={key} value={key}>{value}</option>
+                    <option key={key} value={key}>
+                      {value}
+                    </option>
                   ))}
                 </Form.Select>
               </Form.Group>
@@ -379,16 +404,18 @@ const ClientsPage: React.FC = () => {
                   value={filters.cash_pro_bono}
                   onChange={(e) => handleFilterChange('cash_pro_bono', e.target.value)}
                 >
-                  <option value="">جميع الأنواع</option>
+                  <option value=''>جميع الأنواع</option>
                   {Object.entries(options.cash_pro_bono).map(([key, value]) => (
-                    <option key={key} value={key}>{value}</option>
+                    <option key={key} value={key}>
+                      {value}
+                    </option>
                   ))}
                 </Form.Select>
               </Form.Group>
             </Col>
-            <Col md={2} className="d-flex align-items-end">
-              <Button variant="outline-secondary" onClick={loadClients}>
-                <Filter className="me-1" />
+            <Col md={2} className='d-flex align-items-end'>
+              <Button variant='outline-secondary' onClick={loadClients}>
+                <Filter className='me-1' />
                 تطبيق
               </Button>
             </Col>
@@ -398,7 +425,7 @@ const ClientsPage: React.FC = () => {
 
       {/* Error Alert */}
       {error && (
-        <Alert variant="danger" className="mb-4">
+        <Alert variant='danger' className='mb-4'>
           {error}
         </Alert>
       )}
@@ -406,29 +433,27 @@ const ClientsPage: React.FC = () => {
       {/* Clients Table */}
       <Card>
         <Card.Header>
-          <div className="d-flex justify-content-between align-items-center">
-            <h5 className="mb-0">قائمة العملاء</h5>
-            <div className="text-muted">
-              إجمالي: {pagination.total} عميل
-            </div>
+          <div className='d-flex justify-content-between align-items-center'>
+            <h5 className='mb-0'>قائمة العملاء</h5>
+            <div className='text-muted'>إجمالي: {pagination.total} عميل</div>
           </div>
         </Card.Header>
-        <Card.Body className="p-0">
+        <Card.Body className='p-0'>
           {loading ? (
-            <div className="text-center py-4">
-              <Spinner animation="border" />
-              <p className="mt-2">جاري التحميل...</p>
+            <div className='text-center py-4'>
+              <Spinner animation='border' />
+              <p className='mt-2'>جاري التحميل...</p>
             </div>
           ) : clients.length === 0 ? (
-            <div className="text-center py-5">
-              <Users size={48} className="text-muted mb-3" />
+            <div className='text-center py-5'>
+              <Users size={48} className='text-muted mb-3' />
               <h5>لا يوجد عملاء</h5>
-              <p className="text-muted">لم يتم العثور على عملاء يطابقون المعايير المحددة</p>
+              <p className='text-muted'>لم يتم العثور على عملاء يطابقون المعايير المحددة</p>
             </div>
           ) : (
-            <div className="table-responsive">
-              <table className="table table-hover mb-0">
-                <thead className="table-light">
+            <div className='table-responsive'>
+              <table className='table table-hover mb-0'>
+                <thead className='table-light'>
                   <tr>
                     <th>الاسم</th>
                     <th>النوع</th>
@@ -445,9 +470,9 @@ const ClientsPage: React.FC = () => {
                   {clients.map((client) => (
                     <tr key={client.id}>
                       <td>
-                        <div className="d-flex align-items-center">
+                        <div className='d-flex align-items-center'>
                           {/* Client Logo or Type Icon */}
-                          <div className="me-2">
+                          <div className='me-2'>
                             {client.logo_url ? (
                               <img
                                 src={client.logo_url}
@@ -457,7 +482,7 @@ const ClientsPage: React.FC = () => {
                                   height: '32px',
                                   objectFit: 'contain',
                                   borderRadius: '4px',
-                                  border: '1px solid #dee2e6'
+                                  border: '1px solid #dee2e6',
                                 }}
                                 onError={(e) => {
                                   // Fallback to type icon if logo fails to load
@@ -472,16 +497,16 @@ const ClientsPage: React.FC = () => {
                           </div>
 
                           {/* Client Name */}
-                          <div className="flex-grow-1">
-                            <div className="fw-bold">{client.client_name_ar}</div>
+                          <div className='flex-grow-1'>
+                            <div className='fw-bold'>{client.client_name_ar}</div>
                             {client.client_name_en && (
-                              <small className="text-muted">{client.client_name_en}</small>
+                              <small className='text-muted'>{client.client_name_en}</small>
                             )}
                             {/* Show logo indicator for companies */}
                             {client.logo_url && (
                               <div>
-                                <small className="text-success">
-                                  <FileImage size={12} className="me-1" />
+                                <small className='text-success'>
+                                  <FileImage size={12} className='me-1' />
                                   {currentLanguage === 'ar' ? 'يحتوي على شعار' : 'Has Logo'}
                                 </small>
                               </div>
@@ -490,7 +515,7 @@ const ClientsPage: React.FC = () => {
                         </div>
                       </td>
                       <td>
-                        <Badge bg="info">
+                        <Badge bg='info'>
                           {options.type[client.client_type] || client.client_type}
                         </Badge>
                       </td>
@@ -498,31 +523,31 @@ const ClientsPage: React.FC = () => {
                       <td>{getCashProBonoBadge(client.cash_pro_bono)}</td>
                       <td>{client.contact_lawyer || '-'}</td>
                       <td>
-                        <Badge bg="primary">{client.cases_count}</Badge>
+                        <Badge bg='primary'>{client.cases_count}</Badge>
                       </td>
                       <td>{formatDate(client.client_start_date)}</td>
                       <td>{formatDate(client.last_case_date)}</td>
                       <td>
-                        <div className="btn-group btn-group-sm">
+                        <div className='btn-group btn-group-sm'>
                           <Button
-                            variant="outline-primary"
-                            size="sm"
+                            variant='outline-primary'
+                            size='sm'
                             onClick={() => handleViewClient(client)}
                             title={currentLanguage === 'ar' ? 'عرض التفاصيل' : 'View Details'}
                           >
                             <Eye size={14} />
                           </Button>
                           <Button
-                            variant="outline-secondary"
-                            size="sm"
+                            variant='outline-secondary'
+                            size='sm'
                             onClick={() => handleEditClient(client)}
                             title={currentLanguage === 'ar' ? 'تعديل' : 'Edit'}
                           >
                             <Edit size={14} />
                           </Button>
                           <Button
-                            variant="outline-danger"
-                            size="sm"
+                            variant='outline-danger'
+                            size='sm'
                             onClick={() => handleDeleteClient(client)}
                             title={currentLanguage === 'ar' ? 'حذف' : 'Delete'}
                           >
@@ -537,20 +562,20 @@ const ClientsPage: React.FC = () => {
             </div>
           )}
         </Card.Body>
-        
+
         {/* Pagination */}
         {pagination.total_pages > 1 && (
           <Card.Footer>
-            <div className="d-flex justify-content-between align-items-center">
-              <div className="text-muted">
-                عرض {((pagination.current_page - 1) * pagination.per_page) + 1} إلى{' '}
+            <div className='d-flex justify-content-between align-items-center'>
+              <div className='text-muted'>
+                عرض {(pagination.current_page - 1) * pagination.per_page + 1} إلى{' '}
                 {Math.min(pagination.current_page * pagination.per_page, pagination.total)} من{' '}
                 {pagination.total} عميل
               </div>
-              <div className="btn-group">
+              <div className='btn-group'>
                 <Button
-                  variant="outline-secondary"
-                  size="sm"
+                  variant='outline-secondary'
+                  size='sm'
                   disabled={!pagination.has_prev}
                   onClick={() => handlePageChange(pagination.current_page - 1)}
                 >
@@ -560,15 +585,15 @@ const ClientsPage: React.FC = () => {
                   <Button
                     key={page}
                     variant={page === pagination.current_page ? 'primary' : 'outline-secondary'}
-                    size="sm"
+                    size='sm'
                     onClick={() => handlePageChange(page)}
                   >
                     {page}
                   </Button>
                 ))}
                 <Button
-                  variant="outline-secondary"
-                  size="sm"
+                  variant='outline-secondary'
+                  size='sm'
                   disabled={!pagination.has_next}
                   onClick={() => handlePageChange(pagination.current_page + 1)}
                 >
@@ -591,62 +616,51 @@ const ClientsPage: React.FC = () => {
       />
 
       {/* Delete Confirmation Modal */}
-      <Modal
-        show={showDeleteModal}
-        onHide={handleCloseDeleteModal}
-        centered
-        size="sm"
-      >
+      <Modal show={showDeleteModal} onHide={handleCloseDeleteModal} centered size='sm'>
         <Modal.Header closeButton>
-          <Modal.Title className="d-flex align-items-center text-danger">
-            <AlertTriangle className="me-2" size={20} />
+          <Modal.Title className='d-flex align-items-center text-danger'>
+            <AlertTriangle className='me-2' size={20} />
             {currentLanguage === 'ar' ? 'تأكيد الحذف' : 'Confirm Delete'}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p className="mb-3">
+          <p className='mb-3'>
             {currentLanguage === 'ar'
               ? 'هل أنت متأكد من حذف هذا العميل؟ لا يمكن التراجع عن هذا الإجراء.'
-              : 'Are you sure you want to delete this client? This action cannot be undone.'
-            }
+              : 'Are you sure you want to delete this client? This action cannot be undone.'}
           </p>
           {clientToDelete && (
-            <div className="bg-light p-3 rounded">
+            <div className='bg-light p-3 rounded'>
               <strong>
                 {currentLanguage === 'ar'
                   ? clientToDelete.client_name_ar
-                  : clientToDelete.client_name_en || clientToDelete.client_name_ar
-                }
+                  : clientToDelete.client_name_en || clientToDelete.client_name_ar}
               </strong>
               <br />
-              <small className="text-muted">
+              <small className='text-muted'>
                 {currentLanguage === 'ar' ? 'عدد القضايا:' : 'Cases:'} {clientToDelete.cases_count}
               </small>
             </div>
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button
-            variant="outline-secondary"
-            onClick={handleCloseDeleteModal}
-            disabled={deleting}
-          >
+          <Button variant='outline-secondary' onClick={handleCloseDeleteModal} disabled={deleting}>
             {currentLanguage === 'ar' ? 'إلغاء' : 'Cancel'}
           </Button>
           <Button
-            variant="danger"
+            variant='danger'
             onClick={confirmDeleteClient}
             disabled={deleting}
-            className="d-flex align-items-center"
+            className='d-flex align-items-center'
           >
             {deleting ? (
               <>
-                <Spinner size="sm" animation="border" className="me-1" />
+                <Spinner size='sm' animation='border' className='me-1' />
                 {currentLanguage === 'ar' ? 'جاري الحذف...' : 'Deleting...'}
               </>
             ) : (
               <>
-                <Trash size={16} className="me-1" />
+                <Trash size={16} className='me-1' />
                 {currentLanguage === 'ar' ? 'حذف' : 'Delete'}
               </>
             )}

@@ -70,10 +70,12 @@ export class LoginHelpers {
    */
   async verifyLoggedIn(page: Page): Promise<void> {
     // Should be on dashboard or any protected page
-    await expect(page.url()).not.toContain('/login');
+    expect(page.url()).not.toContain('/login');
 
     // Should see user menu or logout button
-    const userIndicators = page.locator('[data-testid="user-menu"], [data-testid="logout"], .user-menu, .logout-btn');
+    const userIndicators = page.locator(
+      '[data-testid="user-menu"], [data-testid="logout"], .user-menu, .logout-btn'
+    );
     await expect(userIndicators.first()).toBeVisible();
   }
 
@@ -82,7 +84,7 @@ export class LoginHelpers {
    */
   async verifyLoggedOut(page: Page): Promise<void> {
     // Should be redirected to login page
-    await expect(page.url()).toContain('/login');
+    expect(page.url()).toContain('/login');
 
     // Should see login form
     await expect(page.locator('form, [data-testid="login-form"]')).toBeVisible();
@@ -100,7 +102,9 @@ export class LoginHelpers {
    * Switch language on login page
    */
   async switchLanguage(page: Page, language: 'ar' | 'en'): Promise<void> {
-    const languageSwitcher = page.locator(`[data-testid="language-switcher"] [data-lang="${language}"], .language-switcher [data-lang="${language}"]`);
+    const languageSwitcher = page.locator(
+      `[data-testid="language-switcher"] [data-lang="${language}"], .language-switcher [data-lang="${language}"]`
+    );
     await languageSwitcher.click();
     await page.waitForLoadState('networkidle');
   }
@@ -150,7 +154,7 @@ export class LoginHelpers {
     expect(hasError).toBe(true);
 
     // Should remain on login page
-    await expect(page.url()).toContain('/login');
+    expect(page.url()).toContain('/login');
   }
 
   /**
@@ -167,13 +171,19 @@ export class LoginHelpers {
       // Alternative: check what navigation items are available based on role
       switch (expectedRole) {
         case 'admin':
-          await expect(page.locator('[data-testid="nav-users"], text=إدارة المستخدمين, text=User Management')).toBeVisible();
+          await expect(
+            page.locator('[data-testid="nav-users"], text=إدارة المستخدمين, text=User Management')
+          ).toBeVisible();
           break;
         case 'lawyer':
-          await expect(page.locator('[data-testid="nav-cases"], text=القضايا, text=Cases')).toBeVisible();
+          await expect(
+            page.locator('[data-testid="nav-cases"], text=القضايا, text=Cases')
+          ).toBeVisible();
           break;
         case 'staff':
-          await expect(page.locator('[data-testid="nav-clients"], text=العملاء, text=Clients')).toBeVisible();
+          await expect(
+            page.locator('[data-testid="nav-clients"], text=العملاء, text=Clients')
+          ).toBeVisible();
           break;
       }
     }

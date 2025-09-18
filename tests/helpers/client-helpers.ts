@@ -26,12 +26,20 @@ export class ClientHelpers {
     await page.waitForSelector('.modal');
 
     // Fill required Arabic name
-    const arabicNameInput = page.locator('input[placeholder*="اسم العميل بالعربية"], input[placeholder*="Arabic client name"]').first();
+    const arabicNameInput = page
+      .locator(
+        'input[placeholder*="اسم العميل بالعربية"], input[placeholder*="Arabic client name"]'
+      )
+      .first();
     await arabicNameInput.fill(data.nameAr);
 
     // Fill English name if provided
     if (data.nameEn) {
-      const englishNameInput = page.locator('input[placeholder*="اسم العميل بالإنجليزية"], input[placeholder*="English client name"]').first();
+      const englishNameInput = page
+        .locator(
+          'input[placeholder*="اسم العميل بالإنجليزية"], input[placeholder*="English client name"]'
+        )
+        .first();
       await englishNameInput.fill(data.nameEn);
     }
 
@@ -48,7 +56,9 @@ export class ClientHelpers {
     await statusSelect.selectOption(data.status);
 
     // Fill contact lawyer (required)
-    const lawyerInput = page.locator('input[placeholder*="المحامي"], input[placeholder*="lawyer"]').first();
+    const lawyerInput = page
+      .locator('input[placeholder*="المحامي"], input[placeholder*="lawyer"]')
+      .first();
     await lawyerInput.fill(data.contactLawyer);
 
     // Fill optional fields
@@ -63,22 +73,34 @@ export class ClientHelpers {
     }
 
     if (data.addressAr) {
-      const addressArTextarea = page.locator('textarea[placeholder*="العنوان بالعربية"], textarea[placeholder*="Arabic address"]').first();
+      const addressArTextarea = page
+        .locator(
+          'textarea[placeholder*="العنوان بالعربية"], textarea[placeholder*="Arabic address"]'
+        )
+        .first();
       await addressArTextarea.fill(data.addressAr);
     }
 
     if (data.addressEn) {
-      const addressEnTextarea = page.locator('textarea[placeholder*="العنوان بالإنجليزية"], textarea[placeholder*="English address"]').first();
+      const addressEnTextarea = page
+        .locator(
+          'textarea[placeholder*="العنوان بالإنجليزية"], textarea[placeholder*="English address"]'
+        )
+        .first();
       await addressEnTextarea.fill(data.addressEn);
     }
 
     if (data.notesAr) {
-      const notesArTextarea = page.locator('textarea[placeholder*="ملاحظات"], textarea[placeholder*="notes"]').first();
+      const notesArTextarea = page
+        .locator('textarea[placeholder*="ملاحظات"], textarea[placeholder*="notes"]')
+        .first();
       await notesArTextarea.fill(data.notesAr);
     }
 
     if (data.notesEn) {
-      const notesEnTextarea = page.locator('textarea[placeholder*="ملاحظات"], textarea[placeholder*="notes"]').nth(1);
+      const notesEnTextarea = page
+        .locator('textarea[placeholder*="ملاحظات"], textarea[placeholder*="notes"]')
+        .nth(1);
       await notesEnTextarea.fill(data.notesEn);
     }
 
@@ -105,7 +127,11 @@ export class ClientHelpers {
   /**
    * Edit an existing client
    */
-  async editClient(page: Page, clientName: string, updatedData: Partial<ClientData>): Promise<void> {
+  async editClient(
+    page: Page,
+    clientName: string,
+    updatedData: Partial<ClientData>
+  ): Promise<void> {
     // Find and click edit button for the client
     const clientRow = page.locator(`tr:has-text("${clientName}")`);
     await clientRow.locator('[data-testid="edit-client"]').click();
@@ -114,13 +140,21 @@ export class ClientHelpers {
 
     // Update fields as needed
     if (updatedData.nameAr) {
-      const arabicNameInput = page.locator('input[placeholder*="اسم العميل بالعربية"], input[placeholder*="Arabic client name"]').first();
+      const arabicNameInput = page
+        .locator(
+          'input[placeholder*="اسم العميل بالعربية"], input[placeholder*="Arabic client name"]'
+        )
+        .first();
       await arabicNameInput.clear();
       await arabicNameInput.fill(updatedData.nameAr);
     }
 
     if (updatedData.nameEn) {
-      const englishNameInput = page.locator('input[placeholder*="اسم العميل بالإنجليزية"], input[placeholder*="English client name"]').first();
+      const englishNameInput = page
+        .locator(
+          'input[placeholder*="اسم العميل بالإنجليزية"], input[placeholder*="English client name"]'
+        )
+        .first();
       await englishNameInput.clear();
       await englishNameInput.fill(updatedData.nameEn);
     }
@@ -167,7 +201,7 @@ export class ClientHelpers {
     await clientRow.locator('[data-testid="delete-client"]').click();
 
     // Confirm deletion in alert/confirmation dialog
-    page.on('dialog', dialog => dialog.accept());
+    page.on('dialog', (dialog) => dialog.accept());
 
     // Wait for client to be removed from list
     await page.waitForSelector(`text=${clientName}`, { state: 'hidden', timeout: 5000 });
@@ -193,7 +227,10 @@ export class ClientHelpers {
   /**
    * Filter clients by status
    */
-  async filterClientsByStatus(page: Page, status: 'all' | 'active' | 'inactive' | 'disabled'): Promise<void> {
+  async filterClientsByStatus(
+    page: Page,
+    status: 'all' | 'active' | 'inactive' | 'disabled'
+  ): Promise<void> {
     const statusFilter = page.locator('[data-testid="status-filter"]');
     await statusFilter.selectOption(status);
   }
@@ -240,7 +277,7 @@ export class ClientHelpers {
       lawyer: cells[3] || '',
       phone: cells[4] || '',
       email: cells[5] || '',
-      status: cells[6] || ''
+      status: cells[6] || '',
     };
   }
 
@@ -263,7 +300,11 @@ export class ClientHelpers {
   /**
    * Test logo upload validation
    */
-  async testLogoValidation(page: Page, filePath: string, shouldFail: boolean = false): Promise<void> {
+  async testLogoValidation(
+    page: Page,
+    filePath: string,
+    shouldFail: boolean = false
+  ): Promise<void> {
     await page.click('[data-testid="add-client-btn"]');
     await page.waitForSelector('.modal');
 

@@ -1,6 +1,6 @@
 /**
  * Simple App Component with Management Pages
- * 
+ *
  * A simplified version of the App component with routing for management pages.
  */
 
@@ -22,12 +22,12 @@ const AppContent: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="container-fluid vh-100 d-flex align-items-center justify-content-center">
-        <div className="text-center">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
+      <div className='container-fluid vh-100 d-flex align-items-center justify-content-center'>
+        <div className='text-center'>
+          <div className='spinner-border text-primary' role='status'>
+            <span className='visually-hidden'>Loading...</span>
           </div>
-          <p className="mt-3">جاري التحميل...</p>
+          <p className='mt-3'>جاري التحميل...</p>
         </div>
       </div>
     );
@@ -51,64 +51,88 @@ const AppContent: React.FC = () => {
   };
 
   return (
-    <div className="app" dir="rtl">
+    <div className='app' dir='rtl'>
       {/* Navigation */}
-      <Navbar bg="dark" variant="dark" expand="lg" className="mb-4">
+      <Navbar bg='dark' variant='dark' expand='lg' className='mb-4'>
         <Container fluid>
-          <Navbar.Brand href="#" onClick={(e) => { e.preventDefault(); setCurrentPage('dashboard'); }}>
-            <Gavel className="me-2" />
+          <Navbar.Brand
+            href='#'
+            onClick={(e) => {
+              e.preventDefault();
+              setCurrentPage('dashboard');
+            }}
+          >
+            <Gavel className='me-2' />
             نظام إدارة التقاضي
           </Navbar.Brand>
-          
-          <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="me-auto">
-              <Nav.Link 
-                href="#" 
-                onClick={(e) => { e.preventDefault(); setCurrentPage('dashboard'); }}
+
+          <Navbar.Toggle aria-controls='basic-navbar-nav' />
+          <Navbar.Collapse id='basic-navbar-nav'>
+            <Nav className='me-auto'>
+              <Nav.Link
+                href='#'
+                onClick={(e) => {
+                  e.preventDefault();
+                  setCurrentPage('dashboard');
+                }}
                 className={currentPage === 'dashboard' ? 'active' : ''}
               >
-                <Home className="me-1" size={16} />
+                <Home className='me-1' size={16} />
                 الرئيسية
               </Nav.Link>
-              <Nav.Link 
-                href="#" 
-                onClick={(e) => { e.preventDefault(); setCurrentPage('cases'); }}
+              <Nav.Link
+                href='#'
+                onClick={(e) => {
+                  e.preventDefault();
+                  setCurrentPage('cases');
+                }}
                 className={currentPage === 'cases' ? 'active' : ''}
               >
-                <Gavel className="me-1" size={16} />
+                <Gavel className='me-1' size={16} />
                 القضايا
               </Nav.Link>
-              <Nav.Link 
-                href="#" 
-                onClick={(e) => { e.preventDefault(); setCurrentPage('clients'); }}
+              <Nav.Link
+                href='#'
+                onClick={(e) => {
+                  e.preventDefault();
+                  setCurrentPage('clients');
+                }}
                 className={currentPage === 'clients' ? 'active' : ''}
               >
-                <Users className="me-1" size={16} />
+                <Users className='me-1' size={16} />
                 العملاء
               </Nav.Link>
-              <Nav.Link 
-                href="#" 
-                onClick={(e) => { e.preventDefault(); setCurrentPage('hearings'); }}
+              <Nav.Link
+                href='#'
+                onClick={(e) => {
+                  e.preventDefault();
+                  setCurrentPage('hearings');
+                }}
                 className={currentPage === 'hearings' ? 'active' : ''}
               >
-                <Calendar className="me-1" size={16} />
+                <Calendar className='me-1' size={16} />
                 الجلسات
               </Nav.Link>
             </Nav>
-            
+
             <Nav>
-              <NavDropdown 
+              <NavDropdown
                 title={
                   <span>
-                    <Users className="me-1" size={16} />
+                    <Users className='me-1' size={16} />
                     {user?.name || 'المستخدم'}
                   </span>
-                } 
-                id="user-dropdown"
+                }
+                id='user-dropdown'
               >
-                <NavDropdown.Item href="#" onClick={(e) => { e.preventDefault(); logout(); }}>
-                  <LogOut className="me-1" size={16} />
+                <NavDropdown.Item
+                  href='#'
+                  onClick={(e) => {
+                    e.preventDefault();
+                    logout();
+                  }}
+                >
+                  <LogOut className='me-1' size={16} />
                   تسجيل الخروج
                 </NavDropdown.Item>
               </NavDropdown>
@@ -118,9 +142,7 @@ const AppContent: React.FC = () => {
       </Navbar>
 
       {/* Page Content */}
-      <Container fluid>
-        {renderPage()}
-      </Container>
+      <Container fluid>{renderPage()}</Container>
     </div>
   );
 };

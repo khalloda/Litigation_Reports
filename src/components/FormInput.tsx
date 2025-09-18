@@ -31,15 +31,15 @@ const FormInput: React.FC<FormInputProps> = ({
   dir = 'auto',
   error,
   className = '',
-  autoComplete
+  autoComplete,
 }) => {
   const inputClasses = `form-control ${error ? 'is-invalid' : ''} ${className}`;
 
   return (
-    <div className="mb-3">
-      <label htmlFor={id} className="form-label">
+    <div className='mb-3'>
+      <label htmlFor={id} className='form-label'>
         {label}
-        {required && <span className="text-danger ms-1">*</span>}
+        {required && <span className='text-danger ms-1'>*</span>}
       </label>
       <input
         type={type}
@@ -55,12 +55,7 @@ const FormInput: React.FC<FormInputProps> = ({
         aria-describedby={error ? `${id}-error` : undefined}
       />
       {error && (
-        <div
-          id={`${id}-error`}
-          className="invalid-feedback error"
-          role="alert"
-          aria-live="polite"
-        >
+        <div id={`${id}-error`} className='invalid-feedback error' role='alert' aria-live='polite'>
           {error}
         </div>
       )}

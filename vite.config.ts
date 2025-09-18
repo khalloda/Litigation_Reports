@@ -1,6 +1,6 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import { resolve } from 'path'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import { resolve } from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -17,8 +17,8 @@ export default defineConfig({
       '@assets': resolve(__dirname, 'src/assets'),
       '@i18n': resolve(__dirname, 'src/i18n'),
       '@api': resolve(__dirname, 'src/api'),
-      '@store': resolve(__dirname, 'src/store')
-    }
+      '@store': resolve(__dirname, 'src/store'),
+    },
   },
   css: {
     preprocessorOptions: {
@@ -27,9 +27,9 @@ export default defineConfig({
           @import "@styles/variables.scss";
           @import "@styles/mixins.scss";
         `,
-        silenceDeprecations: ['legacy-js-api', 'import', 'global-builtin', 'color-functions']
-      }
-    }
+        silenceDeprecations: ['legacy-js-api', 'import', 'global-builtin', 'color-functions'],
+      },
+    },
   },
   server: {
     port: 3001,
@@ -51,8 +51,8 @@ export default defineConfig({
             console.log('Received Response from the Target:', proxyRes.statusCode, req.url);
           });
         },
-      }
-    }
+      },
+    },
   },
   build: {
     outDir: 'dist',
@@ -64,15 +64,15 @@ export default defineConfig({
           router: ['react-router-dom'],
           ui: ['react-bootstrap', 'bootstrap'],
           forms: ['react-hook-form', '@hookform/resolvers', 'zod'],
-          utils: ['axios', 'date-fns', 'clsx']
-        }
-      }
-    }
+          utils: ['axios', 'date-fns', 'clsx'],
+        },
+      },
+    },
   },
   test: {
     globals: true,
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
-    css: true
-  }
-})
+    css: true,
+  },
+});

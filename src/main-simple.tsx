@@ -1,6 +1,6 @@
 /**
  * Simple Main Entry Point
- * 
+ *
  * A simplified version of the main.tsx for testing the authentication system.
  */
 
@@ -12,5 +12,5 @@ import './styles/main.scss';
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <App />
-  </React.StrictMode>,
+  </React.StrictMode>
 );

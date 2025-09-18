@@ -77,7 +77,14 @@ class ClientController {
                 'client_name_en' => 'min:2|max:200',
                 'client_type' => 'required|in:individual,company',
                 'cash_pro_bono' => 'required|in:cash,probono',
-                'status' => 'in:active,disabled,inactive'
+                'status' => 'in:active,disabled,inactive',
+                'email' => 'email|max:200',
+                'phone' => 'max:50',
+                'address_ar' => 'max:500',
+                'address_en' => 'max:500',
+                'notes_ar' => 'max:1000',
+                'notes_en' => 'max:1000',
+                'contact_lawyer' => 'max:200'
             ]);
             
             if (!$validator->validate()) {
@@ -86,7 +93,8 @@ class ClientController {
             
             $data = $request->only([
                 'client_name_ar', 'client_name_en', 'client_type', 'cash_pro_bono',
-                'status', 'logo', 'contact_lawyer', 'client_start_date', 'client_end_date'
+                'status', 'logo', 'contact_lawyer', 'client_start_date', 'client_end_date',
+                'phone', 'email', 'address_ar', 'address_en', 'notes_ar', 'notes_en'
             ]);
             
             $clientId = Client::create($data);
@@ -135,7 +143,8 @@ class ClientController {
             
             $data = $request->only([
                 'client_name_ar', 'client_name_en', 'client_type', 'cash_pro_bono',
-                'status', 'logo', 'contact_lawyer', 'client_start_date', 'client_end_date'
+                'status', 'logo', 'contact_lawyer', 'client_start_date', 'client_end_date',
+                'phone', 'email', 'address_ar', 'address_en', 'notes_ar', 'notes_en'
             ]);
             
             // Remove empty values

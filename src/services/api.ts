@@ -1,12 +1,12 @@
 /**
  * API Service for Litigation Management System
- * 
+ *
  * Handles communication with the backend API.
  */
 
 // API Configuration
-const API_BASE_URL = (import.meta as any).env?.VITE_API_BASE || '/api'; // Use environment variable or default to /api
-const API_TIMEOUT = 5000; // Reduced timeout for faster fallback to mock data
+const API_BASE_URL = 'http://localhost:8000/api'; // Use PHP API server - hardcoded to bypass env issues
+const API_TIMEOUT = 10000; // Increased timeout for real API calls
 
 // API Response Types
 interface ApiResponse<T = any> {
@@ -58,7 +58,7 @@ const mockUsers: User[] = [
     status: 'active',
     created_at: '2025-01-01T00:00:00Z',
     updated_at: '2025-01-01T00:00:00Z',
-    last_login_at: '2025-09-16T12:00:00Z'
+    last_login_at: '2025-09-16T12:00:00Z',
   },
   {
     id: 2,
@@ -68,7 +68,7 @@ const mockUsers: User[] = [
     status: 'active',
     created_at: '2025-01-01T00:00:00Z',
     updated_at: '2025-01-01T00:00:00Z',
-    last_login_at: '2025-09-16T11:30:00Z'
+    last_login_at: '2025-09-16T11:30:00Z',
   },
   {
     id: 3,
@@ -77,8 +77,8 @@ const mockUsers: User[] = [
     role: 'staff',
     status: 'active',
     created_at: '2025-01-01T00:00:00Z',
-    updated_at: '2025-01-01T00:00:00Z'
-  }
+    updated_at: '2025-01-01T00:00:00Z',
+  },
 ];
 
 // API Service Class
@@ -90,11 +90,11 @@ class ApiService {
   constructor(baseUrl: string = API_BASE_URL, timeout: number = API_TIMEOUT) {
     this.baseUrl = baseUrl;
     this.timeout = timeout;
-    
+
     // Load token from localStorage
     this.loadToken();
   }
-  
+
   private loadToken() {
     if (typeof window !== 'undefined') {
       this.token = localStorage.getItem('auth_token');
@@ -117,22 +117,19 @@ class ApiService {
   getToken(): string | null {
     return this.token;
   }
-  
+
   // Refresh token from localStorage
   refreshToken() {
     this.loadToken();
   }
 
   // Make HTTP request
-  private async request<T>(
-    endpoint: string,
-    options: RequestInit = {}
-  ): Promise<ApiResponse<T>> {
+  private async request<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
     // Refresh token from localStorage before making request
     this.refreshToken();
-    
+
     const url = `${this.baseUrl}${endpoint}`;
-    
+
     const defaultHeaders: HeadersInit = {
       'Content-Type': 'application/json',
     };
@@ -171,7 +168,7 @@ class ApiService {
           url,
           status: response.status,
           contentType,
-          response: text.substring(0, 200)
+          response: text.substring(0, 200),
         });
         throw new Error(`API request failed: Expected JSON but got ${contentType}`);
       }
@@ -184,33 +181,41 @@ class ApiService {
       return data;
     } catch (error) {
       console.error('API request failed:', error);
-      
-      // Return mock data for development
-      return this.getMockResponse<T>(endpoint, options);
+
+      // For development fallback to mock data only for options endpoints
+      if (endpoint.includes('/options')) {
+        return this.getMockResponse<T>(endpoint, options);
+      }
+
+      // For other endpoints, return proper error response
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Network error',
+      } as ApiResponse<T>;
     }
   }
 
   // Get mock response for development
   private getMockResponse<T>(endpoint: string, options: RequestInit): ApiResponse<T> {
     const method = options.method || 'GET';
-    
+
     switch (endpoint) {
-      case '/api/health':
+      case '/health':
         return {
           success: true,
           data: {
             status: 'ok',
             timestamp: new Date().toISOString(),
             server: 'Mock API',
-            version: '1.0.0'
-          }
+            version: '1.0.0',
+          },
         } as ApiResponse<T>;
 
-      case '/api/auth/login':
+      case '/auth/login':
         if (method === 'POST') {
-          const body = JSON.parse(options.body as string || '{}');
-          const user = mockUsers.find(u => u.email === body.email);
-          
+          const body = JSON.parse((options.body as string) || '{}');
+          const user = mockUsers.find((u) => u.email === body.email);
+
           if (user && body.password === 'admin123') {
             this.setToken('mock-token-123');
             return {
@@ -218,32 +223,32 @@ class ApiService {
               message: 'Login successful',
               data: {
                 user: user,
-                token: 'mock-token-123'
-              }
+                token: 'mock-token-123',
+              },
             } as ApiResponse<T>;
           } else {
             return {
               success: false,
-              error: 'Invalid credentials'
+              error: 'Invalid credentials',
             } as ApiResponse<T>;
           }
         }
         break;
 
-      case '/api/auth/me':
+      case '/auth/me':
         if (this.token) {
           const user = mockUsers[0]; // Return first user as current user
           return {
             success: true,
-            data: user
+            data: user,
           } as ApiResponse<T>;
         }
         return {
           success: false,
-          error: 'Not authenticated'
+          error: 'Not authenticated',
         } as ApiResponse<T>;
 
-      case '/api/users':
+      case '/users':
         if (method === 'GET') {
           return {
             success: true,
@@ -254,13 +259,13 @@ class ApiService {
               total: mockUsers.length,
               total_pages: 1,
               has_next: false,
-              has_prev: false
-            }
+              has_prev: false,
+            },
           } as ApiResponse<T>;
         }
         break;
 
-      case '/api/clients':
+      case '/clients':
         return {
           success: true,
           data: {
@@ -271,12 +276,12 @@ class ApiService {
               total: 0,
               total_pages: 0,
               has_next: false,
-              has_prev: false
-            }
-          }
+              has_prev: false,
+            },
+          },
         } as ApiResponse<T>;
 
-      case '/api/cases':
+      case '/cases':
         return {
           success: true,
           data: {
@@ -287,12 +292,12 @@ class ApiService {
               total: 0,
               total_pages: 0,
               has_next: false,
-              has_prev: false
-            }
-          }
+              has_prev: false,
+            },
+          },
         } as ApiResponse<T>;
 
-      case '/api/hearings':
+      case '/hearings':
         return {
           success: true,
           data: {
@@ -303,12 +308,12 @@ class ApiService {
               total: 0,
               total_pages: 0,
               has_next: false,
-              has_prev: false
-            }
-          }
+              has_prev: false,
+            },
+          },
         } as ApiResponse<T>;
 
-      case '/api/reports/dashboard':
+      case '/reports/dashboard':
         return {
           success: true,
           data: {
@@ -321,21 +326,95 @@ class ApiService {
             financial_summary: {
               total_revenue: 0,
               pending_amount: 0,
-              paid_amount: 0
-            }
-          }
+              paid_amount: 0,
+            },
+          },
+        } as ApiResponse<T>;
+
+      case '/clients/options':
+        return {
+          success: true,
+          data: {
+            status: {
+              active: 'نشط',
+              inactive: 'غير نشط',
+              suspended: 'معلق',
+              terminated: 'منتهي',
+            },
+            type: {
+              individual: 'فرد',
+              company: 'شركة',
+              government: 'حكومي',
+              organization: 'مؤسسة',
+            },
+            cash_pro_bono: {
+              cash: 'نقدي',
+              probono: 'مجاني',
+              installment: 'أقساط',
+            },
+          },
+        } as ApiResponse<T>;
+
+      case '/cases/options':
+        return {
+          success: true,
+          data: {
+            status: {
+              active: 'نشطة',
+              closed: 'مغلقة',
+              suspended: 'معلقة',
+              appealed: 'مستأنفة',
+            },
+            type: {
+              civil: 'مدنية',
+              criminal: 'جنائية',
+              commercial: 'تجارية',
+              administrative: 'إدارية',
+              family: 'أحوال شخصية',
+            },
+            priority: {
+              high: 'عالية',
+              medium: 'متوسطة',
+              low: 'منخفضة',
+            },
+          },
+        } as ApiResponse<T>;
+
+      case '/hearings/options':
+        return {
+          success: true,
+          data: {
+            status: {
+              scheduled: 'مجدولة',
+              completed: 'مكتملة',
+              postponed: 'مؤجلة',
+              cancelled: 'ملغاة',
+            },
+            type: {
+              initial: 'أولى',
+              follow_up: 'متابعة',
+              final: 'نهائية',
+              appeal: 'استئناف',
+            },
+            outcome: {
+              for: 'لصالح',
+              against: 'ضد',
+              pending: 'معلقة',
+              settled: 'تسوية',
+            },
+          },
         } as ApiResponse<T>;
     }
 
     return {
       success: false,
-      error: 'Endpoint not implemented'
+      error: 'Endpoint not implemented',
     } as ApiResponse<T>;
   }
 
   // Authentication methods
   async login(credentials: LoginRequest): Promise<ApiResponse<LoginResponse>> {
-    return this.request<LoginResponse>('/api/auth/login', {
+    return this.request<LoginResponse>('/auth/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
     });
@@ -343,58 +422,62 @@ class ApiService {
 
   async logout(): Promise<ApiResponse> {
     this.setToken(null);
-    return this.request('/api/auth/logout', {
+    return this.request('/auth/logout', {
       method: 'POST',
     });
   }
 
   async getCurrentUser(): Promise<ApiResponse<User>> {
-    return this.request<User>('/api/auth/me');
+    return this.request<User>('/auth/me');
   }
 
   // User management methods
-  async getUsers(page: number = 1, limit: number = 20, filters: any = {}): Promise<ApiResponse<User[]>> {
+  async getUsers(
+    page: number = 1,
+    limit: number = 20,
+    filters: any = {}
+  ): Promise<ApiResponse<User[]>> {
     const params = new URLSearchParams({
       page: page.toString(),
       limit: limit.toString(),
-      ...filters
+      ...filters,
     });
-    
-    return this.request<User[]>(`/api/users?${params}`);
+
+    return this.request<User[]>(`/users?${params}`);
   }
 
   async getUser(id: number): Promise<ApiResponse<User>> {
-    return this.request<User>(`/api/users/${id}`);
+    return this.request<User>(`/users/${id}`);
   }
 
   async createUser(userData: Partial<User>): Promise<ApiResponse<User>> {
-    return this.request<User>('/api/users', {
+    return this.request<User>('/users', {
       method: 'POST',
       body: JSON.stringify(userData),
     });
   }
 
   async updateUser(id: number, userData: Partial<User>): Promise<ApiResponse<User>> {
-    return this.request<User>(`/api/users/${id}`, {
+    return this.request<User>(`/users/${id}`, {
       method: 'PUT',
       body: JSON.stringify(userData),
     });
   }
 
   async deleteUser(id: number): Promise<ApiResponse> {
-    return this.request(`/api/users/${id}`, {
+    return this.request(`/users/${id}`, {
       method: 'DELETE',
     });
   }
 
   // Dashboard methods
   async getDashboard(): Promise<ApiResponse<any>> {
-    return this.request('/api/reports/dashboard');
+    return this.request('/reports/dashboard');
   }
 
   // Health check
   async healthCheck(): Promise<ApiResponse<any>> {
-    return this.request('/api/health');
+    return this.request('/health');
   }
 
   // Generic HTTP methods

@@ -1,6 +1,6 @@
 /**
  * Status Check Component
- * 
+ *
  * Displays the current status of the application and API connectivity.
  */
 
@@ -32,10 +32,10 @@ const StatusCheck: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="alert alert-info">
-        <div className="d-flex align-items-center">
-          <div className="spinner-border spinner-border-sm me-2" role="status">
-            <span className="visually-hidden">Loading...</span>
+      <div className='alert alert-info'>
+        <div className='d-flex align-items-center'>
+          <div className='spinner-border spinner-border-sm me-2' role='status'>
+            <span className='visually-hidden'>Loading...</span>
           </div>
           جاري فحص حالة النظام...
         </div>
@@ -45,19 +45,21 @@ const StatusCheck: React.FC = () => {
 
   if (error) {
     return (
-      <div className="alert alert-warning">
+      <div className='alert alert-warning'>
         <h6>تحذير: {error}</h6>
-        <p className="mb-0">النظام يعمل في وضع البيانات الوهمية (Mock Data Mode)</p>
+        <p className='mb-0'>النظام يعمل في وضع البيانات الوهمية (Mock Data Mode)</p>
       </div>
     );
   }
 
   return (
-    <div className="alert alert-success">
+    <div className='alert alert-success'>
       <h6>✅ النظام يعمل بشكل طبيعي</h6>
-      <p className="mb-0">
-        الخادم: {status?.data?.server || 'Mock API'}<br />
-        الإصدار: {status?.data?.version || '1.0.0'}<br />
+      <p className='mb-0'>
+        الخادم: {status?.data?.server || 'Mock API'}
+        <br />
+        الإصدار: {status?.data?.version || '1.0.0'}
+        <br />
         الوقت: {status?.data?.timestamp || new Date().toLocaleString('ar-SA')}
       </p>
     </div>

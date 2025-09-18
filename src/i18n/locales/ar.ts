@@ -8,7 +8,7 @@ export const ar = {
     invoices: 'الفواتير',
     reports: 'التقارير',
     settings: 'الإعدادات',
-    logout: 'تسجيل الخروج'
+    logout: 'تسجيل الخروج',
   },
 
   // Authentication
@@ -21,7 +21,7 @@ export const ar = {
     loginButton: 'دخول',
     invalidCredentials: 'بيانات الدخول غير صحيحة',
     loginSuccess: 'تم تسجيل الدخول بنجاح',
-    logoutSuccess: 'تم تسجيل الخروج بنجاح'
+    logoutSuccess: 'تم تسجيل الخروج بنجاح',
   },
 
   // Dashboard
@@ -33,7 +33,7 @@ export const ar = {
     upcomingHearings: 'الجلسات القادمة',
     pendingInvoices: 'الفواتير المعلقة',
     recentActivity: 'النشاط الأخير',
-    quickActions: 'الإجراءات السريعة'
+    quickActions: 'الإجراءات السريعة',
   },
 
   // Clients
@@ -57,7 +57,7 @@ export const ar = {
     noClientsFound: 'لم يتم العثور على عملاء',
     clientAdded: 'تم إضافة العميل بنجاح',
     clientUpdated: 'تم تحديث العميل بنجاح',
-    clientDeleted: 'تم حذف العميل بنجاح'
+    clientDeleted: 'تم حذف العميل بنجاح',
   },
 
   // Cases
@@ -86,7 +86,7 @@ export const ar = {
     noCasesFound: 'لم يتم العثور على قضايا',
     caseAdded: 'تم إضافة القضية بنجاح',
     caseUpdated: 'تم تحديث القضية بنجاح',
-    caseDeleted: 'تم حذف القضية بنجاح'
+    caseDeleted: 'تم حذف القضية بنجاح',
   },
 
   // Hearings
@@ -108,7 +108,7 @@ export const ar = {
     noHearingsFound: 'لم يتم العثور على جلسات',
     hearingAdded: 'تم إضافة الجلسة بنجاح',
     hearingUpdated: 'تم تحديث الجلسة بنجاح',
-    hearingDeleted: 'تم حذف الجلسة بنجاح'
+    hearingDeleted: 'تم حذف الجلسة بنجاح',
   },
 
   // Invoices
@@ -132,7 +132,7 @@ export const ar = {
     noInvoicesFound: 'لم يتم العثور على فواتير',
     invoiceAdded: 'تم إضافة الفاتورة بنجاح',
     invoiceUpdated: 'تم تحديث الفاتورة بنجاح',
-    invoiceDeleted: 'تم حذف الفاتورة بنجاح'
+    invoiceDeleted: 'تم حذف الفاتورة بنجاح',
   },
 
   // Common
@@ -189,7 +189,7 @@ export const ar = {
     supportedFormats: 'الصيغ المدعومة',
     dateFormat: 'DD/MM/YYYY',
     timeFormat: 'HH:mm',
-    dateTimeFormat: 'DD/MM/YYYY HH:mm'
+    dateTimeFormat: 'DD/MM/YYYY HH:mm',
   },
 
   // Form validation
@@ -211,7 +211,7 @@ export const ar = {
     confirmPassword: 'كلمات المرور غير متطابقة',
     acceptTerms: 'يجب الموافقة على الشروط والأحكام',
     unique: 'هذه القيمة موجودة مسبقاً',
-    invalidFormat: 'التنسيق غير صحيح'
+    invalidFormat: 'التنسيق غير صحيح',
   },
 
   // Status values
@@ -223,7 +223,7 @@ export const ar = {
     cancelled: 'ملغي',
     draft: 'مسودة',
     published: 'منشور',
-    archived: 'مؤرشف'
+    archived: 'مؤرشف',
   },
 
   // Priority values
@@ -231,7 +231,7 @@ export const ar = {
     low: 'منخفض',
     medium: 'متوسط',
     high: 'عالي',
-    urgent: 'عاجل'
+    urgent: 'عاجل',
   },
 
   // Case types
@@ -243,7 +243,7 @@ export const ar = {
     family: 'أحوال شخصية',
     administrative: 'إداري',
     constitutional: 'دستوري',
-    international: 'دولي'
+    international: 'دولي',
   },
 
   // Hearing types
@@ -254,7 +254,7 @@ export const ar = {
     arbitration: 'تحكيم',
     settlement: 'تسوية',
     appeal: 'استئناف',
-    cassation: 'تمييز'
+    cassation: 'تمييز',
   },
 
   // Invoice status
@@ -263,7 +263,7 @@ export const ar = {
     sent: 'مرسل',
     paid: 'مدفوع',
     overdue: 'متأخر',
-    cancelled: 'ملغي'
+    cancelled: 'ملغي',
   },
 
   // Language switcher
@@ -271,7 +271,7 @@ export const ar = {
     switchTo: 'التبديل إلى',
     arabic: 'العربية',
     english: 'English',
-    currentLanguage: 'اللغة الحالية'
+    currentLanguage: 'اللغة الحالية',
   },
 
   // Accessibility
@@ -293,6 +293,6 @@ export const ar = {
     requiredField: 'حقل مطلوب',
     optionalField: 'حقل اختياري',
     invalidInput: 'إدخال غير صحيح',
-    validInput: 'إدخال صحيح'
-  }
-}
+    validInput: 'إدخال صحيح',
+  },
+};
