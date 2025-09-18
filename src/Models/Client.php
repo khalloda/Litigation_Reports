@@ -11,17 +11,22 @@ class Client {
     public static function findById($id) {
         $db = Database::getInstance();
         $client = $db->fetch("SELECT * FROM " . self::$table . " WHERE id = :id", ['id' => $id]);
-        
+
         if ($client) {
+            // Add logo URL if logo exists
+            if (!empty($client['logo'])) {
+                $client['logo_url'] = '/uploads/logos/' . $client['logo'];
+            }
+
             // Get related cases count
             $casesCount = $db->fetch("SELECT COUNT(*) as count FROM cases WHERE client_id = :client_id", ['client_id' => $id]);
             $client['cases_count'] = $casesCount['count'];
-            
+
             // Get recent cases
             $recentCases = $db->fetchAll("SELECT id, matter_ar, matter_en, matter_status, created_at FROM cases WHERE client_id = :client_id ORDER BY created_at DESC LIMIT 5", ['client_id' => $id]);
             $client['recent_cases'] = $recentCases;
         }
-        
+
         return $client;
     }
     
@@ -52,14 +57,25 @@ class Client {
             $params['search'] = '%' . $filters['search'] . '%';
         }
         
-        $sql = "SELECT c.*, 
+        $sql = "SELECT c.*,
                        (SELECT COUNT(*) FROM cases WHERE client_id = c.id) as cases_count,
                        (SELECT MAX(created_at) FROM cases WHERE client_id = c.id) as last_case_date
-                FROM " . self::$table . " c 
-                WHERE {$whereClause} 
+                FROM " . self::$table . " c
+                WHERE {$whereClause}
                 ORDER BY c.created_at DESC";
-        
-        return $db->paginate($sql, $params, $page, $limit);
+
+        $result = $db->paginate($sql, $params, $page, $limit);
+
+        // Add logo URLs to all clients
+        if (!empty($result['data'])) {
+            foreach ($result['data'] as &$client) {
+                if (!empty($client['logo'])) {
+                    $client['logo_url'] = '/uploads/logos/' . $client['logo'];
+                }
+            }
+        }
+
+        return $result;
     }
     
     public static function create($data) {
@@ -147,40 +163,73 @@ class Client {
     
     public static function search($searchTerm, $page = 1, $limit = DEFAULT_PAGE_SIZE) {
         $db = Database::getInstance();
-        
-        $sql = "SELECT c.*, 
+
+        $sql = "SELECT c.*,
                        (SELECT COUNT(*) FROM cases WHERE client_id = c.id) as cases_count
-                FROM " . self::$table . " c 
-                WHERE c.client_name_ar LIKE :search 
-                   OR c.client_name_en LIKE :search 
-                   OR c.contact_lawyer LIKE :search 
+                FROM " . self::$table . " c
+                WHERE c.client_name_ar LIKE :search
+                   OR c.client_name_en LIKE :search
+                   OR c.contact_lawyer LIKE :search
                 ORDER BY c.created_at DESC";
-        
-        return $db->paginate($sql, ['search' => '%' . $searchTerm . '%'], $page, $limit);
+
+        $result = $db->paginate($sql, ['search' => '%' . $searchTerm . '%'], $page, $limit);
+
+        // Add logo URLs to all clients
+        if (!empty($result['data'])) {
+            foreach ($result['data'] as &$client) {
+                if (!empty($client['logo'])) {
+                    $client['logo_url'] = '/uploads/logos/' . $client['logo'];
+                }
+            }
+        }
+
+        return $result;
     }
     
     public static function getByLawyer($lawyerName, $page = 1, $limit = DEFAULT_PAGE_SIZE) {
         $db = Database::getInstance();
-        
-        $sql = "SELECT c.*, 
+
+        $sql = "SELECT c.*,
                        (SELECT COUNT(*) FROM cases WHERE client_id = c.id) as cases_count
-                FROM " . self::$table . " c 
-                WHERE c.contact_lawyer LIKE :lawyer 
+                FROM " . self::$table . " c
+                WHERE c.contact_lawyer LIKE :lawyer
                 ORDER BY c.created_at DESC";
-        
-        return $db->paginate($sql, ['lawyer' => '%' . $lawyerName . '%'], $page, $limit);
+
+        $result = $db->paginate($sql, ['lawyer' => '%' . $lawyerName . '%'], $page, $limit);
+
+        // Add logo URLs to all clients
+        if (!empty($result['data'])) {
+            foreach ($result['data'] as &$client) {
+                if (!empty($client['logo'])) {
+                    $client['logo_url'] = '/uploads/logos/' . $client['logo'];
+                }
+            }
+        }
+
+        return $result;
     }
     
     public static function getActiveClients($page = 1, $limit = DEFAULT_PAGE_SIZE) {
         $db = Database::getInstance();
-        
-        $sql = "SELECT c.*, 
+
+        $sql = "SELECT c.*,
                        (SELECT COUNT(*) FROM cases WHERE client_id = c.id) as cases_count
-                FROM " . self::$table . " c 
-                WHERE c.status = 'active' 
+                FROM " . self::$table . " c
+                WHERE c.status = 'active'
                 ORDER BY c.client_name_ar ASC";
-        
-        return $db->paginate($sql, [], $page, $limit);
+
+        $result = $db->paginate($sql, [], $page, $limit);
+
+        // Add logo URLs to all clients
+        if (!empty($result['data'])) {
+            foreach ($result['data'] as &$client) {
+                if (!empty($client['logo'])) {
+                    $client['logo_url'] = '/uploads/logos/' . $client['logo'];
+                }
+            }
+        }
+
+        return $result;
     }
     
     public static function getStatusOptions() {

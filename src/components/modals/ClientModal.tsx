@@ -87,10 +87,27 @@ export const ClientModal: React.FC<ClientModalProps> = ({
 
   useEffect(() => {
     if (client && (isEditMode || isViewMode)) {
-      setFormData({ ...defaultFormData, ...client });
+      // Ensure all fields have string values, never null or undefined
+      const clientData = {
+        ...defaultFormData,
+        ...client,
+        client_name_ar: client.client_name_ar || '',
+        client_name_en: client.client_name_en || '',
+        contact_lawyer: client.contact_lawyer || '',
+        phone: client.phone || '',
+        email: client.email || '',
+        address_ar: client.address_ar || '',
+        address_en: client.address_en || '',
+        notes_ar: client.notes_ar || '',
+        notes_en: client.notes_en || '',
+        client_start_date: client.client_start_date || new Date().toISOString().split('T')[0],
+      };
+      setFormData(clientData);
       // Set logo preview if client has existing logo
       if (client.logo_url) {
         setLogoPreview(client.logo_url);
+      } else {
+        setLogoPreview(null);
       }
     } else if (isCreateMode) {
       setFormData(defaultFormData);
@@ -99,11 +116,20 @@ export const ClientModal: React.FC<ClientModalProps> = ({
     setErrors({});
   }, [client, mode, show]);
 
+  // Cleanup blob URLs on unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      if (logoPreview && logoPreview.startsWith('blob:')) {
+        URL.revokeObjectURL(logoPreview);
+      }
+    };
+  }, [logoPreview]);
+
   const validateForm = (): boolean => {
     const newErrors: Partial<Record<keyof ClientFormData, string>> = {};
 
     // Arabic name is required
-    if (!formData.client_name_ar.trim()) {
+    if (!formData.client_name_ar?.trim()) {
       newErrors.client_name_ar =
         currentLanguage === 'ar' ? 'اسم العميل بالعربية مطلوب' : 'Arabic client name is required';
     }
@@ -120,7 +146,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
     }
 
     // Contact lawyer is required
-    if (!formData.contact_lawyer.trim()) {
+    if (!formData.contact_lawyer?.trim()) {
       newErrors.contact_lawyer =
         currentLanguage === 'ar' ? 'المحامي المسؤول مطلوب' : 'Contact lawyer is required';
     }
@@ -194,18 +220,25 @@ export const ClientModal: React.FC<ClientModalProps> = ({
     // Clear any existing errors
     setErrors((prev) => ({ ...prev, logo_file: undefined }));
 
+    // Clean up previous preview URL to prevent memory leaks
+    if (logoPreview && logoPreview.startsWith('blob:')) {
+      URL.revokeObjectURL(logoPreview);
+    }
+
     // Update form data
     setFormData((prev) => ({ ...prev, logo_file: file }));
 
-    // Create preview
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setLogoPreview(e.target?.result as string);
-    };
-    reader.readAsDataURL(file);
+    // Create preview using URL.createObjectURL (more efficient than FileReader)
+    const previewUrl = URL.createObjectURL(file);
+    setLogoPreview(previewUrl);
   };
 
   const handleLogoRemove = () => {
+    // Clean up preview URL to prevent memory leaks
+    if (logoPreview && logoPreview.startsWith('blob:')) {
+      URL.revokeObjectURL(logoPreview);
+    }
+
     setFormData((prev) => ({ ...prev, logo_file: undefined, logo_url: '' }));
     setLogoPreview(null);
     if (fileInputRef.current) {

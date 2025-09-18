@@ -123,6 +123,33 @@ class ApiService {
     this.loadToken();
   }
 
+  // Check if data contains file fields
+  private hasFileFields(data: any): boolean {
+    if (!data || typeof data !== 'object') return false;
+    
+    for (const key in data) {
+      if (data[key] instanceof File) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // Create FormData from object
+  private createFormData(data: any): FormData {
+    const formData = new FormData();
+    
+    for (const key in data) {
+      if (data[key] instanceof File) {
+        formData.append(key, data[key]);
+      } else if (data[key] !== null && data[key] !== undefined) {
+        formData.append(key, String(data[key]));
+      }
+    }
+    
+    return formData;
+  }
+
   // Make HTTP request
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResponse<T>> {
     // Refresh token from localStorage before making request
@@ -130,9 +157,12 @@ class ApiService {
 
     const url = `${this.baseUrl}${endpoint}`;
 
-    const defaultHeaders: HeadersInit = {
-      'Content-Type': 'application/json',
-    };
+    const defaultHeaders: HeadersInit = {};
+
+    // Only set Content-Type for JSON requests, not for FormData
+    if (!(options.body instanceof FormData)) {
+      defaultHeaders['Content-Type'] = 'application/json';
+    }
 
     if (this.token) {
       defaultHeaders['Authorization'] = `Bearer ${this.token}`;
@@ -414,10 +444,13 @@ class ApiService {
 
   // Authentication methods
   async login(credentials: LoginRequest): Promise<ApiResponse<LoginResponse>> {
-    return this.request<LoginResponse>('/auth/login', {
+    console.log('API Service: Login attempt with credentials:', credentials);
+    const response = await this.request<LoginResponse>('/auth/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
     });
+    console.log('API Service: Login response:', response);
+    return response;
   }
 
   async logout(): Promise<ApiResponse> {
@@ -486,17 +519,50 @@ class ApiService {
   }
 
   async post(endpoint: string, data?: any): Promise<ApiResponse<any>> {
-    return this.request(endpoint, {
-      method: 'POST',
-      body: data ? JSON.stringify(data) : undefined,
-    });
+    // Check if data contains files
+    const hasFiles = data && this.hasFileFields(data);
+    
+    if (hasFiles) {
+      // Use FormData for file uploads
+      const formData = this.createFormData(data);
+      return this.request(endpoint, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          // Don't set Content-Type for FormData, let browser set it with boundary
+        },
+      });
+    } else {
+      // Use JSON for regular data
+      return this.request(endpoint, {
+        method: 'POST',
+        body: data ? JSON.stringify(data) : undefined,
+      });
+    }
   }
 
   async put(endpoint: string, data?: any): Promise<ApiResponse<any>> {
-    return this.request(endpoint, {
-      method: 'PUT',
-      body: data ? JSON.stringify(data) : undefined,
-    });
+    // Check if data contains files
+    const hasFiles = data && this.hasFileFields(data);
+
+    if (hasFiles) {
+      // Use FormData for file uploads in PUT requests
+      // This will work correctly with the backend
+      const formData = this.createFormData(data);
+      return this.request(endpoint, {
+        method: 'PUT',
+        body: formData,
+        headers: {
+          // Don't set Content-Type for FormData, let browser set it with boundary
+        },
+      });
+    } else {
+      // Use JSON for regular data
+      return this.request(endpoint, {
+        method: 'PUT',
+        body: data ? JSON.stringify(data) : undefined,
+      });
+    }
   }
 
   async patch(endpoint: string, data?: any): Promise<ApiResponse<any>> {

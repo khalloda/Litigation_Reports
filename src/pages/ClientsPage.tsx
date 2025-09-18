@@ -24,6 +24,7 @@ import {
   Building,
   User,
   AlertTriangle,
+  FileImage,
 } from 'lucide-react';
 import { apiService as api } from '../services/api';
 import { ClientModal } from '../components/modals/ClientModal';
@@ -122,8 +123,11 @@ const ClientsPage: React.FC = () => {
 
   useEffect(() => {
     loadClients();
+  }, [filters.status, filters.type, filters.cash_pro_bono, filters.search, pagination.current_page]);
+
+  useEffect(() => {
     loadOptions();
-  }, [filters, pagination.current_page]);
+  }, []);
 
   const loadClients = async () => {
     try {
@@ -472,28 +476,41 @@ const ClientsPage: React.FC = () => {
                       <td>
                         <div className='d-flex align-items-center'>
                           {/* Client Logo or Type Icon */}
-                          <div className='me-2'>
+                          <div className='me-2' style={{ width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             {client.logo_url ? (
-                              <img
-                                src={client.logo_url}
-                                alt={`${client.client_name_ar} Logo`}
-                                style={{
-                                  width: '32px',
-                                  height: '32px',
-                                  objectFit: 'contain',
-                                  borderRadius: '4px',
-                                  border: '1px solid #dee2e6',
-                                }}
-                                onError={(e) => {
-                                  // Fallback to type icon if logo fails to load
-                                  e.currentTarget.style.display = 'none';
-                                  e.currentTarget.nextElementSibling?.classList.remove('d-none');
-                                }}
-                              />
-                            ) : null}
-                            <div className={client.logo_url ? 'd-none' : ''}>
-                              {getTypeIcon(client.client_type)}
-                            </div>
+                              <>
+                                <img
+                                  src={client.logo_url}
+                                  alt={`${client.client_name_ar} Logo`}
+                                  style={{
+                                    width: '32px',
+                                    height: '32px',
+                                    objectFit: 'contain',
+                                    borderRadius: '4px',
+                                    border: '1px solid #dee2e6',
+                                  }}
+                                  onError={(e) => {
+                                    // Hide the image and show fallback icon
+                                    const imgElement = e.currentTarget;
+                                    const container = imgElement.parentElement;
+                                    if (container) {
+                                      imgElement.style.display = 'none';
+                                      const fallbackIcon = container.querySelector('.fallback-icon');
+                                      if (fallbackIcon) {
+                                        (fallbackIcon as HTMLElement).style.display = 'block';
+                                      }
+                                    }
+                                  }}
+                                />
+                                <div className='fallback-icon' style={{ display: 'none' }}>
+                                  {getTypeIcon(client.client_type)}
+                                </div>
+                              </>
+                            ) : (
+                              <div className='type-icon'>
+                                {getTypeIcon(client.client_type)}
+                              </div>
+                            )}
                           </div>
 
                           {/* Client Name */}
