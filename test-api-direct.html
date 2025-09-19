@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Test</title>
+</head>
+<body>
+    <h1>API Service Test</h1>
+    <div id="results"></div>
+    
+    <script type="module">
+        // Test API service directly
+        console.log('Testing API service...');
+        
+        // Import the API service
+        import { apiService } from './src/services/api.ts';
+        
+        console.log('API Service:', apiService);
+        console.log('API Service methods:', Object.getOwnPropertyNames(Object.getPrototypeOf(apiService)));
+        
+        // Test if get method exists
+        console.log('Has get method:', typeof apiService.get === 'function');
+        
+        // Test API call
+        if (typeof apiService.get === 'function') {
+            apiService.get('/api/health')
+                .then(response => {
+                    console.log('Health check response:', response);
+                    document.getElementById('results').innerHTML = '<p>API Service working!</p>';
+                })
+                .catch(error => {
+                    console.error('API call failed:', error);
+                    document.getElementById('results').innerHTML = '<p>API Service failed: ' + error.message + '</p>';
+                });
+        } else {
+            console.error('API service get method not available');
+            document.getElementById('results').innerHTML = '<p>API service get method not available</p>';
+        }
+    </script>
+</body>
+</html>
+

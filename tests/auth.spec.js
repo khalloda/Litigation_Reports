@@ -1,4 +1,4 @@
-const { test, expect } = require('@playwright/test');
+import { test, expect } from '@playwright/test';
 
 test.describe('Authentication System', () => {
   
@@ -145,7 +145,7 @@ test.describe('Authentication System', () => {
 
   test('should handle password reset functionality', async ({ page }) => {
     // Look for password reset link
-    const resetLink = page.locator('a[href*="reset"], a[href*="forgot"], text=Reset, text=نسيت كلمة المرور');
+    const resetLink = page.locator('a[href*=reset], a[href*=forgot], text=Reset, text=نسيت كلمة المرور');
     
     if (await resetLink.isVisible()) {
       await resetLink.click();
