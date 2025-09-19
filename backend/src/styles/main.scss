@@ -1,0 +1,300 @@
+// Import Bootstrap
+@import "bootstrap/scss/bootstrap";
+
+// Import custom variables and mixins
+@import "variables";
+@import "mixins";
+@import "rtl";
+
+// Base styles
+* {
+  box-sizing: border-box;
+}
+
+html {
+  // Set default RTL direction
+  direction: rtl;
+  text-align: right;
+}
+
+body {
+  font-family: 'Noto Sans Arabic', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.6;
+  color: var(--bs-body-color);
+  background-color: var(--bs-body-bg);
+  direction: inherit;
+  text-align: inherit;
+}
+
+// RTL-specific overrides
+[dir="rtl"] {
+  .text-start { text-align: right !important; }
+  .text-end { text-align: left !important; }
+  
+  .float-start { float: right !important; }
+  .float-end { float: left !important; }
+  
+  .me-1 { margin-left: 0.25rem !important; margin-right: 0 !important; }
+  .me-2 { margin-left: 0.5rem !important; margin-right: 0 !important; }
+  .me-3 { margin-left: 1rem !important; margin-right: 0 !important; }
+  .me-4 { margin-left: 1.5rem !important; margin-right: 0 !important; }
+  .me-5 { margin-left: 3rem !important; margin-right: 0 !important; }
+  
+  .ms-1 { margin-right: 0.25rem !important; margin-left: 0 !important; }
+  .ms-2 { margin-right: 0.5rem !important; margin-left: 0 !important; }
+  .ms-3 { margin-right: 1rem !important; margin-left: 0 !important; }
+  .ms-4 { margin-right: 1.5rem !important; margin-left: 0 !important; }
+  .ms-5 { margin-right: 3rem !important; margin-left: 0 !important; }
+  
+  .pe-1 { padding-left: 0.25rem !important; padding-right: 0 !important; }
+  .pe-2 { padding-left: 0.5rem !important; padding-right: 0 !important; }
+  .pe-3 { padding-left: 1rem !important; padding-right: 0 !important; }
+  .pe-4 { padding-left: 1.5rem !important; padding-right: 0 !important; }
+  .pe-5 { padding-left: 3rem !important; padding-right: 0 !important; }
+  
+  .ps-1 { padding-right: 0.25rem !important; padding-left: 0 !important; }
+  .ps-2 { padding-right: 0.5rem !important; padding-left: 0 !important; }
+  .ps-3 { padding-right: 1rem !important; padding-left: 0 !important; }
+  .ps-4 { padding-right: 1.5rem !important; padding-left: 0 !important; }
+  .ps-5 { padding-right: 3rem !important; padding-left: 0 !important; }
+}
+
+// LTR-specific overrides
+[dir="ltr"] {
+  .text-start { text-align: left !important; }
+  .text-end { text-align: right !important; }
+  
+  .float-start { float: left !important; }
+  .float-end { float: right !important; }
+}
+
+// App container
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+// Main content area
+.main-content {
+  flex: 1;
+  padding: 2rem 0;
+}
+
+// Custom components
+.btn-primary {
+  background-color: var(--bs-primary);
+  border-color: var(--bs-primary);
+  
+  &:hover {
+    background-color: var(--bs-primary-dark);
+    border-color: var(--bs-primary-dark);
+  }
+}
+
+// Form styles with RTL support
+.form-control {
+  direction: auto; // Let browser determine direction based on content
+  
+  &[dir="auto"] {
+    direction: auto;
+  }
+  
+  &[dir="ltr"] {
+    direction: ltr;
+    text-align: left;
+  }
+  
+  &[dir="rtl"] {
+    direction: rtl;
+    text-align: right;
+  }
+}
+
+// Table styles with RTL support
+.table {
+  direction: inherit;
+  
+  th, td {
+    text-align: inherit;
+  }
+}
+
+// Navigation styles
+.navbar-brand {
+  font-weight: 600;
+  font-size: 1.5rem;
+}
+
+// Sidebar styles
+.sidebar {
+  background-color: var(--bs-dark);
+  color: var(--bs-light);
+  min-height: 100vh;
+  
+  .nav-link {
+    color: var(--bs-light);
+    
+    &:hover, &.active {
+      background-color: var(--bs-primary);
+      color: white;
+    }
+  }
+}
+
+// Card styles
+.card {
+  border: 1px solid var(--bs-border-color);
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  
+  .card-header {
+    background-color: var(--bs-light);
+    border-bottom: 1px solid var(--bs-border-color);
+  }
+}
+
+// Toast styles with RTL support
+.toast-rtl {
+  direction: rtl;
+  text-align: right;
+  
+  .toast-header {
+    direction: rtl;
+  }
+  
+  .toast-body {
+    direction: rtl;
+    text-align: right;
+  }
+}
+
+// Loading spinner
+.spinner-border {
+  width: 1rem;
+  height: 1rem;
+  border-width: 0.125em;
+}
+
+// Error states
+.is-invalid {
+  border-color: var(--bs-danger);
+  
+  &:focus {
+    border-color: var(--bs-danger);
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+  }
+}
+
+.invalid-feedback {
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+  font-size: 0.875em;
+  color: var(--bs-danger);
+}
+
+// Success states
+.is-valid {
+  border-color: var(--bs-success);
+  
+  &:focus {
+    border-color: var(--bs-success);
+    box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.25);
+  }
+}
+
+.valid-feedback {
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+  font-size: 0.875em;
+  color: var(--bs-success);
+}
+
+// Accessibility improvements
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+// Focus styles
+.btn:focus,
+.form-control:focus,
+.form-select:focus {
+  outline: 2px solid var(--bs-primary);
+  outline-offset: 2px;
+}
+
+// Print styles
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-break {
+    page-break-before: always;
+  }
+  
+  body {
+    font-size: 12pt;
+    line-height: 1.4;
+  }
+  
+  .container {
+    max-width: none !important;
+  }
+}
+
+// Responsive utilities
+@media (max-width: 768px) {
+  .main-content {
+    padding: 1rem 0;
+  }
+  
+  .sidebar {
+    min-height: auto;
+  }
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bs-body-color: #dee2e6;
+    --bs-body-bg: #212529;
+    --bs-border-color: #495057;
+  }
+}
+
+// Reduced motion support
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+// High contrast mode support
+@media (prefers-contrast: high) {
+  .btn {
+    border-width: 2px;
+  }
+  
+  .form-control {
+    border-width: 2px;
+  }
+  
+  .card {
+    border-width: 2px;
+  }
+}

@@ -5,7 +5,7 @@
  */
 
 // API Configuration
-const API_BASE_URL = '/api'; // Use relative URL to avoid CORS issues
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ? `${import.meta.env.VITE_API_BASE_URL}/api` : '/api'; // Use environment variable or fallback to relative URL
 const API_TIMEOUT = 10000; // Increased timeout for real API calls
 
 // API Response Types
@@ -212,12 +212,7 @@ class ApiService {
     } catch (error) {
       console.error('API request failed:', error);
 
-      // For development fallback to mock data only for options endpoints
-      if (endpoint.includes('/options')) {
-        return this.getMockResponse<T>(endpoint, options);
-      }
-
-      // For other endpoints, return proper error response
+      // Return proper error response for failed API calls
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Network error',
@@ -347,17 +342,57 @@ class ApiService {
         return {
           success: true,
           data: {
-            total_clients: 0,
-            total_cases: 0,
-            total_hearings: 0,
-            total_invoices: 0,
-            recent_activities: [],
-            upcoming_hearings: [],
+            total_clients: 25,
+            total_cases: 45,
+            total_hearings: 120,
+            total_invoices: 85,
+            total_lawyers: 8,
+            recent_activities: [
+              {
+                type: 'client',
+                name: 'شركة الأمان للتأمين',
+                action: 'تم إضافة عميل جديد',
+                created_at: '2025-09-19T10:30:00Z'
+              },
+              {
+                type: 'case',
+                name: 'قضية تجارية رقم 123',
+                action: 'تم تحديث القضية',
+                created_at: '2025-09-19T09:15:00Z'
+              }
+            ],
+            upcoming_hearings: [
+              {
+                id: 1,
+                hearing_date: '2025-09-25T10:00:00Z',
+                hearing_type: 'جلسة أولى',
+                matter_ar: 'قضية مدنية تجارية',
+                client_name_ar: 'شركة الخليج للتجارة'
+              }
+            ],
             financial_summary: {
-              total_revenue: 0,
-              pending_amount: 0,
-              paid_amount: 0,
+              total_revenue: 250000,
+              pending_amount: 45000,
+              paid_amount: 205000,
+              paid_count: 65,
+              pending_count: 20,
+              overdue_count: 5
             },
+            case_statistics: {
+              'نشطة': 28,
+              'مغلقة': 15,
+              'معلقة': 2
+            },
+            hearing_statistics: {
+              'مجدولة': 45,
+              'مكتملة': 70,
+              'مؤجلة': 5
+            },
+            revenue_trend: [
+              { month: 'يناير 2025', revenue: 85000 },
+              { month: 'فبراير 2025', revenue: 92000 },
+              { month: 'مارس 2025', revenue: 78000 }
+            ]
           },
         } as ApiResponse<T>;
 

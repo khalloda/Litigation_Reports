@@ -1,40 +1,76 @@
 <?php
 /**
  * Litigation Management System - Main Entry Point
- * 
- * This is the main entry point for the PHP backend API.
- * It handles routing, CORS, and initializes the application.
+ *
+ * This serves both the React frontend and handles API routes.
  */
 
-// Enable error reporting for development
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// Get the request URI and method
+$requestUri = $_SERVER['REQUEST_URI'];
+$requestMethod = $_SERVER['REQUEST_METHOD'];
 
-// Set headers for CORS and JSON responses
-header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: http://localhost:3001');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
-header('Access-Control-Allow-Credentials: true');
+// Remove query string from URI
+$path = parse_url($requestUri, PHP_URL_PATH);
 
-// Handle preflight OPTIONS requests
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
+// Check if this is an API request
+if (strpos($path, '/api/') === 0) {
+    // Handle API requests
+
+    // Set JSON response headers
+    header('Content-Type: application/json; charset=utf-8');
+
+    // Enable error reporting for development
+    error_reporting(E_ALL);
+    ini_set('display_errors', 1);
+
+    // Set timezone
+    date_default_timezone_set('Asia/Riyadh');
+
+    // Include configuration and API handlers from the api directory
+    require_once __DIR__ . '/../api/index.php';
+    exit;
+} else {
+    // Serve static React app files
+
+    // Check if requesting a static asset
+    $publicFile = __DIR__ . $path;
+
+    if ($path !== '/' && file_exists($publicFile) && is_file($publicFile)) {
+        // Serve the static file with appropriate content type
+        $extension = pathinfo($publicFile, PATHINFO_EXTENSION);
+
+        switch ($extension) {
+            case 'css':
+                header('Content-Type: text/css');
+                break;
+            case 'js':
+                header('Content-Type: application/javascript');
+                break;
+            case 'png':
+                header('Content-Type: image/png');
+                break;
+            case 'jpg':
+            case 'jpeg':
+                header('Content-Type: image/jpeg');
+                break;
+            case 'svg':
+                header('Content-Type: image/svg+xml');
+                break;
+            case 'woff':
+            case 'woff2':
+                header('Content-Type: font/woff2');
+                break;
+            default:
+                header('Content-Type: text/plain');
+        }
+
+        readfile($publicFile);
+        exit;
+    } else {
+        // Serve the React app's index.html for all other routes (SPA routing)
+        header('Content-Type: text/html; charset=utf-8');
+        readfile(__DIR__ . '/index.html');
+        exit;
+    }
 }
-
-// Include the application bootstrap
-require_once __DIR__ . '/../bootstrap/app.php';
-
-// Initialize and run the application
-try {
-    $app = new App();
-    $app->run();
-} catch (Exception $e) {
-    http_response_code(500);
-    echo json_encode([
-        'error' => true,
-        'message' => 'Internal server error',
-        'details' => $e->getMessage()
-    ]);
-}
+?>

@@ -10,6 +10,7 @@ import {
   hasRole,
   canAccess,
 } from '@types/auth';
+import { apiService } from '@/services/api';
 
 interface AuthContextType {
   user: User | null;
@@ -39,17 +40,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
       try {
         const token = localStorage.getItem('auth_token');
         if (token) {
-          // Verify token with backend
-          const response = await fetch('/api/auth/me', {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
+          // Verify token with backend using API service
+          const response = await apiService.getCurrentUser();
 
-          if (response.ok) {
-            const userData = await response.json();
-            console.log('Debug AuthProvider - User data from API:', userData);
-            setUser(userData.data);
+          if (response.success && response.data) {
+            console.log('Debug AuthProvider - User data from API:', response.data);
+            setUser(response.data);
           } else {
             localStorage.removeItem('auth_token');
           }
@@ -69,23 +65,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       setIsLoading(true);
 
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      const response = await apiService.login({ email, password });
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Debug AuthProvider - Login response:', data);
-        localStorage.setItem('auth_token', data.data.token);
-        setUser(data.data.user);
+      if (response.success && response.data) {
+        console.log('Debug AuthProvider - Login response:', response.data);
+        apiService.setToken(response.data.token);
+        setUser(response.data.user);
         return true;
       } else {
-        const error = await response.json();
-        console.error('Login failed:', error.message);
+        console.error('Login failed:', response.error || response.message);
         return false;
       }
     } catch (error) {

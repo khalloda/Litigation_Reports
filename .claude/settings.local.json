@@ -44,7 +44,11 @@
       "Bash(cmd /c:*)",
       "Bash(pkill:*)",
       "Bash(npx vite:*)",
-      "Bash(npx playwright:*)"
+      "Bash(npx playwright:*)",
+      "Read(//d/wamp64/logs/**)",
+      "Read(//d/wamp64/bin/php/**)",
+      "Bash(dir:*)",
+      "mcp__playwright__browser_console_messages"
     ],
     "deny": [],
     "ask": []

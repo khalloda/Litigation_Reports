@@ -6,13 +6,13 @@ import { ProtectedRoute } from '@components/auth/ProtectedRoute';
 import { Layout } from '@components/layout/Layout';
 import { Login } from '@pages/auth/Login';
 import { Dashboard } from '@pages/Dashboard';
-import { Clients } from '@pages/Clients';
-import { Cases } from '@pages/Cases';
-import { Hearings } from '@pages/Hearings';
+import ClientsPage from '@pages/ClientsPage';
+import CasesPage from '@pages/CasesPage';
+import HearingsPage from '@pages/HearingsPage';
 import { Invoices } from '@pages/Invoices';
-import { LawyersPage } from '@pages/LawyersPage';
+import LawyersPage from '@pages/LawyersPage';
 import { Documents } from '@pages/Documents';
-import { Reports } from '@pages/Reports';
+import ReportsPage from '@pages/ReportsPage';
 import { Settings } from '@pages/Settings';
 import { Users } from '@pages/Users';
 import { NotFound } from '@pages/NotFound';
@@ -55,18 +55,18 @@ function App() {
           >
             <Route index element={<Navigate to='/dashboard' replace />} />
             <Route path='dashboard' element={<Dashboard />} />
-            <Route path='clients' element={<Clients />} />
-            <Route path='clients/new' element={<Clients />} />
-            <Route path='clients/:id' element={<Clients />} />
-            <Route path='clients/:id/edit' element={<Clients />} />
-            <Route path='cases' element={<Cases />} />
-            <Route path='cases/new' element={<Cases />} />
-            <Route path='cases/:id' element={<Cases />} />
-            <Route path='cases/:id/edit' element={<Cases />} />
-            <Route path='hearings' element={<Hearings />} />
-            <Route path='hearings/new' element={<Hearings />} />
-            <Route path='hearings/:id' element={<Hearings />} />
-            <Route path='hearings/:id/edit' element={<Hearings />} />
+            <Route path='clients' element={<ClientsPage />} />
+            <Route path='clients/new' element={<ClientsPage />} />
+            <Route path='clients/:id' element={<ClientsPage />} />
+            <Route path='clients/:id/edit' element={<ClientsPage />} />
+            <Route path='cases' element={<CasesPage />} />
+            <Route path='cases/new' element={<CasesPage />} />
+            <Route path='cases/:id' element={<CasesPage />} />
+            <Route path='cases/:id/edit' element={<CasesPage />} />
+            <Route path='hearings' element={<HearingsPage />} />
+            <Route path='hearings/new' element={<HearingsPage />} />
+            <Route path='hearings/:id' element={<HearingsPage />} />
+            <Route path='hearings/:id/edit' element={<HearingsPage />} />
             <Route path='invoices' element={<Invoices />} />
             <Route path='invoices/new' element={<Invoices />} />
             <Route path='invoices/:id' element={<Invoices />} />
@@ -78,7 +78,7 @@ function App() {
             <Route path='documents' element={<Documents />} />
             <Route path='documents/new' element={<Documents />} />
             <Route path='documents/:id' element={<Documents />} />
-            <Route path='reports' element={<Reports />} />
+            <Route path='reports' element={<ReportsPage />} />
             <Route path='settings' element={<Settings />} />
             <Route path='users' element={<Users />} />
           </Route>

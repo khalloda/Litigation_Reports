@@ -8,7 +8,12 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
-    base: env.VITE_PUBLIC_BASE || '/',
+    base: '/',
+    server: {
+      host: '0.0.0.0',
+      port: 3005,
+      allowedHosts: ['lit.local', 'localhost', '127.0.0.1'],
+    },
     resolve: {
       alias: {
         '@': resolve(__dirname, 'src'),
