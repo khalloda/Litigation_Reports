@@ -1,0 +1,344 @@
+// SCSS Mixins for the litigation management system
+
+// RTL Support Mixins
+@mixin rtl($property, $ltr-value, $rtl-value) {
+  #{$property}: $ltr-value;
+  
+  [dir="rtl"] & {
+    #{$property}: $rtl-value;
+  }
+}
+
+@mixin rtl-margin($ltr-value, $rtl-value) {
+  margin-left: $ltr-value;
+  
+  [dir="rtl"] & {
+    margin-left: 0;
+    margin-right: $rtl-value;
+  }
+}
+
+@mixin rtl-padding($ltr-value, $rtl-value) {
+  padding-left: $ltr-value;
+  
+  [dir="rtl"] & {
+    padding-left: 0;
+    padding-right: $rtl-value;
+  }
+}
+
+@mixin rtl-border($ltr-value, $rtl-value) {
+  border-left: $ltr-value;
+  
+  [dir="rtl"] & {
+    border-left: none;
+    border-right: $rtl-value;
+  }
+}
+
+@mixin rtl-position($ltr-value, $rtl-value) {
+  left: $ltr-value;
+  
+  [dir="rtl"] & {
+    left: auto;
+    right: $rtl-value;
+  }
+}
+
+// Text Direction Mixins
+@mixin text-direction($direction: auto) {
+  direction: $direction;
+  
+  @if $direction == rtl {
+    text-align: right;
+  } @else if $direction == ltr {
+    text-align: left;
+  } @else {
+    text-align: inherit;
+  }
+}
+
+@mixin mixed-content-input {
+  direction: auto;
+  unicode-bidi: plaintext;
+  
+  // Let browser determine direction based on first character
+  &[data-first-char="arabic"] {
+    direction: rtl;
+    text-align: right;
+  }
+  
+  &[data-first-char="latin"] {
+    direction: ltr;
+    text-align: left;
+  }
+}
+
+// Form Mixins
+@mixin form-control-base {
+  display: block;
+  width: 100%;
+  padding: var(--bs-form-control-padding-y) var(--bs-form-control-padding-x);
+  font-size: var(--bs-form-control-font-size);
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--bs-body-color);
+  background-color: var(--bs-body-bg);
+  background-clip: padding-box;
+  border: var(--bs-form-control-border-width) solid var(--bs-form-control-border-color);
+  border-radius: var(--bs-form-control-border-radius);
+  transition: var(--bs-transition);
+  
+  &:focus {
+    color: var(--bs-body-color);
+    background-color: var(--bs-body-bg);
+    border-color: var(--bs-form-control-focus-border-color);
+    outline: 0;
+    box-shadow: var(--bs-form-control-focus-box-shadow);
+  }
+  
+  &::placeholder {
+    color: var(--bs-gray-500);
+    opacity: 1;
+  }
+  
+  &:disabled,
+  &[readonly] {
+    background-color: var(--bs-gray-200);
+    opacity: 1;
+  }
+}
+
+@mixin form-validation-state($state, $color) {
+  .form-control.is-#{$state} {
+    border-color: $color;
+    
+    &:focus {
+      border-color: $color;
+      box-shadow: 0 0 0 0.2rem rgba($color, 0.25);
+    }
+  }
+  
+  .form-check-input.is-#{$state} {
+    border-color: $color;
+    
+    &:checked {
+      background-color: $color;
+      border-color: $color;
+    }
+    
+    &:focus {
+      box-shadow: 0 0 0 0.2rem rgba($color, 0.25);
+    }
+  }
+  
+  .invalid-feedback,
+  .valid-feedback {
+    display: block;
+    width: 100%;
+    margin-top: 0.25rem;
+    font-size: 0.875em;
+    color: $color;
+  }
+}
+
+// Button Mixins
+@mixin button-variant($background, $border, $color: #fff) {
+  color: $color;
+  background-color: $background;
+  border-color: $border;
+  
+  &:hover {
+    color: $color;
+    background-color: darken($background, 7.5%);
+    border-color: darken($border, 10%);
+  }
+  
+  &:focus {
+    color: $color;
+    background-color: darken($background, 7.5%);
+    border-color: darken($border, 10%);
+    box-shadow: 0 0 0 0.2rem rgba($background, 0.5);
+  }
+  
+  &:active {
+    color: $color;
+    background-color: darken($background, 10%);
+    border-color: darken($border, 12.5%);
+    
+    &:focus {
+      box-shadow: 0 0 0 0.2rem rgba($background, 0.5);
+    }
+  }
+  
+  &:disabled {
+    color: $color;
+    background-color: $background;
+    border-color: $border;
+    opacity: 0.65;
+  }
+}
+
+// Table Mixins
+@mixin table-variant($color) {
+  --bs-table-color: $color;
+  --bs-table-bg: rgba($color, 0.1);
+  --bs-table-border-color: rgba($color, 0.2);
+  --bs-table-striped-bg: rgba($color, 0.05);
+  --bs-table-hover-bg: rgba($color, 0.075);
+}
+
+// Card Mixins
+@mixin card-variant($background, $border, $color) {
+  background-color: $background;
+  border-color: $border;
+  color: $color;
+  
+  .card-header {
+    background-color: darken($background, 5%);
+    border-bottom-color: $border;
+    color: $color;
+  }
+  
+  .card-footer {
+    background-color: darken($background, 5%);
+    border-top-color: $border;
+    color: $color;
+  }
+}
+
+// Responsive Mixins
+@mixin media-breakpoint-up($name, $breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1400px
+)) {
+  $min: map-get($breakpoints, $name);
+  
+  @if $min {
+    @media (min-width: $min) {
+      @content;
+    }
+  } @else {
+    @content;
+  }
+}
+
+@mixin media-breakpoint-down($name, $breakpoints: (
+  xs: 0,
+  sm: 576px,
+  md: 768px,
+  lg: 992px,
+  xl: 1200px,
+  xxl: 1400px
+)) {
+  $max: map-get($breakpoints, $name);
+  
+  @if $max {
+    @media (max-width: $max - 0.02px) {
+      @content;
+    }
+  }
+}
+
+// Accessibility Mixins
+@mixin sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+@mixin sr-only-focusable {
+  &:active,
+  &:focus {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+    clip: auto !important;
+    white-space: normal !important;
+  }
+}
+
+@mixin focus-ring($color: var(--bs-primary)) {
+  outline: 0;
+  box-shadow: 0 0 0 var(--bs-focus-ring-width) rgba($color, var(--bs-focus-ring-opacity));
+}
+
+// Animation Mixins
+@mixin transition($property: all, $duration: var(--bs-transition-duration), $timing-function: var(--bs-transition-timing-function)) {
+  transition: $property $duration $timing-function;
+}
+
+@mixin animation($name, $duration: var(--bs-animation-duration), $timing-function: var(--bs-animation-timing-function), $iteration-count: 1) {
+  animation: $name $duration $timing-function $iteration-count;
+}
+
+// Utility Mixins
+@mixin clearfix {
+  &::after {
+    display: block;
+    clear: both;
+    content: "";
+  }
+}
+
+@mixin truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin text-truncate($lines: 1) {
+  @if $lines == 1 {
+    @include truncate;
+  } @else {
+    display: -webkit-box;
+    -webkit-line-clamp: $lines;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
+// Print Mixins
+@mixin print-only {
+  @media print {
+    @content;
+  }
+}
+
+@mixin screen-only {
+  @media screen {
+    @content;
+  }
+}
+
+// Dark Mode Mixins
+@mixin dark-mode {
+  @media (prefers-color-scheme: dark) {
+    @content;
+  }
+}
+
+// Reduced Motion Mixins
+@mixin reduced-motion {
+  @media (prefers-reduced-motion: reduce) {
+    @content;
+  }
+}
+
+// High Contrast Mixins
+@mixin high-contrast {
+  @media (prefers-contrast: high) {
+    @content;
+  }
+}
