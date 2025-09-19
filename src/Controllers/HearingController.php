@@ -47,8 +47,8 @@ class HearingController {
             if (!Auth::check()) {
                 return Response::unauthorized('Authentication required');
             }
-            
-            $id = $request->get('id');
+
+            $id = $request->getRouteParam('id');
             if (!$id) {
                 return Response::error('Hearing ID is required', 400);
             }
@@ -111,8 +111,8 @@ class HearingController {
             if (!Auth::check()) {
                 return Response::unauthorized('Authentication required');
             }
-            
-            $id = $request->get('id');
+
+            $id = $request->getRouteParam('id');
             if (!$id) {
                 return Response::error('Hearing ID is required', 400);
             }
@@ -123,14 +123,28 @@ class HearingController {
                 return Response::notFound('Hearing not found');
             }
             
-            // Validate input
-            $validator = new Validator($request->all(), [
-                'case_id' => 'integer',
-                'hearing_date' => 'date',
-                'hearing_result' => 'in:won,lost,postponed,pending',
-                'hearing_type' => 'in:initial,procedural,evidence,witness,expert,final,appeal,execution',
-                'hearing_duration' => 'in:30min,1hour,2hours,3hours,4hours,fullday'
-            ]);
+            // Validate input - for updates, only validate provided fields
+            $validationRules = [];
+            $requestData = $request->all();
+
+            // Only add validation rules for fields that are actually provided
+            if (isset($requestData['case_id'])) {
+                $validationRules['case_id'] = 'integer';
+            }
+            if (isset($requestData['hearing_date'])) {
+                $validationRules['hearing_date'] = 'date';
+            }
+            if (isset($requestData['hearing_result'])) {
+                $validationRules['hearing_result'] = 'in:won,lost,postponed,pending';
+            }
+            if (isset($requestData['hearing_type'])) {
+                $validationRules['hearing_type'] = 'in:initial,procedural,evidence,witness,expert,final,appeal,execution';
+            }
+            if (isset($requestData['hearing_duration'])) {
+                $validationRules['hearing_duration'] = 'in:30min,1hour,2hours,3hours,4hours,fullday';
+            }
+
+            $validator = new Validator($requestData, $validationRules);
             
             if (!$validator->validate()) {
                 return Response::validationError($validator->errors());
@@ -170,8 +184,8 @@ class HearingController {
             if (!Auth::check()) {
                 return Response::unauthorized('Authentication required');
             }
-            
-            $id = $request->get('id');
+
+            $id = $request->getRouteParam('id');
             if (!$id) {
                 return Response::error('Hearing ID is required', 400);
             }

@@ -312,7 +312,7 @@ const CasesPage: React.FC = () => {
                       </td>
                       <td>{getStatusBadge(caseItem.matter_status)}</td>
                       <td>{getImportanceBadge(caseItem.matter_importance)}</td>
-                      <td>{caseItem.matter_court}</td>
+                      <td>{caseItem.matter_court || '-'}</td>
                       <td>{formatDate(caseItem.matter_start_date)}</td>
                       <td>
                         <div className='btn-group btn-group-sm'>

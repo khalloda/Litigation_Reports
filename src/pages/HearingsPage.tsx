@@ -346,13 +346,13 @@ const HearingsPage: React.FC = () => {
                       </td>
                       <td>
                         <div>
-                          <div className='fw-bold'>{hearing.matter_id}</div>
-                          <div className='text-muted small'>{hearing.matter_ar}</div>
+                          <div className='fw-bold'>{hearing.matter_id || '-'}</div>
+                          <div className='text-muted small'>{hearing.matter_ar || '-'}</div>
                         </div>
                       </td>
                       <td>
                         <div>
-                          <div>{hearing.client_name_ar}</div>
+                          <div>{hearing.client_name_ar || '-'}</div>
                           {hearing.client_name_en && (
                             <small className='text-muted'>{hearing.client_name_en}</small>
                           )}

@@ -5,7 +5,7 @@
  */
 
 // API Configuration
-const API_BASE_URL = 'http://localhost:8000/api'; // Use PHP API server - hardcoded to bypass env issues
+const API_BASE_URL = '/api'; // Use relative URL to avoid CORS issues
 const API_TIMEOUT = 10000; // Increased timeout for real API calls
 
 // API Response Types

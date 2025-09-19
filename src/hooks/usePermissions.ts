@@ -241,6 +241,36 @@ export const usePermissions = () => {
     return checkPermission('invoices:export');
   };
 
+  // Lawyer permissions
+  const canManageLawyers = (): boolean => {
+    return checkAllPermissions([
+      'lawyers:view',
+      'lawyers:create',
+      'lawyers:edit',
+      'lawyers:delete',
+    ]);
+  };
+
+  const canViewLawyers = (): boolean => {
+    return checkPermission('lawyers:view');
+  };
+
+  const canCreateLawyers = (): boolean => {
+    return checkPermission('lawyers:create');
+  };
+
+  const canEditLawyers = (): boolean => {
+    return checkPermission('lawyers:edit');
+  };
+
+  const canDeleteLawyers = (): boolean => {
+    return checkPermission('lawyers:delete');
+  };
+
+  const canExportLawyers = (): boolean => {
+    return checkPermission('lawyers:export');
+  };
+
   // Report permissions
   const canViewReports = (): boolean => {
     return checkPermission('reports:view');
@@ -471,6 +501,14 @@ export const usePermissions = () => {
     canEditInvoices,
     canDeleteInvoices,
     canExportInvoices,
+
+    // Lawyer management
+    canManageLawyers,
+    canViewLawyers,
+    canCreateLawyers,
+    canEditLawyers,
+    canDeleteLawyers,
+    canExportLawyers,
 
     // Reports
     canViewReports,

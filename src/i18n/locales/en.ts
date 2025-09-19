@@ -6,8 +6,11 @@ export const en = {
     cases: 'Cases',
     hearings: 'Hearings',
     invoices: 'Invoices',
+    lawyers: 'Lawyers',
+    documents: 'Documents',
     reports: 'Reports',
     settings: 'Settings',
+    users: 'Users',
     logout: 'Logout',
   },
 

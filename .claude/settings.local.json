@@ -40,7 +40,11 @@
       "mcp__playwright__browser_close",
       "mcp__playwright__browser_wait_for",
       "Bash(npx eslint:*)",
-      "Bash(mysql:*)"
+      "Bash(mysql:*)",
+      "Bash(cmd /c:*)",
+      "Bash(pkill:*)",
+      "Bash(npx vite:*)",
+      "Bash(npx playwright:*)"
     ],
     "deny": [],
     "ask": []

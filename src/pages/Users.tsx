@@ -16,15 +16,15 @@ import {
   Form,
   Alert,
 } from 'react-bootstrap';
-import { usePermissions } from '@hooks/usePermissions';
+import { usePermissions } from '../hooks/usePermissions';
 import {
   PermissionGate,
   AdminGate,
   SuperAdminGate,
   CanManageUsersGate,
-} from '@components/auth/PermissionGate';
-import { ProtectedRoute } from '@components/auth/ProtectedRoute';
-import { User, UserRole, getRoleDisplayName } from '@types/auth';
+} from '../components/auth/PermissionGate';
+import { ProtectedRoute } from '../components/auth/ProtectedRoute';
+import { User, UserRole, getRoleDisplayName } from '../types/auth';
 import {
   Plus,
   Edit,

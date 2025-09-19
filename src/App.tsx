@@ -10,6 +10,8 @@ import { Clients } from '@pages/Clients';
 import { Cases } from '@pages/Cases';
 import { Hearings } from '@pages/Hearings';
 import { Invoices } from '@pages/Invoices';
+import { LawyersPage } from '@pages/LawyersPage';
+import { Documents } from '@pages/Documents';
 import { Reports } from '@pages/Reports';
 import { Settings } from '@pages/Settings';
 import { Users } from '@pages/Users';
@@ -69,6 +71,13 @@ function App() {
             <Route path='invoices/new' element={<Invoices />} />
             <Route path='invoices/:id' element={<Invoices />} />
             <Route path='invoices/:id/edit' element={<Invoices />} />
+            <Route path='lawyers' element={<LawyersPage />} />
+            <Route path='lawyers/new' element={<LawyersPage />} />
+            <Route path='lawyers/:id' element={<LawyersPage />} />
+            <Route path='lawyers/:id/edit' element={<LawyersPage />} />
+            <Route path='documents' element={<Documents />} />
+            <Route path='documents/new' element={<Documents />} />
+            <Route path='documents/:id' element={<Documents />} />
             <Route path='reports' element={<Reports />} />
             <Route path='settings' element={<Settings />} />
             <Route path='users' element={<Users />} />

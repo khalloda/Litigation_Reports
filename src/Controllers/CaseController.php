@@ -46,8 +46,8 @@ class CaseController {
             if (!Auth::check()) {
                 return Response::unauthorized('Authentication required');
             }
-            
-            $id = $request->get('id');
+
+            $id = $request->getRouteParam('id');
             if (!$id) {
                 return Response::error('Case ID is required', 400);
             }
@@ -119,8 +119,8 @@ class CaseController {
             if (!Auth::check()) {
                 return Response::unauthorized('Authentication required');
             }
-            
-            $id = $request->get('id');
+
+            $id = $request->getRouteParam('id');
             if (!$id) {
                 return Response::error('Case ID is required', 400);
             }
@@ -131,16 +131,34 @@ class CaseController {
                 return Response::notFound('Case not found');
             }
             
-            // Validate input
-            $validator = new Validator($request->all(), [
-                'client_id' => 'integer',
-                'matter_ar' => 'min:3|max:500',
-                'matter_en' => 'min:3|max:500',
-                'matter_subject' => 'min:10',
-                'matter_status' => 'in:active,pending,completed,cancelled,on_hold,appealed',
-                'matter_category' => 'in:civil,commercial,criminal,administrative,labor,family,real_estate,intellectual_property',
-                'matter_importance' => 'in:low,medium,high,critical'
-            ]);
+            // Validate input - for updates, only validate provided fields
+            $validationRules = [];
+            $requestData = $request->all();
+
+            // Only add validation rules for fields that are actually provided
+            if (isset($requestData['client_id'])) {
+                $validationRules['client_id'] = 'integer';
+            }
+            if (isset($requestData['matter_ar'])) {
+                $validationRules['matter_ar'] = 'min:3|max:500';
+            }
+            if (isset($requestData['matter_en'])) {
+                $validationRules['matter_en'] = 'min:3|max:500';
+            }
+            if (isset($requestData['matter_subject'])) {
+                $validationRules['matter_subject'] = 'min:10';
+            }
+            if (isset($requestData['matter_status'])) {
+                $validationRules['matter_status'] = 'in:active,pending,completed,cancelled,on_hold,appealed';
+            }
+            if (isset($requestData['matter_category'])) {
+                $validationRules['matter_category'] = 'in:civil,commercial,criminal,administrative,labor,family,real_estate,intellectual_property';
+            }
+            if (isset($requestData['matter_importance'])) {
+                $validationRules['matter_importance'] = 'in:low,medium,high,critical';
+            }
+
+            $validator = new Validator($requestData, $validationRules);
             
             if (!$validator->validate()) {
                 return Response::validationError($validator->errors());
@@ -187,8 +205,8 @@ class CaseController {
             if (!Auth::check()) {
                 return Response::unauthorized('Authentication required');
             }
-            
-            $id = $request->get('id');
+
+            $id = $request->getRouteParam('id');
             if (!$id) {
                 return Response::error('Case ID is required', 400);
             }

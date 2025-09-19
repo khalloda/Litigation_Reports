@@ -40,7 +40,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         const token = localStorage.getItem('auth_token');
         if (token) {
           // Verify token with backend
-          const response = await fetch('/api/auth/verify', {
+          const response = await fetch('/api/auth/me', {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -48,7 +48,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
           if (response.ok) {
             const userData = await response.json();
-            setUser(userData.user);
+            console.log('Debug AuthProvider - User data from API:', userData);
+            setUser(userData.data);
           } else {
             localStorage.removeItem('auth_token');
           }
@@ -78,8 +79,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       if (response.ok) {
         const data = await response.json();
-        localStorage.setItem('auth_token', data.token);
-        setUser(data.user);
+        console.log('Debug AuthProvider - Login response:', data);
+        localStorage.setItem('auth_token', data.data.token);
+        setUser(data.data.user);
         return true;
       } else {
         const error = await response.json();

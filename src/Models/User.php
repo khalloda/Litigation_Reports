@@ -43,32 +43,73 @@ class User {
     
     public static function create($data) {
         $db = Database::getInstance();
-        
-        // Hash password if provided
-        if (isset($data['password'])) {
-            $data['password'] = Auth::hashPassword($data['password']);
+
+        // Map API format to database columns
+        $dbData = [];
+
+        if (isset($data['name'])) {
+            $dbData['full_name_en'] = $data['name'];
+            $dbData['full_name_ar'] = $data['name']; // Default both to same value
         }
-        
-        // Set default values
-        $data['status'] = $data['status'] ?? 'active';
-        $data['role'] = $data['role'] ?? 'staff';
-        $data['created_at'] = date('Y-m-d H:i:s');
-        $data['updated_at'] = date('Y-m-d H:i:s');
-        
-        return $db->insert(self::$table, $data);
+
+        if (isset($data['email'])) {
+            $dbData['email'] = $data['email'];
+            $dbData['username'] = explode('@', $data['email'])[0]; // Use email prefix as username
+        }
+
+        if (isset($data['password'])) {
+            $dbData['password_hash'] = Auth::hashPassword($data['password']);
+        }
+
+        if (isset($data['role'])) {
+            $dbData['role'] = $data['role'];
+        } else {
+            $dbData['role'] = 'staff';
+        }
+
+        if (isset($data['status'])) {
+            $dbData['is_active'] = $data['status'] === 'active' ? 1 : 0;
+        } else {
+            $dbData['is_active'] = 1;
+        }
+
+        $dbData['created_at'] = date('Y-m-d H:i:s');
+        $dbData['updated_at'] = date('Y-m-d H:i:s');
+
+        return $db->insert(self::$table, $dbData);
     }
     
     public static function update($id, $data) {
         $db = Database::getInstance();
-        
-        // Hash password if provided
-        if (isset($data['password'])) {
-            $data['password'] = Auth::hashPassword($data['password']);
+
+        // Map API format to database columns
+        $dbData = [];
+
+        if (isset($data['name'])) {
+            $dbData['full_name_en'] = $data['name'];
+            $dbData['full_name_ar'] = $data['name']; // Default both to same value
         }
-        
-        $data['updated_at'] = date('Y-m-d H:i:s');
-        
-        return $db->update(self::$table, $data, 'id = :id', ['id' => $id]);
+
+        if (isset($data['email'])) {
+            $dbData['email'] = $data['email'];
+            $dbData['username'] = explode('@', $data['email'])[0]; // Use email prefix as username
+        }
+
+        if (isset($data['password'])) {
+            $dbData['password_hash'] = Auth::hashPassword($data['password']);
+        }
+
+        if (isset($data['role'])) {
+            $dbData['role'] = $data['role'];
+        }
+
+        if (isset($data['status'])) {
+            $dbData['is_active'] = $data['status'] === 'active' ? 1 : 0;
+        }
+
+        $dbData['updated_at'] = date('Y-m-d H:i:s');
+
+        return $db->update(self::$table, $dbData, 'id = :id', ['id' => $id]);
     }
     
     public static function delete($id) {
@@ -78,28 +119,42 @@ class User {
     
     public static function getAll($page = 1, $limit = DEFAULT_PAGE_SIZE, $filters = []) {
         $db = Database::getInstance();
-        
+
         $whereClause = '1=1';
         $params = [];
-        
+
         // Apply filters
         if (!empty($filters['status'])) {
-            $whereClause .= ' AND status = :status';
-            $params['status'] = $filters['status'];
+            if ($filters['status'] === 'active') {
+                $whereClause .= ' AND is_active = 1';
+            } else {
+                $whereClause .= ' AND is_active = 0';
+            }
         }
-        
+
         if (!empty($filters['role'])) {
             $whereClause .= ' AND role = :role';
             $params['role'] = $filters['role'];
         }
-        
+
         if (!empty($filters['search'])) {
-            $whereClause .= ' AND (name LIKE :search OR email LIKE :search)';
+            $whereClause .= ' AND (full_name_en LIKE :search OR full_name_ar LIKE :search OR email LIKE :search OR username LIKE :search)';
             $params['search'] = '%' . $filters['search'] . '%';
         }
-        
-        $sql = "SELECT id, name, email, role, status, created_at, updated_at, last_login_at FROM " . self::$table . " WHERE {$whereClause} ORDER BY created_at DESC";
-        
+
+        $sql = "SELECT
+                    id,
+                    COALESCE(full_name_en, full_name_ar, username) as name,
+                    email,
+                    role,
+                    CASE WHEN is_active = 1 THEN 'active' ELSE 'inactive' END as status,
+                    created_at,
+                    updated_at,
+                    last_login
+                FROM " . self::$table . "
+                WHERE {$whereClause}
+                ORDER BY created_at DESC";
+
         return $db->paginate($sql, $params, $page, $limit);
     }
     

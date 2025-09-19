@@ -1,10 +1,11 @@
-import React from 'react';
-import { Container, Row, Col, Card } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Container, Row, Col, Card, Spinner, Alert } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@components/auth/AuthProvider';
 import { useRTL } from '@hooks/useRTL';
 import { useLanguage } from '@hooks/useLanguage';
-import { Users, FileText, Calendar, Receipt, TrendingUp, Clock } from 'lucide-react';
+import { Users, FileText, Calendar, Receipt, TrendingUp, Clock, Gavel } from 'lucide-react';
+import { apiService as api } from '../services/api';
 
 export function Dashboard() {
   const { t } = useTranslation();
@@ -12,73 +13,70 @@ export function Dashboard() {
   const { isRTL } = useRTL();
   const { currentLanguage } = useLanguage();
 
-  const stats = [
-    {
-      title: t('dashboard.totalClients'),
-      titleAr: 'إجمالي العملاء',
-      value: '1,234',
-      icon: Users,
-      color: 'primary',
-      change: '+12%',
-    },
-    {
-      title: t('dashboard.activeCases'),
-      titleAr: 'القضايا النشطة',
-      value: '567',
-      icon: FileText,
-      color: 'success',
-      change: '+8%',
-    },
-    {
-      title: t('dashboard.upcomingHearings'),
-      titleAr: 'الجلسات القادمة',
-      value: '23',
-      icon: Calendar,
-      color: 'warning',
-      change: '+3',
-    },
-    {
-      title: t('dashboard.pendingInvoices'),
-      titleAr: 'الفواتير المعلقة',
-      value: '89',
-      icon: Receipt,
-      color: 'danger',
-      change: '-5%',
-    },
-  ];
+  const [dashboardData, setDashboardData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const recentActivities = [
-    {
-      id: 1,
-      action: 'New client added',
-      actionAr: 'تم إضافة عميل جديد',
-      client: 'John Smith',
-      clientAr: 'ناجي رمضان',
-      time: '2 hours ago',
-      timeAr: 'منذ ساعتين',
-      icon: Users,
-    },
-    {
-      id: 2,
-      action: 'Case updated',
-      actionAr: 'تم تحديث قضية',
-      client: 'ABC Company',
-      clientAr: 'شركة أ ب ج',
-      time: '4 hours ago',
-      timeAr: 'منذ 4 ساعات',
-      icon: FileText,
-    },
-    {
-      id: 3,
-      action: 'Hearing scheduled',
-      actionAr: 'تم جدولة جلسة',
-      client: 'Jane Doe',
-      clientAr: 'فاطمة أحمد',
-      time: '1 day ago',
-      timeAr: 'منذ يوم',
-      icon: Calendar,
-    },
-  ];
+  useEffect(() => {
+    loadDashboardData();
+  }, []);
+
+  const loadDashboardData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await api.get('/reports/dashboard');
+
+      if (response.success) {
+        setDashboardData(response.data);
+      } else {
+        setError('Failed to load dashboard data');
+      }
+    } catch (err) {
+      setError('Error loading dashboard data');
+      console.error('Dashboard error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatNumber = (num: number) => {
+    return new Intl.NumberFormat('ar-EG').format(num);
+  };
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('ar-EG', {
+      style: 'currency',
+      currency: 'EGP',
+      minimumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  const formatTimeAgo = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+
+    if (diffInHours < 1) return 'منذ دقائق';
+    if (diffInHours < 24) return `منذ ${diffInHours} ساعة`;
+
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays === 1) return 'منذ يوم';
+    if (diffInDays < 30) return `منذ ${diffInDays} يوم`;
+
+    return date.toLocaleDateString('ar-SA');
+  };
+
+  const getActivityIcon = (type: string) => {
+    switch (type) {
+      case 'client': return Users;
+      case 'case': return FileText;
+      case 'hearing': return Calendar;
+      case 'invoice': return Receipt;
+      default: return FileText;
+    }
+  };
 
   const getUserDisplayName = () => {
     if (currentLanguage === 'ar' && user?.arabicName) {
@@ -86,6 +84,62 @@ export function Dashboard() {
     }
     return user?.name || 'User';
   };
+
+  if (loading) {
+    return (
+      <Container fluid className='py-4' dir={isRTL ? 'rtl' : 'ltr'}>
+        <div className='text-center py-5'>
+          <Spinner animation='border' variant='primary' />
+          <p className='mt-3 text-muted'>جاري تحميل لوحة التحكم...</p>
+        </div>
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container fluid className='py-4' dir={isRTL ? 'rtl' : 'ltr'}>
+        <Alert variant='danger' className='text-center'>
+          <h5>خطأ في تحميل البيانات</h5>
+          <p>{error}</p>
+          <button className='btn btn-outline-danger' onClick={loadDashboardData}>
+            إعادة المحاولة
+          </button>
+        </Alert>
+      </Container>
+    );
+  }
+
+  if (!dashboardData) {
+    return null;
+  }
+
+  const stats = [
+    {
+      title: 'إجمالي العملاء',
+      value: formatNumber(dashboardData.total_clients),
+      icon: Users,
+      color: 'primary',
+    },
+    {
+      title: 'القضايا النشطة',
+      value: formatNumber(dashboardData.total_cases),
+      icon: FileText,
+      color: 'success',
+    },
+    {
+      title: 'إجمالي الجلسات',
+      value: formatNumber(dashboardData.total_hearings),
+      icon: Gavel,
+      color: 'warning',
+    },
+    {
+      title: 'الفواتير المعلقة',
+      value: formatNumber(dashboardData.financial_summary.pending_count),
+      icon: Receipt,
+      color: 'danger',
+    },
+  ];
 
   return (
     <Container fluid className='py-4' dir={isRTL ? 'rtl' : 'ltr'}>
@@ -116,15 +170,8 @@ export function Dashboard() {
                       <div className={`text-${stat.color} mb-2`}>
                         <Icon size={24} />
                       </div>
-                      <h6 className='card-title mb-1'>
-                        {currentLanguage === 'ar' ? stat.titleAr : stat.title}
-                      </h6>
+                      <h6 className='card-title mb-1'>{stat.title}</h6>
                       <h3 className='mb-0'>{stat.value}</h3>
-                      <small
-                        className={`text-${stat.change.startsWith('+') ? 'success' : 'danger'}`}
-                      >
-                        {stat.change}
-                      </small>
                     </Col>
                   </Row>
                 </Card.Body>
@@ -135,65 +182,104 @@ export function Dashboard() {
       </Row>
 
       <Row>
-        {/* Recent Activity */}
-        <Col lg={8} className='mb-4'>
+        {/* Financial Summary */}
+        <Col lg={4} className='mb-4'>
           <Card className='h-100 shadow-sm'>
             <Card.Header>
-              <h5 className='card-title mb-0'>
-                {currentLanguage === 'ar' ? 'النشاط الأخير' : 'Recent Activity'}
-              </h5>
+              <h5 className='card-title mb-0'>الملخص المالي</h5>
             </Card.Header>
             <Card.Body>
-              <div className='activity-list'>
-                {recentActivities.map((activity) => {
-                  const Icon = activity.icon;
-                  return (
-                    <div key={activity.id} className='activity-item d-flex align-items-center mb-3'>
-                      <div className='activity-icon me-3'>
-                        <Icon size={20} className='text-primary' />
-                      </div>
-                      <div className='flex-grow-1'>
-                        <p className='mb-1'>
-                          <strong>
-                            {currentLanguage === 'ar' ? activity.actionAr : activity.action}
-                          </strong>{' '}
-                          {currentLanguage === 'ar' ? activity.clientAr : activity.client}
-                        </p>
-                        <small className='text-muted'>
-                          <Clock size={12} className='me-1' />
-                          {currentLanguage === 'ar' ? activity.timeAr : activity.time}
-                        </small>
-                      </div>
-                    </div>
-                  );
-                })}
+              <div className='financial-summary'>
+                <div className='mb-3'>
+                  <div className='d-flex justify-content-between'>
+                    <span>إجمالي الإيرادات:</span>
+                    <strong className='text-primary'>
+                      {formatCurrency(dashboardData.financial_summary.total_revenue)}
+                    </strong>
+                  </div>
+                </div>
+                <div className='mb-3'>
+                  <div className='d-flex justify-content-between'>
+                    <span>المبالغ المدفوعة:</span>
+                    <strong className='text-success'>
+                      {formatCurrency(dashboardData.financial_summary.paid_amount)}
+                    </strong>
+                  </div>
+                </div>
+                <div className='mb-3'>
+                  <div className='d-flex justify-content-between'>
+                    <span>المبالغ المعلقة:</span>
+                    <strong className='text-warning'>
+                      {formatCurrency(dashboardData.financial_summary.pending_amount)}
+                    </strong>
+                  </div>
+                </div>
               </div>
             </Card.Body>
           </Card>
         </Col>
 
-        {/* Quick Actions */}
+        {/* Recent Activity */}
         <Col lg={4} className='mb-4'>
           <Card className='h-100 shadow-sm'>
             <Card.Header>
-              <h5 className='card-title mb-0'>
-                {currentLanguage === 'ar' ? 'الإجراءات السريعة' : 'Quick Actions'}
-              </h5>
+              <h5 className='card-title mb-0'>النشاط الأخير</h5>
             </Card.Header>
             <Card.Body>
-              <div className='quick-actions'>
-                <button className='btn btn-outline-primary w-100 mb-2'>
-                  {currentLanguage === 'ar' ? 'إضافة عميل جديد' : 'Add New Client'}
-                </button>
-                <button className='btn btn-outline-success w-100 mb-2'>
-                  {currentLanguage === 'ar' ? 'إنشاء قضية جديدة' : 'Create New Case'}
-                </button>
-                <button className='btn btn-outline-warning w-100 mb-2'>
-                  {currentLanguage === 'ar' ? 'جدولة جلسة' : 'Schedule Hearing'}
-                </button>
-                <button className='btn btn-outline-info w-100'>
-                  {currentLanguage === 'ar' ? 'إنشاء فاتورة' : 'Create Invoice'}
-                </button>
+              <div className='activity-list'>
+                {dashboardData.recent_activities?.slice(0, 5).map((activity: any, index: number) => {
+                  const Icon = getActivityIcon(activity.type);
+                  return (
+                    <div key={index} className='activity-item d-flex align-items-center mb-3'>
+                      <div className='activity-icon me-3'>
+                        <Icon size={20} className='text-primary' />
+                      </div>
+                      <div className='flex-grow-1'>
+                        <p className='mb-1'>
+                          <strong>{activity.action}</strong> {activity.name}
+                        </p>
+                        <small className='text-muted'>
+                          <Clock size={12} className='me-1' />
+                          {formatTimeAgo(activity.created_at)}
+                        </small>
+                      </div>
+                    </div>
+                  );
+                })}
+                {(!dashboardData.recent_activities || dashboardData.recent_activities.length === 0) && (
+                  <p className='text-muted text-center'>لا يوجد نشاط حديث</p>
+                )}
+              </div>
+            </Card.Body>
+          </Card>
+        </Col>
+
+        {/* Upcoming Hearings */}
+        <Col lg={4} className='mb-4'>
+          <Card className='h-100 shadow-sm'>
+            <Card.Header>
+              <h5 className='card-title mb-0'>الجلسات القادمة</h5>
+            </Card.Header>
+            <Card.Body>
+              <div className='upcoming-hearings'>
+                {dashboardData.upcoming_hearings?.map((hearing: any, index: number) => (
+                  <div key={index} className='hearing-item d-flex align-items-center mb-3'>
+                    <div className='hearing-icon me-3'>
+                      <Calendar size={20} className='text-warning' />
+                    </div>
+                    <div className='flex-grow-1'>
+                      <p className='mb-1'>
+                        <strong>{hearing.matter_ar || 'جلسة محكمة'}</strong>
+                      </p>
+                      <small className='text-muted'>
+                        {new Date(hearing.hearing_date).toLocaleDateString('ar-SA')}
+                      </small>
+                    </div>
+                  </div>
+                ))}
+                {(!dashboardData.upcoming_hearings || dashboardData.upcoming_hearings.length === 0) && (
+                  <p className='text-muted text-center'>لا توجد جلسات قادمة</p>
+                )}
               </div>
             </Card.Body>
           </Card>

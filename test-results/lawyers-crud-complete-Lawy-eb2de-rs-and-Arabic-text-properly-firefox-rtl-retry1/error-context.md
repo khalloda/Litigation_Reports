@@ -1,0 +1,69 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - navigation [ref=e4]:
+    - generic [ref=e5]:
+      - link "نظام إدارة التقاضي" [ref=e6] [cursor=pointer]:
+        - /url: "#"
+        - img [ref=e7] [cursor=pointer]
+        - text: نظام إدارة التقاضي
+      - generic [ref=e13]:
+        - generic [ref=e14]:
+          - button "الرئيسية" [ref=e15] [cursor=pointer]:
+            - img [ref=e16] [cursor=pointer]
+            - text: الرئيسية
+          - button "القضايا" [ref=e19] [cursor=pointer]:
+            - img [ref=e20] [cursor=pointer]
+            - text: القضايا
+          - button "العملاء" [ref=e26] [cursor=pointer]:
+            - img [ref=e27] [cursor=pointer]
+            - text: العملاء
+          - button "الجلسات" [ref=e32] [cursor=pointer]:
+            - img [ref=e33] [cursor=pointer]
+            - text: الجلسات
+        - button "System Administrator" [ref=e40] [cursor=pointer]:
+          - generic [ref=e41] [cursor=pointer]:
+            - img [ref=e42] [cursor=pointer]
+            - text: System Administrator
+  - generic [ref=e48]:
+    - navigation [ref=e49]:
+      - generic [ref=e50]:
+        - link "نظام إدارة التقاضي" [ref=e51] [cursor=pointer]:
+          - /url: "#"
+        - button "System Administrator" [ref=e54] [cursor=pointer]
+    - generic [ref=e55]:
+      - generic [ref=e57]:
+        - heading "لوحة التحكم" [level=1] [ref=e58]
+        - generic [ref=e59]:
+          - heading "✅ النظام يعمل بشكل طبيعي" [level=6] [ref=e60]
+          - paragraph [ref=e61]:
+            - text: "الخادم: Mock API"
+            - text: "الإصدار: 1.0.0"
+            - text: "الوقت: ١٩‏/٩‏/٢٠٢٥، ٨:٥٩:١٤ ص"
+      - generic [ref=e62]:
+        - generic [ref=e67]:
+          - heading "العملاء" [level=4] [ref=e68]
+          - heading "0" [level=2] [ref=e69]
+        - generic [ref=e74]:
+          - heading "القضايا" [level=4] [ref=e75]
+          - heading "0" [level=2] [ref=e76]
+        - generic [ref=e81]:
+          - heading "الجلسات" [level=4] [ref=e82]
+          - heading "0" [level=2] [ref=e83]
+        - generic [ref=e88]:
+          - heading "الفواتير" [level=4] [ref=e89]
+          - heading "0" [level=2] [ref=e90]
+      - generic [ref=e93]:
+        - heading "مرحباً بك في نظام إدارة التقاضي" [level=5] [ref=e95]
+        - generic [ref=e96]:
+          - paragraph [ref=e97]:
+            - text: مرحباً
+            - strong [ref=e98]: System Administrator
+            - text: ،
+          - paragraph [ref=e99]: تم تسجيل دخولك بنجاح إلى نظام إدارة التقاضي. يمكنك الآن إدارة العملاء والقضايا والجلسات والفواتير من خلال هذا النظام.
+          - paragraph [ref=e100]:
+            - generic [ref=e101]:
+              - text: "دورك الحالي:"
+              - strong [ref=e102]: super_admin
+```

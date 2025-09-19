@@ -6,8 +6,11 @@ export const ar = {
     cases: 'القضايا',
     hearings: 'الجلسات',
     invoices: 'الفواتير',
+    lawyers: 'المحامون',
+    documents: 'المستندات',
     reports: 'التقارير',
     settings: 'الإعدادات',
+    users: 'المستخدمين',
     logout: 'تسجيل الخروج',
   },
 

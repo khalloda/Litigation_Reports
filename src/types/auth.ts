@@ -49,6 +49,7 @@ export type Resource =
   | 'cases'
   | 'hearings'
   | 'invoices'
+  | 'lawyers'
   | 'reports'
   | 'users'
   | 'system_settings'
@@ -97,6 +98,13 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     'invoices:edit',
     'invoices:delete',
     'invoices:export',
+
+    // Lawyers - Full Access
+    'lawyers:view',
+    'lawyers:create',
+    'lawyers:edit',
+    'lawyers:delete',
+    'lawyers:export',
 
     // Reports - Full Access
     'reports:view',
@@ -184,6 +192,13 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     'invoices:delete',
     'invoices:export',
 
+    // Lawyers - Full Access
+    'lawyers:view',
+    'lawyers:create',
+    'lawyers:edit',
+    'lawyers:delete',
+    'lawyers:export',
+
     // Reports - Full Access
     'reports:view',
     'reports:export',
@@ -260,6 +275,11 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     'invoices:create',
     'invoices:edit',
 
+    // Lawyers - View and Edit Own Profile
+    'lawyers:view',
+    'lawyers:edit',
+    'lawyers:export',
+
     // Reports - View Only
     'reports:view',
     'reports:export',
@@ -310,6 +330,10 @@ export const ROLE_PERMISSIONS: Record<UserRole, Permission[]> = {
     // Invoices - View Only
     'invoices:view',
     'invoices:export',
+
+    // Lawyers - View Only
+    'lawyers:view',
+    'lawyers:export',
 
     // Reports - View Only
     'reports:view',
@@ -372,6 +396,12 @@ export const PERMISSION_DISPLAY_NAMES: Record<Permission, { ar: string; en: stri
   'invoices:edit': { ar: 'تعديل الفواتير', en: 'Edit Invoices' },
   'invoices:delete': { ar: 'حذف الفواتير', en: 'Delete Invoices' },
   'invoices:export': { ar: 'تصدير الفواتير', en: 'Export Invoices' },
+
+  'lawyers:view': { ar: 'عرض المحامين', en: 'View Lawyers' },
+  'lawyers:create': { ar: 'إضافة محامين', en: 'Create Lawyers' },
+  'lawyers:edit': { ar: 'تعديل المحامين', en: 'Edit Lawyers' },
+  'lawyers:delete': { ar: 'حذف المحامين', en: 'Delete Lawyers' },
+  'lawyers:export': { ar: 'تصدير المحامين', en: 'Export Lawyers' },
 
   'reports:view': { ar: 'عرض التقارير', en: 'View Reports' },
   'reports:export': { ar: 'تصدير التقارير', en: 'Export Reports' },

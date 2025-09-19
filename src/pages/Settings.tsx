@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { usePermissions } from '@hooks/usePermissions';
 import { PermissionGate, SuperAdminGate } from '@components/auth/PermissionGate';
 import { RoleManagement } from '@components/admin/RoleManagement';
+import { ProfileSettings } from '@components/settings/ProfileSettings';
+import { GeneralSettings } from '@components/settings/GeneralSettings';
 import {
   Settings as SettingsIcon,
   Shield,
@@ -77,14 +79,7 @@ export function Settings() {
               <Col lg={9}>
                 <Tab.Content>
                   <Tab.Pane eventKey='general'>
-                    <Card>
-                      <Card.Header>
-                        <h5 className='mb-0'>الإعدادات العامة</h5>
-                      </Card.Header>
-                      <Card.Body>
-                        <p>General system settings will be implemented here.</p>
-                      </Card.Body>
-                    </Card>
+                    <GeneralSettings />
                   </Tab.Pane>
 
                   <Tab.Pane eventKey='roles'>
@@ -92,14 +87,7 @@ export function Settings() {
                   </Tab.Pane>
 
                   <Tab.Pane eventKey='profile'>
-                    <Card>
-                      <Card.Header>
-                        <h5 className='mb-0'>الملف الشخصي</h5>
-                      </Card.Header>
-                      <Card.Body>
-                        <p>User profile settings will be implemented here.</p>
-                      </Card.Body>
-                    </Card>
+                    <ProfileSettings />
                   </Tab.Pane>
 
                   <Tab.Pane eventKey='language'>

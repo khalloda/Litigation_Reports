@@ -17,6 +17,8 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
+  Scale,
+  FolderOpen,
 } from 'lucide-react';
 import clsx from 'clsx';
 
@@ -36,9 +38,24 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
     canViewCases,
     canViewHearings,
     canViewInvoices,
+    canViewLawyers,
+    canViewDocuments,
     canViewReports,
     canViewUsers,
   } = usePermissions();
+
+  // Debug: Log user and permissions
+  console.log('Debug Sidebar - User:', {
+    canViewDashboard,
+    canViewClients,
+    canViewCases,
+    canViewHearings,
+    canViewInvoices,
+    canViewLawyers,
+    canViewDocuments,
+    canViewReports,
+    canViewUsers,
+  });
 
   const menuItems = [
     {
@@ -75,6 +92,20 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       label: t('nav.invoices'),
       labelAr: 'الفواتير',
       permission: 'invoices:view',
+    },
+    {
+      path: '/lawyers',
+      icon: Scale,
+      label: t('nav.lawyers'),
+      labelAr: 'المحامون',
+      permission: 'lawyers:view',
+    },
+    {
+      path: '/documents',
+      icon: FolderOpen,
+      label: t('nav.documents'),
+      labelAr: 'المستندات',
+      permission: 'documents:view',
     },
     {
       path: '/reports',
