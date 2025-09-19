@@ -48,7 +48,8 @@
       "Read(//d/wamp64/logs/**)",
       "Read(//d/wamp64/bin/php/**)",
       "Bash(dir:*)",
-      "mcp__playwright__browser_console_messages"
+      "mcp__playwright__browser_console_messages",
+      "Bash(tee:*)"
     ],
     "deny": [],
     "ask": []
