@@ -7,17 +7,8 @@
  * It handles routing, authentication, and request processing.
  */
 
-// Enable CORS for development
-header('Access-Control-Allow-Origin: http://localhost:3011');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+// Set content type for API responses
 header('Content-Type: application/json; charset=utf-8');
-
-// Handle preflight OPTIONS requests
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit();
-}
 
 // Error reporting for development
 error_reporting(E_ALL);
@@ -73,8 +64,7 @@ try {
     // Initialize router
     $router = new Router();
 
-    // Apply CORS middleware
-    $router->middleware(new CorsMiddleware());
+    // No CORS middleware needed when serving from same origin
 
     // Define API routes
 
@@ -148,6 +138,14 @@ try {
     $router->get('/api/reports/cases', 'ReportController@cases');
     $router->get('/api/reports/financial', 'ReportController@financial');
     $router->get('/api/reports/hearings', 'ReportController@hearings');
+
+    // Advanced reporting routes
+    $router->get('/api/reports/custom', 'ReportController@customReport');
+    $router->post('/api/reports/custom', 'ReportController@generateCustomReport');
+    $router->get('/api/reports/export', 'ReportController@exportReport');
+    $router->get('/api/reports/templates', 'ReportController@getReportTemplates');
+    $router->post('/api/reports/templates', 'ReportController@saveReportTemplate');
+    $router->get('/api/reports/options', 'ReportController@getReportOptions');
 
     // Document management routes
     $router->get('/api/documents', 'DocumentController@index');

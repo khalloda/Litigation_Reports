@@ -10,6 +10,11 @@ import {
   Alert,
   Badge,
   Table,
+  Modal,
+  ListGroup,
+  ButtonGroup,
+  Tabs,
+  Tab,
 } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import {
@@ -22,6 +27,10 @@ import {
   TrendingUp,
   Download,
   Filter,
+  Settings,
+  Eye,
+  Save,
+  Plus,
 } from 'lucide-react';
 import { apiService as api } from '../services/api';
 import { useLanguage } from '../hooks/useLanguage';
@@ -61,6 +70,27 @@ interface DashboardData {
   }>;
 }
 
+interface ReportTemplate {
+  id: number;
+  name: string;
+  entity: string;
+  description: string;
+  config: any;
+  created_by: string;
+  created_at: string;
+}
+
+interface CustomReportConfig {
+  entity: string;
+  filters: Record<string, any>;
+  columns: string[];
+  grouping?: string;
+  sort_by?: string;
+  sort_order?: string;
+  page?: number;
+  limit?: number;
+}
+
 const ReportsPage: React.FC = () => {
   const { t } = useTranslation();
   const { currentLanguage } = useLanguage();
@@ -68,8 +98,27 @@ const ReportsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Modal states
+  const [showReportBuilder, setShowReportBuilder] = useState(false);
+  const [showTemplates, setShowTemplates] = useState(false);
+  const [showExportOptions, setShowExportOptions] = useState(false);
+  const [showDetailedReport, setShowDetailedReport] = useState(false);
+
+  // Report data states
+  const [reportTemplates, setReportTemplates] = useState<ReportTemplate[]>([]);
+  const [customReportOptions, setCustomReportOptions] = useState<any>(null);
+  const [currentReportType, setCurrentReportType] = useState<'clients' | 'cases' | 'hearings'>('clients');
+  const [reportConfig, setReportConfig] = useState<CustomReportConfig>({
+    entity: 'clients',
+    filters: {},
+    columns: [],
+  });
+  const [reportData, setReportData] = useState<any>(null);
+  const [reportLoading, setReportLoading] = useState(false);
+
   useEffect(() => {
     loadDashboardData();
+    loadReportTemplates();
   }, []);
 
   const loadDashboardData = async () => {
@@ -89,6 +138,60 @@ const ReportsPage: React.FC = () => {
       console.error('Error loading dashboard:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadReportTemplates = async () => {
+    try {
+      const response = await api.get('/reports/templates');
+      if (response.success) {
+        setReportTemplates(response.data);
+      }
+    } catch (err) {
+      console.error('Error loading templates:', err);
+    }
+  };
+
+  const loadCustomReportOptions = async (entity: string) => {
+    try {
+      const response = await api.get(`/reports/custom?type=${entity}`);
+      if (response.success) {
+        setCustomReportOptions(response.data);
+      }
+    } catch (err) {
+      console.error('Error loading custom report options:', err);
+    }
+  };
+
+  const generateDetailedReport = async (type: 'clients' | 'cases' | 'hearings', filters = {}) => {
+    try {
+      setReportLoading(true);
+      const response = await api.get(`/reports/${type}`, { params: filters });
+      if (response.success) {
+        setReportData(response.data);
+        setCurrentReportType(type);
+        setShowDetailedReport(true);
+      }
+    } catch (err) {
+      console.error('Error generating report:', err);
+    } finally {
+      setReportLoading(false);
+    }
+  };
+
+  const generateCustomReport = async (config: CustomReportConfig) => {
+    try {
+      setReportLoading(true);
+      const response = await api.post('/reports/custom', config);
+      if (response.success) {
+        setReportData(response.data);
+        setShowDetailedReport(true);
+        setShowReportBuilder(false);
+      }
+    } catch (err) {
+      console.error('Error generating custom report:', err);
+    } finally {
+      setReportLoading(false);
     }
   };
 
@@ -140,11 +243,15 @@ const ReportsPage: React.FC = () => {
               <p className='text-muted mb-0'>عرض شامل لأداء المكتب والإحصائيات</p>
             </div>
             <div className='d-flex gap-2'>
-              <Button variant='outline-primary'>
-                <Filter className='me-2' size={16} />
-                تصفية
+              <Button variant='outline-primary' onClick={() => setShowReportBuilder(true)}>
+                <BarChart3 className='me-2' size={16} />
+                إنشاء تقرير مخصص
               </Button>
-              <Button variant='success'>
+              <Button variant='outline-secondary' onClick={() => setShowTemplates(true)}>
+                <FileText className='me-2' size={16} />
+                القوالب
+              </Button>
+              <Button variant='success' onClick={() => setShowExportOptions(true)}>
                 <Download className='me-2' size={16} />
                 تصدير
               </Button>
@@ -389,8 +496,324 @@ const ReportsPage: React.FC = () => {
               </Col>
             </Row>
           )}
+
+          {/* Quick Report Access */}
+          <Row className='mb-4'>
+            <Col>
+              <Card>
+                <Card.Header>
+                  <h5 className='mb-0'>
+                    <BarChart3 className='me-2' />
+                    التقارير التفصيلية
+                  </h5>
+                </Card.Header>
+                <Card.Body>
+                  <Row>
+                    <Col md={4} className='mb-3'>
+                      <Card className='h-100 border-primary'>
+                        <Card.Body className='text-center'>
+                          <Users size={48} className='text-primary mb-3' />
+                          <h5>تقارير العملاء</h5>
+                          <p className='text-muted mb-3'>تقارير شاملة عن العملاء والأنشطة</p>
+                          <Button
+                            variant='primary'
+                            size='sm'
+                            className='me-2'
+                            onClick={() => generateDetailedReport('clients')}
+                            disabled={reportLoading}
+                          >
+                            <Eye className='me-1' size={14} />
+                            عرض
+                          </Button>
+                          <Button
+                            variant='outline-primary'
+                            size='sm'
+                            onClick={() => {
+                              setReportConfig({...reportConfig, entity: 'clients'});
+                              loadCustomReportOptions('clients');
+                              setShowReportBuilder(true);
+                            }}
+                          >
+                            <Settings className='me-1' size={14} />
+                            تخصيص
+                          </Button>
+                        </Card.Body>
+                      </Card>
+                    </Col>
+                    <Col md={4} className='mb-3'>
+                      <Card className='h-100 border-info'>
+                        <Card.Body className='text-center'>
+                          <Briefcase size={48} className='text-info mb-3' />
+                          <h5>تقارير القضايا</h5>
+                          <p className='text-muted mb-3'>تحليل أداء القضايا والنتائج</p>
+                          <Button
+                            variant='info'
+                            size='sm'
+                            className='me-2'
+                            onClick={() => generateDetailedReport('cases')}
+                            disabled={reportLoading}
+                          >
+                            <Eye className='me-1' size={14} />
+                            عرض
+                          </Button>
+                          <Button
+                            variant='outline-info'
+                            size='sm'
+                            onClick={() => {
+                              setReportConfig({...reportConfig, entity: 'cases'});
+                              loadCustomReportOptions('cases');
+                              setShowReportBuilder(true);
+                            }}
+                          >
+                            <Settings className='me-1' size={14} />
+                            تخصيص
+                          </Button>
+                        </Card.Body>
+                      </Card>
+                    </Col>
+                    <Col md={4} className='mb-3'>
+                      <Card className='h-100 border-warning'>
+                        <Card.Body className='text-center'>
+                          <Calendar size={48} className='text-warning mb-3' />
+                          <h5>تقارير الجلسات</h5>
+                          <p className='text-muted mb-3'>إحصائيات وتحليل الجلسات</p>
+                          <Button
+                            variant='warning'
+                            size='sm'
+                            className='me-2'
+                            onClick={() => generateDetailedReport('hearings')}
+                            disabled={reportLoading}
+                          >
+                            <Eye className='me-1' size={14} />
+                            عرض
+                          </Button>
+                          <Button
+                            variant='outline-warning'
+                            size='sm'
+                            onClick={() => {
+                              setReportConfig({...reportConfig, entity: 'hearings'});
+                              loadCustomReportOptions('hearings');
+                              setShowReportBuilder(true);
+                            }}
+                          >
+                            <Settings className='me-1' size={14} />
+                            تخصيص
+                          </Button>
+                        </Card.Body>
+                      </Card>
+                    </Col>
+                  </Row>
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
         </>
       )}
+
+      {/* Report Builder Modal */}
+      <Modal show={showReportBuilder} onHide={() => setShowReportBuilder(false)} size='lg'>
+        <Modal.Header closeButton>
+          <Modal.Title>إنشاء تقرير مخصص</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {customReportOptions && (
+            <Tabs defaultActiveKey='filters' className='mb-3'>
+              <Tab eventKey='filters' title='المرشحات'>
+                <Row>
+                  <Col md={6}>
+                    <Form.Group className='mb-3'>
+                      <Form.Label>نوع التقرير</Form.Label>
+                      <Form.Select
+                        value={reportConfig.entity}
+                        onChange={(e) => {
+                          const entity = e.target.value;
+                          setReportConfig({...reportConfig, entity});
+                          loadCustomReportOptions(entity);
+                        }}
+                      >
+                        {Object.entries(customReportOptions.available_entities || {}).map(([key, value]) => (
+                          <option key={key} value={key}>{value as string}</option>
+                        ))}
+                      </Form.Select>
+                    </Form.Group>
+                  </Col>
+                  <Col md={6}>
+                    <Form.Group className='mb-3'>
+                      <Form.Label>من تاريخ</Form.Label>
+                      <Form.Control
+                        type='date'
+                        value={reportConfig.filters.date_from || ''}
+                        onChange={(e) => setReportConfig({
+                          ...reportConfig,
+                          filters: {...reportConfig.filters, date_from: e.target.value}
+                        })}
+                      />
+                    </Form.Group>
+                  </Col>
+                  <Col md={6}>
+                    <Form.Group className='mb-3'>
+                      <Form.Label>إلى تاريخ</Form.Label>
+                      <Form.Control
+                        type='date'
+                        value={reportConfig.filters.date_to || ''}
+                        onChange={(e) => setReportConfig({
+                          ...reportConfig,
+                          filters: {...reportConfig.filters, date_to: e.target.value}
+                        })}
+                      />
+                    </Form.Group>
+                  </Col>
+                </Row>
+              </Tab>
+              <Tab eventKey='columns' title='الأعمدة'>
+                <Row>
+                  {Object.entries(customReportOptions.available_columns || {}).map(([key, value]) => (
+                    <Col md={6} key={key} className='mb-2'>
+                      <Form.Check
+                        type='checkbox'
+                        id={`column-${key}`}
+                        label={value as string}
+                        checked={reportConfig.columns.includes(key)}
+                        onChange={(e) => {
+                          const newColumns = e.target.checked
+                            ? [...reportConfig.columns, key]
+                            : reportConfig.columns.filter(col => col !== key);
+                          setReportConfig({...reportConfig, columns: newColumns});
+                        }}
+                      />
+                    </Col>
+                  ))}
+                </Row>
+              </Tab>
+            </Tabs>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant='secondary' onClick={() => setShowReportBuilder(false)}>
+            إلغاء
+          </Button>
+          <Button
+            variant='primary'
+            onClick={() => generateCustomReport(reportConfig)}
+            disabled={reportLoading}
+          >
+            {reportLoading && <Spinner size='sm' className='me-2' />}
+            إنشاء التقرير
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Templates Modal */}
+      <Modal show={showTemplates} onHide={() => setShowTemplates(false)} size='lg'>
+        <Modal.Header closeButton>
+          <Modal.Title>قوالب التقارير</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <ListGroup>
+            {reportTemplates.map((template) => (
+              <ListGroup.Item key={template.id} className='d-flex justify-content-between align-items-start'>
+                <div className='ms-2 me-auto'>
+                  <div className='fw-bold'>{template.name}</div>
+                  <p className='mb-1'>{template.description}</p>
+                  <small className='text-muted'>بواسطة {template.created_by} - {template.created_at}</small>
+                </div>
+                <ButtonGroup>
+                  <Button
+                    variant='outline-primary'
+                    size='sm'
+                    onClick={() => {
+                      setReportConfig({
+                        entity: template.entity,
+                        filters: template.config.filters || {},
+                        columns: template.config.columns || [],
+                        grouping: template.config.grouping,
+                      });
+                      setShowTemplates(false);
+                      setShowReportBuilder(true);
+                    }}
+                  >
+                    استخدام
+                  </Button>
+                </ButtonGroup>
+              </ListGroup.Item>
+            ))}
+          </ListGroup>
+          {reportTemplates.length === 0 && (
+            <p className='text-center text-muted py-4'>لا توجد قوالب محفوظة</p>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant='secondary' onClick={() => setShowTemplates(false)}>
+            إغلاق
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Detailed Report Modal */}
+      <Modal show={showDetailedReport} onHide={() => setShowDetailedReport(false)} size='xl'>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            تقرير {currentReportType === 'clients' ? 'العملاء' :
+                    currentReportType === 'cases' ? 'القضايا' : 'الجلسات'} التفصيلي
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body style={{ maxHeight: '70vh', overflowY: 'auto' }}>
+          {reportData && (
+            <>
+              {/* Summary */}
+              <Card className='mb-3'>
+                <Card.Body>
+                  <h6>ملخص التقرير</h6>
+                  <Row>
+                    {Object.entries(reportData.summary || {}).map(([key, value]) => (
+                      <Col md={3} key={key} className='text-center mb-2'>
+                        <div className='fw-bold'>{value as string}</div>
+                        <small className='text-muted'>{key}</small>
+                      </Col>
+                    ))}
+                  </Row>
+                </Card.Body>
+              </Card>
+
+              {/* Data Table */}
+              {reportData.available_columns && (
+                <div className='table-responsive'>
+                  <Table striped hover>
+                    <thead>
+                      <tr>
+                        {Object.entries(reportData.available_columns).slice(0, 6).map(([key, value]) => (
+                          <th key={key}>{value as string}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {reportData.data.map((row: any, index: number) => (
+                        <tr key={index}>
+                          {Object.keys(reportData.available_columns).slice(0, 6).map((key) => (
+                            <td key={key}>{row[key] || '-'}</td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </Table>
+                  {reportData.data.length === 0 && (
+                    <p className='text-center text-muted py-4'>لا توجد بيانات لعرضها</p>
+                  )}
+                </div>
+              )}
+            </>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant='success'>
+            <Download className='me-2' size={16} />
+            تصدير
+          </Button>
+          <Button variant='secondary' onClick={() => setShowDetailedReport(false)}>
+            إغلاق
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 };

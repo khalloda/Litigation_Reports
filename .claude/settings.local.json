@@ -49,7 +49,18 @@
       "Read(//d/wamp64/bin/php/**)",
       "Bash(dir:*)",
       "mcp__playwright__browser_console_messages",
-      "Bash(tee:*)"
+      "Bash(tee:*)",
+      "mcp__memory-bank__list_projects",
+      "Bash(timeout 90 npx playwright test tests/hearings-simple.spec.ts --reporter=line)",
+      "Bash(timeout 90 npx playwright test tests/deployment-check.spec.ts --reporter=line)",
+      "Bash(BASE_URL=http://lit.local:8080 timeout 90 npx playwright test tests/hearings-simple.spec.ts --reporter=line --config=playwright.config.simple.mjs)",
+      "Bash(BASE_URL=http://lit.local:8080 timeout 90 npx playwright test tests/deployment-check.spec.ts --reporter=line --config=playwright.config.simple.mjs)",
+      "Bash(BASE_URL=http://lit.local:8080 timeout 90 npx playwright test tests/login-test.spec.ts --reporter=line --config=playwright.config.simple.mjs)",
+      "Bash(BASE_URL=http://lit.local:8080 timeout 90 npx playwright test tests/hearings-full-test.spec.ts --reporter=line --config=playwright.config.simple.mjs)",
+      "Bash(D:wamp64binmysqlmysql9.1.0binmysql.exe -u root -p1234 -e \"SELECT 1 as test\")",
+      "Read(//c/Users/Khaled/**)",
+      "Bash(npx:*)",
+      "Bash(npm search:*)"
     ],
     "deny": [],
     "ask": []

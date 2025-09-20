@@ -1,5 +1,140 @@
 # Decision Log - Litigation Reports System
 
+## 2025-09-20 - Strict lit.local Architecture & CORS Elimination
+
+### Decision: Implement Same-Origin Architecture with lit.local Only
+
+**Context**: النظام كان يستخدم CORS للتعامل مع المنافذ المختلفة، مما يسبب تعقيدات في الأمان والمصادقة وإدارة الجلسات.
+
+**Decision**: Eliminate CORS entirely by serving React static files through PHP backend on single origin (lit.local:8080).
+
+**Options Considered**:
+1. Continue with CORS configuration between ports 3010 and 8080
+2. Use proxy server to handle cross-origin requests
+3. Serve React static files directly from PHP backend (same-origin)
+
+**Chosen Option**: #3 - Same-origin architecture
+
+**Rationale**:
+- إزالة تعقيدات CORS وتحسين الأمان
+- Simplified authentication flow with shared sessions
+- Better performance without preflight requests
+- Reduced security attack surface
+- Easier deployment and configuration management
+- Native browser cookie/session handling
+
+**Implementation Details**:
+- **Build Integration**: `npm run build` outputs to `backend/public/`
+- **Apache Routing**: `.htaccess` handles API routes and SPA fallback
+- **API Path Fixing**: Updated PHP includes for copied API structure
+- **Authentication**: Session-based + JWT token dual support
+- **No CORS Headers**: Removed all cross-origin configuration
+
+**Directory Structure**:
+```
+backend/public/          # Apache DocumentRoot
+├── index.html          # React SPA entry
+├── assets/             # React static assets
+├── api/                # PHP API endpoints
+└── .htaccess           # Routing configuration
+```
+
+**Impact**:
+- ✅ Eliminated CORS vulnerabilities entirely
+- ✅ Simplified authentication and session management
+- ✅ Improved performance with no preflight requests
+- ✅ Single-origin security model
+- ✅ Production-ready deployment architecture
+
+**Files Modified**:
+- `backend/public/.htaccess` - Apache routing rules
+- `backend/public/api/index.php` - Fixed include paths
+- `backend/api/index.php` - Removed CORS headers
+- `src/services/api.ts` - Relative URLs and no credentials
+
+**Cross-References**: 
+- [Architecture.md](Architecture.md) - Updated architecture documentation
+- [Progress.md](Progress.md) - Implementation status
+
+---
+
+## 2025-09-20 - Advanced Reporting System Implementation
+
+### Decision: Implement Comprehensive Custom Reporting System
+
+**Context**: المستخدمون يحتاجون إلى تقارير مفصلة وقابلة للتخصيص لإدارة القضايا والعملاء والجلسات مع إمكانيات فلترة متقدمة.
+
+**Decision**: Build full-featured reporting system with dashboard, custom report builder, templates, and export functionality.
+
+**Options Considered**:
+1. Basic static reports with fixed formats
+2. Simple filtering with limited customization
+3. Advanced reporting system with full customization (chosen)
+
+**Chosen Option**: #3 - Advanced reporting system
+
+**Rationale**:
+- تلبية احتياجات المستخدمين للتقارير المخصصة
+- Professional litigation management requires detailed reporting
+- Export capabilities essential for external stakeholders
+- Template system improves workflow efficiency
+- Arabic-first reporting interface
+
+**Implementation Details**:
+
+#### Backend API Enhancement
+- **8 New Endpoints**: Dashboard, custom reports, templates, export
+- **Advanced Filtering**: Date ranges, status filters, entity-specific filters
+- **Dynamic Columns**: User-selectable column configuration
+- **Template Management**: Save/load report configurations
+- **Export Support**: CSV, Excel, PDF format support
+
+#### Frontend Components
+- **Enhanced ReportsPage.tsx**: Complete dashboard with metrics
+- **Report Builder Modal**: Tabbed interface with filters and columns
+- **Templates Modal**: Template management and application
+- **Quick Access Cards**: View/Customize buttons for each report type
+- **Detailed Report Modal**: Full-screen results with export options
+
+#### Key Features
+- **Dashboard Overview**: Key metrics, financial summary, recent activities
+- **Custom Report Builder**: Entity selection, filter configuration, column selection
+- **Report Templates**: Save and reuse report configurations
+- **Export Functionality**: Multi-format export capabilities
+- **Real-time Generation**: Dynamic report generation with pagination
+
+**Data Structures**:
+```typescript
+interface CustomReportConfig {
+  entity: 'clients' | 'cases' | 'hearings' | 'invoices' | 'lawyers'
+  filters: Record<string, any>
+  columns: string[]
+  grouping?: string
+  sort_by?: string
+  sort_order?: 'asc' | 'desc'
+}
+```
+
+**Impact**:
+- ✅ Professional reporting capabilities for litigation management
+- ✅ Customizable reports with advanced filtering
+- ✅ Template system for workflow efficiency
+- ✅ Export functionality for stakeholder distribution
+- ✅ Arabic-first interface with RTL compliance
+- ✅ Comprehensive dashboard with key metrics
+
+**Files Created/Modified**:
+- `backend/src/Controllers/ReportController.php` - Enhanced with 8 new methods
+- `src/pages/ReportsPage.tsx` - Complete reporting interface
+- `backend/api/index.php` - Added advanced reporting routes
+- `ReportingSystem.md` - Comprehensive documentation
+
+**Cross-References**: 
+- [ReportingSystem.md](ReportingSystem.md) - Detailed system documentation
+- [Architecture.md](Architecture.md) - Architectural integration
+
+---
+
 ## 2025-09-17 - Client Logo Implementation
 
 ### Decision: Implement Client Logo Upload and Display Functionality

@@ -10,7 +10,9 @@ import {
   Badge,
   Spinner,
   Alert,
+  Modal,
 } from 'react-bootstrap';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import {
   Plus,
@@ -62,6 +64,29 @@ interface HearingOptions {
   duration: Record<string, string>;
 }
 
+interface Case {
+  id: number;
+  matter_id: string;
+  matter_ar: string;
+  matter_en: string;
+  client_name_ar: string;
+  client_name_en: string;
+}
+
+interface HearingFormData {
+  case_id: string;
+  hearing_date: string;
+  hearing_type: string;
+  hearing_result: string;
+  hearing_duration: string;
+  hearing_decision: string;
+  court_notes: string;
+  lawyer_notes: string;
+  expert_notes: string;
+  next_hearing: string;
+  short_decision: string;
+}
+
 const HearingsPage: React.FC = () => {
   const { t } = useTranslation();
   const [hearings, setHearings] = useState<Hearing[]>([]);
@@ -89,10 +114,35 @@ const HearingsPage: React.FC = () => {
     has_prev: false,
   });
 
+  // Modal state
+  const [showModal, setShowModal] = useState(false);
+  const [modalLoading, setModalLoading] = useState(false);
+  const [cases, setCases] = useState<Case[]>([]);
+  const [formData, setFormData] = useState<HearingFormData>({
+    case_id: '',
+    hearing_date: '',
+    hearing_type: '',
+    hearing_result: '',
+    hearing_duration: '',
+    hearing_decision: '',
+    court_notes: '',
+    lawyer_notes: '',
+    expert_notes: '',
+    next_hearing: '',
+    short_decision: '',
+  });
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+
   useEffect(() => {
     loadHearings();
     loadOptions();
   }, [filters, pagination.current_page]);
+
+  useEffect(() => {
+    if (showModal) {
+      loadCases();
+    }
+  }, [showModal]);
 
   const loadHearings = async () => {
     try {
@@ -129,6 +179,115 @@ const HearingsPage: React.FC = () => {
       }
     } catch (err) {
       console.error('Error loading options:', err);
+    }
+  };
+
+  const loadCases = async () => {
+    try {
+      const response = await api.get('/cases?limit=100');
+      if (response.success && response.data?.data) {
+        setCases(response.data.data);
+      }
+    } catch (err) {
+      console.error('Error loading cases:', err);
+      toast.error('خطأ في تحميل القضايا');
+    }
+  };
+
+  const handleModalOpen = () => {
+    setShowModal(true);
+    setFormData({
+      case_id: '',
+      hearing_date: '',
+      hearing_type: '',
+      hearing_result: '',
+      hearing_duration: '',
+      hearing_decision: '',
+      court_notes: '',
+      lawyer_notes: '',
+      expert_notes: '',
+      next_hearing: '',
+      short_decision: '',
+    });
+    setFormErrors({});
+  };
+
+  const handleModalClose = () => {
+    setShowModal(false);
+    setFormData({
+      case_id: '',
+      hearing_date: '',
+      hearing_type: '',
+      hearing_result: '',
+      hearing_duration: '',
+      hearing_decision: '',
+      court_notes: '',
+      lawyer_notes: '',
+      expert_notes: '',
+      next_hearing: '',
+      short_decision: '',
+    });
+    setFormErrors({});
+  };
+
+  const handleFormChange = (key: keyof HearingFormData, value: string) => {
+    setFormData((prev) => ({ ...prev, [key]: value }));
+    // Clear error when user starts typing
+    if (formErrors[key]) {
+      setFormErrors((prev) => ({ ...prev, [key]: '' }));
+    }
+  };
+
+  const validateForm = (): boolean => {
+    const errors: Record<string, string> = {};
+
+    if (!formData.case_id) {
+      errors.case_id = 'القضية مطلوبة';
+    }
+    if (!formData.hearing_date) {
+      errors.hearing_date = 'تاريخ الجلسة مطلوب';
+    }
+    if (!formData.hearing_type) {
+      errors.hearing_type = 'نوع الجلسة مطلوب';
+    }
+    if (!formData.hearing_result) {
+      errors.hearing_result = 'نتيجة الجلسة مطلوبة';
+    }
+    if (!formData.hearing_duration) {
+      errors.hearing_duration = 'مدة الجلسة مطلوبة';
+    }
+
+    setFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    try {
+      setModalLoading(true);
+      const response = await api.post('/hearings', formData);
+
+      if (response.success) {
+        toast.success('تم إضافة الجلسة بنجاح');
+        handleModalClose();
+        loadHearings(); // Refresh the list
+      } else {
+        if (response.errors) {
+          setFormErrors(response.errors);
+        } else {
+          toast.error(response.error || 'حدث خطأ أثناء إضافة الجلسة');
+        }
+      }
+    } catch (err) {
+      console.error('Error creating hearing:', err);
+      toast.error('حدث خطأ أثناء إضافة الجلسة');
+    } finally {
+      setModalLoading(false);
     }
   };
 
@@ -202,7 +361,12 @@ const HearingsPage: React.FC = () => {
               </h2>
               <p className='text-muted mb-0'>إدارة وتتبع جميع جلسات المحكمة</p>
             </div>
-            <Button variant='primary' size='lg'>
+            <Button
+              variant='primary'
+              size='lg'
+              onClick={handleModalOpen}
+              data-testid='add-hearing-button'
+            >
               <Plus className='me-2' />
               إضافة جلسة جديدة
             </Button>
@@ -443,6 +607,225 @@ const HearingsPage: React.FC = () => {
           </Card.Footer>
         )}
       </Card>
+
+      {/* Add Hearing Modal */}
+      <Modal show={showModal} onHide={handleModalClose} size='lg' backdrop='static'>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <Gavel className='me-2' />
+            إضافة جلسة جديدة
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={handleSubmit}>
+            <Row>
+              <Col md={6}>
+                <Form.Group className='mb-3'>
+                  <Form.Label>القضية *</Form.Label>
+                  <Form.Select
+                    value={formData.case_id}
+                    onChange={(e) => handleFormChange('case_id', e.target.value)}
+                    isInvalid={!!formErrors.case_id}
+                    data-testid='case-select'
+                  >
+                    <option value=''>اختر القضية</option>
+                    {cases.map((case_item) => (
+                      <option key={case_item.id} value={case_item.id}>
+                        {case_item.matter_id} - {case_item.matter_ar} ({case_item.client_name_ar})
+                      </option>
+                    ))}
+                  </Form.Select>
+                  <Form.Control.Feedback type='invalid'>{formErrors.case_id}</Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group className='mb-3'>
+                  <Form.Label>تاريخ الجلسة *</Form.Label>
+                  <Form.Control
+                    type='datetime-local'
+                    value={formData.hearing_date}
+                    onChange={(e) => handleFormChange('hearing_date', e.target.value)}
+                    isInvalid={!!formErrors.hearing_date}
+                    data-testid='hearing-date-input'
+                  />
+                  <Form.Control.Feedback type='invalid'>
+                    {formErrors.hearing_date}
+                  </Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+            </Row>
+
+            <Row>
+              <Col md={4}>
+                <Form.Group className='mb-3'>
+                  <Form.Label>نوع الجلسة *</Form.Label>
+                  <Form.Select
+                    value={formData.hearing_type}
+                    onChange={(e) => handleFormChange('hearing_type', e.target.value)}
+                    isInvalid={!!formErrors.hearing_type}
+                    data-testid='hearing-type-select'
+                  >
+                    <option value=''>اختر النوع</option>
+                    {Object.entries(options.type).map(([key, value]) => (
+                      <option key={key} value={key}>
+                        {value}
+                      </option>
+                    ))}
+                  </Form.Select>
+                  <Form.Control.Feedback type='invalid'>
+                    {formErrors.hearing_type}
+                  </Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+              <Col md={4}>
+                <Form.Group className='mb-3'>
+                  <Form.Label>نتيجة الجلسة *</Form.Label>
+                  <Form.Select
+                    value={formData.hearing_result}
+                    onChange={(e) => handleFormChange('hearing_result', e.target.value)}
+                    isInvalid={!!formErrors.hearing_result}
+                    data-testid='hearing-result-select'
+                  >
+                    <option value=''>اختر النتيجة</option>
+                    {Object.entries(options.result).map(([key, value]) => (
+                      <option key={key} value={key}>
+                        {value}
+                      </option>
+                    ))}
+                  </Form.Select>
+                  <Form.Control.Feedback type='invalid'>
+                    {formErrors.hearing_result}
+                  </Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+              <Col md={4}>
+                <Form.Group className='mb-3'>
+                  <Form.Label>مدة الجلسة *</Form.Label>
+                  <Form.Select
+                    value={formData.hearing_duration}
+                    onChange={(e) => handleFormChange('hearing_duration', e.target.value)}
+                    isInvalid={!!formErrors.hearing_duration}
+                    data-testid='hearing-duration-select'
+                  >
+                    <option value=''>اختر المدة</option>
+                    {Object.entries(options.duration).map(([key, value]) => (
+                      <option key={key} value={key}>
+                        {value}
+                      </option>
+                    ))}
+                  </Form.Select>
+                  <Form.Control.Feedback type='invalid'>
+                    {formErrors.hearing_duration}
+                  </Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+            </Row>
+
+            <Row>
+              <Col md={6}>
+                <Form.Group className='mb-3'>
+                  <Form.Label>الجلسة التالية</Form.Label>
+                  <Form.Control
+                    type='datetime-local'
+                    value={formData.next_hearing}
+                    onChange={(e) => handleFormChange('next_hearing', e.target.value)}
+                    data-testid='next-hearing-input'
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group className='mb-3'>
+                  <Form.Label>القرار المختصر</Form.Label>
+                  <Form.Control
+                    type='text'
+                    value={formData.short_decision}
+                    onChange={(e) => handleFormChange('short_decision', e.target.value)}
+                    placeholder='القرار المختصر'
+                    data-testid='short-decision-input'
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+
+            <Form.Group className='mb-3'>
+              <Form.Label>قرار الجلسة</Form.Label>
+              <Form.Control
+                as='textarea'
+                rows={3}
+                value={formData.hearing_decision}
+                onChange={(e) => handleFormChange('hearing_decision', e.target.value)}
+                placeholder='تفاصيل قرار الجلسة'
+                data-testid='hearing-decision-textarea'
+              />
+            </Form.Group>
+
+            <Row>
+              <Col md={4}>
+                <Form.Group className='mb-3'>
+                  <Form.Label>ملاحظات المحكمة</Form.Label>
+                  <Form.Control
+                    as='textarea'
+                    rows={3}
+                    value={formData.court_notes}
+                    onChange={(e) => handleFormChange('court_notes', e.target.value)}
+                    placeholder='ملاحظات المحكمة'
+                    data-testid='court-notes-textarea'
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={4}>
+                <Form.Group className='mb-3'>
+                  <Form.Label>ملاحظات المحامي</Form.Label>
+                  <Form.Control
+                    as='textarea'
+                    rows={3}
+                    value={formData.lawyer_notes}
+                    onChange={(e) => handleFormChange('lawyer_notes', e.target.value)}
+                    placeholder='ملاحظات المحامي'
+                    data-testid='lawyer-notes-textarea'
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={4}>
+                <Form.Group className='mb-3'>
+                  <Form.Label>ملاحظات الخبراء</Form.Label>
+                  <Form.Control
+                    as='textarea'
+                    rows={3}
+                    value={formData.expert_notes}
+                    onChange={(e) => handleFormChange('expert_notes', e.target.value)}
+                    placeholder='ملاحظات الخبراء'
+                    data-testid='expert-notes-textarea'
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant='secondary' onClick={handleModalClose} disabled={modalLoading}>
+            إلغاء
+          </Button>
+          <Button
+            variant='primary'
+            onClick={handleSubmit}
+            disabled={modalLoading}
+            data-testid='submit-hearing-button'
+          >
+            {modalLoading ? (
+              <>
+                <Spinner animation='border' size='sm' className='me-2' />
+                جاري الحفظ...
+              </>
+            ) : (
+              <>
+                <Plus className='me-2' />
+                إضافة الجلسة
+              </>
+            )}
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Container>
   );
 };
