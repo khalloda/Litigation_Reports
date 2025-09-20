@@ -288,7 +288,7 @@ export function Users() {
                         </td>
                         <td>
                           {user.last_login
-                            ? new Date(user.last_login).toLocaleDateString('ar-SA')
+                            ? new Date(user.last_login).toLocaleDateString('en-GB')
                             : 'لم يسجل دخول'}
                         </td>
                         <td>

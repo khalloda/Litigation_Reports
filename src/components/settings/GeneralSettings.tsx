@@ -545,7 +545,7 @@ export function GeneralSettings() {
           <div className="d-flex justify-content-between align-items-center">
             <div>
               <Badge variant="info" className="me-2">
-                آخر تحديث: {new Date().toLocaleDateString('ar-SA')}
+                آخر تحديث: {new Date().toLocaleDateString('en-GB')}
               </Badge>
             </div>
             <div className="d-flex gap-2">

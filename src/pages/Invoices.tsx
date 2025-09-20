@@ -297,7 +297,7 @@ export function Invoices() {
 
   const formatDate = (dateString: string) => {
     if (!dateString) return '-';
-    return new Date(dateString).toLocaleDateString('ar-SA');
+    return new Date(dateString).toLocaleDateString('en-GB');
   };
 
   if (loading && invoices.length === 0) {

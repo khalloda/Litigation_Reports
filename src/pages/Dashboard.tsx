@@ -65,7 +65,7 @@ export function Dashboard() {
     if (diffInDays === 1) return 'منذ يوم';
     if (diffInDays < 30) return `منذ ${diffInDays} يوم`;
 
-    return date.toLocaleDateString('ar-SA');
+    return date.toLocaleDateString('en-GB');
   };
 
   const getActivityIcon = (type: string) => {
@@ -272,7 +272,7 @@ export function Dashboard() {
                         <strong>{hearing.matter_ar || 'جلسة محكمة'}</strong>
                       </p>
                       <small className='text-muted'>
-                        {new Date(hearing.hearing_date).toLocaleDateString('ar-SA')}
+                        {new Date(hearing.hearing_date).toLocaleDateString('en-GB')}
                       </small>
                     </div>
                   </div>

@@ -149,7 +149,7 @@ const CasesPage: React.FC = () => {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('ar-SA');
+    return new Date(dateString).toLocaleDateString('en-GB');
   };
 
   if (loading && cases.length === 0) {

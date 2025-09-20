@@ -508,7 +508,7 @@ export function Documents() {
                       <td>
                         <div className="d-flex align-items-center">
                           <Calendar size={14} className="me-1" />
-                          {new Date(document.created_at).toLocaleDateString('ar-SA')}
+                          {new Date(document.created_at).toLocaleDateString('en-GB')}
                         </div>
                       </td>
                       <td>

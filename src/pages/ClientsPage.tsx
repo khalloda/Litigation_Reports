@@ -314,7 +314,7 @@ const ClientsPage: React.FC = () => {
 
   const formatDate = (dateString: string) => {
     if (!dateString) return '-';
-    return new Date(dateString).toLocaleDateString('ar-SA');
+    return new Date(dateString).toLocaleDateString('en-GB');
   };
 
   if (loading && clients.length === 0) {

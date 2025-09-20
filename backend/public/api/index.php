@@ -23,7 +23,7 @@ session_start();
 // Autoloader not needed for this simple setup
 
 // Include configuration
-require_once __DIR__ . '/../../config/config.php';
+require_once __DIR__ . '/../../../config/config.php';
 
 // Include database connection (MySQL)
 require_once __DIR__ . '/../../config/database.php';

@@ -344,7 +344,7 @@ export function ProfileSettings() {
                   <Form.Label>تاريخ الإنشاء</Form.Label>
                   <Form.Control
                     type="text"
-                    value={new Date(profile.created_at).toLocaleDateString('ar-SA')}
+                    value={new Date(profile.created_at).toLocaleDateString('en-GB')}
                     disabled
                     className="bg-light"
                   />
