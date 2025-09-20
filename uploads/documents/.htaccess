@@ -1,0 +1,35 @@
+# Security for document uploads directory
+# Prevent direct access to files
+
+# Deny access to all files by default
+<Files "*">
+    Require all denied
+</Files>
+
+# Allow access only through PHP application
+# (Files will be served through the download API endpoint)
+
+# Prevent execution of PHP files
+<FilesMatch "\.(php|phtml|php3|php4|php5|pl|py|jsp|asp|sh|cgi)$">
+    Require all denied
+</FilesMatch>
+
+# Security headers
+<IfModule mod_headers.c>
+    # Prevent MIME type sniffing
+    Header always set X-Content-Type-Options nosniff
+
+    # Prevent files from being executed as scripts
+    Header always set X-Frame-Options DENY
+
+    # Add security headers for downloaded files
+    Header always set Content-Security-Policy "default-src 'none';"
+</IfModule>
+
+# Disable directory browsing
+Options -Indexes
+
+# Prevent access to hidden files
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>

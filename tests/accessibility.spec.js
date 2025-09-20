@@ -1,5 +1,5 @@
-const { test, expect } = require('@playwright/test');
-const TestHelpers = require('./utils/test-helpers');
+import { test, expect } from '@playwright/test';
+import TestHelpers from './utils/test-helpers.js';
 
 test.describe('Accessibility Testing', () => {
   let helpers;

@@ -1,0 +1,4 @@
+- Strictly use lit.local only
+- Use react static files with php only
+- Never use CORS
+- All backend files and data is inside folder /backend/
