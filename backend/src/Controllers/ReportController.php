@@ -34,12 +34,21 @@ class ReportController {
                 return Response::success($dashboard);
             }
 
-            // Return mock data for now to fix the frontend
-            $dashboard['total_clients'] = 0;
-            $dashboard['total_cases'] = 0;
-            $dashboard['total_hearings'] = 0;
-            $dashboard['total_invoices'] = 0;
-            $dashboard['total_lawyers'] = 0;
+            // Get real counts
+            $result = $db->fetch("SELECT COUNT(*) as count FROM clients WHERE status = 'active'");
+            $dashboard['total_clients'] = (int) ($result['count'] ?? 0);
+
+            $result = $db->fetch("SELECT COUNT(*) as count FROM cases");
+            $dashboard['total_cases'] = (int) ($result['count'] ?? 0);
+
+            $result = $db->fetch("SELECT COUNT(*) as count FROM hearings");
+            $dashboard['total_hearings'] = (int) ($result['count'] ?? 0);
+
+            $result = $db->fetch("SELECT COUNT(*) as count FROM invoices");
+            $dashboard['total_invoices'] = (int) ($result['count'] ?? 0);
+
+            $result = $db->fetch("SELECT COUNT(*) as count FROM lawyers WHERE is_active = 1");
+            $dashboard['total_lawyers'] = (int) ($result['count'] ?? 0);
             $dashboard['recent_activities'] = [];
             $dashboard['upcoming_hearings'] = [];
             $dashboard['financial_summary'] = [
@@ -87,25 +96,116 @@ class ReportController {
                 'columns' => $request->get('columns') // specific columns to include
             ];
 
-            // Return mock detailed client report data
+            // Get database instance
+            $db = Database::getInstance();
+
+            // Build WHERE clause for filters
+            $whereConditions = ['1=1'];
+            $params = [];
+
+            if (!empty($filters['status'])) {
+                $whereConditions[] = 'status = ?';
+                $params[] = $filters['status'];
+            }
+
+            if (!empty($filters['client_type'])) {
+                $whereConditions[] = 'client_type = ?';
+                $params[] = $filters['client_type'];
+            }
+
+            if (!empty($filters['search'])) {
+                $whereConditions[] = '(client_name_ar LIKE ? OR client_name_en LIKE ? OR email LIKE ?)';
+                $searchTerm = '%' . $filters['search'] . '%';
+                $params[] = $searchTerm;
+                $params[] = $searchTerm;
+                $params[] = $searchTerm;
+            }
+
+            if (!empty($filters['date_from'])) {
+                $whereConditions[] = 'created_at >= ?';
+                $params[] = $filters['date_from'];
+            }
+
+            if (!empty($filters['date_to'])) {
+                $whereConditions[] = 'created_at <= ?';
+                $params[] = $filters['date_to'] . ' 23:59:59';
+            }
+
+            $whereClause = implode(' AND ', $whereConditions);
+
+            // Get total count
+            $totalQuery = "SELECT COUNT(*) as total FROM clients WHERE $whereClause";
+            $totalResult = $db->fetch($totalQuery, $params);
+            $total = $totalResult ? (int)$totalResult['total'] : 0;
+
+            // Get summary statistics
+            $summaryQuery = "
+                SELECT
+                    COUNT(*) as total_clients,
+                    SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) as active_clients,
+                    SUM(CASE WHEN status != 'active' THEN 1 ELSE 0 END) as inactive_clients,
+                    SUM(CASE WHEN DATE(created_at) >= DATE(DATE_SUB(NOW(), INTERVAL 1 MONTH)) THEN 1 ELSE 0 END) as new_clients_this_month
+                FROM clients
+                WHERE $whereClause
+            ";
+            $summaryResult = $db->fetch($summaryQuery, $params);
+
+            // Get client type breakdown
+            $typeQuery = "
+                SELECT client_type, COUNT(*) as count
+                FROM clients
+                WHERE $whereClause
+                GROUP BY client_type
+            ";
+            $typeResults = $db->fetchAll($typeQuery, $params);
+            $typeBreakdown = ['individual' => 0, 'company' => 0, 'government' => 0, 'ngo' => 0];
+            foreach ($typeResults as $row) {
+                if (isset($typeBreakdown[$row['client_type']])) {
+                    $typeBreakdown[$row['client_type']] = (int)$row['count'];
+                }
+            }
+
+            // Calculate pagination
+            $totalPages = ceil($total / $filters['limit']);
+            $offset = ($filters['page'] - 1) * $filters['limit'];
+
+            // Get paginated data
+            $dataQuery = "
+                SELECT
+                    id,
+                    client_name_ar,
+                    client_name_en,
+                    client_type,
+                    phone,
+                    email,
+                    status,
+                    created_at,
+                    client_start_date as last_case_date,
+                    0 as case_count,
+                    0 as total_invoices,
+                    0 as paid_amount,
+                    0 as pending_amount
+                FROM clients
+                WHERE $whereClause
+                ORDER BY {$filters['sort_by']} {$filters['sort_order']}
+                LIMIT {$filters['limit']} OFFSET $offset
+            ";
+            $clientData = $db->fetchAll($dataQuery, $params);
+
+            // Return real client report data
             $reports = [
                 'summary' => [
-                    'total_clients' => 0,
-                    'active_clients' => 0,
-                    'inactive_clients' => 0,
-                    'new_clients_this_month' => 0,
+                    'total_clients' => (int)($summaryResult['total_clients'] ?? 0),
+                    'active_clients' => (int)($summaryResult['active_clients'] ?? 0),
+                    'inactive_clients' => (int)($summaryResult['inactive_clients'] ?? 0),
+                    'new_clients_this_month' => (int)($summaryResult['new_clients_this_month'] ?? 0),
                     'avg_cases_per_client' => 0,
                     'total_revenue_generated' => 0
                 ],
-                'data' => [],
+                'data' => $clientData,
                 'filters_applied' => array_filter($filters, function($v) { return $v !== null && $v !== ''; }),
                 'breakdown' => [
-                    'by_type' => [
-                        'individual' => 0,
-                        'company' => 0,
-                        'government' => 0,
-                        'ngo' => 0
-                    ],
+                    'by_type' => $typeBreakdown,
                     'by_city' => [],
                     'by_lawyer' => [],
                     'by_month' => []
@@ -113,10 +213,10 @@ class ReportController {
                 'pagination' => [
                     'current_page' => $filters['page'],
                     'per_page' => $filters['limit'],
-                    'total' => 0,
-                    'total_pages' => 0,
-                    'has_next' => false,
-                    'has_prev' => false
+                    'total' => $total,
+                    'total_pages' => $totalPages,
+                    'has_next' => $filters['page'] < $totalPages,
+                    'has_prev' => $filters['page'] > 1
                 ],
                 'available_columns' => [
                     'id' => 'معرف العميل',
@@ -172,45 +272,108 @@ class ReportController {
                 'columns' => $request->get('columns')
             ];
 
-            // Return mock detailed case report data
+            // Use the same database approach as dashboard
+            $db = Database::getInstance();
+
+            // Get real case statistics
+            $totalCases = $db->fetch("SELECT COUNT(*) as count FROM cases");
+            $activeCases = $db->fetch("SELECT COUNT(*) as count FROM cases WHERE matter_status = 'active'");
+            $closedCases = $db->fetch("SELECT COUNT(*) as count FROM cases WHERE matter_status = 'closed'");
+            $wonCases = $db->fetch("SELECT COUNT(*) as count FROM cases WHERE matter_status = 'won'");
+            $lostCases = $db->fetch("SELECT COUNT(*) as count FROM cases WHERE matter_status = 'lost'");
+            $pendingCases = $db->fetch("SELECT COUNT(*) as count FROM cases WHERE matter_status = 'pending'");
+
+            // Get cases by status
+            $statusBreakdown = $db->fetchAll("
+                SELECT matter_status, COUNT(*) as count
+                FROM cases
+                GROUP BY matter_status
+            ");
+            $statusCounts = ['active' => 0, 'closed' => 0, 'suspended' => 0, 'pending' => 0];
+            foreach ($statusBreakdown as $row) {
+                if (isset($statusCounts[$row['matter_status']])) {
+                    $statusCounts[$row['matter_status']] = (int)$row['count'];
+                }
+            }
+
+            // Get cases by category
+            $typeBreakdown = $db->fetchAll("
+                SELECT matter_category, COUNT(*) as count
+                FROM cases
+                GROUP BY matter_category
+            ");
+            $typeCounts = ['civil' => 0, 'criminal' => 0, 'commercial' => 0, 'administrative' => 0, 'labor' => 0, 'family' => 0];
+            foreach ($typeBreakdown as $row) {
+                if (isset($typeCounts[$row['matter_category']])) {
+                    $typeCounts[$row['matter_category']] = (int)$row['count'];
+                }
+            }
+
+            // Get cases by status (using status as outcome for now)
+            $outcomeBreakdown = $db->fetchAll("
+                SELECT matter_status, COUNT(*) as count
+                FROM cases
+                WHERE matter_status IS NOT NULL
+                GROUP BY matter_status
+            ");
+            $outcomeCounts = ['won' => 0, 'lost' => 0, 'settled' => 0, 'dismissed' => 0];
+            foreach ($outcomeBreakdown as $row) {
+                if (isset($outcomeCounts[$row['matter_status']])) {
+                    $outcomeCounts[$row['matter_status']] = (int)$row['count'];
+                }
+            }
+
+            // Get average case duration (for closed cases)
+            $avgDuration = $db->fetch("
+                SELECT AVG(DATEDIFF(matter_end_date, created_at)) as avg_duration_days
+                FROM cases
+                WHERE matter_status = 'closed' AND matter_end_date IS NOT NULL
+            ");
+
+            // Get total hearings for cases
+            $totalHearings = $db->fetch("SELECT COUNT(*) as count FROM hearings");
+
+            // Calculate success rate
+            $totalDecided = ($wonCases['count'] ?? 0) + ($lostCases['count'] ?? 0);
+            $successRate = $totalDecided > 0 ? round((($wonCases['count'] ?? 0) / $totalDecided) * 100, 2) : 0;
+
+            // Return real case report data
             $reports = [
                 'summary' => [
-                    'total_cases' => 0,
-                    'active_cases' => 0,
-                    'closed_cases' => 0,
-                    'won_cases' => 0,
-                    'lost_cases' => 0,
-                    'pending_cases' => 0,
-                    'avg_duration_days' => 0,
-                    'total_hearings' => 0,
-                    'success_rate' => 0
+                    'total_cases' => (int)($totalCases['count'] ?? 0),
+                    'active_cases' => (int)($activeCases['count'] ?? 0),
+                    'closed_cases' => (int)($closedCases['count'] ?? 0),
+                    'won_cases' => (int)($wonCases['count'] ?? 0),
+                    'lost_cases' => (int)($lostCases['count'] ?? 0),
+                    'pending_cases' => (int)($pendingCases['count'] ?? 0),
+                    'avg_duration_days' => $avgDuration['avg_duration_days'] ? (int)$avgDuration['avg_duration_days'] : null,
+                    'total_hearings' => (int)($totalHearings['count'] ?? 0),
+                    'success_rate' => $successRate
                 ],
-                'data' => [],
+                'data' => $db->fetchAll("
+                    SELECT
+                        id,
+                        matter_id as case_number,
+                        matter_ar as case_title_ar,
+                        matter_en as case_title_en,
+                        matter_category as case_type,
+                        matter_status as case_status,
+                        matter_court as court_name,
+                        matter_status as case_outcome,
+                        created_at,
+                        matter_end_date as case_close_date
+                    FROM cases
+                    ORDER BY created_at DESC
+                    LIMIT 50
+                "),
                 'filters_applied' => array_filter($filters, function($v) { return $v !== null && $v !== ''; }),
                 'breakdown' => [
-                    'by_status' => [
-                        'active' => 0,
-                        'closed' => 0,
-                        'suspended' => 0,
-                        'pending' => 0
-                    ],
-                    'by_type' => [
-                        'civil' => 0,
-                        'criminal' => 0,
-                        'commercial' => 0,
-                        'administrative' => 0,
-                        'labor' => 0,
-                        'family' => 0
-                    ],
+                    'by_status' => $statusCounts,
+                    'by_type' => $typeCounts,
                     'by_court' => [],
                     'by_lawyer' => [],
                     'by_month' => [],
-                    'by_outcome' => [
-                        'won' => 0,
-                        'lost' => 0,
-                        'settled' => 0,
-                        'dismissed' => 0
-                    ]
+                    'by_outcome' => $outcomeCounts
                 ],
                 'duration_analysis' => [
                     'avg_duration_all' => 0,
@@ -397,29 +560,90 @@ class ReportController {
                 'columns' => $request->get('columns')
             ];
 
-            // Return mock detailed hearing report data
+            // Use the same database approach as dashboard
+            $db = Database::getInstance();
+
+            // Get real hearing statistics
+            $totalHearings = $db->fetch("SELECT COUNT(*) as count FROM hearings");
+            $completedHearings = $db->fetch("SELECT COUNT(*) as count FROM hearings WHERE hearing_result IS NOT NULL AND hearing_result != 'pending'");
+            $upcomingHearings = $db->fetch("SELECT COUNT(*) as count FROM hearings WHERE hearing_date > NOW()");
+            $postponedHearings = $db->fetch("SELECT COUNT(*) as count FROM hearings WHERE hearing_result = 'postponed'");
+            $cancelledHearings = $db->fetch("SELECT COUNT(*) as count FROM hearings WHERE hearing_result = 'cancelled'");
+            $wonHearings = $db->fetch("SELECT COUNT(*) as count FROM hearings WHERE hearing_result = 'won'");
+            $lostHearings = $db->fetch("SELECT COUNT(*) as count FROM hearings WHERE hearing_result = 'lost'");
+
+            // Get hearings by result
+            $resultBreakdown = $db->fetchAll("
+                SELECT hearing_result, COUNT(*) as count
+                FROM hearings
+                WHERE hearing_result IS NOT NULL
+                GROUP BY hearing_result
+            ");
+            $resultCounts = ['won' => 0, 'lost' => 0, 'postponed' => 0, 'settled' => 0, 'dismissed' => 0, 'pending' => 0];
+            foreach ($resultBreakdown as $row) {
+                if (isset($resultCounts[$row['hearing_result']])) {
+                    $resultCounts[$row['hearing_result']] = (int)$row['count'];
+                }
+            }
+
+            // Get hearings by type
+            $typeBreakdown = $db->fetchAll("
+                SELECT hearing_type, COUNT(*) as count
+                FROM hearings
+                GROUP BY hearing_type
+            ");
+            $typeCounts = ['initial' => 0, 'review' => 0, 'appeal' => 0, 'final' => 0, 'settlement' => 0];
+            foreach ($typeBreakdown as $row) {
+                if (isset($typeCounts[$row['hearing_type']])) {
+                    $typeCounts[$row['hearing_type']] = (int)$row['count'];
+                }
+            }
+
+            // Calculate success rate
+            $totalDecided = ($wonHearings['count'] ?? 0) + ($lostHearings['count'] ?? 0);
+            $successRate = $totalDecided > 0 ? round((($wonHearings['count'] ?? 0) / $totalDecided) * 100, 2) : 0;
+
+            // Return real hearing report data
             $reports = [
                 'summary' => [
-                    'total_hearings' => 0,
-                    'completed_hearings' => 0,
-                    'upcoming_hearings' => 0,
-                    'postponed_hearings' => 0,
-                    'cancelled_hearings' => 0,
-                    'won_hearings' => 0,
-                    'lost_hearings' => 0,
-                    'success_rate' => 0,
+                    'total_hearings' => (int)($totalHearings['count'] ?? 0),
+                    'completed_hearings' => (int)($completedHearings['count'] ?? 0),
+                    'upcoming_hearings' => (int)($upcomingHearings['count'] ?? 0),
+                    'postponed_hearings' => (int)($postponedHearings['count'] ?? 0),
+                    'cancelled_hearings' => (int)($cancelledHearings['count'] ?? 0),
+                    'won_hearings' => (int)($wonHearings['count'] ?? 0),
+                    'lost_hearings' => (int)($lostHearings['count'] ?? 0),
+                    'success_rate' => $successRate,
                     'avg_preparation_time' => 0
                 ],
-                'data' => [],
+                'data' => $db->fetchAll("
+                    SELECT
+                        h.id,
+                        h.hearing_date,
+                        h.hearing_type,
+                        h.hearing_result,
+                        h.case_id,
+                        c.matter_id as case_number,
+                        c.matter_ar as case_title_ar,
+                        c.matter_court as court_name,
+                        h.created_at
+                    FROM hearings h
+                    LEFT JOIN cases c ON h.case_id = c.id
+                    ORDER BY h.hearing_date DESC
+                    LIMIT 50
+                "),
                 'filters_applied' => array_filter($filters, function($v) { return $v !== null && $v !== ''; }),
                 'breakdown' => [
-                    'by_result' => [
-                        'won' => 0,
-                        'lost' => 0,
+                    'by_result' => $resultCounts,
+                    'by_type' => $typeCounts,
+                    'by_court' => [],
+                    'by_lawyer' => [],
+                    'by_month' => [],
+                    'by_status' => [
+                        'scheduled' => 0,
+                        'completed' => 0,
                         'postponed' => 0,
-                        'settled' => 0,
-                        'dismissed' => 0,
-                        'pending' => 0
+                        'cancelled' => 0
                     ],
                     'by_type' => [
                         'initial' => 0,

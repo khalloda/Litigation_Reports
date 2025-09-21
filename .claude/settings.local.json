@@ -60,7 +60,15 @@
       "Bash(D:wamp64binmysqlmysql9.1.0binmysql.exe -u root -p1234 -e \"SELECT 1 as test\")",
       "Read(//c/Users/Khaled/**)",
       "Bash(npx:*)",
-      "Bash(npm search:*)"
+      "Bash(npm search:*)",
+      "Bash(BASE_URL=http://lit.local:8080 timeout 90 npx playwright test tests/reports-test.spec.ts --reporter=line --config=playwright.config.simple.mjs)",
+      "Bash(BASE_URL=http://lit.local:8080 timeout 90 npx playwright test tests/reports-simple.spec.ts --reporter=line --config=playwright.config.simple.mjs)",
+      "Bash(BASE_URL=http://lit.local:8080 timeout 90 npx playwright test tests/reports-detailed.spec.ts --reporter=line --config=playwright.config.simple.mjs)",
+      "Bash(D:wamp64binmysqlmysql9.1.0binmysql.exe -u root -p1234 -e \"DESCRIBE cases\" litigation_reports)",
+      "Bash(\"D:\\wamp64\\bin\\mysql\\mysql9.1.0\\bin\\mysql.exe\" -u root -p1234 -e \"DESCRIBE cases\" litigation_reports)",
+      "Bash(\"D:\\wamp64\\bin\\mysql\\mysql9.1.0\\bin\\mysql.exe\" -u root -p1234 -e \"SHOW DATABASES\")",
+      "Bash(\"D:\\wamp64\\bin\\mysql\\mysql9.1.0\\bin\\mysql.exe\" -u root -p1234 -e \"DESCRIBE cases\" litigation_db)",
+      "Bash(\"D:\\wamp64\\bin\\mysql\\mysql9.1.0\\bin\\mysql.exe\" -u root -p1234 -e \"DESCRIBE hearings\" litigation_db)"
     ],
     "deny": [],
     "ask": []
