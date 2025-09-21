@@ -724,18 +724,17 @@ class ReportController {
                 return Response::unauthorized('Authentication required');
             }
 
-            $reportType = $request->get('type'); // clients, cases, hearings
-            $customFilters = $request->get('filters', []);
-            $customColumns = $request->get('columns', []);
+            $reportType = $request->get('type', 'clients'); // clients, cases, hearings
 
-            // Return structure for custom report builder
+            // Get database instance to check available values
+            $db = Database::getInstance();
+
+            // Return structure for custom report builder with real data
             $response = [
                 'available_entities' => [
                     'clients' => 'العملاء',
                     'cases' => 'القضايا',
-                    'hearings' => 'الجلسات',
-                    'invoices' => 'الفواتير',
-                    'lawyers' => 'المحامين'
+                    'hearings' => 'الجلسات'
                 ],
                 'available_filters' => $this->getAvailableFilters($reportType),
                 'available_columns' => $this->getAvailableColumns($reportType),
@@ -754,6 +753,36 @@ class ReportController {
                 ]
             ];
 
+            // Add filter values based on database content
+            if ($reportType === 'clients') {
+                // Get available client types
+                $clientTypes = $db->fetchAll("SELECT DISTINCT client_type FROM clients WHERE client_type IS NOT NULL");
+                $response['filter_values'] = [
+                    'client_type' => array_column($clientTypes, 'client_type'),
+                    'status' => ['active', 'inactive']
+                ];
+            } elseif ($reportType === 'cases') {
+                // Get available case statuses and types
+                $caseStatuses = $db->fetchAll("SELECT DISTINCT matter_status FROM cases WHERE matter_status IS NOT NULL");
+                $caseTypes = $db->fetchAll("SELECT DISTINCT matter_category FROM cases WHERE matter_category IS NOT NULL");
+                $courts = $db->fetchAll("SELECT DISTINCT matter_court FROM cases WHERE matter_court IS NOT NULL");
+
+                $response['filter_values'] = [
+                    'case_status' => array_column($caseStatuses, 'matter_status'),
+                    'case_type' => array_column($caseTypes, 'matter_category'),
+                    'court_name' => array_column($courts, 'matter_court')
+                ];
+            } elseif ($reportType === 'hearings') {
+                // Get available hearing types and results
+                $hearingTypes = $db->fetchAll("SELECT DISTINCT hearing_type FROM hearings WHERE hearing_type IS NOT NULL");
+                $hearingResults = $db->fetchAll("SELECT DISTINCT hearing_result FROM hearings WHERE hearing_result IS NOT NULL");
+
+                $response['filter_values'] = [
+                    'hearing_type' => array_column($hearingTypes, 'hearing_type'),
+                    'hearing_result' => array_column($hearingResults, 'hearing_result')
+                ];
+            }
+
             return Response::success($response);
 
         } catch (Exception $e) {
@@ -770,41 +799,197 @@ class ReportController {
             }
 
             $reportConfig = [
-                'entity' => $request->get('entity'),
-                'filters' => $request->get('filters', []),
-                'columns' => $request->get('columns', []),
-                'grouping' => $request->get('grouping'),
-                'aggregations' => $request->get('aggregations', []),
-                'sort_by' => $request->get('sort_by'),
-                'sort_order' => $request->get('sort_order', 'asc'),
-                'page' => (int) $request->get('page', 1),
-                'limit' => (int) $request->get('limit', 100)
+                'entity' => $request->post('entity'),
+                'filters' => $request->post('filters', []),
+                'columns' => $request->post('columns', []),
+                'grouping' => $request->post('grouping'),
+                'aggregations' => $request->post('aggregations', []),
+                'sort_by' => $request->post('sort_by', 'created_at'),
+                'sort_order' => $request->post('sort_order', 'desc'),
+                'page' => (int) $request->post('page', 1),
+                'limit' => (int) $request->post('limit', 100)
             ];
 
-            // Generate report based on configuration
+            $db = Database::getInstance();
+            $entity = $reportConfig['entity'];
+            $filters = $reportConfig['filters'];
+            $columns = $reportConfig['columns'];
+
+            // Build query based on entity type
+            $whereConditions = ['1=1'];
+            $params = [];
+            $selectColumns = [];
+            $tableName = '';
+            $joins = '';
+
+            if ($entity === 'clients') {
+                $tableName = 'clients';
+                $defaultColumns = ['id', 'client_name_ar', 'client_name_en', 'client_type', 'phone', 'email', 'status', 'created_at'];
+                $selectColumns = empty($columns) ? $defaultColumns : array_intersect($columns, $defaultColumns);
+
+                // Ensure we always have at least some columns
+                if (empty($selectColumns)) {
+                    $selectColumns = ['id', 'client_name_ar', 'client_type', 'created_at'];
+                }
+
+                // Apply filters
+                if (!empty($filters['status'])) {
+                    $whereConditions[] = 'status = ?';
+                    $params[] = $filters['status'];
+                }
+                if (!empty($filters['client_type'])) {
+                    $whereConditions[] = 'client_type = ?';
+                    $params[] = $filters['client_type'];
+                }
+                if (!empty($filters['date_from'])) {
+                    $whereConditions[] = 'created_at >= ?';
+                    $params[] = $filters['date_from'];
+                }
+                if (!empty($filters['date_to'])) {
+                    $whereConditions[] = 'created_at <= ?';
+                    $params[] = $filters['date_to'] . ' 23:59:59';
+                }
+
+            } elseif ($entity === 'cases') {
+                $tableName = 'cases';
+                $defaultColumns = ['id', 'matter_id', 'matter_ar', 'matter_en', 'matter_category', 'matter_status', 'matter_court', 'created_at'];
+                $selectColumns = empty($columns) ? $defaultColumns : array_intersect($columns, $defaultColumns);
+
+                // Ensure we always have at least some columns
+                if (empty($selectColumns)) {
+                    $selectColumns = ['id', 'matter_id', 'matter_ar', 'matter_status', 'created_at'];
+                }
+
+                // Apply filters
+                if (!empty($filters['case_status'])) {
+                    $whereConditions[] = 'matter_status = ?';
+                    $params[] = $filters['case_status'];
+                }
+                if (!empty($filters['case_type'])) {
+                    $whereConditions[] = 'matter_category = ?';
+                    $params[] = $filters['case_type'];
+                }
+                if (!empty($filters['court_name'])) {
+                    $whereConditions[] = 'matter_court = ?';
+                    $params[] = $filters['court_name'];
+                }
+                if (!empty($filters['date_from'])) {
+                    $whereConditions[] = 'created_at >= ?';
+                    $params[] = $filters['date_from'];
+                }
+                if (!empty($filters['date_to'])) {
+                    $whereConditions[] = 'created_at <= ?';
+                    $params[] = $filters['date_to'] . ' 23:59:59';
+                }
+
+            } elseif ($entity === 'hearings') {
+                $tableName = 'hearings h';
+                $joins = 'LEFT JOIN cases c ON h.case_id = c.id';
+                $defaultColumns = ['h.id', 'h.hearing_date', 'h.hearing_type', 'h.hearing_result', 'c.matter_id', 'c.matter_ar', 'h.created_at'];
+                $selectColumns = empty($columns) ? $defaultColumns : array_intersect($columns, $defaultColumns);
+
+                // Ensure we always have at least some columns
+                if (empty($selectColumns)) {
+                    $selectColumns = ['h.id', 'h.hearing_date', 'h.hearing_type', 'h.created_at'];
+                }
+
+                // Apply filters
+                if (!empty($filters['hearing_type'])) {
+                    $whereConditions[] = 'h.hearing_type = ?';
+                    $params[] = $filters['hearing_type'];
+                }
+                if (!empty($filters['hearing_result'])) {
+                    $whereConditions[] = 'h.hearing_result = ?';
+                    $params[] = $filters['hearing_result'];
+                }
+                if (!empty($filters['date_from'])) {
+                    $whereConditions[] = 'h.hearing_date >= ?';
+                    $params[] = $filters['date_from'];
+                }
+                if (!empty($filters['date_to'])) {
+                    $whereConditions[] = 'h.hearing_date <= ?';
+                    $params[] = $filters['date_to'] . ' 23:59:59';
+                }
+            } else {
+                return Response::serverError('Invalid entity: ' . $entity);
+            }
+
+            $whereClause = implode(' AND ', $whereConditions);
+
+            // Get total count
+            $countQuery = "SELECT COUNT(*) as total FROM $tableName $joins WHERE $whereClause";
+
+            $totalResult = $db->fetch($countQuery, $params);
+            $total = $totalResult ? (int)$totalResult['total'] : 0;
+
+            // Calculate pagination
+            $totalPages = ceil($total / $reportConfig['limit']);
+            $offset = ($reportConfig['page'] - 1) * $reportConfig['limit'];
+
+            // Build final query
+            $selectClause = implode(', ', $selectColumns);
+
+            // Fix ORDER BY clause to use valid column names
+            $orderBy = $reportConfig['sort_by'];
+            if ($entity === 'hearings' && $orderBy === 'created_at') {
+                $orderBy = 'h.created_at';
+            } elseif ($entity === 'hearings' && !str_contains($orderBy, '.')) {
+                $orderBy = 'h.' . $orderBy;
+            } elseif (($entity === 'clients' || $entity === 'cases') && !in_array($orderBy, $selectColumns)) {
+                $orderBy = 'created_at';
+            }
+
+            $orderDirection = $reportConfig['sort_order'];
+
+            $dataQuery = "
+                SELECT $selectClause
+                FROM $tableName $joins
+                WHERE $whereClause
+                ORDER BY $orderBy $orderDirection
+                LIMIT {$reportConfig['limit']} OFFSET $offset
+            ";
+
+            $data = $db->fetchAll($dataQuery, $params);
+
+            // Build summary statistics
+            $summary = [
+                'total_records' => $total,
+                'filtered_records' => count($data),
+                'aggregated_values' => []
+            ];
+
+            // Add basic aggregations if requested
+            if (!empty($reportConfig['aggregations'])) {
+                foreach ($reportConfig['aggregations'] as $agg) {
+                    if ($agg === 'count') {
+                        $summary['aggregated_values']['count'] = $total;
+                    }
+                }
+            }
+
+            // Generate report response
             $report = [
                 'config' => $reportConfig,
-                'data' => [],
-                'summary' => [
-                    'total_records' => 0,
-                    'filtered_records' => 0,
-                    'aggregated_values' => []
-                ],
+                'data' => $data,
+                'summary' => $summary,
                 'pagination' => [
                     'current_page' => $reportConfig['page'],
                     'per_page' => $reportConfig['limit'],
-                    'total' => 0,
-                    'total_pages' => 0
+                    'total' => $total,
+                    'total_pages' => $totalPages,
+                    'has_next' => $reportConfig['page'] < $totalPages,
+                    'has_prev' => $reportConfig['page'] > 1
                 ],
+                'available_columns' => $this->getAvailableColumns($entity),
                 'generated_at' => date('Y-m-d H:i:s'),
-                'generated_by' => Auth::user()['name'] ?? 'Unknown'
+                'generated_by' => Auth::user()['name'] ?? 'مجهول'
             ];
 
             return Response::success($report);
 
         } catch (Exception $e) {
             error_log("Generate custom report error: " . $e->getMessage());
-            return Response::serverError('Failed to generate custom report');
+            return Response::serverError('Failed to generate custom report: ' . $e->getMessage());
         }
     }
 
@@ -844,46 +1029,83 @@ class ReportController {
                 return Response::unauthorized('Authentication required');
             }
 
-            // Mock report templates
+            // Predefined useful report templates
             $templates = [
                 [
                     'id' => 1,
-                    'name' => 'تقرير العملاء الشهري',
+                    'name' => 'تقرير العملاء النشطين',
                     'entity' => 'clients',
-                    'description' => 'تقرير شامل بالعملاء الجدد والنشطين شهرياً',
+                    'description' => 'تقرير شامل بالعملاء النشطين وأنواعهم',
                     'config' => [
                         'filters' => ['status' => 'active'],
-                        'columns' => ['client_name_ar', 'client_type', 'case_count', 'created_at'],
-                        'grouping' => 'month'
+                        'columns' => ['client_name_ar', 'client_name_en', 'client_type', 'phone', 'email', 'created_at'],
+                        'sort_by' => 'created_at',
+                        'sort_order' => 'desc'
                     ],
-                    'created_by' => 'Admin',
-                    'created_at' => '2025-09-01'
+                    'created_by' => 'النظام',
+                    'created_at' => date('Y-m-d')
                 ],
                 [
                     'id' => 2,
-                    'name' => 'تقرير أداء القضايا',
+                    'name' => 'تقرير القضايا النشطة',
                     'entity' => 'cases',
-                    'description' => 'تقرير تفصيلي بأداء القضايا ونتائجها',
+                    'description' => 'تقرير تفصيلي بالقضايا النشطة وحالتها',
                     'config' => [
-                        'filters' => ['case_status' => 'closed'],
-                        'columns' => ['case_number', 'case_type', 'case_outcome', 'duration_days'],
-                        'grouping' => 'case_type'
+                        'filters' => ['case_status' => 'active'],
+                        'columns' => ['case_number', 'case_title_ar', 'case_type', 'case_status', 'court_name', 'created_at'],
+                        'sort_by' => 'created_at',
+                        'sort_order' => 'desc'
                     ],
-                    'created_by' => 'Admin',
-                    'created_at' => '2025-09-01'
+                    'created_by' => 'النظام',
+                    'created_at' => date('Y-m-d')
                 ],
                 [
                     'id' => 3,
-                    'name' => 'تقرير الجلسات الأسبوعي',
+                    'name' => 'تقرير الجلسات القادمة',
                     'entity' => 'hearings',
-                    'description' => 'تقرير أسبوعي بالجلسات ونتائجها',
+                    'description' => 'تقرير بالجلسات المجدولة في الأسبوع القادم',
                     'config' => [
-                        'filters' => ['date_from' => '-7 days'],
-                        'columns' => ['hearing_date', 'court_name', 'case_title', 'hearing_result'],
-                        'grouping' => 'court_name'
+                        'filters' => [
+                            'date_from' => date('Y-m-d'),
+                            'date_to' => date('Y-m-d', strtotime('+7 days'))
+                        ],
+                        'columns' => ['hearing_date', 'hearing_type', 'case_number', 'case_title_ar', 'court_name'],
+                        'sort_by' => 'hearing_date',
+                        'sort_order' => 'asc'
                     ],
-                    'created_by' => 'Admin',
-                    'created_at' => '2025-09-01'
+                    'created_by' => 'النظام',
+                    'created_at' => date('Y-m-d')
+                ],
+                [
+                    'id' => 4,
+                    'name' => 'تقرير نتائج الجلسات',
+                    'entity' => 'hearings',
+                    'description' => 'تقرير بنتائج الجلسات المكتملة',
+                    'config' => [
+                        'filters' => ['hearing_result' => ['won', 'lost', 'settled']],
+                        'columns' => ['hearing_date', 'hearing_type', 'hearing_result', 'case_number', 'case_title_ar'],
+                        'sort_by' => 'hearing_date',
+                        'sort_order' => 'desc'
+                    ],
+                    'created_by' => 'النظام',
+                    'created_at' => date('Y-m-d')
+                ],
+                [
+                    'id' => 5,
+                    'name' => 'تقرير العملاء الجدد',
+                    'entity' => 'clients',
+                    'description' => 'تقرير بالعملاء المسجلين في الشهر الحالي',
+                    'config' => [
+                        'filters' => [
+                            'date_from' => date('Y-m-01'),
+                            'date_to' => date('Y-m-t')
+                        ],
+                        'columns' => ['client_name_ar', 'client_type', 'phone', 'email', 'created_at'],
+                        'sort_by' => 'created_at',
+                        'sort_order' => 'desc'
+                    ],
+                    'created_by' => 'النظام',
+                    'created_at' => date('Y-m-d')
                 ]
             ];
 
@@ -1021,28 +1243,33 @@ class ReportController {
                 return [
                     'id' => 'معرف العميل',
                     'client_name_ar' => 'اسم العميل (عربي)',
+                    'client_name_en' => 'اسم العميل (إنجليزي)',
                     'client_type' => 'نوع العميل',
                     'phone' => 'رقم الهاتف',
                     'email' => 'البريد الإلكتروني',
-                    'city' => 'المدينة',
-                    'case_count' => 'عدد القضايا'
+                    'status' => 'الحالة',
+                    'created_at' => 'تاريخ التسجيل'
                 ];
             case 'cases':
                 return [
                     'id' => 'معرف القضية',
-                    'case_number' => 'رقم القضية',
-                    'case_title_ar' => 'عنوان القضية',
-                    'case_type' => 'نوع القضية',
-                    'case_status' => 'حالة القضية',
-                    'court_name' => 'اسم المحكمة'
+                    'matter_id' => 'رقم القضية',
+                    'matter_ar' => 'عنوان القضية (عربي)',
+                    'matter_en' => 'عنوان القضية (إنجليزي)',
+                    'matter_category' => 'نوع القضية',
+                    'matter_status' => 'حالة القضية',
+                    'matter_court' => 'اسم المحكمة',
+                    'created_at' => 'تاريخ الإنشاء'
                 ];
             case 'hearings':
                 return [
-                    'id' => 'معرف الجلسة',
-                    'hearing_date' => 'تاريخ الجلسة',
-                    'hearing_type' => 'نوع الجلسة',
-                    'court_name' => 'اسم المحكمة',
-                    'hearing_result' => 'نتيجة الجلسة'
+                    'h.id' => 'معرف الجلسة',
+                    'h.hearing_date' => 'تاريخ الجلسة',
+                    'h.hearing_type' => 'نوع الجلسة',
+                    'h.hearing_result' => 'نتيجة الجلسة',
+                    'c.matter_id' => 'رقم القضية',
+                    'c.matter_ar' => 'عنوان القضية',
+                    'h.created_at' => 'تاريخ الإنشاء'
                 ];
             default:
                 return [];

@@ -68,7 +68,10 @@
       "Bash(\"D:\\wamp64\\bin\\mysql\\mysql9.1.0\\bin\\mysql.exe\" -u root -p1234 -e \"DESCRIBE cases\" litigation_reports)",
       "Bash(\"D:\\wamp64\\bin\\mysql\\mysql9.1.0\\bin\\mysql.exe\" -u root -p1234 -e \"SHOW DATABASES\")",
       "Bash(\"D:\\wamp64\\bin\\mysql\\mysql9.1.0\\bin\\mysql.exe\" -u root -p1234 -e \"DESCRIBE cases\" litigation_db)",
-      "Bash(\"D:\\wamp64\\bin\\mysql\\mysql9.1.0\\bin\\mysql.exe\" -u root -p1234 -e \"DESCRIBE hearings\" litigation_db)"
+      "Bash(\"D:\\wamp64\\bin\\mysql\\mysql9.1.0\\bin\\mysql.exe\" -u root -p1234 -e \"DESCRIBE hearings\" litigation_db)",
+      "Bash(\"D:\\wamp64\\bin\\mysql\\mysql9.1.0\\bin\\mysql.exe\" -u root -p1234 -e \"SELECT email FROM users LIMIT 5\" litigation_db)",
+      "Bash(\"D:\\wamp64\\bin\\mysql\\mysql9.1.0\\bin\\mysql.exe\" -u root -p1234 -e \"SELECT email, password FROM users WHERE email = ''admin@litigation.com''\" litigation_db)",
+      "Bash(\"D:\\wamp64\\bin\\mysql\\mysql9.1.0\\bin\\mysql.exe\" -u root -p1234 -e \"DESCRIBE users\" litigation_db)"
     ],
     "deny": [],
     "ask": []

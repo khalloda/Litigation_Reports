@@ -69,98 +69,98 @@ try {
     // Define API routes
 
     // Authentication routes
-    $router->post('/api/auth/login', 'AuthController@login');
-    $router->post('/api/auth/logout', 'AuthController@logout');
-    $router->post('/api/auth/refresh', 'AuthController@refresh');
-    $router->get('/api/auth/me', 'AuthController@me');
+    $router->post('/auth/login', 'AuthController@login');
+    $router->post('/auth/logout', 'AuthController@logout');
+    $router->post('/auth/refresh', 'AuthController@refresh');
+    $router->get('/auth/me', 'AuthController@me');
 
     // User management routes
-    $router->get('/api/users', 'UserController@index');
-    $router->get('/api/users/{id}', 'UserController@show');
-    $router->post('/api/users', 'UserController@store');
-    $router->put('/api/users/{id}', 'UserController@update');
-    $router->delete('/api/users/{id}', 'UserController@destroy');
+    $router->get('/users', 'UserController@index');
+    $router->get('/users/{id}', 'UserController@show');
+    $router->post('/users', 'UserController@store');
+    $router->put('/users/{id}', 'UserController@update');
+    $router->delete('/users/{id}', 'UserController@destroy');
 
     // Profile management routes
-    $router->get('/api/profile', 'UserController@profile');
-    $router->put('/api/profile', 'UserController@updateProfile');
-    $router->post('/api/profile/change-password', 'UserController@changePassword');
+    $router->get('/profile', 'UserController@profile');
+    $router->put('/profile', 'UserController@updateProfile');
+    $router->post('/profile/change-password', 'UserController@changePassword');
 
     // Client management routes
-    $router->get('/api/clients', 'ClientController@index');
-    $router->get('/api/clients/options', 'ClientController@options');
-    $router->get('/api/clients/{id}', 'ClientController@show');
-    $router->post('/api/clients', 'ClientController@store');
-    $router->put('/api/clients/{id}', 'ClientController@update');
-    $router->delete('/api/clients/{id}', 'ClientController@destroy');
+    $router->get('/clients', 'ClientController@index');
+    $router->get('/clients/options', 'ClientController@options');
+    $router->get('/clients/{id}', 'ClientController@show');
+    $router->post('/clients', 'ClientController@store');
+    $router->put('/clients/{id}', 'ClientController@update');
+    $router->delete('/clients/{id}', 'ClientController@destroy');
 
     // Case management routes
-    $router->get('/api/cases', 'CaseController@index');
-    $router->get('/api/cases/options', 'CaseController@options');
-    $router->get('/api/cases/{id}', 'CaseController@show');
-    $router->post('/api/cases', 'CaseController@store');
-    $router->put('/api/cases/{id}', 'CaseController@update');
-    $router->delete('/api/cases/{id}', 'CaseController@destroy');
+    $router->get('/cases', 'CaseController@index');
+    $router->get('/cases/options', 'CaseController@options');
+    $router->get('/cases/{id}', 'CaseController@show');
+    $router->post('/cases', 'CaseController@store');
+    $router->put('/cases/{id}', 'CaseController@update');
+    $router->delete('/cases/{id}', 'CaseController@destroy');
 
     // Hearing management routes
-    $router->get('/api/hearings', 'HearingController@index');
-    $router->get('/api/hearings/options', 'HearingController@options');
-    $router->get('/api/hearings/{id}', 'HearingController@show');
-    $router->post('/api/hearings', 'HearingController@store');
-    $router->put('/api/hearings/{id}', 'HearingController@update');
-    $router->delete('/api/hearings/{id}', 'HearingController@destroy');
+    $router->get('/hearings', 'HearingController@index');
+    $router->get('/hearings/options', 'HearingController@options');
+    $router->get('/hearings/{id}', 'HearingController@show');
+    $router->post('/hearings', 'HearingController@store');
+    $router->put('/hearings/{id}', 'HearingController@update');
+    $router->delete('/hearings/{id}', 'HearingController@destroy');
 
     // Invoice management routes
-    $router->get('/api/invoices', 'InvoiceController@index');
-    $router->get('/api/invoices/options', 'InvoiceController@options');
-    $router->get('/api/invoices/stats', 'InvoiceController@stats');
-    $router->get('/api/invoices/search', 'InvoiceController@search');
-    $router->get('/api/invoices/overdue', 'InvoiceController@overdue');
-    $router->get('/api/invoices/by-status', 'InvoiceController@byStatus');
-    $router->get('/api/invoices/{id}', 'InvoiceController@show');
-    $router->post('/api/invoices', 'InvoiceController@store');
-    $router->put('/api/invoices/{id}', 'InvoiceController@update');
-    $router->delete('/api/invoices/{id}', 'InvoiceController@destroy');
+    $router->get('/invoices', 'InvoiceController@index');
+    $router->get('/invoices/options', 'InvoiceController@options');
+    $router->get('/invoices/stats', 'InvoiceController@stats');
+    $router->get('/invoices/search', 'InvoiceController@search');
+    $router->get('/invoices/overdue', 'InvoiceController@overdue');
+    $router->get('/invoices/by-status', 'InvoiceController@byStatus');
+    $router->get('/invoices/{id}', 'InvoiceController@show');
+    $router->post('/invoices', 'InvoiceController@store');
+    $router->put('/invoices/{id}', 'InvoiceController@update');
+    $router->delete('/invoices/{id}', 'InvoiceController@destroy');
 
     // Lawyer management routes
-    $router->get('/api/lawyers', 'LawyerController@index');
-    $router->get('/api/lawyers/active', 'LawyerController@active');
-    $router->get('/api/lawyers/stats', 'LawyerController@stats');
-    $router->get('/api/lawyers/search', 'LawyerController@search');
-    $router->get('/api/lawyers/{id}', 'LawyerController@show');
-    $router->post('/api/lawyers', 'LawyerController@store');
-    $router->put('/api/lawyers/{id}', 'LawyerController@update');
-    $router->delete('/api/lawyers/{id}', 'LawyerController@destroy');
+    $router->get('/lawyers', 'LawyerController@index');
+    $router->get('/lawyers/active', 'LawyerController@active');
+    $router->get('/lawyers/stats', 'LawyerController@stats');
+    $router->get('/lawyers/search', 'LawyerController@search');
+    $router->get('/lawyers/{id}', 'LawyerController@show');
+    $router->post('/lawyers', 'LawyerController@store');
+    $router->put('/lawyers/{id}', 'LawyerController@update');
+    $router->delete('/lawyers/{id}', 'LawyerController@destroy');
 
     // Report routes
-    $router->get('/api/reports/dashboard', 'ReportController@dashboard');
-    $router->get('/api/reports/clients', 'ReportController@clients');
-    $router->get('/api/reports/cases', 'ReportController@cases');
-    $router->get('/api/reports/financial', 'ReportController@financial');
-    $router->get('/api/reports/hearings', 'ReportController@hearings');
+    $router->get('/reports/dashboard', 'ReportController@dashboard');
+    $router->get('/reports/clients', 'ReportController@clients');
+    $router->get('/reports/cases', 'ReportController@cases');
+    $router->get('/reports/financial', 'ReportController@financial');
+    $router->get('/reports/hearings', 'ReportController@hearings');
 
     // Advanced reporting routes
-    $router->get('/api/reports/custom', 'ReportController@customReport');
-    $router->post('/api/reports/custom', 'ReportController@generateCustomReport');
-    $router->get('/api/reports/export', 'ReportController@exportReport');
-    $router->get('/api/reports/templates', 'ReportController@getReportTemplates');
-    $router->post('/api/reports/templates', 'ReportController@saveReportTemplate');
-    $router->get('/api/reports/options', 'ReportController@getReportOptions');
+    $router->get('/reports/custom', 'ReportController@customReport');
+    $router->post('/reports/custom', 'ReportController@generateCustomReport');
+    $router->get('/reports/export', 'ReportController@exportReport');
+    $router->get('/reports/templates', 'ReportController@getReportTemplates');
+    $router->post('/reports/templates', 'ReportController@saveReportTemplate');
+    $router->get('/reports/options', 'ReportController@getReportOptions');
 
     // Document management routes
-    $router->get('/api/documents', 'DocumentController@index');
-    $router->get('/api/documents/options', 'DocumentController@options');
-    $router->get('/api/documents/stats', 'DocumentController@stats');
-    $router->get('/api/documents/search', 'DocumentController@search');
-    $router->get('/api/documents/entity', 'DocumentController@getByEntity');
-    $router->get('/api/documents/{id}', 'DocumentController@show');
-    $router->get('/api/documents/{id}/download', 'DocumentController@download');
-    $router->post('/api/documents', 'DocumentController@store');
-    $router->put('/api/documents/{id}', 'DocumentController@update');
-    $router->delete('/api/documents/{id}', 'DocumentController@destroy');
+    $router->get('/documents', 'DocumentController@index');
+    $router->get('/documents/options', 'DocumentController@options');
+    $router->get('/documents/stats', 'DocumentController@stats');
+    $router->get('/documents/search', 'DocumentController@search');
+    $router->get('/documents/entity', 'DocumentController@getByEntity');
+    $router->get('/documents/{id}', 'DocumentController@show');
+    $router->get('/documents/{id}/download', 'DocumentController@download');
+    $router->post('/documents', 'DocumentController@store');
+    $router->put('/documents/{id}', 'DocumentController@update');
+    $router->delete('/documents/{id}', 'DocumentController@destroy');
 
     // Health check route
-    $router->get('/api/health', function () {
+    $router->get('/health', function () {
         return new Response(['status' => 'ok', 'timestamp' => date('Y-m-d H:i:s')]);
     });
 

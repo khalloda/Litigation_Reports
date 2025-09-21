@@ -243,11 +243,17 @@ const ReportsPage: React.FC = () => {
               <p className='text-muted mb-0'>عرض شامل لأداء المكتب والإحصائيات</p>
             </div>
             <div className='d-flex gap-2'>
-              <Button variant='outline-primary' onClick={() => setShowReportBuilder(true)}>
+              <Button variant='outline-primary' onClick={() => {
+                setShowReportBuilder(true);
+                loadCustomReportOptions('clients');
+              }}>
                 <BarChart3 className='me-2' size={16} />
                 إنشاء تقرير مخصص
               </Button>
-              <Button variant='outline-secondary' onClick={() => setShowTemplates(true)}>
+              <Button variant='outline-secondary' onClick={() => {
+                setShowTemplates(true);
+                loadReportTemplates();
+              }}>
                 <FileText className='me-2' size={16} />
                 القوالب
               </Button>
@@ -776,30 +782,34 @@ const ReportsPage: React.FC = () => {
               </Card>
 
               {/* Data Table */}
-              {reportData.available_columns && (
+              {reportData.data && reportData.data.length > 0 && (
                 <div className='table-responsive'>
                   <Table striped hover>
                     <thead>
                       <tr>
-                        {Object.entries(reportData.available_columns).slice(0, 6).map(([key, value]) => (
-                          <th key={key}>{value as string}</th>
+                        {Object.keys(reportData.data[0]).map((key) => (
+                          <th key={key}>
+                            {reportData.available_columns?.[key] || key}
+                          </th>
                         ))}
                       </tr>
                     </thead>
                     <tbody>
                       {reportData.data.map((row: any, index: number) => (
                         <tr key={index}>
-                          {Object.keys(reportData.available_columns).slice(0, 6).map((key) => (
-                            <td key={key}>{row[key] || '-'}</td>
+                          {Object.keys(reportData.data[0]).map((key) => (
+                            <td key={key}>
+                              {key.includes('date') && row[key] ? formatDate(row[key]) : (row[key] || '-')}
+                            </td>
                           ))}
                         </tr>
                       ))}
                     </tbody>
                   </Table>
-                  {reportData.data.length === 0 && (
-                    <p className='text-center text-muted py-4'>لا توجد بيانات لعرضها</p>
-                  )}
                 </div>
+              )}
+              {reportData.data && reportData.data.length === 0 && (
+                <p className='text-center text-muted py-4'>لا توجد بيانات لعرضها</p>
               )}
             </>
           )}
