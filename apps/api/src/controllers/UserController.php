@@ -13,12 +13,26 @@ require_once __DIR__ . '/../core/Validator.php';
 require_once __DIR__ . '/../core/Auth.php';
 require_once __DIR__ . '/../models/User.php';
 
+// Controller Constants (only define if not already defined)
+if (!defined('DEFAULT_PAGE_SIZE')) {
+    define('DEFAULT_PAGE_SIZE', 20);
+}
+if (!defined('MAX_PAGE_SIZE')) {
+    define('MAX_PAGE_SIZE', 100);
+}
+if (!defined('MIN_PAGE_SIZE')) {
+    define('MIN_PAGE_SIZE', 5);
+}
+
 class UserController
 {
 
     public function index(Request $request)
     {
         try {
+            // Debug output
+            error_log("UserController::index called - this is the USER controller");
+
             // Check authentication and permissions
             Auth::requirePermission('users.read');
 

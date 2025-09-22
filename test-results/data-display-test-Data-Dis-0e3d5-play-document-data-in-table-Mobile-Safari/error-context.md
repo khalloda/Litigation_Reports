@@ -1,0 +1,150 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e4]:
+  - navigation [ref=e5]:
+    - generic [ref=e6]:
+      - button "Toggle sidebar" [ref=e7] [cursor=pointer]:
+        - img [ref=e8] [cursor=pointer]
+      - link "نظام إدارة القضايا" [ref=e11]:
+        - /url: /dashboard
+      - button "Toggle navigation" [ref=e12] [cursor=pointer]
+  - generic [ref=e14]:
+    - complementary [ref=e15]:
+      - generic [ref=e16]:
+        - heading "القائمة الرئيسية" [level=6] [ref=e17]
+        - button "Collapse sidebar" [ref=e18] [cursor=pointer]:
+          - img [ref=e19] [cursor=pointer]
+      - generic [ref=e21]:
+        - link "لوحة التحكم" [ref=e23]:
+          - /url: /dashboard
+          - img [ref=e24]
+          - generic [ref=e29]: لوحة التحكم
+        - link "العملاء" [ref=e31]:
+          - /url: /clients
+          - img [ref=e32]
+          - generic [ref=e37]: العملاء
+        - link "القضايا" [ref=e39]:
+          - /url: /cases
+          - img [ref=e40]
+          - generic [ref=e43]: القضايا
+        - link "الجلسات" [ref=e45]:
+          - /url: /hearings
+          - img [ref=e46]
+          - generic [ref=e48]: الجلسات
+        - link "الفواتير" [ref=e50]:
+          - /url: /invoices
+          - img [ref=e51]
+          - generic [ref=e54]: الفواتير
+        - link "المحامون" [ref=e56]:
+          - /url: /lawyers
+          - img [ref=e57]
+          - generic [ref=e61]: المحامون
+        - link "المستندات (الصفحة الحالية)" [ref=e63]:
+          - /url: /documents
+          - img [ref=e64]
+          - generic [ref=e66]: المستندات
+          - generic [ref=e67]: (الصفحة الحالية)
+        - link "التقارير" [ref=e69]:
+          - /url: /reports
+          - img [ref=e70]
+          - generic [ref=e72]: التقارير
+        - link "المستخدمين" [ref=e74]:
+          - /url: /users
+          - img [ref=e75]
+          - generic [ref=e79]: المستخدمين
+        - link "الإعدادات" [ref=e81]:
+          - /url: /settings
+          - img [ref=e82]
+          - generic [ref=e85]: الإعدادات
+      - generic [ref=e87]: نظام إدارة القضايا v1.0
+    - main [ref=e88]:
+      - generic [ref=e90]:
+        - generic [ref=e93]:
+          - generic [ref=e94]:
+            - heading "إدارة المستندات" [level=2] [ref=e95]:
+              - img [ref=e96]
+              - text: إدارة المستندات
+            - paragraph [ref=e99]: Documents Management
+          - button "رفع مستند جديد" [ref=e100] [cursor=pointer]:
+            - img [ref=e101] [cursor=pointer]
+            - text: رفع مستند جديد
+        - generic [ref=e102]:
+          - generic [ref=e104]:
+            - heading "البحث والتصفية" [level=5] [ref=e105]
+            - button "تصفية متقدمة" [ref=e106] [cursor=pointer]:
+              - img [ref=e107] [cursor=pointer]
+              - text: تصفية متقدمة
+          - generic [ref=e110]:
+            - generic [ref=e112]:
+              - textbox "البحث في العنوان أو الوصف..." [ref=e113]
+              - button [ref=e114] [cursor=pointer]:
+                - img [ref=e115] [cursor=pointer]
+            - combobox [ref=e119]:
+              - option "جميع الأنواع" [selected]
+            - combobox [ref=e121]:
+              - option "جميع الكيانات" [selected]
+        - generic [ref=e122]:
+          - heading "قائمة المستندات (2)" [level=5] [ref=e124]
+          - generic [ref=e125]:
+            - alert [ref=e126]: خطأ في تحميل المستندات
+            - table [ref=e128]:
+              - rowgroup [ref=e129]:
+                - row "النوع العنوان اسم الملف الحجم المرفوع بواسطة الكيان المرتبط تاريخ الرفع الحالة الإجراءات" [ref=e130]:
+                  - cell "النوع" [ref=e131]
+                  - cell "العنوان" [ref=e132]
+                  - cell "اسم الملف" [ref=e133]
+                  - cell "الحجم" [ref=e134]
+                  - cell "المرفوع بواسطة" [ref=e135]
+                  - cell "الكيان المرتبط" [ref=e136]
+                  - cell "تاريخ الرفع" [ref=e137]
+                  - cell "الحالة" [ref=e138]
+                  - cell "الإجراءات" [ref=e139]
+              - rowgroup [ref=e140]:
+                - row "contract عقد التأمين الأساسي NaN undefined Invalid Date خاص الإجراءات" [ref=e141]:
+                  - cell "contract" [ref=e142]:
+                    - generic [ref=e143]:
+                      - img [ref=e144]
+                      - generic [ref=e148]: contract
+                  - cell "عقد التأمين الأساسي" [ref=e149]:
+                    - strong [ref=e151]: عقد التأمين الأساسي
+                  - cell [ref=e152]:
+                    - code
+                  - cell "NaN undefined" [ref=e153]
+                  - cell [ref=e154]:
+                    - img [ref=e156]
+                  - cell [ref=e159]
+                  - cell "Invalid Date" [ref=e160]:
+                    - generic [ref=e161]:
+                      - img [ref=e162]
+                      - text: Invalid Date
+                  - cell "خاص" [ref=e164]:
+                    - generic [ref=e165]: خاص
+                  - cell "الإجراءات" [ref=e166]:
+                    - button "الإجراءات" [ref=e168] [cursor=pointer]
+                - row "evidence شهادة الشهود NaN undefined Invalid Date خاص الإجراءات" [ref=e169]:
+                  - cell "evidence" [ref=e170]:
+                    - generic [ref=e171]:
+                      - img [ref=e172]
+                      - generic [ref=e175]: evidence
+                  - cell "شهادة الشهود" [ref=e176]:
+                    - strong [ref=e178]: شهادة الشهود
+                  - cell [ref=e179]:
+                    - code
+                  - cell "NaN undefined" [ref=e180]
+                  - cell [ref=e181]:
+                    - img [ref=e183]
+                  - cell [ref=e186]
+                  - cell "Invalid Date" [ref=e187]:
+                    - generic [ref=e188]:
+                      - img [ref=e189]
+                      - text: Invalid Date
+                  - cell "خاص" [ref=e191]:
+                    - generic [ref=e192]: خاص
+                  - cell "الإجراءات" [ref=e193]:
+                    - button "الإجراءات" [ref=e195] [cursor=pointer]
+  - contentinfo [ref=e196]:
+    - generic [ref=e198]:
+      - generic [ref=e200]: © 2025 مكتب المحاماة. جميع الحقوق محفوظة.
+      - generic [ref=e202]: نظام إدارة القضايا القانونية v1.0
+```

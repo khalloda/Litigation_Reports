@@ -13,14 +13,29 @@ require_once __DIR__ . '/../core/Validator.php';
 require_once __DIR__ . '/../core/Auth.php';
 require_once __DIR__ . '/../models/Client.php';
 
+// Controller Constants (only define if not already defined)
+if (!defined('DEFAULT_PAGE_SIZE')) {
+    define('DEFAULT_PAGE_SIZE', 20);
+}
+if (!defined('MAX_PAGE_SIZE')) {
+    define('MAX_PAGE_SIZE', 100);
+}
+if (!defined('MIN_PAGE_SIZE')) {
+    define('MIN_PAGE_SIZE', 5);
+}
+
 class ClientController
 {
 
     public function index(Request $request)
     {
         try {
+            // Debug output
+            error_log("ClientController::index called - this is the CLIENT controller");
+
             // Check authentication
             if (!Auth::check()) {
+                error_log("Authentication failed in ClientController");
                 return Response::unauthorized('Authentication required');
             }
 

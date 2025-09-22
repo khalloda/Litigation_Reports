@@ -1,17 +1,31 @@
 <?php
+
 /**
  * Lawyer Model
  *
  * Handles lawyer data operations.
  */
 
-class Lawyer {
+// Model Constants
+if (!defined('DEFAULT_PAGE_SIZE')) {
+    define('DEFAULT_PAGE_SIZE', 20);
+}
+if (!defined('MAX_PAGE_SIZE')) {
+    define('MAX_PAGE_SIZE', 100);
+}
+if (!defined('MIN_PAGE_SIZE')) {
+    define('MIN_PAGE_SIZE', 5);
+}
+
+class Lawyer
+{
     private static $table = 'lawyers';
 
     /**
      * Get all lawyers with pagination and filtering
      */
-    public static function getAll($page = 1, $limit = 20, $filters = []) {
+    public static function getAll($page = 1, $limit = 20, $filters = [])
+    {
         $db = Database::getInstance();
 
         $offset = ($page - 1) * $limit;
@@ -69,7 +83,8 @@ class Lawyer {
     /**
      * Find lawyer by ID
      */
-    public static function findById($id) {
+    public static function findById($id)
+    {
         $db = Database::getInstance();
 
         $sql = "SELECT * FROM " . self::$table . " WHERE id = ?";
@@ -85,7 +100,8 @@ class Lawyer {
     /**
      * Create new lawyer
      */
-    public static function create($data) {
+    public static function create($data)
+    {
         $db = Database::getInstance();
 
         $sql = "INSERT INTO " . self::$table . " (lawyer_name_ar, lawyer_name_en, lawyer_email, is_active) VALUES (?, ?, ?, ?)";
@@ -103,7 +119,8 @@ class Lawyer {
     /**
      * Update lawyer
      */
-    public static function update($id, $data) {
+    public static function update($id, $data)
+    {
         $db = Database::getInstance();
 
         $fields = [];
@@ -141,7 +158,8 @@ class Lawyer {
     /**
      * Delete lawyer (soft delete)
      */
-    public static function delete($id) {
+    public static function delete($id)
+    {
         $db = Database::getInstance();
 
         $sql = "UPDATE " . self::$table . " SET is_active = 0, updated_at = NOW() WHERE id = ?";
@@ -152,7 +170,8 @@ class Lawyer {
     /**
      * Get active lawyers for dropdowns
      */
-    public static function getActiveLawyers() {
+    public static function getActiveLawyers()
+    {
         $db = Database::getInstance();
 
         $sql = "SELECT id, lawyer_name_ar, lawyer_name_en FROM " . self::$table . " WHERE is_active = 1 ORDER BY lawyer_name_ar ASC";
@@ -162,14 +181,16 @@ class Lawyer {
     /**
      * Search lawyers
      */
-    public static function search($searchTerm, $page = 1, $limit = 20) {
+    public static function search($searchTerm, $page = 1, $limit = 20)
+    {
         return self::getAll($page, $limit, ['search' => $searchTerm]);
     }
 
     /**
      * Get lawyer statistics
      */
-    public static function getStats() {
+    public static function getStats()
+    {
         $db = Database::getInstance();
 
         $stats = [];
@@ -189,7 +210,8 @@ class Lawyer {
     /**
      * Format lawyer data
      */
-    private static function formatLawyer($lawyer) {
+    private static function formatLawyer($lawyer)
+    {
         return [
             'id' => (int) $lawyer['id'],
             'lawyer_name_ar' => $lawyer['lawyer_name_ar'] ?? '',

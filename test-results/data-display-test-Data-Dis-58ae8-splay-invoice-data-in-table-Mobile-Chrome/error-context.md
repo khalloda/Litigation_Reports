@@ -1,0 +1,168 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e4]:
+  - navigation [ref=e5]:
+    - generic [ref=e6]:
+      - button "Toggle sidebar" [ref=e7] [cursor=pointer]:
+        - img [ref=e8] [cursor=pointer]
+      - link "نظام إدارة القضايا" [ref=e11] [cursor=pointer]:
+        - /url: /dashboard
+      - button "Toggle navigation" [ref=e12] [cursor=pointer]
+  - generic [ref=e14]:
+    - complementary [ref=e15]:
+      - generic [ref=e16]:
+        - heading "القائمة الرئيسية" [level=6] [ref=e17]
+        - button "Collapse sidebar" [ref=e18] [cursor=pointer]:
+          - img [ref=e19] [cursor=pointer]
+      - generic [ref=e21]:
+        - link "لوحة التحكم" [ref=e23] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e24] [cursor=pointer]
+          - generic [ref=e29] [cursor=pointer]: لوحة التحكم
+        - link "العملاء" [ref=e31] [cursor=pointer]:
+          - /url: /clients
+          - img [ref=e32] [cursor=pointer]
+          - generic [ref=e37] [cursor=pointer]: العملاء
+        - link "القضايا" [ref=e39] [cursor=pointer]:
+          - /url: /cases
+          - img [ref=e40] [cursor=pointer]
+          - generic [ref=e43] [cursor=pointer]: القضايا
+        - link "الجلسات" [ref=e45] [cursor=pointer]:
+          - /url: /hearings
+          - img [ref=e46] [cursor=pointer]
+          - generic [ref=e48] [cursor=pointer]: الجلسات
+        - link "الفواتير (الصفحة الحالية)" [active] [ref=e50] [cursor=pointer]:
+          - /url: /invoices
+          - img [ref=e51] [cursor=pointer]
+          - generic [ref=e54] [cursor=pointer]: الفواتير
+          - generic [ref=e55] [cursor=pointer]: (الصفحة الحالية)
+        - link "المحامون" [ref=e57] [cursor=pointer]:
+          - /url: /lawyers
+          - img [ref=e58] [cursor=pointer]
+          - generic [ref=e62] [cursor=pointer]: المحامون
+        - link "المستندات" [ref=e64] [cursor=pointer]:
+          - /url: /documents
+          - img [ref=e65] [cursor=pointer]
+          - generic [ref=e67] [cursor=pointer]: المستندات
+        - link "التقارير" [ref=e69] [cursor=pointer]:
+          - /url: /reports
+          - img [ref=e70] [cursor=pointer]
+          - generic [ref=e72] [cursor=pointer]: التقارير
+        - link "المستخدمين" [ref=e74] [cursor=pointer]:
+          - /url: /users
+          - img [ref=e75] [cursor=pointer]
+          - generic [ref=e79] [cursor=pointer]: المستخدمين
+        - link "الإعدادات" [ref=e81] [cursor=pointer]:
+          - /url: /settings
+          - img [ref=e82] [cursor=pointer]
+          - generic [ref=e85] [cursor=pointer]: الإعدادات
+      - generic [ref=e87]: نظام إدارة القضايا v1.0
+    - main [ref=e88]:
+      - generic [ref=e90]:
+        - generic [ref=e93]:
+          - generic [ref=e94]:
+            - heading "إدارة الفواتير" [level=2] [ref=e95]:
+              - img [ref=e96]
+              - text: إدارة الفواتير
+            - paragraph [ref=e99]: إدارة وتتبع جميع الفواتير والمدفوعات
+          - button "إضافة فاتورة جديدة" [ref=e100] [cursor=pointer]:
+            - img [ref=e101] [cursor=pointer]
+            - text: إضافة فاتورة جديدة
+        - generic [ref=e104]:
+          - generic [ref=e106]:
+            - generic [ref=e107]: البحث
+            - generic [ref=e108]:
+              - img [ref=e110]
+              - textbox "البحث في الفواتير..." [ref=e113]
+          - generic [ref=e115]:
+            - generic [ref=e116]: الحالة
+            - combobox [ref=e117]:
+              - option "جميع الحالات" [selected]
+          - generic [ref=e119]:
+            - generic [ref=e120]: النوع
+            - combobox [ref=e121]:
+              - option "جميع الأنواع" [selected]
+          - generic [ref=e123]:
+            - generic [ref=e124]: العملة
+            - combobox [ref=e125]:
+              - option "جميع العملات" [selected]
+          - generic [ref=e127]:
+            - generic [ref=e128]: من تاريخ
+            - textbox [ref=e129]
+          - button "تطبيق" [ref=e131] [cursor=pointer]:
+            - img [ref=e132] [cursor=pointer]
+            - text: تطبيق
+        - generic [ref=e134]:
+          - generic [ref=e136]:
+            - heading "قائمة الفواتير" [level=5] [ref=e137]
+            - generic [ref=e138]: "إجمالي: 2 فاتورة"
+          - table [ref=e141]:
+            - rowgroup [ref=e142]:
+              - row "رقم الفاتورة تاريخ الفاتورة المبلغ النوع الحالة العقد تاريخ الدفع الإجراءات" [ref=e143]:
+                - cell "رقم الفاتورة" [ref=e144]
+                - cell "تاريخ الفاتورة" [ref=e145]
+                - cell "المبلغ" [ref=e146]
+                - cell "النوع" [ref=e147]
+                - cell "الحالة" [ref=e148]
+                - cell "العقد" [ref=e149]
+                - cell "تاريخ الدفع" [ref=e150]
+                - cell "الإجراءات" [ref=e151]
+            - rowgroup [ref=e152]:
+              - row "INV-2025-001 - ‏١٥٬٠٠٠٫٠٠ ر.س.‏ - - View Edit Delete" [ref=e153]:
+                - cell "INV-2025-001" [ref=e154]:
+                  - generic [ref=e155]:
+                    - img [ref=e156]
+                    - text: INV-2025-001
+                - cell "-" [ref=e159]:
+                  - generic [ref=e160]:
+                    - img [ref=e161]
+                    - text: "-"
+                - cell "‏١٥٬٠٠٠٫٠٠ ر.س.‏" [ref=e163]:
+                  - generic [ref=e164]:
+                    - img [ref=e165]
+                    - text: ‏١٥٬٠٠٠٫٠٠ ر.س.‏
+                - cell [ref=e167]
+                - cell [ref=e168]:
+                  - img [ref=e170]
+                - cell "-" [ref=e173]
+                - cell "-" [ref=e174]
+                - cell "View Edit Delete" [ref=e175]:
+                  - generic [ref=e176]:
+                    - button "View" [ref=e177] [cursor=pointer]:
+                      - img [ref=e178] [cursor=pointer]
+                    - button "Edit" [ref=e181] [cursor=pointer]:
+                      - img [ref=e182] [cursor=pointer]
+                    - button "Delete" [ref=e185] [cursor=pointer]:
+                      - img [ref=e186] [cursor=pointer]
+              - row "INV-2025-002 - ‏٨٬٥٠٠٫٠٠ ر.س.‏ - - View Edit Delete" [ref=e189]:
+                - cell "INV-2025-002" [ref=e190]:
+                  - generic [ref=e191]:
+                    - img [ref=e192]
+                    - text: INV-2025-002
+                - cell "-" [ref=e195]:
+                  - generic [ref=e196]:
+                    - img [ref=e197]
+                    - text: "-"
+                - cell "‏٨٬٥٠٠٫٠٠ ر.س.‏" [ref=e199]:
+                  - generic [ref=e200]:
+                    - img [ref=e201]
+                    - text: ‏٨٬٥٠٠٫٠٠ ر.س.‏
+                - cell [ref=e203]
+                - cell [ref=e204]:
+                  - img [ref=e206]
+                - cell "-" [ref=e209]
+                - cell "-" [ref=e210]
+                - cell "View Edit Delete" [ref=e211]:
+                  - generic [ref=e212]:
+                    - button "View" [ref=e213] [cursor=pointer]:
+                      - img [ref=e214] [cursor=pointer]
+                    - button "Edit" [ref=e217] [cursor=pointer]:
+                      - img [ref=e218] [cursor=pointer]
+                    - button "Delete" [ref=e221] [cursor=pointer]:
+                      - img [ref=e222] [cursor=pointer]
+  - contentinfo [ref=e225]:
+    - generic [ref=e227]:
+      - generic [ref=e229]: © 2025 مكتب المحاماة. جميع الحقوق محفوظة.
+      - generic [ref=e231]: نظام إدارة القضايا القانونية v1.0
+```

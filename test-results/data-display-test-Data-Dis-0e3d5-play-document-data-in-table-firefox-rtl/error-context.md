@@ -1,0 +1,155 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e4]:
+  - navigation [ref=e5]:
+    - generic [ref=e6]:
+      - button "Toggle sidebar" [ref=e7] [cursor=pointer]:
+        - img [ref=e8] [cursor=pointer]
+      - link "نظام إدارة القضايا" [ref=e11] [cursor=pointer]:
+        - /url: /dashboard
+      - generic [ref=e13]:
+        - button "اللغة الحالية" [ref=e15] [cursor=pointer]:
+          - img [ref=e16] [cursor=pointer]
+          - generic [ref=e20] [cursor=pointer]: 🇸🇦 العربية
+        - button "User menu" [ref=e22] [cursor=pointer]:
+          - img [ref=e23] [cursor=pointer]
+  - generic [ref=e26]:
+    - complementary [ref=e27]:
+      - generic [ref=e28]:
+        - heading "القائمة الرئيسية" [level=6] [ref=e29]
+        - button "Collapse sidebar" [ref=e30] [cursor=pointer]:
+          - img [ref=e31] [cursor=pointer]
+      - generic [ref=e33]:
+        - link "لوحة التحكم" [ref=e35] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e36] [cursor=pointer]
+          - generic [ref=e41] [cursor=pointer]: لوحة التحكم
+        - link "العملاء" [ref=e43] [cursor=pointer]:
+          - /url: /clients
+          - img [ref=e44] [cursor=pointer]
+          - generic [ref=e49] [cursor=pointer]: العملاء
+        - link "القضايا" [ref=e51] [cursor=pointer]:
+          - /url: /cases
+          - img [ref=e52] [cursor=pointer]
+          - generic [ref=e58] [cursor=pointer]: القضايا
+        - link "الجلسات" [ref=e60] [cursor=pointer]:
+          - /url: /hearings
+          - img [ref=e61] [cursor=pointer]
+          - generic [ref=e66] [cursor=pointer]: الجلسات
+        - link "الفواتير" [ref=e68] [cursor=pointer]:
+          - /url: /invoices
+          - img [ref=e69] [cursor=pointer]
+          - generic [ref=e73] [cursor=pointer]: الفواتير
+        - link "المحامون" [ref=e75] [cursor=pointer]:
+          - /url: /lawyers
+          - img [ref=e76] [cursor=pointer]
+          - generic [ref=e82] [cursor=pointer]: المحامون
+        - link "المستندات (الصفحة الحالية)" [active] [ref=e84] [cursor=pointer]:
+          - /url: /documents
+          - img [ref=e85] [cursor=pointer]
+          - generic [ref=e87] [cursor=pointer]: المستندات
+          - generic [ref=e88] [cursor=pointer]: (الصفحة الحالية)
+        - link "التقارير" [ref=e90] [cursor=pointer]:
+          - /url: /reports
+          - img [ref=e91] [cursor=pointer]
+          - generic [ref=e96] [cursor=pointer]: التقارير
+        - link "المستخدمين" [ref=e98] [cursor=pointer]:
+          - /url: /users
+          - img [ref=e99] [cursor=pointer]
+          - generic [ref=e103] [cursor=pointer]: المستخدمين
+        - link "الإعدادات" [ref=e105] [cursor=pointer]:
+          - /url: /settings
+          - img [ref=e106] [cursor=pointer]
+          - generic [ref=e109] [cursor=pointer]: الإعدادات
+      - generic [ref=e111]: نظام إدارة القضايا v1.0
+    - main [ref=e112]:
+      - generic [ref=e114]:
+        - generic [ref=e117]:
+          - generic [ref=e118]:
+            - heading "إدارة المستندات" [level=2] [ref=e119]:
+              - img [ref=e120]
+              - text: إدارة المستندات
+            - paragraph [ref=e126]: Documents Management
+          - button "رفع مستند جديد" [ref=e127] [cursor=pointer]:
+            - img [ref=e128] [cursor=pointer]
+            - text: رفع مستند جديد
+        - generic [ref=e131]:
+          - generic [ref=e133]:
+            - heading "البحث والتصفية" [level=5] [ref=e134]
+            - button "تصفية متقدمة" [ref=e135] [cursor=pointer]:
+              - img [ref=e136] [cursor=pointer]
+              - text: تصفية متقدمة
+          - generic [ref=e139]:
+            - generic [ref=e141]:
+              - textbox "البحث في العنوان أو الوصف..." [ref=e142]
+              - button [ref=e143] [cursor=pointer]:
+                - img [ref=e144] [cursor=pointer]
+            - combobox [ref=e148]:
+              - option "جميع الأنواع" [selected]
+            - combobox [ref=e150]:
+              - option "جميع الكيانات" [selected]
+        - generic [ref=e151]:
+          - heading "قائمة المستندات (2)" [level=5] [ref=e153]
+          - generic [ref=e154]:
+            - alert [ref=e155]: خطأ في تحميل المستندات
+            - table [ref=e157]:
+              - rowgroup [ref=e158]:
+                - row "النوع العنوان اسم الملف الحجم المرفوع بواسطة الكيان المرتبط تاريخ الرفع الحالة الإجراءات" [ref=e159]:
+                  - cell "النوع" [ref=e160]
+                  - cell "العنوان" [ref=e161]
+                  - cell "اسم الملف" [ref=e162]
+                  - cell "الحجم" [ref=e163]
+                  - cell "المرفوع بواسطة" [ref=e164]
+                  - cell "الكيان المرتبط" [ref=e165]
+                  - cell "تاريخ الرفع" [ref=e166]
+                  - cell "الحالة" [ref=e167]
+                  - cell "الإجراءات" [ref=e168]
+              - rowgroup [ref=e169]:
+                - row "contract عقد التأمين الأساسي NaN undefined Invalid Date خاص الإجراءات" [ref=e170]:
+                  - cell "contract" [ref=e171]:
+                    - generic [ref=e172]:
+                      - img [ref=e173]
+                      - generic [ref=e177]: contract
+                  - cell "عقد التأمين الأساسي" [ref=e178]:
+                    - strong [ref=e180]: عقد التأمين الأساسي
+                  - cell [ref=e181]:
+                    - code
+                  - cell "NaN undefined" [ref=e182]
+                  - cell [ref=e183]:
+                    - img [ref=e185]
+                  - cell [ref=e188]
+                  - cell "Invalid Date" [ref=e189]:
+                    - generic [ref=e190]:
+                      - img [ref=e191]
+                      - text: Invalid Date
+                  - cell "خاص" [ref=e196]:
+                    - generic [ref=e197]: خاص
+                  - cell "الإجراءات" [ref=e198]:
+                    - button "الإجراءات" [ref=e200] [cursor=pointer]
+                - row "evidence شهادة الشهود NaN undefined Invalid Date خاص الإجراءات" [ref=e201]:
+                  - cell "evidence" [ref=e202]:
+                    - generic [ref=e203]:
+                      - img [ref=e204]
+                      - generic [ref=e208]: evidence
+                  - cell "شهادة الشهود" [ref=e209]:
+                    - strong [ref=e211]: شهادة الشهود
+                  - cell [ref=e212]:
+                    - code
+                  - cell "NaN undefined" [ref=e213]
+                  - cell [ref=e214]:
+                    - img [ref=e216]
+                  - cell [ref=e219]
+                  - cell "Invalid Date" [ref=e220]:
+                    - generic [ref=e221]:
+                      - img [ref=e222]
+                      - text: Invalid Date
+                  - cell "خاص" [ref=e227]:
+                    - generic [ref=e228]: خاص
+                  - cell "الإجراءات" [ref=e229]:
+                    - button "الإجراءات" [ref=e231] [cursor=pointer]
+  - contentinfo [ref=e232]:
+    - generic [ref=e234]:
+      - generic [ref=e236]: © 2025 مكتب المحاماة. جميع الحقوق محفوظة.
+      - generic [ref=e238]: نظام إدارة القضايا القانونية v1.0
+```

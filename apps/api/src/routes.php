@@ -20,6 +20,8 @@ require_once __DIR__ . '/controllers/UserController.php';
 
 function registerRoutes(Router $router)
 {
+    error_log("Routes: Registering routes in registerRoutes function");
+
     // Health check endpoints
     $router->get('/ping', function () {
         return [

@@ -1,0 +1,162 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e4]:
+  - navigation [ref=e5]:
+    - generic [ref=e6]:
+      - button "Toggle sidebar" [ref=e7] [cursor=pointer]:
+        - img [ref=e8] [cursor=pointer]
+      - link "نظام إدارة القضايا" [ref=e11] [cursor=pointer]:
+        - /url: /dashboard
+      - button "Toggle navigation" [ref=e12] [cursor=pointer]
+  - generic [ref=e14]:
+    - complementary [ref=e15]:
+      - generic [ref=e16]:
+        - heading "القائمة الرئيسية" [level=6] [ref=e17]
+        - button "Collapse sidebar" [ref=e18] [cursor=pointer]:
+          - img [ref=e19] [cursor=pointer]
+      - generic [ref=e21]:
+        - link "لوحة التحكم" [ref=e23] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e24] [cursor=pointer]
+          - generic [ref=e29] [cursor=pointer]: لوحة التحكم
+        - link "العملاء (الصفحة الحالية)" [active] [ref=e31] [cursor=pointer]:
+          - /url: /clients
+          - img [ref=e32] [cursor=pointer]
+          - generic [ref=e37] [cursor=pointer]: العملاء
+          - generic [ref=e38] [cursor=pointer]: (الصفحة الحالية)
+        - link "القضايا" [ref=e40] [cursor=pointer]:
+          - /url: /cases
+          - img [ref=e41] [cursor=pointer]
+          - generic [ref=e44] [cursor=pointer]: القضايا
+        - link "الجلسات" [ref=e46] [cursor=pointer]:
+          - /url: /hearings
+          - img [ref=e47] [cursor=pointer]
+          - generic [ref=e49] [cursor=pointer]: الجلسات
+        - link "الفواتير" [ref=e51] [cursor=pointer]:
+          - /url: /invoices
+          - img [ref=e52] [cursor=pointer]
+          - generic [ref=e55] [cursor=pointer]: الفواتير
+        - link "المحامون" [ref=e57] [cursor=pointer]:
+          - /url: /lawyers
+          - img [ref=e58] [cursor=pointer]
+          - generic [ref=e62] [cursor=pointer]: المحامون
+        - link "المستندات" [ref=e64] [cursor=pointer]:
+          - /url: /documents
+          - img [ref=e65] [cursor=pointer]
+          - generic [ref=e67] [cursor=pointer]: المستندات
+        - link "التقارير" [ref=e69] [cursor=pointer]:
+          - /url: /reports
+          - img [ref=e70] [cursor=pointer]
+          - generic [ref=e72] [cursor=pointer]: التقارير
+        - link "المستخدمين" [ref=e74] [cursor=pointer]:
+          - /url: /users
+          - img [ref=e75] [cursor=pointer]
+          - generic [ref=e79] [cursor=pointer]: المستخدمين
+        - link "الإعدادات" [ref=e81] [cursor=pointer]:
+          - /url: /settings
+          - img [ref=e82] [cursor=pointer]
+          - generic [ref=e85] [cursor=pointer]: الإعدادات
+      - generic [ref=e87]: نظام إدارة القضايا v1.0
+    - main [ref=e88]:
+      - generic [ref=e90]:
+        - generic [ref=e93]:
+          - generic [ref=e94]:
+            - heading "إدارة العملاء" [level=2] [ref=e95]:
+              - img [ref=e96]
+              - text: إدارة العملاء
+            - paragraph [ref=e101]: إدارة وتتبع جميع العملاء والشركات
+          - button "إضافة عميل جديد" [ref=e102] [cursor=pointer]:
+            - img [ref=e103] [cursor=pointer]
+            - text: إضافة عميل جديد
+        - generic [ref=e106]:
+          - generic [ref=e108]:
+            - generic [ref=e109]: البحث
+            - generic [ref=e110]:
+              - img [ref=e112]
+              - textbox "البحث في العملاء..." [ref=e115]
+          - generic [ref=e117]:
+            - generic [ref=e118]: الحالة
+            - combobox [ref=e119]:
+              - option "جميع الحالات" [selected]
+          - generic [ref=e121]:
+            - generic [ref=e122]: النوع
+            - combobox [ref=e123]:
+              - option "جميع الأنواع" [selected]
+          - generic [ref=e125]:
+            - generic [ref=e126]: نوع الدفع
+            - combobox [ref=e127]:
+              - option "جميع الأنواع" [selected]
+          - button "تطبيق" [ref=e129] [cursor=pointer]:
+            - img [ref=e130] [cursor=pointer]
+            - text: تطبيق
+        - generic [ref=e132]:
+          - generic [ref=e134]:
+            - heading "قائمة العملاء" [level=5] [ref=e135]
+            - generic [ref=e136]: "إجمالي: 2 عميل"
+          - table [ref=e139]:
+            - rowgroup [ref=e140]:
+              - row "الاسم النوع الحالة نوع الدفع المحامي المسؤول عدد القضايا تاريخ البداية آخر قضية الإجراءات" [ref=e141]:
+                - cell "الاسم" [ref=e142]
+                - cell "النوع" [ref=e143]
+                - cell "الحالة" [ref=e144]
+                - cell "نوع الدفع" [ref=e145]
+                - cell "المحامي المسؤول" [ref=e146]
+                - cell "عدد القضايا" [ref=e147]
+                - cell "تاريخ البداية" [ref=e148]
+                - cell "آخر قضية" [ref=e149]
+                - cell "الإجراءات" [ref=e150]
+            - rowgroup [ref=e151]:
+              - row "شركة الأمان للتأمين Al-Aman Insurance Company company active - - - عرض التفاصيل تعديل حذف" [ref=e152]:
+                - cell "شركة الأمان للتأمين Al-Aman Insurance Company" [ref=e153]:
+                  - generic [ref=e154]:
+                    - img [ref=e157]
+                    - generic [ref=e160]:
+                      - generic [ref=e161]: شركة الأمان للتأمين
+                      - generic [ref=e162]: Al-Aman Insurance Company
+                - cell "company" [ref=e163]:
+                  - generic [ref=e164]: company
+                - cell "active" [ref=e165]:
+                  - generic [ref=e166]: active
+                - cell [ref=e167]
+                - cell "-" [ref=e168]
+                - cell [ref=e169]
+                - cell "-" [ref=e170]
+                - cell "-" [ref=e171]
+                - cell "عرض التفاصيل تعديل حذف" [ref=e172]:
+                  - generic [ref=e173]:
+                    - button "عرض التفاصيل" [ref=e174] [cursor=pointer]:
+                      - img [ref=e175] [cursor=pointer]
+                    - button "تعديل" [ref=e178] [cursor=pointer]:
+                      - img [ref=e179] [cursor=pointer]
+                    - button "حذف" [ref=e182] [cursor=pointer]:
+                      - img [ref=e183] [cursor=pointer]
+              - row "فاطمة أحمد Fatima Ahmed individual active - - - عرض التفاصيل تعديل حذف" [ref=e186]:
+                - cell "فاطمة أحمد Fatima Ahmed" [ref=e187]:
+                  - generic [ref=e188]:
+                    - img [ref=e191]
+                    - generic [ref=e194]:
+                      - generic [ref=e195]: فاطمة أحمد
+                      - generic [ref=e196]: Fatima Ahmed
+                - cell "individual" [ref=e197]:
+                  - generic [ref=e198]: individual
+                - cell "active" [ref=e199]:
+                  - generic [ref=e200]: active
+                - cell [ref=e201]
+                - cell "-" [ref=e202]
+                - cell [ref=e203]
+                - cell "-" [ref=e204]
+                - cell "-" [ref=e205]
+                - cell "عرض التفاصيل تعديل حذف" [ref=e206]:
+                  - generic [ref=e207]:
+                    - button "عرض التفاصيل" [ref=e208] [cursor=pointer]:
+                      - img [ref=e209] [cursor=pointer]
+                    - button "تعديل" [ref=e212] [cursor=pointer]:
+                      - img [ref=e213] [cursor=pointer]
+                    - button "حذف" [ref=e216] [cursor=pointer]:
+                      - img [ref=e217] [cursor=pointer]
+  - contentinfo [ref=e220]:
+    - generic [ref=e222]:
+      - generic [ref=e224]: © 2025 مكتب المحاماة. جميع الحقوق محفوظة.
+      - generic [ref=e226]: نظام إدارة القضايا القانونية v1.0
+```

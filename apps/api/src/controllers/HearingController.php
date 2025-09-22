@@ -14,6 +14,17 @@ require_once __DIR__ . '/../core/Auth.php';
 require_once __DIR__ . '/../models/Hearing.php';
 require_once __DIR__ . '/../models/Case.php';
 
+// Controller Constants (only define if not already defined)
+if (!defined('DEFAULT_PAGE_SIZE')) {
+    define('DEFAULT_PAGE_SIZE', 20);
+}
+if (!defined('MAX_PAGE_SIZE')) {
+    define('MAX_PAGE_SIZE', 100);
+}
+if (!defined('MIN_PAGE_SIZE')) {
+    define('MIN_PAGE_SIZE', 5);
+}
+
 class HearingController
 {
 

@@ -1,0 +1,175 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e4]:
+  - navigation [ref=e5]:
+    - generic [ref=e6]:
+      - button "Toggle sidebar" [ref=e7] [cursor=pointer]:
+        - img [ref=e8] [cursor=pointer]
+      - link "نظام إدارة القضايا" [ref=e11] [cursor=pointer]:
+        - /url: /dashboard
+      - generic [ref=e13]:
+        - button "اللغة الحالية" [ref=e15] [cursor=pointer]:
+          - img [ref=e16] [cursor=pointer]
+          - generic [ref=e20] [cursor=pointer]: 🇸🇦 العربية
+        - button "User menu" [ref=e22] [cursor=pointer]:
+          - img [ref=e23] [cursor=pointer]
+  - generic [ref=e26]:
+    - complementary [ref=e27]:
+      - generic [ref=e28]:
+        - heading "القائمة الرئيسية" [level=6] [ref=e29]
+        - button "Collapse sidebar" [ref=e30] [cursor=pointer]:
+          - img [ref=e31] [cursor=pointer]
+      - generic [ref=e33]:
+        - link "لوحة التحكم" [ref=e35] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e36] [cursor=pointer]
+          - generic [ref=e41] [cursor=pointer]: لوحة التحكم
+        - link "العملاء" [ref=e43] [cursor=pointer]:
+          - /url: /clients
+          - img [ref=e44] [cursor=pointer]
+          - generic [ref=e49] [cursor=pointer]: العملاء
+        - link "القضايا" [ref=e51] [cursor=pointer]:
+          - /url: /cases
+          - img [ref=e52] [cursor=pointer]
+          - generic [ref=e58] [cursor=pointer]: القضايا
+        - link "الجلسات (الصفحة الحالية)" [active] [ref=e60] [cursor=pointer]:
+          - /url: /hearings
+          - img [ref=e61] [cursor=pointer]
+          - generic [ref=e66] [cursor=pointer]: الجلسات
+          - generic [ref=e67] [cursor=pointer]: (الصفحة الحالية)
+        - link "الفواتير" [ref=e69] [cursor=pointer]:
+          - /url: /invoices
+          - img [ref=e70] [cursor=pointer]
+          - generic [ref=e74] [cursor=pointer]: الفواتير
+        - link "المحامون" [ref=e76] [cursor=pointer]:
+          - /url: /lawyers
+          - img [ref=e77] [cursor=pointer]
+          - generic [ref=e83] [cursor=pointer]: المحامون
+        - link "المستندات" [ref=e85] [cursor=pointer]:
+          - /url: /documents
+          - img [ref=e86] [cursor=pointer]
+          - generic [ref=e88] [cursor=pointer]: المستندات
+        - link "التقارير" [ref=e90] [cursor=pointer]:
+          - /url: /reports
+          - img [ref=e91] [cursor=pointer]
+          - generic [ref=e96] [cursor=pointer]: التقارير
+        - link "المستخدمين" [ref=e98] [cursor=pointer]:
+          - /url: /users
+          - img [ref=e99] [cursor=pointer]
+          - generic [ref=e103] [cursor=pointer]: المستخدمين
+        - link "الإعدادات" [ref=e105] [cursor=pointer]:
+          - /url: /settings
+          - img [ref=e106] [cursor=pointer]
+          - generic [ref=e109] [cursor=pointer]: الإعدادات
+      - generic [ref=e111]: نظام إدارة القضايا v1.0
+    - main [ref=e112]:
+      - generic [ref=e114]:
+        - generic [ref=e117]:
+          - generic [ref=e118]:
+            - heading "إدارة الجلسات" [level=2] [ref=e119]:
+              - img [ref=e120]
+              - text: إدارة الجلسات
+            - paragraph [ref=e126]: إدارة وتتبع جميع جلسات المحكمة
+          - button "إضافة جلسة جديدة" [ref=e127] [cursor=pointer]:
+            - img [ref=e128] [cursor=pointer]
+            - text: إضافة جلسة جديدة
+        - generic [ref=e133]:
+          - generic [ref=e135]:
+            - generic [ref=e136]: البحث
+            - generic [ref=e137]:
+              - img [ref=e139]
+              - textbox "البحث في الجلسات..." [ref=e142]
+          - generic [ref=e144]:
+            - generic [ref=e145]: النتيجة
+            - combobox [ref=e146]:
+              - option "جميع النتائج" [selected]
+          - generic [ref=e148]:
+            - generic [ref=e149]: نوع الجلسة
+            - combobox [ref=e150]:
+              - option "جميع الأنواع" [selected]
+          - generic [ref=e152]:
+            - generic [ref=e153]: من تاريخ
+            - textbox [ref=e154]
+          - generic [ref=e156]:
+            - generic [ref=e157]: إلى تاريخ
+            - textbox [ref=e158]
+          - button "تطبيق" [ref=e160] [cursor=pointer]:
+            - img [ref=e161] [cursor=pointer]
+            - text: تطبيق
+        - generic [ref=e163]:
+          - generic [ref=e165]:
+            - heading "قائمة الجلسات" [level=5] [ref=e166]
+            - generic [ref=e167]: "إجمالي: 2 جلسة"
+          - table [ref=e170]:
+            - rowgroup [ref=e171]:
+              - row "تاريخ الجلسة القضية العميل نوع الجلسة النتيجة المدة القرار الجلسة التالية الإجراءات" [ref=e172]:
+                - cell "تاريخ الجلسة" [ref=e173]
+                - cell "القضية" [ref=e174]
+                - cell "العميل" [ref=e175]
+                - cell "نوع الجلسة" [ref=e176]
+                - cell "النتيجة" [ref=e177]
+                - cell "المدة" [ref=e178]
+                - cell "القرار" [ref=e179]
+                - cell "الجلسة التالية" [ref=e180]
+                - cell "الإجراءات" [ref=e181]
+            - rowgroup [ref=e182]:
+              - row "27/09/2025 - - - initial - -" [ref=e183]:
+                - cell "27/09/2025" [ref=e184]:
+                  - generic [ref=e185]:
+                    - img [ref=e186]
+                    - text: 27/09/2025
+                - cell "- -" [ref=e191]:
+                  - generic [ref=e192]:
+                    - generic [ref=e193]: "-"
+                    - generic [ref=e194]: "-"
+                - cell "-" [ref=e195]:
+                  - generic [ref=e197]: "-"
+                - cell "initial" [ref=e198]:
+                  - generic [ref=e199]: initial
+                - cell [ref=e200]
+                - cell [ref=e201]:
+                  - img [ref=e203]
+                - cell "-" [ref=e206]:
+                  - generic [ref=e207]: "-"
+                - cell "-" [ref=e208]
+                - cell [ref=e209]:
+                  - generic [ref=e210]:
+                    - button [ref=e211] [cursor=pointer]:
+                      - img [ref=e212] [cursor=pointer]
+                    - button [ref=e215] [cursor=pointer]:
+                      - img [ref=e216] [cursor=pointer]
+                    - button [ref=e219] [cursor=pointer]:
+                      - img [ref=e220] [cursor=pointer]
+              - row "25/09/2025 - - - follow_up - -" [ref=e224]:
+                - cell "25/09/2025" [ref=e225]:
+                  - generic [ref=e226]:
+                    - img [ref=e227]
+                    - text: 25/09/2025
+                - cell "- -" [ref=e232]:
+                  - generic [ref=e233]:
+                    - generic [ref=e234]: "-"
+                    - generic [ref=e235]: "-"
+                - cell "-" [ref=e236]:
+                  - generic [ref=e238]: "-"
+                - cell "follow_up" [ref=e239]:
+                  - generic [ref=e240]: follow_up
+                - cell [ref=e241]
+                - cell [ref=e242]:
+                  - img [ref=e244]
+                - cell "-" [ref=e247]:
+                  - generic [ref=e248]: "-"
+                - cell "-" [ref=e249]
+                - cell [ref=e250]:
+                  - generic [ref=e251]:
+                    - button [ref=e252] [cursor=pointer]:
+                      - img [ref=e253] [cursor=pointer]
+                    - button [ref=e256] [cursor=pointer]:
+                      - img [ref=e257] [cursor=pointer]
+                    - button [ref=e260] [cursor=pointer]:
+                      - img [ref=e261] [cursor=pointer]
+  - contentinfo [ref=e265]:
+    - generic [ref=e267]:
+      - generic [ref=e269]: © 2025 مكتب المحاماة. جميع الحقوق محفوظة.
+      - generic [ref=e271]: نظام إدارة القضايا القانونية v1.0
+```

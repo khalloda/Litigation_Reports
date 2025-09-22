@@ -1,13 +1,27 @@
 <?php
+
 /**
  * Document Model
  *
  * Handles document management operations.
  */
 
-class Document {
+// Model Constants
+if (!defined('DEFAULT_PAGE_SIZE')) {
+    define('DEFAULT_PAGE_SIZE', 20);
+}
+if (!defined('MAX_PAGE_SIZE')) {
+    define('MAX_PAGE_SIZE', 100);
+}
+if (!defined('MIN_PAGE_SIZE')) {
+    define('MIN_PAGE_SIZE', 5);
+}
 
-    public static function getAll($page = 1, $limit = DEFAULT_PAGE_SIZE, $filters = []) {
+class Document
+{
+
+    public static function getAll($page = 1, $limit = self::DEFAULT_PAGE_SIZE, $filters = [])
+    {
         try {
             $db = Database::getInstance();
 
@@ -112,14 +126,14 @@ class Document {
                     'has_prev' => $page > 1
                 ]
             ];
-
         } catch (Exception $e) {
             error_log("Document getAll error: " . $e->getMessage());
             throw $e;
         }
     }
 
-    public static function findById($id) {
+    public static function findById($id)
+    {
         try {
             $db = Database::getInstance();
 
@@ -151,14 +165,14 @@ class Document {
             ";
 
             return $db->fetch($sql, [':id' => $id]);
-
         } catch (Exception $e) {
             error_log("Document findById error: " . $e->getMessage());
             throw $e;
         }
     }
 
-    public static function create($data) {
+    public static function create($data)
+    {
         try {
             $db = Database::getInstance();
 
@@ -191,14 +205,14 @@ class Document {
             ]);
 
             return $db->lastInsertId();
-
         } catch (Exception $e) {
             error_log("Document create error: " . $e->getMessage());
             throw $e;
         }
     }
 
-    public static function update($id, $data) {
+    public static function update($id, $data)
+    {
         try {
             $db = Database::getInstance();
 
@@ -224,14 +238,14 @@ class Document {
 
             $db->query($sql, $params);
             return true;
-
         } catch (Exception $e) {
             error_log("Document update error: " . $e->getMessage());
             throw $e;
         }
     }
 
-    public static function delete($id) {
+    public static function delete($id)
+    {
         try {
             $db = Database::getInstance();
 
@@ -245,14 +259,14 @@ class Document {
             $sql = "DELETE FROM documents WHERE id = :id";
             $db->query($sql, [':id' => $id]);
             return true;
-
         } catch (Exception $e) {
             error_log("Document delete error: " . $e->getMessage());
             throw $e;
         }
     }
 
-    public static function getByEntity($entity_type, $entity_id) {
+    public static function getByEntity($entity_type, $entity_id)
+    {
         try {
             $db = Database::getInstance();
 
@@ -270,25 +284,25 @@ class Document {
                 ':entity_type' => $entity_type,
                 ':entity_id' => $entity_id
             ]);
-
         } catch (Exception $e) {
             error_log("Document getByEntity error: " . $e->getMessage());
             throw $e;
         }
     }
 
-    public static function search($searchTerm, $page = 1, $limit = DEFAULT_PAGE_SIZE) {
+    public static function search($searchTerm, $page = 1, $limit = DEFAULT_PAGE_SIZE)
+    {
         try {
             $filters = ['search' => $searchTerm];
             return self::getAll($page, $limit, $filters);
-
         } catch (Exception $e) {
             error_log("Document search error: " . $e->getMessage());
             throw $e;
         }
     }
 
-    public static function getStats() {
+    public static function getStats()
+    {
         try {
             $db = Database::getInstance();
 
@@ -308,14 +322,14 @@ class Document {
             ";
 
             return $db->fetch($sql);
-
         } catch (Exception $e) {
             error_log("Document getStats error: " . $e->getMessage());
             throw $e;
         }
     }
 
-    public static function getTypeOptions() {
+    public static function getTypeOptions()
+    {
         return [
             'contract' => 'عقد',
             'evidence' => 'دليل',
@@ -333,7 +347,8 @@ class Document {
         ];
     }
 
-    public static function getEntityTypeOptions() {
+    public static function getEntityTypeOptions()
+    {
         return [
             'client' => 'عميل',
             'case' => 'قضية',

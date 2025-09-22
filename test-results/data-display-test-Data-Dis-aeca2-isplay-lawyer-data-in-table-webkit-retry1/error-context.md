@@ -1,0 +1,150 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e4]:
+  - navigation [ref=e5]:
+    - generic [ref=e6]:
+      - button "Toggle sidebar" [ref=e7] [cursor=pointer]:
+        - img [ref=e8] [cursor=pointer]
+      - link "نظام إدارة القضايا" [ref=e11]:
+        - /url: /dashboard
+      - generic [ref=e13]:
+        - button "اللغة الحالية" [ref=e15] [cursor=pointer]:
+          - img [ref=e16] [cursor=pointer]
+          - generic [ref=e19] [cursor=pointer]: 🇸🇦 العربية
+        - button "User menu" [ref=e21] [cursor=pointer]:
+          - img [ref=e22] [cursor=pointer]
+  - generic [ref=e25]:
+    - complementary [ref=e26]:
+      - generic [ref=e27]:
+        - heading "القائمة الرئيسية" [level=6] [ref=e28]
+        - button "Collapse sidebar" [ref=e29] [cursor=pointer]:
+          - img [ref=e30] [cursor=pointer]
+      - generic [ref=e32]:
+        - link "لوحة التحكم" [ref=e34]:
+          - /url: /dashboard
+          - img [ref=e35]
+          - generic [ref=e40]: لوحة التحكم
+        - link "العملاء" [ref=e42]:
+          - /url: /clients
+          - img [ref=e43]
+          - generic [ref=e48]: العملاء
+        - link "القضايا" [ref=e50]:
+          - /url: /cases
+          - img [ref=e51]
+          - generic [ref=e54]: القضايا
+        - link "الجلسات" [ref=e56]:
+          - /url: /hearings
+          - img [ref=e57]
+          - generic [ref=e59]: الجلسات
+        - link "الفواتير" [ref=e61]:
+          - /url: /invoices
+          - img [ref=e62]
+          - generic [ref=e65]: الفواتير
+        - link "المحامون (الصفحة الحالية)" [ref=e67]:
+          - /url: /lawyers
+          - img [ref=e68]
+          - generic [ref=e72]: المحامون
+          - generic [ref=e73]: (الصفحة الحالية)
+        - link "المستندات" [ref=e75]:
+          - /url: /documents
+          - img [ref=e76]
+          - generic [ref=e78]: المستندات
+        - link "التقارير" [ref=e80]:
+          - /url: /reports
+          - img [ref=e81]
+          - generic [ref=e83]: التقارير
+        - link "المستخدمين" [ref=e85]:
+          - /url: /users
+          - img [ref=e86]
+          - generic [ref=e90]: المستخدمين
+        - link "الإعدادات" [ref=e92]:
+          - /url: /settings
+          - img [ref=e93]
+          - generic [ref=e96]: الإعدادات
+      - generic [ref=e98]: نظام إدارة القضايا v1.0
+    - main [ref=e99]:
+      - generic [ref=e101]:
+        - generic [ref=e104]:
+          - generic [ref=e105]:
+            - heading "إدارة المحامين" [level=2] [ref=e106]:
+              - img [ref=e107]
+              - text: إدارة المحامين
+            - paragraph [ref=e112]: إدارة وتتبع جميع المحامين في المكتب
+          - button "إضافة محامي جديد" [ref=e113] [cursor=pointer]:
+            - img [ref=e114] [cursor=pointer]
+            - text: إضافة محامي جديد
+        - generic [ref=e117]:
+          - generic [ref=e119]:
+            - generic [ref=e120]: البحث
+            - generic [ref=e121]:
+              - img [ref=e123]
+              - textbox "البحث في المحامين..." [ref=e126]
+          - generic [ref=e128]:
+            - generic [ref=e129]: الحالة
+            - combobox [ref=e130]:
+              - option "جميع الحالات" [selected]
+              - option "نشط"
+              - option "غير نشط"
+          - button "تطبيق" [ref=e132] [cursor=pointer]:
+            - img [ref=e133] [cursor=pointer]
+            - text: تطبيق
+        - generic [ref=e135]:
+          - generic [ref=e137]:
+            - heading "قائمة المحامين" [level=5] [ref=e138]
+            - generic [ref=e139]: "إجمالي: 2 محامي"
+          - table [ref=e142]:
+            - rowgroup [ref=e143]:
+              - row "الاسم العربي الاسم الإنجليزي البريد الإلكتروني الحالة تاريخ الإنشاء الإجراءات" [ref=e144]:
+                - cell "الاسم العربي" [ref=e145]
+                - cell "الاسم الإنجليزي" [ref=e146]
+                - cell "البريد الإلكتروني" [ref=e147]
+                - cell "الحالة" [ref=e148]
+                - cell "تاريخ الإنشاء" [ref=e149]
+                - cell "الإجراءات" [ref=e150]
+            - rowgroup [ref=e151]:
+              - row "محمد علي Mohamed Ali - غير نشط - View Edit Delete" [ref=e152]:
+                - cell "محمد علي" [ref=e153]:
+                  - generic [ref=e154]:
+                    - img [ref=e155]
+                    - text: محمد علي
+                - cell "Mohamed Ali" [ref=e158]
+                - cell "-" [ref=e159]
+                - cell "غير نشط" [ref=e160]:
+                  - generic [ref=e161]:
+                    - img [ref=e162]
+                    - text: غير نشط
+                - cell "-" [ref=e166]
+                - cell "View Edit Delete" [ref=e167]:
+                  - generic [ref=e168]:
+                    - button "View" [ref=e169] [cursor=pointer]:
+                      - img [ref=e170] [cursor=pointer]
+                    - button "Edit" [ref=e173] [cursor=pointer]:
+                      - img [ref=e174] [cursor=pointer]
+                    - button "Delete" [ref=e177] [cursor=pointer]:
+                      - img [ref=e178] [cursor=pointer]
+              - row "لينا السعد Lina Al-Saad - غير نشط - View Edit Delete" [ref=e181]:
+                - cell "لينا السعد" [ref=e182]:
+                  - generic [ref=e183]:
+                    - img [ref=e184]
+                    - text: لينا السعد
+                - cell "Lina Al-Saad" [ref=e187]
+                - cell "-" [ref=e188]
+                - cell "غير نشط" [ref=e189]:
+                  - generic [ref=e190]:
+                    - img [ref=e191]
+                    - text: غير نشط
+                - cell "-" [ref=e195]
+                - cell "View Edit Delete" [ref=e196]:
+                  - generic [ref=e197]:
+                    - button "View" [ref=e198] [cursor=pointer]:
+                      - img [ref=e199] [cursor=pointer]
+                    - button "Edit" [ref=e202] [cursor=pointer]:
+                      - img [ref=e203] [cursor=pointer]
+                    - button "Delete" [ref=e206] [cursor=pointer]:
+                      - img [ref=e207] [cursor=pointer]
+  - contentinfo [ref=e210]:
+    - generic [ref=e212]:
+      - generic [ref=e214]: © 2025 مكتب المحاماة. جميع الحقوق محفوظة.
+      - generic [ref=e216]: نظام إدارة القضايا القانونية v1.0
+```
