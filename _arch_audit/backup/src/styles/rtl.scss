@@ -1,0 +1,413 @@
+// RTL-specific styles for the litigation management system
+
+// Base RTL styles
+[dir="rtl"] {
+  // Text alignment
+  text-align: right;
+  
+  // Form controls
+  .form-control,
+  .form-select,
+  .form-check-input {
+    text-align: right;
+  }
+  
+  // Buttons
+  .btn {
+    text-align: center;
+  }
+  
+  // Tables
+  .table {
+    th, td {
+      text-align: right;
+    }
+    
+    th:first-child,
+    td:first-child {
+      text-align: right;
+    }
+    
+    th:last-child,
+    td:last-child {
+      text-align: left;
+    }
+  }
+  
+  // Navigation
+  .navbar-nav {
+    .nav-link {
+      text-align: right;
+    }
+  }
+  
+  // Dropdowns
+  .dropdown-menu {
+    text-align: right;
+    
+    .dropdown-item {
+      text-align: right;
+    }
+  }
+  
+  // Modals
+  .modal-header {
+    .btn-close {
+      margin: -0.5rem auto -0.5rem -0.5rem;
+    }
+  }
+  
+  // Cards
+  .card {
+    text-align: right;
+    
+    .card-header,
+    .card-body,
+    .card-footer {
+      text-align: right;
+    }
+  }
+  
+  // Pagination
+  .pagination {
+    .page-link {
+      text-align: center;
+    }
+  }
+  
+  // Breadcrumbs
+  .breadcrumb {
+    .breadcrumb-item {
+      &::before {
+        content: "\\";
+      }
+      
+      &:first-child::before {
+        content: "";
+      }
+    }
+  }
+  
+  // Progress bars
+  .progress {
+    direction: ltr; // Keep progress bars LTR for visual consistency
+  }
+  
+  // Carousels
+  .carousel {
+    direction: ltr; // Keep carousels LTR for visual consistency
+    
+    .carousel-control-prev,
+    .carousel-control-next {
+      transform: scaleX(-1); // Flip the arrows
+    }
+  }
+  
+  // Tooltips and popovers
+  .tooltip,
+  .popover {
+    text-align: right;
+    
+    .tooltip-inner,
+    .popover-body {
+      text-align: right;
+    }
+  }
+  
+  // Alerts
+  .alert {
+    text-align: right;
+    
+    .alert-heading {
+      text-align: right;
+    }
+  }
+  
+  // List groups
+  .list-group {
+    .list-group-item {
+      text-align: right;
+    }
+  }
+  
+  // Accordions
+  .accordion {
+    .accordion-header {
+      .accordion-button {
+        text-align: right;
+        
+        &::after {
+          margin-left: auto;
+          margin-right: 0;
+        }
+      }
+    }
+  }
+  
+  // Offcanvas
+  .offcanvas {
+    &.offcanvas-start {
+      top: 0;
+      left: 0;
+      right: auto;
+      border-right: var(--bs-offcanvas-border-width) solid var(--bs-offcanvas-border-color);
+      border-left: 0;
+      transform: translateX(-100%);
+    }
+    
+    &.offcanvas-end {
+      top: 0;
+      left: auto;
+      right: 0;
+      border-left: var(--bs-offcanvas-border-width) solid var(--bs-offcanvas-border-color);
+      border-right: 0;
+      transform: translateX(100%);
+    }
+  }
+  
+  // Toast
+  .toast {
+    text-align: right;
+    
+    .toast-header {
+      text-align: right;
+      
+      .btn-close {
+        margin-left: -0.375rem;
+        margin-right: auto;
+      }
+    }
+    
+    .toast-body {
+      text-align: right;
+    }
+  }
+}
+
+// Mixed content handling
+.mixed-content {
+  direction: auto;
+  unicode-bidi: plaintext;
+  
+  // Arabic text segments
+  .arabic-text {
+    direction: rtl;
+    text-align: right;
+  }
+  
+  // Latin text segments
+  .latin-text {
+    direction: ltr;
+    text-align: left;
+  }
+  
+  // Auto-direction segments
+  .auto-text {
+    direction: auto;
+  }
+}
+
+// Input fields with mixed content support
+.form-control.mixed-content {
+  direction: auto;
+  unicode-bidi: plaintext;
+  
+  // Override for specific field types that should always be LTR
+  &[type="email"],
+  &[type="url"],
+  &[type="tel"],
+  &[type="password"] {
+    direction: ltr;
+    text-align: left;
+  }
+}
+
+// Table with mixed content
+.table.mixed-content {
+  th, td {
+    &.arabic-content {
+      text-align: right;
+    }
+    
+    &.latin-content {
+      text-align: left;
+    }
+    
+    &.mixed-content {
+      text-align: inherit;
+    }
+  }
+}
+
+// Navigation with mixed content
+.navbar.mixed-content {
+  .navbar-brand,
+  .nav-link {
+    &.arabic-content {
+      text-align: right;
+    }
+    
+    &.latin-content {
+      text-align: left;
+    }
+  }
+}
+
+// Card with mixed content
+.card.mixed-content {
+  .card-title,
+  .card-text {
+    &.arabic-content {
+      text-align: right;
+    }
+    
+    &.latin-content {
+      text-align: left;
+    }
+  }
+}
+
+// RTL-specific utility classes
+.rtl-text {
+  direction: rtl;
+  text-align: right;
+}
+
+.ltr-text {
+  direction: ltr;
+  text-align: left;
+}
+
+.auto-text {
+  direction: auto;
+}
+
+// RTL margin and padding utilities
+[dir="rtl"] {
+  .ms-0 { margin-left: 0 !important; margin-right: 0 !important; }
+  .ms-1 { margin-left: 0 !important; margin-right: 0.25rem !important; }
+  .ms-2 { margin-left: 0 !important; margin-right: 0.5rem !important; }
+  .ms-3 { margin-left: 0 !important; margin-right: 1rem !important; }
+  .ms-4 { margin-left: 0 !important; margin-right: 1.5rem !important; }
+  .ms-5 { margin-left: 0 !important; margin-right: 3rem !important; }
+  
+  .me-0 { margin-right: 0 !important; margin-left: 0 !important; }
+  .me-1 { margin-right: 0 !important; margin-left: 0.25rem !important; }
+  .me-2 { margin-right: 0 !important; margin-left: 0.5rem !important; }
+  .me-3 { margin-right: 0 !important; margin-left: 1rem !important; }
+  .me-4 { margin-right: 0 !important; margin-left: 1.5rem !important; }
+  .me-5 { margin-right: 0 !important; margin-left: 3rem !important; }
+  
+  .ps-0 { padding-left: 0 !important; padding-right: 0 !important; }
+  .ps-1 { padding-left: 0 !important; padding-right: 0.25rem !important; }
+  .ps-2 { padding-left: 0 !important; padding-right: 0.5rem !important; }
+  .ps-3 { padding-left: 0 !important; padding-right: 1rem !important; }
+  .ps-4 { padding-left: 0 !important; padding-right: 1.5rem !important; }
+  .ps-5 { padding-left: 0 !important; padding-right: 3rem !important; }
+  
+  .pe-0 { padding-right: 0 !important; padding-left: 0 !important; }
+  .pe-1 { padding-right: 0 !important; padding-left: 0.25rem !important; }
+  .pe-2 { padding-right: 0 !important; padding-left: 0.5rem !important; }
+  .pe-3 { padding-right: 0 !important; padding-left: 1rem !important; }
+  .pe-4 { padding-right: 0 !important; padding-left: 1.5rem !important; }
+  .pe-5 { padding-right: 0 !important; padding-left: 3rem !important; }
+}
+
+// RTL border utilities
+[dir="rtl"] {
+  .border-start { border-right: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important; border-left: 0 !important; }
+  .border-end { border-left: var(--bs-border-width) var(--bs-border-style) var(--bs-border-color) !important; border-right: 0 !important; }
+  
+  .border-start-0 { border-right: 0 !important; }
+  .border-end-0 { border-left: 0 !important; }
+}
+
+// RTL position utilities
+[dir="rtl"] {
+  .start-0 { right: 0 !important; left: auto !important; }
+  .end-0 { left: 0 !important; right: auto !important; }
+  
+  .start-50 { right: 50% !important; left: auto !important; }
+  .end-50 { left: 50% !important; right: auto !important; }
+  
+  .start-100 { right: 100% !important; left: auto !important; }
+  .end-100 { left: 100% !important; right: auto !important; }
+}
+
+// RTL transform utilities
+[dir="rtl"] {
+  .translate-middle-x {
+    transform: translateX(50%) !important;
+  }
+  
+  .translate-middle-x-neg {
+    transform: translateX(-50%) !important;
+  }
+}
+
+// RTL-specific animations
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    visibility: visible;
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-100%);
+    visibility: visible;
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+[dir="rtl"] {
+  .animate__slideInRight {
+    animation-name: slideInLeft;
+  }
+  
+  .animate__slideInLeft {
+    animation-name: slideInRight;
+  }
+}
+
+// RTL-specific responsive utilities
+@media (min-width: 576px) {
+  [dir="rtl"] {
+    .float-sm-start { float: right !important; }
+    .float-sm-end { float: left !important; }
+  }
+}
+
+@media (min-width: 768px) {
+  [dir="rtl"] {
+    .float-md-start { float: right !important; }
+    .float-md-end { float: left !important; }
+  }
+}
+
+@media (min-width: 992px) {
+  [dir="rtl"] {
+    .float-lg-start { float: right !important; }
+    .float-lg-end { float: left !important; }
+  }
+}
+
+@media (min-width: 1200px) {
+  [dir="rtl"] {
+    .float-xl-start { float: right !important; }
+    .float-xl-end { float: left !important; }
+  }
+}
+
+@media (min-width: 1400px) {
+  [dir="rtl"] {
+    .float-xxl-start { float: right !important; }
+    .float-xxl-end { float: left !important; }
+  }
+}
