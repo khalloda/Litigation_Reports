@@ -23,14 +23,20 @@ test('Complete hearing workflow with authentication', async ({ page }) => {
     await page.screenshot({ path: 'test-results/auth-login-page.png' });
 
     // Look for login form elements
-    const emailField = page.locator('input[type="email"], input[name="email"], input[placeholder*="بريد"], input[placeholder*="email"]');
-    const passwordField = page.locator('input[type="password"], input[name="password"], input[placeholder*="مرور"], input[placeholder*="password"]');
-    const loginButton = page.locator('button:has-text("دخول"), button[type="submit"], button:has-text("login")');
+    const emailField = page.locator(
+      'input[type="email"], input[name="email"], input[placeholder*="بريد"], input[placeholder*="email"]'
+    );
+    const passwordField = page.locator(
+      'input[type="password"], input[name="password"], input[placeholder*="مرور"], input[placeholder*="password"]'
+    );
+    const loginButton = page.locator(
+      'button:has-text("دخول"), button[type="submit"], button:has-text("login")'
+    );
 
     // Check if login elements exist
-    const emailExists = await emailField.count() > 0;
-    const passwordExists = await passwordField.count() > 0;
-    const buttonExists = await loginButton.count() > 0;
+    const emailExists = (await emailField.count()) > 0;
+    const passwordExists = (await passwordField.count()) > 0;
+    const buttonExists = (await loginButton.count()) > 0;
 
     console.log(`📧 Email field: ${emailExists ? '✅' : '❌'}`);
     console.log(`🔒 Password field: ${passwordExists ? '✅' : '❌'}`);
@@ -44,7 +50,7 @@ test('Complete hearing workflow with authentication', async ({ page }) => {
         { email: 'admin@litigation.com', password: 'admin123' },
         { email: 'test@test.com', password: 'test123' },
         { email: 'admin@test.com', password: 'admin' },
-        { email: 'user@example.com', password: 'password' }
+        { email: 'user@example.com', password: 'password' },
       ];
 
       for (const creds of testCredentials) {
@@ -57,7 +63,9 @@ test('Complete hearing workflow with authentication', async ({ page }) => {
         await passwordField.fill(creds.password);
 
         // Take screenshot before login attempt
-        await page.screenshot({ path: `test-results/auth-before-login-${creds.email.split('@')[0]}.png` });
+        await page.screenshot({
+          path: `test-results/auth-before-login-${creds.email.split('@')[0]}.png`,
+        });
 
         // Submit form
         await loginButton.click();
@@ -77,7 +85,10 @@ test('Complete hearing workflow with authentication', async ({ page }) => {
           console.log(`❌ Login failed with ${creds.email}`);
 
           // Check for error messages
-          const errorMsg = await page.locator('.error, .alert-danger, .text-danger').textContent().catch(() => '');
+          const errorMsg = await page
+            .locator('.error, .alert-danger, .text-danger')
+            .textContent()
+            .catch(() => '');
           if (errorMsg) {
             console.log(`⚠️ Error message: ${errorMsg}`);
           }
@@ -100,7 +111,8 @@ test('Complete hearing workflow with authentication', async ({ page }) => {
 
         // Check for hearings content
         const pageContent = await page.locator('body').textContent();
-        const hasHearingsContent = pageContent?.includes('جلسات') || pageContent?.includes('إدارة الجلسات');
+        const hasHearingsContent =
+          pageContent?.includes('جلسات') || pageContent?.includes('إدارة الجلسات');
 
         if (hasHearingsContent) {
           console.log('✅ On hearings page with correct content');
@@ -113,7 +125,7 @@ test('Complete hearing workflow with authentication', async ({ page }) => {
             'button:has-text("إضافة جلسة")',
             'button:has-text("إضافة")',
             '[data-testid="add-hearing-button"]',
-            'button[onclick*="add"], button[onclick*="جلسة"]'
+            'button[onclick*="add"], button[onclick*="جلسة"]',
           ];
 
           let addButtonFound = false;
@@ -126,7 +138,10 @@ test('Complete hearing workflow with authentication', async ({ page }) => {
               await page.waitForTimeout(3000);
 
               // Check for modal or form
-              const modalExists = await page.locator('.modal, .dialog, .popup').isVisible().catch(() => false);
+              const modalExists = await page
+                .locator('.modal, .dialog, .popup')
+                .isVisible()
+                .catch(() => false);
               if (modalExists) {
                 console.log('🎉 HEARING CREATION MODAL OPENED SUCCESSFULLY!');
                 await page.screenshot({ path: 'test-results/auth-hearing-modal.png' });
@@ -137,9 +152,13 @@ test('Complete hearing workflow with authentication', async ({ page }) => {
 
                 // Check for form fields
                 const formElements = {
-                  selects: await page.locator('.modal select, .dialog select, .popup select').count(),
+                  selects: await page
+                    .locator('.modal select, .dialog select, .popup select')
+                    .count(),
                   inputs: await page.locator('.modal input, .dialog input, .popup input').count(),
-                  textareas: await page.locator('.modal textarea, .dialog textarea, .popup textarea').count()
+                  textareas: await page
+                    .locator('.modal textarea, .dialog textarea, .popup textarea')
+                    .count(),
                 };
 
                 console.log(`📋 Modal form elements: ${JSON.stringify(formElements)}`);
@@ -162,22 +181,20 @@ test('Complete hearing workflow with authentication', async ({ page }) => {
             const allButtons = await page.locator('button').allTextContents();
             console.log(`🔘 Available buttons: ${allButtons.join(' | ')}`);
           }
-
         } else {
           console.log('❌ Not on correct hearings page');
           const currentPageUrl = page.url();
           console.log(`🔗 Current page: ${currentPageUrl}`);
         }
-
       } else {
         console.log('❌ Authentication failed with all test credentials');
-        console.log('💡 You may need to provide valid credentials or check if the application uses different authentication');
+        console.log(
+          '💡 You may need to provide valid credentials or check if the application uses different authentication'
+        );
       }
-
     } else {
       console.log('❌ Login form elements not found properly');
     }
-
   } else {
     console.log('❓ Not redirected to login page - application might not require authentication');
   }

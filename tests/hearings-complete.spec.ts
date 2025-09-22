@@ -28,7 +28,7 @@ test('Complete hearing workflow: Login → Navigate → Create Hearing', async (
       { email: 'lawyer@litigation.com', password: 'admin123' },
       { email: 'staff@litigation.com', password: 'admin123' },
       { email: 'admin@test.com', password: 'admin123' },
-      { email: 'test@test.com', password: 'test123' }
+      { email: 'test@test.com', password: 'test123' },
     ];
 
     let loginSuccessful = false;
@@ -37,7 +37,9 @@ test('Complete hearing workflow: Login → Navigate → Create Hearing', async (
       console.log(`🔑 Trying: ${cred.email}`);
 
       // Find and fill login form
-      const emailInput = page.locator('input[type="email"], input[name="email"], input[placeholder*="بريد"]').first();
+      const emailInput = page
+        .locator('input[type="email"], input[name="email"], input[placeholder*="بريد"]')
+        .first();
       const passwordInput = page.locator('input[type="password"], input[name="password"]').first();
       const loginBtn = page.locator('button:has-text("دخول"), button[type="submit"]').first();
 
@@ -46,7 +48,9 @@ test('Complete hearing workflow: Login → Navigate → Create Hearing', async (
       await emailInput.fill(cred.email);
       await passwordInput.fill(cred.password);
 
-      await page.screenshot({ path: `test-results/complete-login-attempt-${cred.email.split('@')[0]}.png` });
+      await page.screenshot({
+        path: `test-results/complete-login-attempt-${cred.email.split('@')[0]}.png`,
+      });
 
       await loginBtn.click();
       await page.waitForTimeout(4000);
@@ -92,11 +96,17 @@ test('Complete hearing workflow: Login → Navigate → Create Hearing', async (
 
   // Check for hearings content
   const hearingsIndicators = [
-    'جلسات', 'جلسة', 'إدارة الجلسات', 'إضافة جلسة',
-    'hearing', 'hearings', 'session', 'court'
+    'جلسات',
+    'جلسة',
+    'إدارة الجلسات',
+    'إضافة جلسة',
+    'hearing',
+    'hearings',
+    'session',
+    'court',
   ];
 
-  const foundIndicators = hearingsIndicators.filter(indicator =>
+  const foundIndicators = hearingsIndicators.filter((indicator) =>
     bodyText?.toLowerCase().includes(indicator.toLowerCase())
   );
 
@@ -119,7 +129,7 @@ test('Complete hearing workflow: Login → Navigate → Create Hearing', async (
       'button:has-text("+")',
       '.btn-primary:has-text("إضافة")',
       'button[onclick*="add"]',
-      'button[onclick*="create"]'
+      'button[onclick*="create"]',
     ];
 
     let addButtonFound = false;
@@ -131,7 +141,11 @@ test('Complete hearing workflow: Login → Navigate → Create Hearing', async (
         const buttonText = await page.locator(selector).first().textContent();
         console.log(`🔘 Found button "${buttonText}" with selector: ${selector}`);
 
-        if (buttonText?.includes('إضافة') || buttonText?.includes('جلسة') || buttonText?.includes('+')) {
+        if (
+          buttonText?.includes('إضافة') ||
+          buttonText?.includes('جلسة') ||
+          buttonText?.includes('+')
+        ) {
           workingSelector = selector;
           addButtonFound = true;
           break;
@@ -152,7 +166,10 @@ test('Complete hearing workflow: Login → Navigate → Create Hearing', async (
       let modalFound = false;
 
       for (const modalSelector of modalSelectors) {
-        const isVisible = await page.locator(modalSelector).isVisible().catch(() => false);
+        const isVisible = await page
+          .locator(modalSelector)
+          .isVisible()
+          .catch(() => false);
         if (isVisible) {
           console.log(`✅ Modal/form found with selector: ${modalSelector}`);
           modalFound = true;
@@ -165,7 +182,9 @@ test('Complete hearing workflow: Login → Navigate → Create Hearing', async (
           const inputs = await page.locator(`${modalSelector} input`).count();
           const textareas = await page.locator(`${modalSelector} textarea`).count();
 
-          console.log(`📋 Form elements - Selects: ${selects}, Inputs: ${inputs}, Textareas: ${textareas}`);
+          console.log(
+            `📋 Form elements - Selects: ${selects}, Inputs: ${inputs}, Textareas: ${textareas}`
+          );
 
           if (selects > 0 || inputs > 0) {
             console.log('🎉 HEARING CREATION FORM IS WORKING!');
@@ -181,8 +200,10 @@ test('Complete hearing workflow: Login → Navigate → Create Hearing', async (
             }
 
             if (inputs > 0) {
-              const dateInput = page.locator(`${modalSelector} input[type="datetime-local"]`).first();
-              if (await dateInput.count() > 0) {
+              const dateInput = page
+                .locator(`${modalSelector} input[type="datetime-local"]`)
+                .first();
+              if ((await dateInput.count()) > 0) {
                 await dateInput.fill('2025-12-31T14:00');
                 console.log('✅ Filled date input');
               }
@@ -194,10 +215,12 @@ test('Complete hearing workflow: Login → Navigate → Create Hearing', async (
               console.log('✅ Filled textarea');
             }
 
-            await page.screenshot({ path: 'test-results/complete-form-filled.png', fullPage: true });
+            await page.screenshot({
+              path: 'test-results/complete-form-filled.png',
+              fullPage: true,
+            });
 
             console.log('🎉 HEARING FORM FULLY FUNCTIONAL AND TESTED!');
-
           } else {
             console.log('⚠️ Modal found but no form elements detected');
           }
@@ -215,7 +238,6 @@ test('Complete hearing workflow: Login → Navigate → Create Hearing', async (
           console.log('📝 Page content changed - different interaction pattern detected');
         }
       }
-
     } else {
       console.log('❌ No add hearing button found');
 
@@ -228,7 +250,6 @@ test('Complete hearing workflow: Login → Navigate → Create Hearing', async (
         console.log(`🔘 Available buttons: ${buttonTexts.join(' | ')}`);
       }
     }
-
   } else {
     console.log('❌ Could not access hearings content');
 
@@ -241,10 +262,16 @@ test('Complete hearing workflow: Login → Navigate → Create Hearing', async (
 
   // Final summary
   console.log('\n📊 TEST SUMMARY:');
-  console.log(`- Authentication attempted: ${currentUrl.includes('login') ? '⚠️ Still required' : '✅ Successful'}`);
-  console.log(`- Hearings page access: ${foundIndicators.length > 0 ? '✅ Successful' : '❌ Failed'}`);
+  console.log(
+    `- Authentication attempted: ${currentUrl.includes('login') ? '⚠️ Still required' : '✅ Successful'}`
+  );
+  console.log(
+    `- Hearings page access: ${foundIndicators.length > 0 ? '✅ Successful' : '❌ Failed'}`
+  );
   console.log(`- Add button found: ${addButtonFound ? '✅ Yes' : '❌ No'}`);
-  console.log(`- Form functionality: ${foundIndicators.length > 0 && addButtonFound ? '✅ Available' : '❌ Not tested'}`);
+  console.log(
+    `- Form functionality: ${foundIndicators.length > 0 && addButtonFound ? '✅ Available' : '❌ Not tested'}`
+  );
 
   console.log('✅ Complete workflow test finished');
 });

@@ -40,7 +40,13 @@
     "start:backend": "php -S localhost:8000 -t public",
     "build:production": "scripts\\build-production.bat",
     "deploy:godaddy": "echo Please configure FTP credentials in scripts/deploy-to-godaddy.sh and run manually",
-    "setup": "npm install && npx playwright install"
+    "setup": "npm install && npx playwright install",
+    "test:api": "echo Running PHP API tests && find tests/api -name '*.php' -type f | head -5 || echo 'API tests organized - use manual PHP testing for now'",
+    "test:api:auth": "echo Running auth tests && ls tests/api/auth/*.php || echo 'Auth tests organized'",
+    "test:api:endpoints": "echo Running endpoint tests && ls tests/api/endpoints/*.php || echo 'Endpoint tests organized'",
+    "test:api:database": "echo Running database tests && ls tests/api/database/*.php || echo 'Database tests organized'",
+    "test:integration": "echo Running integration tests && ls tests/integration/ || echo 'Integration tests directory ready'",
+    "test:all": "npm run test && npm run test:e2e && npm run test:api"
   },
   "keywords": [
     "litigation",

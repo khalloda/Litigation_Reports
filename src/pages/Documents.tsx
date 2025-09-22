@@ -13,7 +13,7 @@ import {
   Alert,
   Spinner,
   InputGroup,
-  Pagination
+  Pagination,
 } from 'react-bootstrap';
 import { useTranslation } from 'react-i18next';
 import { useRTL } from '@hooks/useRTL';
@@ -33,7 +33,7 @@ import {
   Tag,
   FileCheck,
   Archive,
-  ExternalLink
+  ExternalLink,
 } from 'lucide-react';
 import { apiService as api } from '../services/api';
 
@@ -108,7 +108,7 @@ export function Documents() {
     entity_id: '',
     uploaded_by: '',
     date_from: '',
-    date_to: ''
+    date_to: '',
   });
   const [showFilters, setShowFilters] = useState(false);
 
@@ -121,7 +121,7 @@ export function Documents() {
     entity_id: '',
     is_public: false,
     tags: '',
-    file: null as File | null
+    file: null as File | null,
   });
 
   // Options
@@ -142,9 +142,7 @@ export function Documents() {
       const params = new URLSearchParams({
         page: currentPage.toString(),
         limit: '20',
-        ...Object.fromEntries(
-          Object.entries(filters).filter(([_, value]) => value !== '')
-        )
+        ...Object.fromEntries(Object.entries(filters).filter(([_, value]) => value !== '')),
       });
 
       const response = await api.get(`/documents?${params}`);
@@ -189,7 +187,7 @@ export function Documents() {
   };
 
   const handleFilterChange = (field: keyof DocumentFilters, value: string) => {
-    setFilters(prev => ({ ...prev, [field]: value }));
+    setFilters((prev) => ({ ...prev, [field]: value }));
     setCurrentPage(1);
   };
 
@@ -212,8 +210,8 @@ export function Documents() {
 
       const response = await api.post('/documents', formData, {
         headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+          'Content-Type': 'multipart/form-data',
+        },
       });
 
       if (response.success) {
@@ -226,7 +224,7 @@ export function Documents() {
           entity_id: '',
           is_public: false,
           tags: '',
-          file: null
+          file: null,
         });
         loadDocuments();
         loadStats();
@@ -278,32 +276,35 @@ export function Documents() {
 
   const getDocumentTypeIcon = (type: string) => {
     switch (type) {
-      case 'contract': return <FileCheck className="text-primary" size={16} />;
-      case 'evidence': return <Archive className="text-warning" size={16} />;
-      case 'correspondence': return <FileText className="text-info" size={16} />;
-      case 'legal_memo': return <File className="text-success" size={16} />;
-      case 'court_filing': return <ExternalLink className="text-danger" size={16} />;
-      default: return <FileText className="text-muted" size={16} />;
+      case 'contract':
+        return <FileCheck className='text-primary' size={16} />;
+      case 'evidence':
+        return <Archive className='text-warning' size={16} />;
+      case 'correspondence':
+        return <FileText className='text-info' size={16} />;
+      case 'legal_memo':
+        return <File className='text-success' size={16} />;
+      case 'court_filing':
+        return <ExternalLink className='text-danger' size={16} />;
+      default:
+        return <FileText className='text-muted' size={16} />;
     }
   };
 
   return (
-    <Container fluid className="py-4" dir={isRTL ? 'rtl' : 'ltr'}>
-      <Row className="mb-4">
+    <Container fluid className='py-4' dir={isRTL ? 'rtl' : 'ltr'}>
+      <Row className='mb-4'>
         <Col>
-          <div className="d-flex justify-content-between align-items-center">
+          <div className='d-flex justify-content-between align-items-center'>
             <div>
-              <h2 className="mb-1">
-                <FileText className="me-2" />
+              <h2 className='mb-1'>
+                <FileText className='me-2' />
                 إدارة المستندات
               </h2>
-              <p className="text-muted mb-0">Documents Management</p>
+              <p className='text-muted mb-0'>Documents Management</p>
             </div>
-            <Button
-              variant="primary"
-              onClick={() => setShowUploadModal(true)}
-            >
-              <Plus size={16} className="me-1" />
+            <Button variant='primary' onClick={() => setShowUploadModal(true)}>
+              <Plus size={16} className='me-1' />
               رفع مستند جديد
             </Button>
           </div>
@@ -312,36 +313,36 @@ export function Documents() {
 
       {/* Statistics Cards */}
       {stats && (
-        <Row className="mb-4">
+        <Row className='mb-4'>
           <Col md={3}>
-            <Card className="bg-primary text-white">
-              <Card.Body className="text-center">
+            <Card className='bg-primary text-white'>
+              <Card.Body className='text-center'>
                 <h3>{stats.total_documents}</h3>
-                <p className="mb-0">إجمالي المستندات</p>
+                <p className='mb-0'>إجمالي المستندات</p>
               </Card.Body>
             </Card>
           </Col>
           <Col md={3}>
-            <Card className="bg-success text-white">
-              <Card.Body className="text-center">
+            <Card className='bg-success text-white'>
+              <Card.Body className='text-center'>
                 <h3>{stats.contracts}</h3>
-                <p className="mb-0">العقود</p>
+                <p className='mb-0'>العقود</p>
               </Card.Body>
             </Card>
           </Col>
           <Col md={3}>
-            <Card className="bg-warning text-white">
-              <Card.Body className="text-center">
+            <Card className='bg-warning text-white'>
+              <Card.Body className='text-center'>
                 <h3>{stats.evidence}</h3>
-                <p className="mb-0">الأدلة</p>
+                <p className='mb-0'>الأدلة</p>
               </Card.Body>
             </Card>
           </Col>
           <Col md={3}>
-            <Card className="bg-info text-white">
-              <Card.Body className="text-center">
+            <Card className='bg-info text-white'>
+              <Card.Body className='text-center'>
                 <h3>{stats.total_size_mb} MB</h3>
-                <p className="mb-0">إجمالي الحجم</p>
+                <p className='mb-0'>إجمالي الحجم</p>
               </Card.Body>
             </Card>
           </Col>
@@ -349,16 +350,16 @@ export function Documents() {
       )}
 
       {/* Filters */}
-      <Card className="mb-4">
+      <Card className='mb-4'>
         <Card.Header>
-          <div className="d-flex justify-content-between align-items-center">
-            <h5 className="mb-0">البحث والتصفية</h5>
+          <div className='d-flex justify-content-between align-items-center'>
+            <h5 className='mb-0'>البحث والتصفية</h5>
             <Button
-              variant="outline-secondary"
-              size="sm"
+              variant='outline-secondary'
+              size='sm'
               onClick={() => setShowFilters(!showFilters)}
             >
-              <Filter size={16} className="me-1" />
+              <Filter size={16} className='me-1' />
               تصفية متقدمة
             </Button>
           </div>
@@ -368,12 +369,12 @@ export function Documents() {
             <Col md={6}>
               <InputGroup>
                 <Form.Control
-                  type="text"
-                  placeholder="البحث في العنوان أو الوصف..."
+                  type='text'
+                  placeholder='البحث في العنوان أو الوصف...'
                   value={filters.search}
                   onChange={(e) => handleFilterChange('search', e.target.value)}
                 />
-                <Button variant="outline-secondary">
+                <Button variant='outline-secondary'>
                   <Search size={16} />
                 </Button>
               </InputGroup>
@@ -383,9 +384,11 @@ export function Documents() {
                 value={filters.document_type}
                 onChange={(e) => handleFilterChange('document_type', e.target.value)}
               >
-                <option value="">جميع الأنواع</option>
+                <option value=''>جميع الأنواع</option>
                 {Object.entries(documentTypes).map(([key, value]) => (
-                  <option key={key} value={key}>{value as string}</option>
+                  <option key={key} value={key}>
+                    {value as string}
+                  </option>
                 ))}
               </Form.Select>
             </Col>
@@ -394,20 +397,22 @@ export function Documents() {
                 value={filters.entity_type}
                 onChange={(e) => handleFilterChange('entity_type', e.target.value)}
               >
-                <option value="">جميع الكيانات</option>
+                <option value=''>جميع الكيانات</option>
                 {Object.entries(entityTypes).map(([key, value]) => (
-                  <option key={key} value={key}>{value as string}</option>
+                  <option key={key} value={key}>
+                    {value as string}
+                  </option>
                 ))}
               </Form.Select>
             </Col>
           </Row>
 
           {showFilters && (
-            <Row className="mt-3">
+            <Row className='mt-3'>
               <Col md={3}>
                 <Form.Label>من تاريخ</Form.Label>
                 <Form.Control
-                  type="date"
+                  type='date'
                   value={filters.date_from}
                   onChange={(e) => handleFilterChange('date_from', e.target.value)}
                 />
@@ -415,7 +420,7 @@ export function Documents() {
               <Col md={3}>
                 <Form.Label>إلى تاريخ</Form.Label>
                 <Form.Control
-                  type="date"
+                  type='date'
                   value={filters.date_to}
                   onChange={(e) => handleFilterChange('date_to', e.target.value)}
                 />
@@ -423,8 +428,8 @@ export function Documents() {
               <Col md={6}>
                 <Form.Label>الكيان المرتبط</Form.Label>
                 <Form.Control
-                  type="text"
-                  placeholder="معرف الكيان"
+                  type='text'
+                  placeholder='معرف الكيان'
                   value={filters.entity_id}
                   onChange={(e) => handleFilterChange('entity_id', e.target.value)}
                 />
@@ -437,19 +442,15 @@ export function Documents() {
       {/* Documents Table */}
       <Card>
         <Card.Header>
-          <h5 className="mb-0">قائمة المستندات ({totalDocuments})</h5>
+          <h5 className='mb-0'>قائمة المستندات ({totalDocuments})</h5>
         </Card.Header>
         <Card.Body>
-          {error && (
-            <Alert variant="danger">
-              {error}
-            </Alert>
-          )}
+          {error && <Alert variant='danger'>{error}</Alert>}
 
           {loading ? (
-            <div className="text-center py-5">
-              <Spinner animation="border" variant="primary" />
-              <p className="mt-3 text-muted">جاري تحميل المستندات...</p>
+            <div className='text-center py-5'>
+              <Spinner animation='border' variant='primary' />
+              <p className='mt-3 text-muted'>جاري تحميل المستندات...</p>
             </div>
           ) : (
             <>
@@ -471,9 +472,9 @@ export function Documents() {
                   {documents.map((document) => (
                     <tr key={document.id}>
                       <td>
-                        <div className="d-flex align-items-center">
+                        <div className='d-flex align-items-center'>
                           {getDocumentTypeIcon(document.document_type)}
-                          <span className="ms-2">
+                          <span className='ms-2'>
                             {documentTypes[document.document_type] || document.document_type}
                           </span>
                         </div>
@@ -482,9 +483,7 @@ export function Documents() {
                         <div>
                           <strong>{document.title}</strong>
                           {document.description && (
-                            <small className="d-block text-muted">
-                              {document.description}
-                            </small>
+                            <small className='d-block text-muted'>{document.description}</small>
                           )}
                         </div>
                       </td>
@@ -493,21 +492,21 @@ export function Documents() {
                       </td>
                       <td>{formatFileSize(document.file_size)}</td>
                       <td>
-                        <div className="d-flex align-items-center">
-                          <User size={14} className="me-1" />
+                        <div className='d-flex align-items-center'>
+                          <User size={14} className='me-1' />
                           {document.uploader_name}
                         </div>
                       </td>
                       <td>
                         {document.entity_type && (
-                          <Badge bg="secondary">
+                          <Badge bg='secondary'>
                             {entityTypes[document.entity_type]} #{document.entity_id}
                           </Badge>
                         )}
                       </td>
                       <td>
-                        <div className="d-flex align-items-center">
-                          <Calendar size={14} className="me-1" />
+                        <div className='d-flex align-items-center'>
+                          <Calendar size={14} className='me-1' />
                           {new Date(document.created_at).toLocaleDateString('en-GB')}
                         </div>
                       </td>
@@ -518,12 +517,12 @@ export function Documents() {
                       </td>
                       <td>
                         <Dropdown>
-                          <Dropdown.Toggle variant="outline-secondary" size="sm">
+                          <Dropdown.Toggle variant='outline-secondary' size='sm'>
                             الإجراءات
                           </Dropdown.Toggle>
                           <Dropdown.Menu>
                             <Dropdown.Item onClick={() => handleDownload(document)}>
-                              <Download size={14} className="me-1" />
+                              <Download size={14} className='me-1' />
                               تحميل
                             </Dropdown.Item>
                             <Dropdown.Item
@@ -532,18 +531,18 @@ export function Documents() {
                                 setShowEditModal(true);
                               }}
                             >
-                              <Edit size={14} className="me-1" />
+                              <Edit size={14} className='me-1' />
                               تعديل
                             </Dropdown.Item>
                             <Dropdown.Divider />
                             <Dropdown.Item
-                              className="text-danger"
+                              className='text-danger'
                               onClick={() => {
                                 setSelectedDocument(document);
                                 setShowDeleteModal(true);
                               }}
                             >
-                              <Trash2 size={14} className="me-1" />
+                              <Trash2 size={14} className='me-1' />
                               حذف
                             </Dropdown.Item>
                           </Dropdown.Menu>
@@ -556,7 +555,7 @@ export function Documents() {
 
               {/* Pagination */}
               {totalPages > 1 && (
-                <div className="d-flex justify-content-center mt-4">
+                <div className='d-flex justify-content-center mt-4'>
                   <Pagination>
                     <Pagination.Prev
                       disabled={currentPage === 1}
@@ -590,12 +589,12 @@ export function Documents() {
       <Modal
         show={showUploadModal}
         onHide={() => setShowUploadModal(false)}
-        size="lg"
+        size='lg'
         dir={isRTL ? 'rtl' : 'ltr'}
       >
         <Modal.Header closeButton>
           <Modal.Title>
-            <Upload size={20} className="me-2" />
+            <Upload size={20} className='me-2' />
             رفع مستند جديد
           </Modal.Title>
         </Modal.Header>
@@ -603,110 +602,124 @@ export function Documents() {
           <Form>
             <Row>
               <Col md={6}>
-                <Form.Group className="mb-3">
+                <Form.Group className='mb-3'>
                   <Form.Label>العنوان *</Form.Label>
                   <Form.Control
-                    type="text"
+                    type='text'
                     value={uploadData.title}
-                    onChange={(e) => setUploadData(prev => ({ ...prev, title: e.target.value }))}
+                    onChange={(e) => setUploadData((prev) => ({ ...prev, title: e.target.value }))}
                     required
                   />
                 </Form.Group>
               </Col>
               <Col md={6}>
-                <Form.Group className="mb-3">
+                <Form.Group className='mb-3'>
                   <Form.Label>نوع المستند *</Form.Label>
                   <Form.Select
                     value={uploadData.document_type}
-                    onChange={(e) => setUploadData(prev => ({ ...prev, document_type: e.target.value }))}
+                    onChange={(e) =>
+                      setUploadData((prev) => ({ ...prev, document_type: e.target.value }))
+                    }
                   >
                     {Object.entries(documentTypes).map(([key, value]) => (
-                      <option key={key} value={key}>{value as string}</option>
+                      <option key={key} value={key}>
+                        {value as string}
+                      </option>
                     ))}
                   </Form.Select>
                 </Form.Group>
               </Col>
             </Row>
 
-            <Form.Group className="mb-3">
+            <Form.Group className='mb-3'>
               <Form.Label>الوصف</Form.Label>
               <Form.Control
-                as="textarea"
+                as='textarea'
                 rows={3}
                 value={uploadData.description}
-                onChange={(e) => setUploadData(prev => ({ ...prev, description: e.target.value }))}
+                onChange={(e) =>
+                  setUploadData((prev) => ({ ...prev, description: e.target.value }))
+                }
               />
             </Form.Group>
 
             <Row>
               <Col md={6}>
-                <Form.Group className="mb-3">
+                <Form.Group className='mb-3'>
                   <Form.Label>نوع الكيان المرتبط</Form.Label>
                   <Form.Select
                     value={uploadData.entity_type}
-                    onChange={(e) => setUploadData(prev => ({ ...prev, entity_type: e.target.value }))}
+                    onChange={(e) =>
+                      setUploadData((prev) => ({ ...prev, entity_type: e.target.value }))
+                    }
                   >
-                    <option value="">غير مرتبط</option>
+                    <option value=''>غير مرتبط</option>
                     {Object.entries(entityTypes).map(([key, value]) => (
-                      <option key={key} value={key}>{value as string}</option>
+                      <option key={key} value={key}>
+                        {value as string}
+                      </option>
                     ))}
                   </Form.Select>
                 </Form.Group>
               </Col>
               <Col md={6}>
-                <Form.Group className="mb-3">
+                <Form.Group className='mb-3'>
                   <Form.Label>معرف الكيان</Form.Label>
                   <Form.Control
-                    type="number"
+                    type='number'
                     value={uploadData.entity_id}
-                    onChange={(e) => setUploadData(prev => ({ ...prev, entity_id: e.target.value }))}
+                    onChange={(e) =>
+                      setUploadData((prev) => ({ ...prev, entity_id: e.target.value }))
+                    }
                   />
                 </Form.Group>
               </Col>
             </Row>
 
-            <Form.Group className="mb-3">
+            <Form.Group className='mb-3'>
               <Form.Label>الكلمات المفتاحية</Form.Label>
               <Form.Control
-                type="text"
+                type='text'
                 value={uploadData.tags}
-                onChange={(e) => setUploadData(prev => ({ ...prev, tags: e.target.value }))}
-                placeholder="افصل بين الكلمات بفاصلة"
+                onChange={(e) => setUploadData((prev) => ({ ...prev, tags: e.target.value }))}
+                placeholder='افصل بين الكلمات بفاصلة'
               />
             </Form.Group>
 
-            <Form.Group className="mb-3">
+            <Form.Group className='mb-3'>
               <Form.Check
-                type="switch"
-                id="is-public"
-                label="مستند عام (يمكن لجميع المستخدمين رؤيته)"
+                type='switch'
+                id='is-public'
+                label='مستند عام (يمكن لجميع المستخدمين رؤيته)'
                 checked={uploadData.is_public}
-                onChange={(e) => setUploadData(prev => ({ ...prev, is_public: e.target.checked }))}
+                onChange={(e) =>
+                  setUploadData((prev) => ({ ...prev, is_public: e.target.checked }))
+                }
               />
             </Form.Group>
 
-            <Form.Group className="mb-3">
+            <Form.Group className='mb-3'>
               <Form.Label>اختيار الملف *</Form.Label>
               <Form.Control
-                type="file"
+                type='file'
                 onChange={(e) => {
                   const file = (e.target as HTMLInputElement).files?.[0];
-                  setUploadData(prev => ({ ...prev, file: file || null }));
+                  setUploadData((prev) => ({ ...prev, file: file || null }));
                 }}
-                accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif"
+                accept='.pdf,.doc,.docx,.txt,.jpg,.jpeg,.png,.gif'
               />
-              <Form.Text className="text-muted">
+              <Form.Text className='text-muted'>
                 الأنواع المدعومة: PDF, DOC, DOCX, TXT, JPG, PNG, GIF (الحد الأقصى: 10MB)
               </Form.Text>
             </Form.Group>
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="outline-secondary" onClick={() => setShowUploadModal(false)}>
+          <Button variant='outline-secondary' onClick={() => setShowUploadModal(false)}>
             إلغاء
           </Button>
-          <Button variant="primary" onClick={handleUploadDocument}>
-            <Upload size={16} className="me-1" />
+          <Button variant='primary' onClick={handleUploadDocument}>
+            <Upload size={16} className='me-1' />
             رفع المستند
           </Button>
         </Modal.Footer>
@@ -727,11 +740,11 @@ export function Documents() {
           <strong>تحذير:</strong> لا يمكن التراجع عن هذا الإجراء.
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="outline-secondary" onClick={() => setShowDeleteModal(false)}>
+          <Button variant='outline-secondary' onClick={() => setShowDeleteModal(false)}>
             إلغاء
           </Button>
-          <Button variant="danger" onClick={handleDelete}>
-            <Trash2 size={16} className="me-1" />
+          <Button variant='danger' onClick={handleDelete}>
+            <Trash2 size={16} className='me-1' />
             حذف المستند
           </Button>
         </Modal.Footer>

@@ -4,7 +4,7 @@ const BASE_URL = 'http://lit.local:8080';
 
 test.setTimeout(120000);
 
-test('Test hearing creation functionality', async ({ page }) => {
+test('hearing creation functionality', async ({ page }) => {
   console.log('🎯 Testing hearing creation functionality...');
 
   // Navigate to hearings page
@@ -26,7 +26,7 @@ test('Test hearing creation functionality', async ({ page }) => {
 
   // Look for hearings-related content
   const hearingsKeywords = ['جلسات', 'جلسة', 'إدارة الجلسات', 'hearings'];
-  const foundKeywords = hearingsKeywords.filter(keyword => bodyText?.includes(keyword));
+  const foundKeywords = hearingsKeywords.filter((keyword) => bodyText?.includes(keyword));
   console.log(`🔍 Found keywords: ${foundKeywords.join(', ')}`);
 
   if (foundKeywords.length > 0) {
@@ -41,7 +41,7 @@ test('Test hearing creation functionality', async ({ page }) => {
       { name: 'add-text', selector: 'button:has-text("إضافة")' },
       { name: 'new-text', selector: 'button:has-text("جديد")' },
       { name: 'plus-icon', selector: 'button:has([class*="plus"], [class*="add"])' },
-      { name: 'primary-btn', selector: 'button.btn-primary' }
+      { name: 'primary-btn', selector: 'button.btn-primary' },
     ];
 
     let buttonFound = false;
@@ -55,7 +55,11 @@ test('Test hearing creation functionality', async ({ page }) => {
         const buttonText = await page.locator(strategy.selector).first().textContent();
         console.log(`📝 Button text: "${buttonText}"`);
 
-        if (buttonText?.includes('إضافة') || buttonText?.includes('جلسة') || buttonText?.includes('add')) {
+        if (
+          buttonText?.includes('إضافة') ||
+          buttonText?.includes('جلسة') ||
+          buttonText?.includes('add')
+        ) {
           console.log(`✅ Found promising button with strategy: ${strategy.name}`);
           workingSelector = strategy.selector;
           buttonFound = true;
@@ -80,12 +84,15 @@ test('Test hearing creation functionality', async ({ page }) => {
         { name: 'dialog', selector: '.dialog, dialog' },
         { name: 'popup', selector: '.popup' },
         { name: 'overlay', selector: '.overlay' },
-        { name: 'form-modal', selector: '.modal-dialog, .modal-content' }
+        { name: 'form-modal', selector: '.modal-dialog, .modal-content' },
       ];
 
       let modalFound = false;
       for (const strategy of modalStrategies) {
-        const visible = await page.locator(strategy.selector).isVisible().catch(() => false);
+        const visible = await page
+          .locator(strategy.selector)
+          .isVisible()
+          .catch(() => false);
         if (visible) {
           console.log(`✅ Modal found with strategy: ${strategy.name}`);
           modalFound = true;
@@ -99,7 +106,7 @@ test('Test hearing creation functionality', async ({ page }) => {
             selects: await page.locator(`${strategy.selector} select`).count(),
             inputs: await page.locator(`${strategy.selector} input`).count(),
             textareas: await page.locator(`${strategy.selector} textarea`).count(),
-            buttons: await page.locator(`${strategy.selector} button`).count()
+            buttons: await page.locator(`${strategy.selector} button`).count(),
           };
 
           console.log(`📋 Form fields found: ${JSON.stringify(formFields)}`);
@@ -127,11 +134,19 @@ test('Test hearing creation functionality', async ({ page }) => {
             }
 
             // Look for date inputs
-            const dateInputs = await page.locator(`${strategy.selector} input[type="datetime-local"], ${strategy.selector} input[type="date"]`).count();
+            const dateInputs = await page
+              .locator(
+                `${strategy.selector} input[type="datetime-local"], ${strategy.selector} input[type="date"]`
+              )
+              .count();
             if (dateInputs > 0) {
               console.log(`📅 Found ${dateInputs} date input(s)`);
 
-              const dateInput = page.locator(`${strategy.selector} input[type="datetime-local"], ${strategy.selector} input[type="date"]`).first();
+              const dateInput = page
+                .locator(
+                  `${strategy.selector} input[type="datetime-local"], ${strategy.selector} input[type="date"]`
+                )
+                .first();
               await dateInput.fill('2025-12-31T10:00');
               console.log('✅ Successfully filled date input');
             }
@@ -147,16 +162,24 @@ test('Test hearing creation functionality', async ({ page }) => {
             }
 
             // Take screenshot of filled form
-            await page.screenshot({ path: 'test-results/hearings-form-filled.png', fullPage: true });
+            await page.screenshot({
+              path: 'test-results/hearings-form-filled.png',
+              fullPage: true,
+            });
 
             console.log('🎉 HEARING FORM INTERACTION TEST SUCCESSFUL!');
 
             // Look for submit button
-            const submitButtons = await page.locator(`${strategy.selector} button[type="submit"], ${strategy.selector} button:has-text("إضافة"), ${strategy.selector} button:has-text("حفظ")`).count();
+            const submitButtons = await page
+              .locator(
+                `${strategy.selector} button[type="submit"], ${strategy.selector} button:has-text("إضافة"), ${strategy.selector} button:has-text("حفظ")`
+              )
+              .count();
             if (submitButtons > 0) {
-              console.log(`💾 Found ${submitButtons} submit button(s) - form is ready for submission`);
+              console.log(
+                `💾 Found ${submitButtons} submit button(s) - form is ready for submission`
+              );
             }
-
           } else {
             console.log('❌ Modal opened but no form fields found');
           }
@@ -176,7 +199,6 @@ test('Test hearing creation functionality', async ({ page }) => {
           console.log('📝 Page content unchanged - button might be inactive');
         }
       }
-
     } else {
       console.log('❌ No suitable add button found');
 
@@ -189,7 +211,6 @@ test('Test hearing creation functionality', async ({ page }) => {
         console.log(`🔘 All button texts: ${buttonTexts.join(' | ')}`);
       }
     }
-
   } else {
     console.log('❌ Not on hearings page or hearings content not found');
 

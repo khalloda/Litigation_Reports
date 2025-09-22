@@ -123,7 +123,13 @@ const ClientsPage: React.FC = () => {
 
   useEffect(() => {
     loadClients();
-  }, [filters.status, filters.type, filters.cash_pro_bono, filters.search, pagination.current_page]);
+  }, [
+    filters.status,
+    filters.type,
+    filters.cash_pro_bono,
+    filters.search,
+    pagination.current_page,
+  ]);
 
   useEffect(() => {
     loadOptions();
@@ -476,7 +482,16 @@ const ClientsPage: React.FC = () => {
                       <td>
                         <div className='d-flex align-items-center'>
                           {/* Client Logo or Type Icon */}
-                          <div className='me-2' style={{ width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <div
+                            className='me-2'
+                            style={{
+                              width: '32px',
+                              height: '32px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                          >
                             {client.logo_url ? (
                               <>
                                 <img
@@ -495,7 +510,8 @@ const ClientsPage: React.FC = () => {
                                     const container = imgElement.parentElement;
                                     if (container) {
                                       imgElement.style.display = 'none';
-                                      const fallbackIcon = container.querySelector('.fallback-icon');
+                                      const fallbackIcon =
+                                        container.querySelector('.fallback-icon');
                                       if (fallbackIcon) {
                                         (fallbackIcon as HTMLElement).style.display = 'block';
                                       }
@@ -507,9 +523,7 @@ const ClientsPage: React.FC = () => {
                                 </div>
                               </>
                             ) : (
-                              <div className='type-icon'>
-                                {getTypeIcon(client.client_type)}
-                              </div>
+                              <div className='type-icon'>{getTypeIcon(client.client_type)}</div>
                             )}
                           </div>
 

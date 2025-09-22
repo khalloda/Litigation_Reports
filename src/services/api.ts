@@ -5,7 +5,9 @@
  */
 
 // API Configuration
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ? `${import.meta.env.VITE_API_BASE_URL}/api` : '/api'; // Use environment variable or fallback to relative URL
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
+  ? `${import.meta.env.VITE_API_BASE_URL}/api`
+  : '/api'; // Use environment variable or fallback to relative URL
 const API_TIMEOUT = 10000; // Increased timeout for real API calls
 
 // API Response Types
@@ -126,7 +128,7 @@ class ApiService {
   // Check if data contains file fields
   private hasFileFields(data: any): boolean {
     if (!data || typeof data !== 'object') return false;
-    
+
     for (const key in data) {
       if (data[key] instanceof File) {
         return true;
@@ -138,7 +140,7 @@ class ApiService {
   // Create FormData from object
   private createFormData(data: any): FormData {
     const formData = new FormData();
-    
+
     for (const key in data) {
       if (data[key] instanceof File) {
         formData.append(key, data[key]);
@@ -146,7 +148,7 @@ class ApiService {
         formData.append(key, String(data[key]));
       }
     }
-    
+
     return formData;
   }
 
@@ -352,14 +354,14 @@ class ApiService {
                 type: 'client',
                 name: 'شركة الأمان للتأمين',
                 action: 'تم إضافة عميل جديد',
-                created_at: '2025-09-19T10:30:00Z'
+                created_at: '2025-09-19T10:30:00Z',
               },
               {
                 type: 'case',
                 name: 'قضية تجارية رقم 123',
                 action: 'تم تحديث القضية',
-                created_at: '2025-09-19T09:15:00Z'
-              }
+                created_at: '2025-09-19T09:15:00Z',
+              },
             ],
             upcoming_hearings: [
               {
@@ -367,8 +369,8 @@ class ApiService {
                 hearing_date: '2025-09-25T10:00:00Z',
                 hearing_type: 'جلسة أولى',
                 matter_ar: 'قضية مدنية تجارية',
-                client_name_ar: 'شركة الخليج للتجارة'
-              }
+                client_name_ar: 'شركة الخليج للتجارة',
+              },
             ],
             financial_summary: {
               total_revenue: 250000,
@@ -376,23 +378,23 @@ class ApiService {
               paid_amount: 205000,
               paid_count: 65,
               pending_count: 20,
-              overdue_count: 5
+              overdue_count: 5,
             },
             case_statistics: {
-              'نشطة': 28,
-              'مغلقة': 15,
-              'معلقة': 2
+              نشطة: 28,
+              مغلقة: 15,
+              معلقة: 2,
             },
             hearing_statistics: {
-              'مجدولة': 45,
-              'مكتملة': 70,
-              'مؤجلة': 5
+              مجدولة: 45,
+              مكتملة: 70,
+              مؤجلة: 5,
             },
             revenue_trend: [
               { month: 'يناير 2025', revenue: 85000 },
               { month: 'فبراير 2025', revenue: 92000 },
-              { month: 'مارس 2025', revenue: 78000 }
-            ]
+              { month: 'مارس 2025', revenue: 78000 },
+            ],
           },
         } as ApiResponse<T>;
 
@@ -556,7 +558,7 @@ class ApiService {
   async post(endpoint: string, data?: any): Promise<ApiResponse<any>> {
     // Check if data contains files
     const hasFiles = data && this.hasFileFields(data);
-    
+
     if (hasFiles) {
       // Use FormData for file uploads
       const formData = this.createFormData(data);

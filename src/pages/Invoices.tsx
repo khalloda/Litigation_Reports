@@ -268,7 +268,7 @@ export function Invoices() {
     return (
       <Badge bg={config.variant}>
         {config.icon}
-        <span className="ms-1">{options.status[status] || status}</span>
+        <span className='ms-1'>{options.status[status] || status}</span>
       </Badge>
     );
   };
@@ -280,11 +280,7 @@ export function Invoices() {
       advance: 'info',
     };
 
-    return (
-      <Badge bg={typeColors[type] || 'secondary'}>
-        {options.type[type] || type}
-      </Badge>
-    );
+    return <Badge bg={typeColors[type] || 'secondary'}>{options.type[type] || type}</Badge>;
   };
 
   const formatAmount = (amount: number, currency: string) => {
@@ -302,30 +298,30 @@ export function Invoices() {
 
   if (loading && invoices.length === 0) {
     return (
-      <Container className="py-4">
-        <div className="text-center">
-          <Spinner animation="border" />
-          <p className="mt-2">Loading invoices...</p>
+      <Container className='py-4'>
+        <div className='text-center'>
+          <Spinner animation='border' />
+          <p className='mt-2'>Loading invoices...</p>
         </div>
       </Container>
     );
   }
 
   return (
-    <Container fluid className="py-4">
+    <Container fluid className='py-4'>
       {/* Header */}
-      <Row className="mb-4">
+      <Row className='mb-4'>
         <Col>
-          <div className="d-flex justify-content-between align-items-center">
+          <div className='d-flex justify-content-between align-items-center'>
             <div>
-              <h2 className="mb-1">
-                <FileText className="me-2" />
+              <h2 className='mb-1'>
+                <FileText className='me-2' />
                 إدارة الفواتير
               </h2>
-              <p className="text-muted mb-0">إدارة وتتبع جميع الفواتير والمدفوعات</p>
+              <p className='text-muted mb-0'>إدارة وتتبع جميع الفواتير والمدفوعات</p>
             </div>
-            <Button variant="primary" size="lg" onClick={handleCreateInvoice}>
-              <Plus className="me-2" />
+            <Button variant='primary' size='lg' onClick={handleCreateInvoice}>
+              <Plus className='me-2' />
               إضافة فاتورة جديدة
             </Button>
           </div>
@@ -333,7 +329,7 @@ export function Invoices() {
       </Row>
 
       {/* Filters */}
-      <Card className="mb-4">
+      <Card className='mb-4'>
         <Card.Body>
           <Row>
             <Col md={3}>
@@ -344,8 +340,8 @@ export function Invoices() {
                     <Search size={16} />
                   </InputGroup.Text>
                   <Form.Control
-                    type="text"
-                    placeholder="البحث في الفواتير..."
+                    type='text'
+                    placeholder='البحث في الفواتير...'
                     value={filters.search}
                     onChange={(e) => handleFilterChange('search', e.target.value)}
                   />
@@ -359,7 +355,7 @@ export function Invoices() {
                   value={filters.invoice_status}
                   onChange={(e) => handleFilterChange('invoice_status', e.target.value)}
                 >
-                  <option value="">جميع الحالات</option>
+                  <option value=''>جميع الحالات</option>
                   {Object.entries(options.status).map(([key, value]) => (
                     <option key={key} value={key}>
                       {value}
@@ -375,7 +371,7 @@ export function Invoices() {
                   value={filters.invoice_type}
                   onChange={(e) => handleFilterChange('invoice_type', e.target.value)}
                 >
-                  <option value="">جميع الأنواع</option>
+                  <option value=''>جميع الأنواع</option>
                   {Object.entries(options.type).map(([key, value]) => (
                     <option key={key} value={key}>
                       {value}
@@ -391,7 +387,7 @@ export function Invoices() {
                   value={filters.currency}
                   onChange={(e) => handleFilterChange('currency', e.target.value)}
                 >
-                  <option value="">جميع العملات</option>
+                  <option value=''>جميع العملات</option>
                   {Object.entries(options.currency).map(([key, value]) => (
                     <option key={key} value={key}>
                       {value}
@@ -404,15 +400,15 @@ export function Invoices() {
               <Form.Group>
                 <Form.Label>من تاريخ</Form.Label>
                 <Form.Control
-                  type="date"
+                  type='date'
                   value={filters.date_from}
                   onChange={(e) => handleFilterChange('date_from', e.target.value)}
                 />
               </Form.Group>
             </Col>
-            <Col md={1} className="d-flex align-items-end">
-              <Button variant="outline-secondary" onClick={loadInvoices}>
-                <Filter className="me-1" />
+            <Col md={1} className='d-flex align-items-end'>
+              <Button variant='outline-secondary' onClick={loadInvoices}>
+                <Filter className='me-1' />
                 تطبيق
               </Button>
             </Col>
@@ -422,7 +418,7 @@ export function Invoices() {
 
       {/* Error Alert */}
       {error && (
-        <Alert variant="danger" className="mb-4">
+        <Alert variant='danger' className='mb-4'>
           {error}
         </Alert>
       )}
@@ -430,27 +426,27 @@ export function Invoices() {
       {/* Invoices Table */}
       <Card>
         <Card.Header>
-          <div className="d-flex justify-content-between align-items-center">
-            <h5 className="mb-0">قائمة الفواتير</h5>
-            <div className="text-muted">إجمالي: {pagination.total} فاتورة</div>
+          <div className='d-flex justify-content-between align-items-center'>
+            <h5 className='mb-0'>قائمة الفواتير</h5>
+            <div className='text-muted'>إجمالي: {pagination.total} فاتورة</div>
           </div>
         </Card.Header>
-        <Card.Body className="p-0">
+        <Card.Body className='p-0'>
           {loading ? (
-            <div className="text-center py-4">
-              <Spinner animation="border" />
-              <p className="mt-2">جاري التحميل...</p>
+            <div className='text-center py-4'>
+              <Spinner animation='border' />
+              <p className='mt-2'>جاري التحميل...</p>
             </div>
           ) : invoices.length === 0 ? (
-            <div className="text-center py-5">
-              <FileText size={48} className="text-muted mb-3" />
+            <div className='text-center py-5'>
+              <FileText size={48} className='text-muted mb-3' />
               <h5>لا توجد فواتير</h5>
-              <p className="text-muted">لم يتم العثور على فواتير تطابق المعايير المحددة</p>
+              <p className='text-muted'>لم يتم العثور على فواتير تطابق المعايير المحددة</p>
             </div>
           ) : (
-            <div className="table-responsive">
-              <table className="table table-hover mb-0">
-                <thead className="table-light">
+            <div className='table-responsive'>
+              <table className='table table-hover mb-0'>
+                <thead className='table-light'>
                   <tr>
                     <th>رقم الفاتورة</th>
                     <th>تاريخ الفاتورة</th>
@@ -466,23 +462,23 @@ export function Invoices() {
                   {invoices.map((invoice) => (
                     <tr key={invoice.id}>
                       <td>
-                        <div className="d-flex align-items-center">
-                          <FileText className="me-2" size={16} />
+                        <div className='d-flex align-items-center'>
+                          <FileText className='me-2' size={16} />
                           {invoice.invoice_number || '-'}
                         </div>
                       </td>
                       <td>
-                        <div className="d-flex align-items-center">
-                          <Calendar className="me-1" size={14} />
+                        <div className='d-flex align-items-center'>
+                          <Calendar className='me-1' size={14} />
                           {formatDate(invoice.invoice_date)}
                         </div>
                       </td>
                       <td>
-                        <div className="d-flex align-items-center">
-                          <DollarSign className="me-1" size={14} />
+                        <div className='d-flex align-items-center'>
+                          <DollarSign className='me-1' size={14} />
                           {formatAmount(invoice.amount, invoice.currency)}
                           {invoice.has_vat && (
-                            <Badge bg="secondary" className="ms-1" size="sm">
+                            <Badge bg='secondary' className='ms-1' size='sm'>
                               ضريبة
                             </Badge>
                           )}
@@ -493,8 +489,8 @@ export function Invoices() {
                       <td>{invoice.contract_id || '-'}</td>
                       <td>
                         {invoice.payment_date ? (
-                          <div className="d-flex align-items-center">
-                            <Calendar className="me-1" size={14} />
+                          <div className='d-flex align-items-center'>
+                            <Calendar className='me-1' size={14} />
                             {formatDate(invoice.payment_date)}
                           </div>
                         ) : (
@@ -502,23 +498,23 @@ export function Invoices() {
                         )}
                       </td>
                       <td>
-                        <div className="btn-group btn-group-sm">
-                          <Button variant="outline-primary" size="sm" title="View">
+                        <div className='btn-group btn-group-sm'>
+                          <Button variant='outline-primary' size='sm' title='View'>
                             <Eye size={14} />
                           </Button>
                           <Button
-                            variant="outline-secondary"
-                            size="sm"
+                            variant='outline-secondary'
+                            size='sm'
                             onClick={() => handleEditInvoice(invoice)}
-                            title="Edit"
+                            title='Edit'
                           >
                             <Edit size={14} />
                           </Button>
                           <Button
-                            variant="outline-danger"
-                            size="sm"
+                            variant='outline-danger'
+                            size='sm'
                             onClick={() => handleDeleteInvoice(invoice)}
-                            title="Delete"
+                            title='Delete'
                           >
                             <Trash size={14} />
                           </Button>
@@ -535,16 +531,16 @@ export function Invoices() {
         {/* Pagination */}
         {pagination.total_pages > 1 && (
           <Card.Footer>
-            <div className="d-flex justify-content-between align-items-center">
-              <div className="text-muted">
+            <div className='d-flex justify-content-between align-items-center'>
+              <div className='text-muted'>
                 عرض {(pagination.current_page - 1) * pagination.per_page + 1} إلى{' '}
                 {Math.min(pagination.current_page * pagination.per_page, pagination.total)} من{' '}
                 {pagination.total} فاتورة
               </div>
-              <div className="btn-group">
+              <div className='btn-group'>
                 <Button
-                  variant="outline-secondary"
-                  size="sm"
+                  variant='outline-secondary'
+                  size='sm'
                   disabled={!pagination.has_prev}
                   onClick={() => handlePageChange(pagination.current_page - 1)}
                 >
@@ -554,15 +550,15 @@ export function Invoices() {
                   <Button
                     key={page}
                     variant={page === pagination.current_page ? 'primary' : 'outline-secondary'}
-                    size="sm"
+                    size='sm'
                     onClick={() => handlePageChange(page)}
                   >
                     {page}
                   </Button>
                 ))}
                 <Button
-                  variant="outline-secondary"
-                  size="sm"
+                  variant='outline-secondary'
+                  size='sm'
                   disabled={!pagination.has_next}
                   onClick={() => handlePageChange(pagination.current_page + 1)}
                 >
@@ -575,14 +571,14 @@ export function Invoices() {
       </Card>
 
       {/* Invoice Modal */}
-      <Modal show={showModal} onHide={() => setShowModal(false)} size="xl">
+      <Modal show={showModal} onHide={() => setShowModal(false)} size='xl'>
         <Modal.Header closeButton>
           <Modal.Title>{editingInvoice ? 'تعديل الفاتورة' : 'إضافة فاتورة جديدة'}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {formErrors.length > 0 && (
-            <Alert variant="danger">
-              <ul className="mb-0">
+            <Alert variant='danger'>
+              <ul className='mb-0'>
                 {formErrors.map((error, index) => (
                   <li key={index}>{error}</li>
                 ))}
@@ -593,31 +589,31 @@ export function Invoices() {
           <Form onSubmit={handleSubmit}>
             <Row>
               <Col md={4}>
-                <Form.Group className="mb-3">
+                <Form.Group className='mb-3'>
                   <Form.Label>رقم الفاتورة</Form.Label>
                   <Form.Control
-                    type="text"
+                    type='text'
                     value={formData.invoice_number}
                     onChange={(e) => setFormData({ ...formData, invoice_number: e.target.value })}
-                    placeholder="سيتم توليده تلقائياً إذا ترك فارغ"
+                    placeholder='سيتم توليده تلقائياً إذا ترك فارغ'
                   />
                 </Form.Group>
               </Col>
               <Col md={4}>
-                <Form.Group className="mb-3">
+                <Form.Group className='mb-3'>
                   <Form.Label>رقم العقد</Form.Label>
                   <Form.Control
-                    type="text"
+                    type='text'
                     value={formData.contract_id}
                     onChange={(e) => setFormData({ ...formData, contract_id: e.target.value })}
                   />
                 </Form.Group>
               </Col>
               <Col md={4}>
-                <Form.Group className="mb-3">
+                <Form.Group className='mb-3'>
                   <Form.Label>تاريخ الفاتورة *</Form.Label>
                   <Form.Control
-                    type="date"
+                    type='date'
                     value={formData.invoice_date}
                     onChange={(e) => setFormData({ ...formData, invoice_date: e.target.value })}
                     required
@@ -628,12 +624,12 @@ export function Invoices() {
 
             <Row>
               <Col md={4}>
-                <Form.Group className="mb-3">
+                <Form.Group className='mb-3'>
                   <Form.Label>المبلغ *</Form.Label>
                   <Form.Control
-                    type="number"
-                    step="0.01"
-                    min="0"
+                    type='number'
+                    step='0.01'
+                    min='0'
                     value={formData.amount}
                     onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
                     required
@@ -641,7 +637,7 @@ export function Invoices() {
                 </Form.Group>
               </Col>
               <Col md={4}>
-                <Form.Group className="mb-3">
+                <Form.Group className='mb-3'>
                   <Form.Label>العملة</Form.Label>
                   <Form.Select
                     value={formData.currency}
@@ -656,12 +652,12 @@ export function Invoices() {
                 </Form.Group>
               </Col>
               <Col md={4}>
-                <Form.Group className="mb-3">
+                <Form.Group className='mb-3'>
                   <Form.Label>المبلغ بالدولار</Form.Label>
                   <Form.Control
-                    type="number"
-                    step="0.01"
-                    min="0"
+                    type='number'
+                    step='0.01'
+                    min='0'
                     value={formData.usd_amount}
                     onChange={(e) => setFormData({ ...formData, usd_amount: e.target.value })}
                   />
@@ -671,7 +667,7 @@ export function Invoices() {
 
             <Row>
               <Col md={4}>
-                <Form.Group className="mb-3">
+                <Form.Group className='mb-3'>
                   <Form.Label>نوع الفاتورة</Form.Label>
                   <Form.Select
                     value={formData.invoice_type}
@@ -686,7 +682,7 @@ export function Invoices() {
                 </Form.Group>
               </Col>
               <Col md={4}>
-                <Form.Group className="mb-3">
+                <Form.Group className='mb-3'>
                   <Form.Label>حالة الفاتورة</Form.Label>
                   <Form.Select
                     value={formData.invoice_status}
@@ -701,10 +697,10 @@ export function Invoices() {
                 </Form.Group>
               </Col>
               <Col md={4}>
-                <Form.Group className="mb-3">
+                <Form.Group className='mb-3'>
                   <Form.Label>تاريخ الدفع</Form.Label>
                   <Form.Control
-                    type="date"
+                    type='date'
                     value={formData.payment_date}
                     onChange={(e) => setFormData({ ...formData, payment_date: e.target.value })}
                   />
@@ -714,10 +710,10 @@ export function Invoices() {
 
             <Row>
               <Col md={12}>
-                <Form.Group className="mb-3">
+                <Form.Group className='mb-3'>
                   <Form.Label>تفاصيل الفاتورة</Form.Label>
                   <Form.Control
-                    as="textarea"
+                    as='textarea'
                     rows={3}
                     value={formData.invoice_details}
                     onChange={(e) => setFormData({ ...formData, invoice_details: e.target.value })}
@@ -729,16 +725,16 @@ export function Invoices() {
             <Row>
               <Col md={6}>
                 <Form.Check
-                  type="checkbox"
-                  label="تشمل ضريبة القيمة المضافة"
+                  type='checkbox'
+                  label='تشمل ضريبة القيمة المضافة'
                   checked={formData.has_vat}
                   onChange={(e) => setFormData({ ...formData, has_vat: e.target.checked })}
                 />
               </Col>
               <Col md={6}>
                 <Form.Check
-                  type="checkbox"
-                  label="تم إنشاء التقرير"
+                  type='checkbox'
+                  label='تم إنشاء التقرير'
                   checked={formData.report_generated}
                   onChange={(e) => setFormData({ ...formData, report_generated: e.target.checked })}
                 />
@@ -747,10 +743,10 @@ export function Invoices() {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
+          <Button variant='secondary' onClick={() => setShowModal(false)}>
             إلغاء
           </Button>
-          <Button variant="primary" onClick={handleSubmit}>
+          <Button variant='primary' onClick={handleSubmit}>
             {editingInvoice ? 'حفظ التغييرات' : 'إضافة الفاتورة'}
           </Button>
         </Modal.Footer>

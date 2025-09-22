@@ -120,7 +120,6 @@ test.describe('Live Hearings Functionality', () => {
       // Look for success indicators (toast, new row in table, etc.)
       // Take final screenshot
       await page.screenshot({ path: 'test-results/hearings-success.png', fullPage: true });
-
     } else {
       console.log('⚠️ Modal still visible - checking for validation errors');
 
@@ -133,7 +132,10 @@ test.describe('Live Hearings Functionality', () => {
       }
 
       // Check for other error indicators
-      const toastError = await page.locator('.toast-error').isVisible().catch(() => false);
+      const toastError = await page
+        .locator('.toast-error')
+        .isVisible()
+        .catch(() => false);
       if (toastError) {
         const errorText = await page.locator('.toast-error').textContent();
         console.log('Toast error:', errorText);
@@ -182,7 +184,7 @@ test.describe('Live Hearings Functionality', () => {
     await page.waitForTimeout(2000);
 
     // Modal should not be visible initially
-    await expect(page.locator('.modal')).not.toBeVisible();
+    await expect(page.locator('.modal')).toBeHidden();
 
     // Click add button to open modal
     await page.getByTestId('add-hearing-button').click();
@@ -190,7 +192,7 @@ test.describe('Live Hearings Functionality', () => {
 
     // Close modal with cancel button
     await page.locator('button:has-text("إلغاء")').click();
-    await expect(page.locator('.modal')).not.toBeVisible();
+    await expect(page.locator('.modal')).toBeHidden();
 
     // Open modal again
     await page.getByTestId('add-hearing-button').click();
@@ -198,7 +200,7 @@ test.describe('Live Hearings Functionality', () => {
 
     // Close modal with X button
     await page.locator('.modal-header .btn-close').click();
-    await expect(page.locator('.modal')).not.toBeVisible();
+    await expect(page.locator('.modal')).toBeHidden();
 
     console.log('✅ Modal open/close functionality works correctly');
   });
@@ -224,7 +226,7 @@ test.describe('Live Hearings Functionality', () => {
       'المدة',
       'القرار',
       'الجلسة التالية',
-      'الإجراءات'
+      'الإجراءات',
     ];
 
     for (const header of tableHeaders) {

@@ -32,7 +32,11 @@ test('Login functionality test', async ({ page }) => {
   console.log(`📄 Page title: ${title}`);
 
   // Look for any error messages
-  const errorMessage = await page.locator('.alert-danger, .error, [data-testid="error"]').first().textContent().catch(() => null);
+  const errorMessage = await page
+    .locator('.alert-danger, .error, [data-testid="error"]')
+    .first()
+    .textContent()
+    .catch(() => null);
   if (errorMessage) {
     console.log(`❌ Error message found: ${errorMessage}`);
   } else {
@@ -40,12 +44,16 @@ test('Login functionality test', async ({ page }) => {
   }
 
   // Check if we have navigation elements (sign of successful login)
-  const navExists = await page.locator('nav, .navbar, [data-testid="navigation"]').first().isVisible().catch(() => false);
+  const navExists = await page
+    .locator('nav, .navbar, [data-testid="navigation"]')
+    .first()
+    .isVisible()
+    .catch(() => false);
   console.log(`🧭 Navigation visible: ${navExists}`);
 
   // Check console for any API errors
   const logs = [];
-  page.on('console', msg => {
+  page.on('console', (msg) => {
     if (msg.type() === 'error') {
       logs.push(msg.text());
     }

@@ -1,0 +1,142 @@
+{
+  "repository_analysis": {
+    "name": "litigation-management-system",
+    "version": "1.0.0",
+    "analysis_date": "2025-09-22",
+    "total_files_scanned": "~500+ (excluding node_modules)"
+  },
+  "services_and_apps": [
+    {
+      "name": "frontend-react",
+      "type": "web-app",
+      "path": "src/",
+      "entrypoint": "src/main.tsx",
+      "build_command": "vite build",
+      "dev_command": "vite",
+      "dependencies": "react, typescript, vite",
+      "description": "React/TypeScript frontend with RTL support"
+    },
+    {
+      "name": "backend-php",
+      "type": "api-service",
+      "path": "backend/",
+      "entrypoint": "backend/api/index.php",
+      "dependencies": "php, mysql",
+      "description": "PHP MVC backend with proper structure"
+    }
+  ],
+  "architectural_violations": {
+    "multiple_api_implementations": {
+      "severity": "CRITICAL",
+      "locations": [
+        "backend/api/ (structured)",
+        "backend/src/ (MVC controllers)",
+        "api-server.php (root)",
+        "router.php (root)",
+        "api-test.php (root)",
+        "20+ test-*.php files (root)"
+      ],
+      "impact": "No single source of truth for API, potential conflicts"
+    },
+    "config_duplication": {
+      "severity": "HIGH",
+      "locations": [
+        "config/ (root)",
+        "backend/config/",
+        "database/config/"
+      ],
+      "impact": "Environment configuration scattered, hard to manage"
+    },
+    "test_file_scatter": {
+      "severity": "HIGH",
+      "locations": [
+        "tests/ (proper structure)",
+        "40+ test-*.php, check-*.php files at root"
+      ],
+      "impact": "No clear testing strategy, mixed test types"
+    },
+    "documentation_explosion": {
+      "severity": "MEDIUM",
+      "locations": [
+        "README.md + 20+ other .md files at root"
+      ],
+      "impact": "Information architecture unclear"
+    },
+    "build_script_duplication": {
+      "severity": "MEDIUM",
+      "locations": [
+        "scripts/",
+        "deploy/",
+        "package.json scripts"
+      ],
+      "impact": "Multiple build/deploy strategies"
+    }
+  },
+  "duplication_analysis": {
+    "database_config": [
+      "config/database.php",
+      "backend/config/database.php",
+      "database/config/database.php",
+      "config/database_sqlite.php",
+      "backend/config/database_sqlite.php"
+    ],
+    "application_config": [
+      "config/config.php",
+      "backend/config/config.php",
+      "config/config.production.php",
+      "backend/config/config.production.php"
+    ],
+    "api_endpoints": [
+      "backend/api/index.php",
+      "api-server.php",
+      "router.php"
+    ],
+    "database_setup": [
+      "database/setup.php",
+      "database/setup_simple.php",
+      "database/setup_sqlite.php",
+      "database/create_database.php"
+    ],
+    "build_scripts": [
+      "scripts/build-production.sh",
+      "scripts/build-production.bat",
+      "deploy/build-production.sh"
+    ]
+  },
+  "dependency_analysis": {
+    "frontend": {
+      "runtime": ["react", "react-dom", "react-router-dom", "axios", "bootstrap"],
+      "build": ["vite", "typescript", "@vitejs/plugin-react"],
+      "testing": ["vitest", "@playwright/test", "@testing-library/react"]
+    },
+    "backend": {
+      "runtime": ["php", "mysql"],
+      "no_package_manager": "TRUE - Raw PHP without composer"
+    }
+  },
+  "environment_files": [
+    "No .env files found",
+    "Configuration hardcoded in config.php files"
+  ],
+  "security_concerns": [
+    "Database credentials may be hardcoded in config files",
+    "No secrets management detected",
+    "Multiple config files increase exposure risk"
+  ],
+  "recommended_canonical_structure": {
+    "proposed": {
+      "/apps/": {
+        "web/": "React frontend (from src/)",
+        "api/": "PHP backend (from backend/)"
+      },
+      "/packages/": {
+        "shared-config/": "Unified configuration",
+        "shared-types/": "Shared TypeScript types",
+        "database/": "Database schemas and migrations"
+      },
+      "/docs/": "All documentation consolidated",
+      "/scripts/": "All build/deployment scripts",
+      "/tests/": "All tests consolidated"
+    }
+  }
+}

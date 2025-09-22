@@ -1,21 +1,6 @@
 import React, { useState, useRef } from 'react';
-import {
-  Card,
-  Button,
-  Alert,
-  ProgressBar,
-  ListGroup,
-  Badge
-} from 'react-bootstrap';
-import {
-  Upload,
-  X,
-  FileText,
-  Image,
-  File,
-  CheckCircle,
-  AlertCircle
-} from 'lucide-react';
+import { Card, Button, Alert, ProgressBar, ListGroup, Badge } from 'react-bootstrap';
+import { Upload, X, FileText, Image, File, CheckCircle, AlertCircle } from 'lucide-react';
 
 interface FileUploadProps {
   onFileSelect?: (files: File[]) => void;
@@ -42,7 +27,7 @@ export function FileUpload({
   uploadProgress = {},
   uploadStatus = {},
   disabled = false,
-  className = ''
+  className = '',
 }: FileUploadProps) {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [dragOver, setDragOver] = useState(false);
@@ -54,13 +39,13 @@ export function FileUpload({
     const name = file.name.toLowerCase();
 
     if (type.startsWith('image/')) {
-      return <Image size={20} className="text-primary" />;
+      return <Image size={20} className='text-primary' />;
     } else if (type.includes('pdf') || name.endsWith('.pdf')) {
-      return <FileText size={20} className="text-danger" />;
+      return <FileText size={20} className='text-danger' />;
     } else if (type.includes('word') || name.endsWith('.doc') || name.endsWith('.docx')) {
-      return <FileText size={20} className="text-info" />;
+      return <FileText size={20} className='text-info' />;
     } else {
-      return <File size={20} className="text-muted" />;
+      return <File size={20} className='text-muted' />;
     }
   };
 
@@ -162,11 +147,11 @@ export function FileUpload({
     const status = uploadStatus[fileName];
     switch (status) {
       case 'success':
-        return <CheckCircle size={16} className="text-success" />;
+        return <CheckCircle size={16} className='text-success' />;
       case 'error':
-        return <AlertCircle size={16} className="text-danger" />;
+        return <AlertCircle size={16} className='text-danger' />;
       case 'uploading':
-        return <div className="spinner-border spinner-border-sm text-primary" />;
+        return <div className='spinner-border spinner-border-sm text-primary' />;
       default:
         return null;
     }
@@ -181,11 +166,11 @@ export function FileUpload({
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
       >
-        <Card.Body className="text-center py-4">
-          <Upload size={48} className="text-muted mb-3" />
+        <Card.Body className='text-center py-4'>
+          <Upload size={48} className='text-muted mb-3' />
           <h5>اسحب الملفات هنا أو</h5>
           <Button
-            variant="outline-primary"
+            variant='outline-primary'
             onClick={() => fileInputRef.current?.click()}
             disabled={disabled}
           >
@@ -193,13 +178,13 @@ export function FileUpload({
           </Button>
           <input
             ref={fileInputRef}
-            type="file"
+            type='file'
             multiple={multiple}
-            accept={acceptedTypes.map(type => `.${type}`).join(',')}
+            accept={acceptedTypes.map((type) => `.${type}`).join(',')}
             onChange={handleInputChange}
             style={{ display: 'none' }}
           />
-          <div className="mt-3 text-muted small">
+          <div className='mt-3 text-muted small'>
             <div>الأنواع المدعومة: {acceptedTypes.join(', ')}</div>
             <div>الحد الأقصى للحجم: {maxFileSize}MB</div>
             <div>الحد الأقصى للعدد: {maxFiles} ملفات</div>
@@ -209,7 +194,7 @@ export function FileUpload({
 
       {/* Error Display */}
       {error && (
-        <Alert variant="danger" className="mb-3">
+        <Alert variant='danger' className='mb-3'>
           {error.split('\n').map((line, index) => (
             <div key={index}>{line}</div>
           ))}
@@ -220,36 +205,34 @@ export function FileUpload({
       {selectedFiles.length > 0 && showPreview && (
         <Card>
           <Card.Header>
-            <h6 className="mb-0">الملفات المحددة ({selectedFiles.length})</h6>
+            <h6 className='mb-0'>الملفات المحددة ({selectedFiles.length})</h6>
           </Card.Header>
-          <Card.Body className="p-0">
-            <ListGroup variant="flush">
+          <Card.Body className='p-0'>
+            <ListGroup variant='flush'>
               {selectedFiles.map((file, index) => (
                 <ListGroup.Item key={`${file.name}-${index}`}>
-                  <div className="d-flex align-items-center justify-content-between">
-                    <div className="d-flex align-items-center">
+                  <div className='d-flex align-items-center justify-content-between'>
+                    <div className='d-flex align-items-center'>
                       {getFileIcon(file)}
-                      <div className="ms-3">
-                        <div className="fw-medium">{file.name}</div>
-                        <small className="text-muted">
-                          {formatFileSize(file.size)}
-                        </small>
+                      <div className='ms-3'>
+                        <div className='fw-medium'>{file.name}</div>
+                        <small className='text-muted'>{formatFileSize(file.size)}</small>
                       </div>
                     </div>
-                    <div className="d-flex align-items-center">
+                    <div className='d-flex align-items-center'>
                       {getStatusIcon(file.name)}
                       {uploadProgress[file.name] !== undefined && (
-                        <div className="me-2" style={{ width: '100px' }}>
+                        <div className='me-2' style={{ width: '100px' }}>
                           <ProgressBar
                             now={uploadProgress[file.name]}
-                            size="sm"
+                            size='sm'
                             variant={uploadStatus[file.name] === 'error' ? 'danger' : 'primary'}
                           />
                         </div>
                       )}
                       <Button
-                        variant="outline-danger"
-                        size="sm"
+                        variant='outline-danger'
+                        size='sm'
                         onClick={() => handleFileRemove(index)}
                         disabled={disabled || uploadStatus[file.name] === 'uploading'}
                       >

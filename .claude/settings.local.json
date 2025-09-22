@@ -87,7 +87,8 @@
       "Bash(net stop:*)",
       "Bash(net start:*)",
       "Bash(echo \"Backup directory: $BACKUP_DIR\")",
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "Bash(echo $BACKUP_DIR)"
     ],
     "deny": [],
     "ask": []

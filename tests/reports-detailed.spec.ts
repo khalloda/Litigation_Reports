@@ -39,7 +39,7 @@ test('Detailed client report investigation', async ({ page }) => {
       console.log('🔘 Found client view button');
 
       // Listen for network requests
-      page.on('response', response => {
+      page.on('response', (response) => {
         if (response.url().includes('/api/reports/clients')) {
           console.log('🌐 API Response:', response.status());
         }
@@ -70,7 +70,6 @@ test('Detailed client report investigation', async ({ page }) => {
         const tableRows = modal.locator('tr');
         const rowCount = await tableRows.count();
         console.log('📋 Table rows in modal:', rowCount);
-
       } else {
         console.log('❌ No modal visible');
       }

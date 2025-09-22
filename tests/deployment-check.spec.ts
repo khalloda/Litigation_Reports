@@ -26,18 +26,18 @@ test('Check what application is actually deployed', async ({ page }) => {
   const techIndicators = {
     react: {
       found: false,
-      indicators: ['react', '__react', 'jsx', 'useState', 'useEffect', 'ReactDOM']
+      indicators: ['react', '__react', 'jsx', 'useState', 'useEffect', 'ReactDOM'],
     },
     php: {
       found: false,
-      indicators: ['<?php', '.php', 'X-Powered-By: PHP']
+      indicators: ['<?php', '.php', 'X-Powered-By: PHP'],
     },
     frameworks: {
       bootstrap: htmlContent.includes('bootstrap'),
       jquery: htmlContent.includes('jquery'),
       vue: htmlContent.includes('vue'),
-      angular: htmlContent.includes('angular')
-    }
+      angular: htmlContent.includes('angular'),
+    },
   };
 
   // Check React indicators
@@ -64,17 +64,19 @@ test('Check what application is actually deployed', async ({ page }) => {
 
   console.log('\n🔧 SERVER HEADERS:');
   Object.entries(headers).forEach(([key, value]) => {
-    if (key.toLowerCase().includes('server') ||
-        key.toLowerCase().includes('x-powered') ||
-        key.toLowerCase().includes('content-type')) {
+    if (
+      key.toLowerCase().includes('server') ||
+      key.toLowerCase().includes('x-powered') ||
+      key.toLowerCase().includes('content-type')
+    ) {
       console.log(`${key}: ${value}`);
     }
   });
 
   // Check HTML structure
   console.log('\n📋 HTML STRUCTURE:');
-  const bodyClasses = await page.locator('body').getAttribute('class') || '';
-  const htmlLang = await page.locator('html').getAttribute('lang') || '';
+  const bodyClasses = (await page.locator('body').getAttribute('class')) || '';
+  const htmlLang = (await page.locator('html').getAttribute('lang')) || '';
   const metaTags = await page.locator('meta').count();
   const scriptTags = await page.locator('script').count();
   const linkTags = await page.locator('link').count();
@@ -101,7 +103,7 @@ test('Check what application is actually deployed', async ({ page }) => {
     /app\.[a-f0-9]+\.js/,
     /chunk\.[a-f0-9]+\.js/,
     /main\.[a-f0-9]+\.js/,
-    /index\.[a-f0-9]+\.js/
+    /index\.[a-f0-9]+\.js/,
   ];
 
   let buildArtifactsFound = false;
@@ -122,7 +124,7 @@ test('Check what application is actually deployed', async ({ page }) => {
     'HearingsPage',
     'React.createElement',
     'useAuth',
-    'AuthProvider'
+    'AuthProvider',
   ];
 
   let ourComponentsFound = 0;

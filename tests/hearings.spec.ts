@@ -27,7 +27,17 @@ test.describe('Hearings Management', () => {
     await expect(page.locator('select').first()).toBeVisible();
 
     // Check table headers
-    await expect(page.locator('th')).toContainText(['تاريخ الجلسة', 'القضية', 'العميل', 'نوع الجلسة', 'النتيجة', 'المدة', 'القرار', 'الجلسة التالية', 'الإجراءات']);
+    await expect(page.locator('th')).toContainText([
+      'تاريخ الجلسة',
+      'القضية',
+      'العميل',
+      'نوع الجلسة',
+      'النتيجة',
+      'المدة',
+      'القرار',
+      'الجلسة التالية',
+      'الإجراءات',
+    ]);
   });
 
   test('should open add hearing modal when clicking add button', async ({ page }) => {
@@ -65,7 +75,7 @@ test.describe('Hearings Management', () => {
     await page.locator('button:has-text("إلغاء")').click();
 
     // Modal should be closed
-    await expect(page.locator('.modal')).not.toBeVisible();
+    await expect(page.locator('.modal')).toBeHidden();
   });
 
   test('should close modal when clicking X button', async ({ page }) => {
@@ -77,7 +87,7 @@ test.describe('Hearings Management', () => {
     await page.locator('.modal-header .btn-close').click();
 
     // Modal should be closed
-    await expect(page.locator('.modal')).not.toBeVisible();
+    await expect(page.locator('.modal')).toBeHidden();
   });
 
   test('should show validation errors for required fields', async ({ page }) => {
@@ -90,7 +100,13 @@ test.describe('Hearings Management', () => {
 
     // Should show validation errors
     await expect(page.locator('.invalid-feedback')).toHaveCount(5); // 5 required fields
-    await expect(page.locator('.invalid-feedback')).toContainText(['القضية مطلوبة', 'تاريخ الجلسة مطلوب', 'نوع الجلسة مطلوب', 'نتيجة الجلسة مطلوبة', 'مدة الجلسة مطلوبة']);
+    await expect(page.locator('.invalid-feedback')).toContainText([
+      'القضية مطلوبة',
+      'تاريخ الجلسة مطلوب',
+      'نوع الجلسة مطلوب',
+      'نتيجة الجلسة مطلوبة',
+      'مدة الجلسة مطلوبة',
+    ]);
   });
 
   test('should clear validation errors when user starts typing', async ({ page }) => {
@@ -128,8 +144,8 @@ test.describe('Hearings Management', () => {
               hearing_duration: '1hour',
               created_at: new Date().toISOString(),
             },
-            message: 'تم إضافة الجلسة بنجاح'
-          })
+            message: 'تم إضافة الجلسة بنجاح',
+          }),
         });
       }
     });
@@ -149,11 +165,11 @@ test.describe('Hearings Management', () => {
                 matter_ar: 'قضية تجارية',
                 matter_en: 'Commercial Case',
                 client_name_ar: 'شركة الأمان',
-                client_name_en: 'Al Aman Company'
-              }
-            ]
-          }
-        })
+                client_name_en: 'Al Aman Company',
+              },
+            ],
+          },
+        }),
       });
     });
 
@@ -168,21 +184,21 @@ test.describe('Hearings Management', () => {
             type: {
               initial: 'جلسة أولى',
               procedural: 'جلسة إجرائية',
-              evidence: 'جلسة إثبات'
+              evidence: 'جلسة إثبات',
             },
             result: {
               won: 'فاز',
               lost: 'خسر',
               postponed: 'مؤجل',
-              pending: 'معلق'
+              pending: 'معلق',
             },
             duration: {
               '30min': '30 دقيقة',
               '1hour': 'ساعة واحدة',
-              '2hours': 'ساعتان'
-            }
-          }
-        })
+              '2hours': 'ساعتان',
+            },
+          },
+        }),
       });
     });
 
@@ -210,7 +226,7 @@ test.describe('Hearings Management', () => {
 
     // Should show success message (you may need to check for toast or other success indicator)
     // Modal should close
-    await expect(page.locator('.modal')).not.toBeVisible();
+    await expect(page.locator('.modal')).toBeHidden();
   });
 
   test('should handle API errors gracefully', async ({ page }) => {
@@ -224,9 +240,9 @@ test.describe('Hearings Management', () => {
             success: false,
             error: 'خطأ في إضافة الجلسة',
             errors: {
-              case_id: 'القضية غير صالحة'
-            }
-          })
+              case_id: 'القضية غير صالحة',
+            },
+          }),
         });
       }
     });
@@ -246,11 +262,11 @@ test.describe('Hearings Management', () => {
                 matter_ar: 'قضية تجارية',
                 matter_en: 'Commercial Case',
                 client_name_ar: 'شركة الأمان',
-                client_name_en: 'Al Aman Company'
-              }
-            ]
-          }
-        })
+                client_name_en: 'Al Aman Company',
+              },
+            ],
+          },
+        }),
       });
     });
 
@@ -283,15 +299,15 @@ test.describe('Hearings Management', () => {
     await page.route('**/api/hearings', async (route) => {
       if (route.request().method() === 'POST') {
         // Delay response to test loading state
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        await new Promise((resolve) => setTimeout(resolve, 2000));
         route.fulfill({
           status: 200,
           contentType: 'application/json',
           body: JSON.stringify({
             success: true,
             data: { id: 1 },
-            message: 'تم إضافة الجلسة بنجاح'
-          })
+            message: 'تم إضافة الجلسة بنجاح',
+          }),
         });
       }
     });
@@ -311,11 +327,11 @@ test.describe('Hearings Management', () => {
                 matter_ar: 'قضية تجارية',
                 matter_en: 'Commercial Case',
                 client_name_ar: 'شركة الأمان',
-                client_name_en: 'Al Aman Company'
-              }
-            ]
-          }
-        })
+                client_name_en: 'Al Aman Company',
+              },
+            ],
+          },
+        }),
       });
     });
 
@@ -365,8 +381,8 @@ test.describe('Hearings Management', () => {
                   hearing_type: 'initial',
                   hearing_result: 'pending',
                   matter_ar: 'قضية تجارية',
-                  client_name_ar: 'شركة الأمان'
-                }
+                  client_name_ar: 'شركة الأمان',
+                },
               ],
               pagination: {
                 current_page: 1,
@@ -374,10 +390,10 @@ test.describe('Hearings Management', () => {
                 total: 1,
                 total_pages: 1,
                 has_next: false,
-                has_prev: false
-              }
-            }
-          })
+                has_prev: false,
+              },
+            },
+          }),
         });
       } else {
         route.fulfill({
@@ -393,10 +409,10 @@ test.describe('Hearings Management', () => {
                 total: 0,
                 total_pages: 0,
                 has_next: false,
-                has_prev: false
-              }
-            }
-          })
+                has_prev: false,
+              },
+            },
+          }),
         });
       }
     });
@@ -429,7 +445,7 @@ test.describe('Hearings Management', () => {
 
     // Close modal with Escape key
     await page.keyboard.press('Escape');
-    await expect(page.locator('.modal')).not.toBeVisible();
+    await expect(page.locator('.modal')).toBeHidden();
   });
 
   test('should handle network errors gracefully', async ({ page }) => {

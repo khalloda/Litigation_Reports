@@ -108,7 +108,9 @@ const ReportsPage: React.FC = () => {
   // Report data states
   const [reportTemplates, setReportTemplates] = useState<ReportTemplate[]>([]);
   const [customReportOptions, setCustomReportOptions] = useState<any>(null);
-  const [currentReportType, setCurrentReportType] = useState<'clients' | 'cases' | 'hearings'>('clients');
+  const [currentReportType, setCurrentReportType] = useState<'clients' | 'cases' | 'hearings'>(
+    'clients'
+  );
   const [reportConfig, setReportConfig] = useState<CustomReportConfig>({
     entity: 'clients',
     filters: {},
@@ -226,8 +228,8 @@ const ReportsPage: React.FC = () => {
         params: {
           client_id: selectedClientId,
           format: reportFormat,
-          template: 'franke'
-        }
+          template: 'franke',
+        },
       });
 
       if (response.success) {
@@ -332,17 +334,23 @@ const ReportsPage: React.FC = () => {
               <p className='text-muted mb-0'>عرض شامل لأداء المكتب والإحصائيات</p>
             </div>
             <div className='d-flex gap-2'>
-              <Button variant='outline-primary' onClick={() => {
-                setShowReportBuilder(true);
-                loadCustomReportOptions('clients');
-              }}>
+              <Button
+                variant='outline-primary'
+                onClick={() => {
+                  setShowReportBuilder(true);
+                  loadCustomReportOptions('clients');
+                }}
+              >
                 <BarChart3 className='me-2' size={16} />
                 إنشاء تقرير مخصص
               </Button>
-              <Button variant='outline-secondary' onClick={() => {
-                setShowTemplates(true);
-                loadReportTemplates();
-              }}>
+              <Button
+                variant='outline-secondary'
+                onClick={() => {
+                  setShowTemplates(true);
+                  loadReportTemplates();
+                }}
+              >
                 <FileText className='me-2' size={16} />
                 القوالب
               </Button>
@@ -412,7 +420,9 @@ const ReportsPage: React.FC = () => {
               <Card className='h-100 text-center border-primary'>
                 <Card.Body>
                   <DollarSign size={32} className='text-primary mb-2' />
-                  <h3 className='mb-1'>{formatCurrency(dashboardData.financial_summary.paid_amount)}</h3>
+                  <h3 className='mb-1'>
+                    {formatCurrency(dashboardData.financial_summary.paid_amount)}
+                  </h3>
                   <p className='text-muted mb-0'>الإيرادات</p>
                 </Card.Body>
               </Card>
@@ -435,21 +445,31 @@ const ReportsPage: React.FC = () => {
                       <div className='mb-2'>
                         <TrendingUp size={24} className='text-success' />
                       </div>
-                      <h4 className='text-success'>{formatCurrency(dashboardData.financial_summary.paid_amount)}</h4>
-                      <p className='text-muted mb-0'>المدفوع ({dashboardData.financial_summary.paid_count} فاتورة)</p>
+                      <h4 className='text-success'>
+                        {formatCurrency(dashboardData.financial_summary.paid_amount)}
+                      </h4>
+                      <p className='text-muted mb-0'>
+                        المدفوع ({dashboardData.financial_summary.paid_count} فاتورة)
+                      </p>
                     </Col>
                     <Col md={4} className='text-center mb-3'>
                       <div className='mb-2'>
                         <TrendingUp size={24} className='text-warning' />
                       </div>
-                      <h4 className='text-warning'>{formatCurrency(dashboardData.financial_summary.pending_amount)}</h4>
-                      <p className='text-muted mb-0'>المعلق ({dashboardData.financial_summary.pending_count} فاتورة)</p>
+                      <h4 className='text-warning'>
+                        {formatCurrency(dashboardData.financial_summary.pending_amount)}
+                      </h4>
+                      <p className='text-muted mb-0'>
+                        المعلق ({dashboardData.financial_summary.pending_count} فاتورة)
+                      </p>
                     </Col>
                     <Col md={4} className='text-center mb-3'>
                       <div className='mb-2'>
                         <TrendingUp size={24} className='text-danger' />
                       </div>
-                      <h4 className='text-danger'>{dashboardData.financial_summary.overdue_count}</h4>
+                      <h4 className='text-danger'>
+                        {dashboardData.financial_summary.overdue_count}
+                      </h4>
                       <p className='text-muted mb-0'>فواتير متأخرة</p>
                     </Col>
                   </Row>
@@ -466,7 +486,10 @@ const ReportsPage: React.FC = () => {
                 </Card.Header>
                 <Card.Body>
                   {Object.entries(dashboardData.case_statistics).map(([status, count]) => (
-                    <div key={status} className='d-flex justify-content-between align-items-center mb-2'>
+                    <div
+                      key={status}
+                      className='d-flex justify-content-between align-items-center mb-2'
+                    >
                       <span>{status}</span>
                       <Badge bg='primary'>{count}</Badge>
                     </div>
@@ -584,7 +607,9 @@ const ReportsPage: React.FC = () => {
                           {dashboardData.revenue_trend.map((item, index) => (
                             <tr key={index}>
                               <td>{item.month}</td>
-                              <td className='text-success fw-bold'>{formatCurrency(item.revenue)}</td>
+                              <td className='text-success fw-bold'>
+                                {formatCurrency(item.revenue)}
+                              </td>
                             </tr>
                           ))}
                         </tbody>
@@ -628,7 +653,7 @@ const ReportsPage: React.FC = () => {
                             variant='outline-primary'
                             size='sm'
                             onClick={() => {
-                              setReportConfig({...reportConfig, entity: 'clients'});
+                              setReportConfig({ ...reportConfig, entity: 'clients' });
                               loadCustomReportOptions('clients');
                               setShowReportBuilder(true);
                             }}
@@ -659,7 +684,7 @@ const ReportsPage: React.FC = () => {
                             variant='outline-info'
                             size='sm'
                             onClick={() => {
-                              setReportConfig({...reportConfig, entity: 'cases'});
+                              setReportConfig({ ...reportConfig, entity: 'cases' });
                               loadCustomReportOptions('cases');
                               setShowReportBuilder(true);
                             }}
@@ -690,7 +715,7 @@ const ReportsPage: React.FC = () => {
                             variant='outline-warning'
                             size='sm'
                             onClick={() => {
-                              setReportConfig({...reportConfig, entity: 'hearings'});
+                              setReportConfig({ ...reportConfig, entity: 'hearings' });
                               loadCustomReportOptions('hearings');
                               setShowReportBuilder(true);
                             }}
@@ -726,13 +751,17 @@ const ReportsPage: React.FC = () => {
                         value={reportConfig.entity}
                         onChange={(e) => {
                           const entity = e.target.value;
-                          setReportConfig({...reportConfig, entity});
+                          setReportConfig({ ...reportConfig, entity });
                           loadCustomReportOptions(entity);
                         }}
                       >
-                        {Object.entries(customReportOptions.available_entities || {}).map(([key, value]) => (
-                          <option key={key} value={key}>{value as string}</option>
-                        ))}
+                        {Object.entries(customReportOptions.available_entities || {}).map(
+                          ([key, value]) => (
+                            <option key={key} value={key}>
+                              {value as string}
+                            </option>
+                          )
+                        )}
                       </Form.Select>
                     </Form.Group>
                   </Col>
@@ -742,10 +771,12 @@ const ReportsPage: React.FC = () => {
                       <Form.Control
                         type='date'
                         value={reportConfig.filters.date_from || ''}
-                        onChange={(e) => setReportConfig({
-                          ...reportConfig,
-                          filters: {...reportConfig.filters, date_from: e.target.value}
-                        })}
+                        onChange={(e) =>
+                          setReportConfig({
+                            ...reportConfig,
+                            filters: { ...reportConfig.filters, date_from: e.target.value },
+                          })
+                        }
                       />
                     </Form.Group>
                   </Col>
@@ -755,10 +786,12 @@ const ReportsPage: React.FC = () => {
                       <Form.Control
                         type='date'
                         value={reportConfig.filters.date_to || ''}
-                        onChange={(e) => setReportConfig({
-                          ...reportConfig,
-                          filters: {...reportConfig.filters, date_to: e.target.value}
-                        })}
+                        onChange={(e) =>
+                          setReportConfig({
+                            ...reportConfig,
+                            filters: { ...reportConfig.filters, date_to: e.target.value },
+                          })
+                        }
                       />
                     </Form.Group>
                   </Col>
@@ -766,22 +799,24 @@ const ReportsPage: React.FC = () => {
               </Tab>
               <Tab eventKey='columns' title='الأعمدة'>
                 <Row>
-                  {Object.entries(customReportOptions.available_columns || {}).map(([key, value]) => (
-                    <Col md={6} key={key} className='mb-2'>
-                      <Form.Check
-                        type='checkbox'
-                        id={`column-${key}`}
-                        label={value as string}
-                        checked={reportConfig.columns.includes(key)}
-                        onChange={(e) => {
-                          const newColumns = e.target.checked
-                            ? [...reportConfig.columns, key]
-                            : reportConfig.columns.filter(col => col !== key);
-                          setReportConfig({...reportConfig, columns: newColumns});
-                        }}
-                      />
-                    </Col>
-                  ))}
+                  {Object.entries(customReportOptions.available_columns || {}).map(
+                    ([key, value]) => (
+                      <Col md={6} key={key} className='mb-2'>
+                        <Form.Check
+                          type='checkbox'
+                          id={`column-${key}`}
+                          label={value as string}
+                          checked={reportConfig.columns.includes(key)}
+                          onChange={(e) => {
+                            const newColumns = e.target.checked
+                              ? [...reportConfig.columns, key]
+                              : reportConfig.columns.filter((col) => col !== key);
+                            setReportConfig({ ...reportConfig, columns: newColumns });
+                          }}
+                        />
+                      </Col>
+                    )
+                  )}
                 </Row>
               </Tab>
             </Tabs>
@@ -810,11 +845,16 @@ const ReportsPage: React.FC = () => {
         <Modal.Body>
           <ListGroup>
             {reportTemplates.map((template) => (
-              <ListGroup.Item key={template.id} className='d-flex justify-content-between align-items-start'>
+              <ListGroup.Item
+                key={template.id}
+                className='d-flex justify-content-between align-items-start'
+              >
                 <div className='ms-2 me-auto'>
                   <div className='fw-bold'>{template.name}</div>
                   <p className='mb-1'>{template.description}</p>
-                  <small className='text-muted'>بواسطة {template.created_by} - {template.created_at}</small>
+                  <small className='text-muted'>
+                    بواسطة {template.created_by} - {template.created_at}
+                  </small>
                 </div>
                 <ButtonGroup>
                   <Button
@@ -852,8 +892,13 @@ const ReportsPage: React.FC = () => {
       <Modal show={showDetailedReport} onHide={() => setShowDetailedReport(false)} size='xl'>
         <Modal.Header closeButton>
           <Modal.Title>
-            تقرير {currentReportType === 'clients' ? 'العملاء' :
-                    currentReportType === 'cases' ? 'القضايا' : 'الجلسات'} التفصيلي
+            تقرير{' '}
+            {currentReportType === 'clients'
+              ? 'العملاء'
+              : currentReportType === 'cases'
+                ? 'القضايا'
+                : 'الجلسات'}{' '}
+            التفصيلي
           </Modal.Title>
         </Modal.Header>
         <Modal.Body style={{ maxHeight: '70vh', overflowY: 'auto' }}>
@@ -881,9 +926,7 @@ const ReportsPage: React.FC = () => {
                     <thead>
                       <tr>
                         {Object.keys(reportData.data[0]).map((key) => (
-                          <th key={key}>
-                            {reportData.available_columns?.[key] || key}
-                          </th>
+                          <th key={key}>{reportData.available_columns?.[key] || key}</th>
                         ))}
                       </tr>
                     </thead>
@@ -892,7 +935,9 @@ const ReportsPage: React.FC = () => {
                         <tr key={index}>
                           {Object.keys(reportData.data[0]).map((key) => (
                             <td key={key}>
-                              {key.includes('date') && row[key] ? formatDate(row[key]) : (row[key] || '-')}
+                              {key.includes('date') && row[key]
+                                ? formatDate(row[key])
+                                : row[key] || '-'}
                             </td>
                           ))}
                         </tr>
@@ -1026,12 +1071,17 @@ const ReportsPage: React.FC = () => {
 
           {selectedClientId && (
             <Alert variant='secondary'>
-              <strong>العميل المحدد:</strong> {clientsList.find(c => c.id === parseInt(selectedClientId))?.client_name_ar}
+              <strong>العميل المحدد:</strong>{' '}
+              {clientsList.find((c) => c.id === parseInt(selectedClientId))?.client_name_ar}
             </Alert>
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant='secondary' onClick={() => setShowClientReportModal(false)} disabled={clientReportLoading}>
+          <Button
+            variant='secondary'
+            onClick={() => setShowClientReportModal(false)}
+            disabled={clientReportLoading}
+          >
             إلغاء
           </Button>
           <Button

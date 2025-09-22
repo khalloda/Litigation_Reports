@@ -1,0 +1,97 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches: [ develop ]
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to deploy'
+        required: true
+        default: 'develop'
+
+env:
+  NODE_VERSION: '18'
+  PHP_VERSION: '8.2'
+
+jobs:
+  deploy-staging:
+    name: Deploy to Staging Environment
+    runs-on: ubuntu-latest
+    environment: staging
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.inputs.branch || github.ref }}
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run tests
+      run: |
+        npm run lint
+        npm run type-check
+        npm run test
+
+    - name: Build for staging
+      run: |
+        npm run build
+        echo "Build completed for staging environment"
+
+    - name: Prepare deployment package
+      run: |
+        # Create deployment directory
+        mkdir -p deploy-package
+
+        # Copy built frontend
+        cp -r dist/* deploy-package/
+
+        # Copy backend files
+        cp -r backend deploy-package/
+        cp -r database deploy-package/
+
+        # Copy configuration templates
+        cp .env.example deploy-package/.env.staging
+
+        # Create deployment manifest
+        echo "Deployment Date: $(date)" > deploy-package/DEPLOYMENT_INFO.txt
+        echo "Branch: ${{ github.event.inputs.branch || github.ref_name }}" >> deploy-package/DEPLOYMENT_INFO.txt
+        echo "Commit: ${{ github.sha }}" >> deploy-package/DEPLOYMENT_INFO.txt
+        echo "Build ID: ${{ github.run_id }}" >> deploy-package/DEPLOYMENT_INFO.txt
+
+    - name: Upload deployment artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: staging-deployment-${{ github.run_id }}
+        path: deploy-package/
+        retention-days: 30
+
+    - name: Deploy to staging server
+      run: |
+        echo "🚀 Staging deployment prepared"
+        echo "📦 Deployment package: staging-deployment-${{ github.run_id }}"
+        echo "🌐 Staging URL: https://staging.lit.sarieldin.com"
+        echo ""
+        echo "Manual steps for staging deployment:"
+        echo "1. Download the deployment artifact"
+        echo "2. Upload to staging server via FTP/SFTP"
+        echo "3. Update .env.staging with staging-specific configuration"
+        echo "4. Run database migrations if needed"
+        echo "5. Verify deployment health"
+
+    - name: Notify deployment status
+      if: always()
+      run: |
+        if [ "${{ job.status }}" == "success" ]; then
+          echo "✅ Staging deployment package ready"
+        else
+          echo "❌ Staging deployment failed"
+        fi

@@ -11,7 +11,7 @@ test('Debug - Check hearings page accessibility', async ({ page }) => {
     // Set a longer timeout and try to navigate
     await page.goto(`${BASE_URL}/hearings`, {
       waitUntil: 'domcontentloaded',
-      timeout: 30000
+      timeout: 30000,
     });
 
     console.log('✅ Page loaded successfully');
@@ -47,7 +47,10 @@ test('Debug - Check hearings page accessibility', async ({ page }) => {
 
         // Wait a bit and check for modal
         await page.waitForTimeout(2000);
-        const modalVisible = await page.locator('.modal').isVisible().catch(() => false);
+        const modalVisible = await page
+          .locator('.modal')
+          .isVisible()
+          .catch(() => false);
 
         if (modalVisible) {
           console.log('✅ Modal opened successfully');
@@ -65,7 +68,6 @@ test('Debug - Check hearings page accessibility', async ({ page }) => {
       console.log('❓ Page content does not match expected hearings page');
       console.log('First 200 characters:', bodyText?.substring(0, 200));
     }
-
   } catch (error) {
     console.error('❌ Error during test:', error);
 

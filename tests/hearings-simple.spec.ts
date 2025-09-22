@@ -87,7 +87,6 @@ test('Simple hearing page test', async ({ page }) => {
     } else {
       console.log('❌ No h2 elements found');
     }
-
   } catch (error) {
     console.error('❌ Test error:', error);
     await page.screenshot({ path: 'test-results/simple-error.png', fullPage: true });

@@ -13,7 +13,7 @@ test('Comprehensive CRUD debugging for hearings', async ({ page }) => {
   const apiRequests: { url: string; method: string; status: number; response?: any }[] = [];
 
   // Listen for console errors
-  page.on('console', msg => {
+  page.on('console', (msg) => {
     if (msg.type() === 'error') {
       consoleErrors.push(msg.text());
       console.log(`❌ Console Error: ${msg.text()}`);
@@ -21,7 +21,7 @@ test('Comprehensive CRUD debugging for hearings', async ({ page }) => {
   });
 
   // Listen for network requests
-  page.on('response', response => {
+  page.on('response', (response) => {
     const url = response.url();
     const method = response.request().method();
     const status = response.status();
@@ -67,7 +67,7 @@ test('Comprehensive CRUD debugging for hearings', async ({ page }) => {
   console.log('🆕 Testing CREATE functionality...');
 
   const addButton = page.locator('button:has-text("إضافة جلسة جديدة")');
-  const addButtonExists = await addButton.count() > 0;
+  const addButtonExists = (await addButton.count()) > 0;
   console.log(`Add button exists: ${addButtonExists ? '✅' : '❌'}`);
 
   if (addButtonExists) {
@@ -80,7 +80,7 @@ test('Comprehensive CRUD debugging for hearings', async ({ page }) => {
     await page.waitForTimeout(5000);
 
     console.log(`API requests after button click: ${apiRequests.length}`);
-    apiRequests.forEach(req => console.log(`  - ${req.method} ${req.url} → ${req.status}`));
+    apiRequests.forEach((req) => console.log(`  - ${req.method} ${req.url} → ${req.status}`));
 
     // Check for modal with multiple strategies
     const modalChecks = [
@@ -89,13 +89,18 @@ test('Comprehensive CRUD debugging for hearings', async ({ page }) => {
       { name: 'Modal Content', selector: '.modal-content' },
       { name: 'Any Modal', selector: '.modal' },
       { name: 'Dialog Element', selector: 'dialog[open]' },
-      { name: 'Popup/Overlay', selector: '.popup, .overlay' }
+      { name: 'Popup/Overlay', selector: '.popup, .overlay' },
     ];
 
     let modalFound = false;
     for (const check of modalChecks) {
-      const isVisible = await page.locator(check.selector).isVisible().catch(() => false);
-      console.log(`${check.name} (${check.selector}): ${isVisible ? '✅ Visible' : '❌ Not visible'}`);
+      const isVisible = await page
+        .locator(check.selector)
+        .isVisible()
+        .catch(() => false);
+      console.log(
+        `${check.name} (${check.selector}): ${isVisible ? '✅ Visible' : '❌ Not visible'}`
+      );
       if (isVisible && !modalFound) {
         modalFound = true;
 
@@ -124,7 +129,6 @@ test('Comprehensive CRUD debugging for hearings', async ({ page }) => {
         console.log('📝 Page might have form content without modal');
       }
     }
-
   } else {
     console.log('❌ Add button not found');
   }
@@ -150,7 +154,10 @@ test('Comprehensive CRUD debugging for hearings', async ({ page }) => {
     console.log('📄 No existing hearings data found');
 
     // Check for "no data" message
-    const noDataMessage = await page.locator('text=/لا توجد|no data|empty/i').textContent().catch(() => '');
+    const noDataMessage = await page
+      .locator('text=/لا توجد|no data|empty/i')
+      .textContent()
+      .catch(() => '');
     if (noDataMessage) {
       console.log(`No data message: "${noDataMessage}"`);
     }
@@ -162,28 +169,33 @@ test('Comprehensive CRUD debugging for hearings', async ({ page }) => {
   const apiTests = [
     { endpoint: '/api/hearings', method: 'GET', description: 'List hearings' },
     { endpoint: '/api/hearings/options', method: 'GET', description: 'Get hearing options' },
-    { endpoint: '/api/cases', method: 'GET', description: 'List cases for dropdown' }
+    { endpoint: '/api/cases', method: 'GET', description: 'List cases for dropdown' },
   ];
 
   for (const apiTest of apiTests) {
     try {
       console.log(`🧪 Testing ${apiTest.description}: ${apiTest.method} ${apiTest.endpoint}`);
 
-      const response = await page.evaluate(async ({ endpoint, method }) => {
-        const response = await fetch(endpoint, {
-          method,
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('auth_token') || ''}`,
-            'Content-Type': 'application/json'
-          }
-        });
+      const response = await page.evaluate(
+        async ({ endpoint, method }) => {
+          const response = await fetch(endpoint, {
+            method,
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('auth_token') || ''}`,
+              'Content-Type': 'application/json',
+            },
+          });
 
-        return {
-          status: response.status,
-          ok: response.ok,
-          data: response.ok ? await response.json().catch(() => 'Invalid JSON') : await response.text()
-        };
-      }, { endpoint: `${BASE_URL}${apiTest.endpoint}`, method: apiTest.method });
+          return {
+            status: response.status,
+            ok: response.ok,
+            data: response.ok
+              ? await response.json().catch(() => 'Invalid JSON')
+              : await response.text(),
+          };
+        },
+        { endpoint: `${BASE_URL}${apiTest.endpoint}`, method: apiTest.method }
+      );
 
       console.log(`  Status: ${response.status} ${response.ok ? '✅' : '❌'}`);
       if (!response.ok) {
@@ -191,7 +203,6 @@ test('Comprehensive CRUD debugging for hearings', async ({ page }) => {
       } else if (typeof response.data === 'object') {
         console.log(`  Success: ${JSON.stringify(response.data).substring(0, 200)}...`);
       }
-
     } catch (error) {
       console.log(`  ❌ API Error: ${error}`);
     }
@@ -201,7 +212,9 @@ test('Comprehensive CRUD debugging for hearings', async ({ page }) => {
   console.log('🔒 Checking authentication state...');
 
   const authToken = await page.evaluate(() => localStorage.getItem('auth_token'));
-  const sessionData = await page.evaluate(() => sessionStorage.getItem('user') || sessionStorage.getItem('auth'));
+  const sessionData = await page.evaluate(
+    () => sessionStorage.getItem('user') || sessionStorage.getItem('auth')
+  );
 
   console.log(`Auth token exists: ${authToken ? '✅' : '❌'}`);
   console.log(`Session data exists: ${sessionData ? '✅' : '❌'}`);
@@ -217,8 +230,12 @@ test('Comprehensive CRUD debugging for hearings', async ({ page }) => {
   console.log(`📄 Page loads: ${page.url().includes('hearings') ? '✅ Yes' : '❌ No'}`);
   console.log(`🔘 Add button: ${addButtonExists ? '✅ Present' : '❌ Missing'}`);
   console.log(`🪟 Modal opens: ${modalFound ? '✅ Yes' : '❌ No'}`);
-  console.log(`📊 Console errors: ${consoleErrors.length === 0 ? '✅ None' : `❌ ${consoleErrors.length} errors`}`);
-  console.log(`🌐 Network errors: ${networkErrors.length === 0 ? '✅ None' : `❌ ${networkErrors.length} errors`}`);
+  console.log(
+    `📊 Console errors: ${consoleErrors.length === 0 ? '✅ None' : `❌ ${consoleErrors.length} errors`}`
+  );
+  console.log(
+    `🌐 Network errors: ${networkErrors.length === 0 ? '✅ None' : `❌ ${networkErrors.length} errors`}`
+  );
   console.log(`📡 API requests: ${apiRequests.length} total`);
 
   if (consoleErrors.length > 0) {
@@ -234,7 +251,7 @@ test('Comprehensive CRUD debugging for hearings', async ({ page }) => {
   // Step 8: Recommendations
   console.log('\n💡 RECOMMENDATIONS:');
   if (!modalFound && addButtonExists) {
-    console.log('- Add button exists but modal doesn\'t open → Check JavaScript errors');
+    console.log("- Add button exists but modal doesn't open → Check JavaScript errors");
     console.log('- Possible missing dependencies or build issues');
   }
   if (consoleErrors.length > 0) {
@@ -255,7 +272,7 @@ async function testFormFields(page: any, modalSelector: string) {
     selects: await page.locator(`${modalSelector} select`).count(),
     inputs: await page.locator(`${modalSelector} input`).count(),
     textareas: await page.locator(`${modalSelector} textarea`).count(),
-    buttons: await page.locator(`${modalSelector} button`).count()
+    buttons: await page.locator(`${modalSelector} button`).count(),
   };
 
   console.log(`📋 Form elements: ${JSON.stringify(formElements)}`);
@@ -279,7 +296,7 @@ async function testFormFields(page: any, modalSelector: string) {
   if (formElements.inputs > 0) {
     try {
       const dateInput = page.locator(`${modalSelector} input[type="datetime-local"]`).first();
-      if (await dateInput.count() > 0) {
+      if ((await dateInput.count()) > 0) {
         await dateInput.fill('2025-12-31T10:00');
         console.log('✅ Successfully filled date input');
       }

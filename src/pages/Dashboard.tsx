@@ -70,11 +70,16 @@ export function Dashboard() {
 
   const getActivityIcon = (type: string) => {
     switch (type) {
-      case 'client': return Users;
-      case 'case': return FileText;
-      case 'hearing': return Calendar;
-      case 'invoice': return Receipt;
-      default: return FileText;
+      case 'client':
+        return Users;
+      case 'case':
+        return FileText;
+      case 'hearing':
+        return Calendar;
+      case 'invoice':
+        return Receipt;
+      default:
+        return FileText;
     }
   };
 
@@ -227,26 +232,29 @@ export function Dashboard() {
             </Card.Header>
             <Card.Body>
               <div className='activity-list'>
-                {dashboardData.recent_activities?.slice(0, 5).map((activity: any, index: number) => {
-                  const Icon = getActivityIcon(activity.type);
-                  return (
-                    <div key={index} className='activity-item d-flex align-items-center mb-3'>
-                      <div className='activity-icon me-3'>
-                        <Icon size={20} className='text-primary' />
+                {dashboardData.recent_activities
+                  ?.slice(0, 5)
+                  .map((activity: any, index: number) => {
+                    const Icon = getActivityIcon(activity.type);
+                    return (
+                      <div key={index} className='activity-item d-flex align-items-center mb-3'>
+                        <div className='activity-icon me-3'>
+                          <Icon size={20} className='text-primary' />
+                        </div>
+                        <div className='flex-grow-1'>
+                          <p className='mb-1'>
+                            <strong>{activity.action}</strong> {activity.name}
+                          </p>
+                          <small className='text-muted'>
+                            <Clock size={12} className='me-1' />
+                            {formatTimeAgo(activity.created_at)}
+                          </small>
+                        </div>
                       </div>
-                      <div className='flex-grow-1'>
-                        <p className='mb-1'>
-                          <strong>{activity.action}</strong> {activity.name}
-                        </p>
-                        <small className='text-muted'>
-                          <Clock size={12} className='me-1' />
-                          {formatTimeAgo(activity.created_at)}
-                        </small>
-                      </div>
-                    </div>
-                  );
-                })}
-                {(!dashboardData.recent_activities || dashboardData.recent_activities.length === 0) && (
+                    );
+                  })}
+                {(!dashboardData.recent_activities ||
+                  dashboardData.recent_activities.length === 0) && (
                   <p className='text-muted text-center'>لا يوجد نشاط حديث</p>
                 )}
               </div>
@@ -277,7 +285,8 @@ export function Dashboard() {
                     </div>
                   </div>
                 ))}
-                {(!dashboardData.upcoming_hearings || dashboardData.upcoming_hearings.length === 0) && (
+                {(!dashboardData.upcoming_hearings ||
+                  dashboardData.upcoming_hearings.length === 0) && (
                   <p className='text-muted text-center'>لا توجد جلسات قادمة</p>
                 )}
               </div>

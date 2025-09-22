@@ -22,19 +22,38 @@ test('Full hearings functionality test', async ({ page }) => {
   console.log(`📄 Page title: ${title}`);
 
   // Look for hearings page elements
-  const hearingsHeader = await page.locator('h2, h1').filter({ hasText: /جلسات|إدارة الجلسات|Hearings/i }).first().textContent().catch(() => null);
+  const hearingsHeader = await page
+    .locator('h2, h1')
+    .filter({ hasText: /جلسات|إدارة الجلسات|Hearings/i })
+    .first()
+    .textContent()
+    .catch(() => null);
   console.log(`🔍 Hearings header: ${hearingsHeader || 'Not found'}`);
 
   // Check for add hearing button
-  const addButton = await page.locator('button').filter({ hasText: /إضافة|جديد|Add|New/i }).first().isVisible().catch(() => false);
+  const addButton = await page
+    .locator('button')
+    .filter({ hasText: /إضافة|جديد|Add|New/i })
+    .first()
+    .isVisible()
+    .catch(() => false);
   console.log(`➕ Add hearing button visible: ${addButton}`);
 
   // Check for hearings table or list
-  const tableExists = await page.locator('table, .table, [data-testid="hearings-table"]').first().isVisible().catch(() => false);
+  const tableExists = await page
+    .locator('table, .table, [data-testid="hearings-table"]')
+    .first()
+    .isVisible()
+    .catch(() => false);
   console.log(`📊 Hearings table visible: ${tableExists}`);
 
   // Check for filters section
-  const filtersExist = await page.locator('.filters, [data-testid="filters"], .card').filter({ hasText: /بحث|Search|فلتر|Filter/i }).first().isVisible().catch(() => false);
+  const filtersExist = await page
+    .locator('.filters, [data-testid="filters"], .card')
+    .filter({ hasText: /بحث|Search|فلتر|Filter/i })
+    .first()
+    .isVisible()
+    .catch(() => false);
   console.log(`🔍 Filters section visible: ${filtersExist}`);
 
   // Check for any hearing data
@@ -43,7 +62,11 @@ test('Full hearings functionality test', async ({ page }) => {
 
   // Check for pagination if there are hearings
   if (hearingRows > 0) {
-    const paginationExists = await page.locator('.pagination, [data-testid="pagination"]').first().isVisible().catch(() => false);
+    const paginationExists = await page
+      .locator('.pagination, [data-testid="pagination"]')
+      .first()
+      .isVisible()
+      .catch(() => false);
     console.log(`📄 Pagination visible: ${paginationExists}`);
   }
 
@@ -54,7 +77,7 @@ test('Full hearings functionality test', async ({ page }) => {
 
   // Look for any API errors in console
   const consoleErrors = [];
-  page.on('console', msg => {
+  page.on('console', (msg) => {
     if (msg.type() === 'error') {
       consoleErrors.push(msg.text());
     }
@@ -70,10 +93,16 @@ test('Full hearings functionality test', async ({ page }) => {
 
   // Try to click add hearing button if visible
   if (addButton) {
-    await page.click('button:has-text("إضافة"), button:has-text("جديد"), button:has-text("Add"), button:has-text("New")');
+    await page.click(
+      'button:has-text("إضافة"), button:has-text("جديد"), button:has-text("Add"), button:has-text("New")'
+    );
     await page.waitForTimeout(1000);
 
-    const modalVisible = await page.locator('.modal, [data-testid="hearing-modal"]').first().isVisible().catch(() => false);
+    const modalVisible = await page
+      .locator('.modal, [data-testid="hearing-modal"]')
+      .first()
+      .isVisible()
+      .catch(() => false);
     console.log(`📝 Add hearing modal opened: ${modalVisible}`);
 
     if (modalVisible) {

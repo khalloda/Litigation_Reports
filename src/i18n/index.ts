@@ -6,40 +6,38 @@ import { en } from './locales/en';
 // Initialize i18next
 const initI18n = async () => {
   try {
-    await i18n
-      .use(initReactI18next)
-      .init({
-        resources: {
-          ar: {
-            translation: ar,
-          },
-          en: {
-            translation: en,
-          },
+    await i18n.use(initReactI18next).init({
+      resources: {
+        ar: {
+          translation: ar,
         },
-        lng: localStorage.getItem('language') || 'ar', // Default to Arabic
-        fallbackLng: 'ar',
-
-        interpolation: {
-          escapeValue: false, // React already escapes values
+        en: {
+          translation: en,
         },
+      },
+      lng: localStorage.getItem('language') || 'ar', // Default to Arabic
+      fallbackLng: 'ar',
 
-        // React specific options
-        react: {
-          useSuspense: false,
-        },
+      interpolation: {
+        escapeValue: false, // React already escapes values
+      },
 
-        // Namespace configuration
-        defaultNS: 'translation',
-        ns: ['translation'],
+      // React specific options
+      react: {
+        useSuspense: false,
+      },
 
-        // Additional options to prevent warnings
-        initImmediate: false,
-        load: 'languageOnly',
+      // Namespace configuration
+      defaultNS: 'translation',
+      ns: ['translation'],
 
-        // Debug mode for development
-        debug: false,
-      });
+      // Additional options to prevent warnings
+      initImmediate: false,
+      load: 'languageOnly',
+
+      // Debug mode for development
+      debug: false,
+    });
 
     console.log('i18next initialized successfully');
   } catch (error) {

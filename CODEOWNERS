@@ -1,0 +1,83 @@
+# Global owners for fallback
+* @litigation-team/maintainers
+
+# Frontend/Web Application
+/src/ @litigation-team/frontend-team
+/apps/web/ @litigation-team/frontend-team
+/tests/web/ @litigation-team/frontend-team
+*.tsx @litigation-team/frontend-team
+*.ts @litigation-team/frontend-team
+vite.config.ts @litigation-team/frontend-team
+tsconfig*.json @litigation-team/frontend-team
+package.json @litigation-team/frontend-team
+
+# Backend/API Service
+/backend/ @litigation-team/backend-team
+/apps/api/ @litigation-team/backend-team
+/tests/api/ @litigation-team/backend-team
+*.php @litigation-team/backend-team
+composer.json @litigation-team/backend-team
+
+# Database and Configuration
+/database/ @litigation-team/backend-team @litigation-team/devops-team
+/packages/database/ @litigation-team/backend-team @litigation-team/devops-team
+/config/ @litigation-team/backend-team @litigation-team/devops-team
+/packages/config/ @litigation-team/backend-team @litigation-team/devops-team
+*.sql @litigation-team/backend-team @litigation-team/devops-team
+
+# Infrastructure and DevOps
+/scripts/ @litigation-team/devops-team
+/deploy/ @litigation-team/devops-team
+/.github/ @litigation-team/devops-team
+docker* @litigation-team/devops-team
+*.yml @litigation-team/devops-team
+*.yaml @litigation-team/devops-team
+
+# Testing Infrastructure
+/tests/ @litigation-team/qa-team
+playwright.config.* @litigation-team/qa-team
+vitest.config.* @litigation-team/qa-team
+/tests/integration/ @litigation-team/qa-team @litigation-team/backend-team @litigation-team/frontend-team
+
+# Documentation
+/docs/ @litigation-team/tech-writers @litigation-team/maintainers
+*.md @litigation-team/tech-writers
+README* @litigation-team/tech-writers @litigation-team/maintainers
+
+# Architecture Decision Records (require senior approval)
+/docs/adr/ @litigation-team/architects @litigation-team/maintainers
+
+# Security and Compliance
+SECURITY.md @litigation-team/security-team @litigation-team/maintainers
+.env* @litigation-team/security-team @litigation-team/devops-team
+
+# Build and Release
+package.json @litigation-team/devops-team @litigation-team/maintainers
+package-lock.json @litigation-team/devops-team
+composer.json @litigation-team/devops-team @litigation-team/backend-team
+composer.lock @litigation-team/devops-team @litigation-team/backend-team
+
+# Legal and Compliance
+LICENSE @litigation-team/legal @litigation-team/maintainers
+CONTRIBUTING.md @litigation-team/maintainers
+CODE_OF_CONDUCT.md @litigation-team/maintainers
+
+# Shared Packages (require cross-team review)
+/packages/ @litigation-team/backend-team @litigation-team/frontend-team @litigation-team/maintainers
+
+# Critical Configuration Files (require lead approval)
+CODEOWNERS @litigation-team/leads @litigation-team/maintainers
+.gitignore @litigation-team/maintainers
+.editorconfig @litigation-team/maintainers
+
+# Team Definitions:
+# @litigation-team/maintainers - Project maintainers with full access
+# @litigation-team/architects - Senior architects for major decisions
+# @litigation-team/leads - Team leads for critical changes
+# @litigation-team/frontend-team - React/TypeScript developers
+# @litigation-team/backend-team - PHP/API developers
+# @litigation-team/devops-team - Infrastructure and deployment
+# @litigation-team/qa-team - Quality assurance and testing
+# @litigation-team/security-team - Security reviews
+# @litigation-team/tech-writers - Documentation specialists
+# @litigation-team/legal - Legal and compliance team

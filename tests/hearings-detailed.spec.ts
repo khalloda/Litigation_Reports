@@ -31,11 +31,21 @@ test('Detailed hearing page analysis', async ({ page }) => {
 
   // Look for Arabic text patterns that might indicate hearings content
   const arabicKeywords = [
-    'جلسات', 'جلسة', 'إدارة', 'قضايا', 'محكمة', 'قضية',
-    'إضافة', 'تعديل', 'حذف', 'بحث', 'تصفية', 'عرض'
+    'جلسات',
+    'جلسة',
+    'إدارة',
+    'قضايا',
+    'محكمة',
+    'قضية',
+    'إضافة',
+    'تعديل',
+    'حذف',
+    'بحث',
+    'تصفية',
+    'عرض',
   ];
 
-  let foundKeywords = [];
+  const foundKeywords = [];
   for (const keyword of arabicKeywords) {
     if (bodyText?.includes(keyword)) {
       foundKeywords.push(keyword);
@@ -52,8 +62,8 @@ test('Detailed hearing page analysis', async ({ page }) => {
     console.log(`🔘 Button texts: ${buttonTexts.join(' | ')}`);
 
     // Look for add hearing button specifically
-    const addHearingButtons = buttonTexts.filter(text =>
-      text.includes('إضافة') && text.includes('جلسة')
+    const addHearingButtons = buttonTexts.filter(
+      (text) => text.includes('إضافة') && text.includes('جلسة')
     );
 
     if (addHearingButtons.length > 0) {
@@ -64,7 +74,10 @@ test('Detailed hearing page analysis', async ({ page }) => {
       await page.waitForTimeout(2000);
 
       // Check for modal
-      const modalVisible = await page.locator('.modal').isVisible().catch(() => false);
+      const modalVisible = await page
+        .locator('.modal')
+        .isVisible()
+        .catch(() => false);
       if (modalVisible) {
         console.log('✅ Modal opened successfully!');
         await page.screenshot({ path: 'test-results/detailed-modal.png' });
@@ -99,7 +112,7 @@ test('Detailed hearing page analysis', async ({ page }) => {
 
   // Check if we might be on a login page
   const loginKeywords = ['login', 'تسجيل', 'دخول', 'password', 'username'];
-  const hasLoginContent = loginKeywords.some(keyword =>
+  const hasLoginContent = loginKeywords.some((keyword) =>
     bodyText?.toLowerCase().includes(keyword.toLowerCase())
   );
 

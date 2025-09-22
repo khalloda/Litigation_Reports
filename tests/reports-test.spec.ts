@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test('Test monthly client report generation', async ({ page }) => {
+test('monthly client report generation', async ({ page }) => {
   console.log('📊 Testing report generation functionality...');
 
   // Navigate to the application
@@ -50,7 +50,6 @@ test('Test monthly client report generation', async ({ page }) => {
     } else {
       console.log('❌ No report modal visible');
     }
-
   } else {
     console.log('❌ Client report button not found');
   }
