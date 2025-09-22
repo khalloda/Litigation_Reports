@@ -103,6 +103,7 @@ const ReportsPage: React.FC = () => {
   const [showTemplates, setShowTemplates] = useState(false);
   const [showExportOptions, setShowExportOptions] = useState(false);
   const [showDetailedReport, setShowDetailedReport] = useState(false);
+  const [showClientReportModal, setShowClientReportModal] = useState(false);
 
   // Report data states
   const [reportTemplates, setReportTemplates] = useState<ReportTemplate[]>([]);
@@ -116,9 +117,16 @@ const ReportsPage: React.FC = () => {
   const [reportData, setReportData] = useState<any>(null);
   const [reportLoading, setReportLoading] = useState(false);
 
+  // Client report states
+  const [clientReportLoading, setClientReportLoading] = useState(false);
+  const [selectedClientId, setSelectedClientId] = useState('');
+  const [reportFormat, setReportFormat] = useState<'pdf' | 'jpg'>('pdf');
+  const [clientsList, setClientsList] = useState<any[]>([]);
+
   useEffect(() => {
     loadDashboardData();
     loadReportTemplates();
+    loadClientsList();
   }, []);
 
   const loadDashboardData = async () => {
@@ -195,6 +203,87 @@ const ReportsPage: React.FC = () => {
     }
   };
 
+  const loadClientsList = async () => {
+    try {
+      const response = await api.get('/clients');
+      if (response.success) {
+        setClientsList(response.data.data || []);
+      }
+    } catch (err) {
+      console.error('Error loading clients list:', err);
+    }
+  };
+
+  const generateClientReport = async () => {
+    try {
+      if (!selectedClientId) {
+        alert('يرجى اختيار عميل');
+        return;
+      }
+
+      setClientReportLoading(true);
+      const response = await api.get('/reports/client-report', {
+        params: {
+          client_id: selectedClientId,
+          format: reportFormat,
+          template: 'franke'
+        }
+      });
+
+      if (response.success) {
+        const reportData = response.data;
+
+        if (reportData.type === 'html_for_pdf') {
+          // Generate PDF from HTML using browser's print functionality
+          const printWindow = window.open('', '_blank');
+          if (printWindow) {
+            printWindow.document.write(reportData.html_content);
+            printWindow.document.close();
+
+            printWindow.onload = () => {
+              printWindow.print();
+              printWindow.close();
+            };
+          }
+        } else if (reportData.type === 'html_for_jpg') {
+          // For JPG, we'll open the HTML in a new window for now
+          // In a full implementation, this would use html2canvas or similar
+          const printWindow = window.open('', '_blank');
+          if (printWindow) {
+            printWindow.document.write(`
+              ${reportData.html_content}
+              <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+              <script>
+                window.onload = function() {
+                  html2canvas(document.body, {
+                    useCORS: true,
+                    scale: 2,
+                    width: document.body.scrollWidth,
+                    height: document.body.scrollHeight
+                  }).then(function(canvas) {
+                    const link = document.createElement('a');
+                    link.download = '${reportData.filename}';
+                    link.href = canvas.toDataURL('image/jpeg', 0.9);
+                    link.click();
+                  });
+                };
+              </script>
+            `);
+            printWindow.document.close();
+          }
+        }
+
+        setShowClientReportModal(false);
+        setSelectedClientId('');
+      }
+    } catch (err) {
+      console.error('Error generating client report:', err);
+      alert('خطأ في إنشاء التقرير');
+    } finally {
+      setClientReportLoading(false);
+    }
+  };
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('ar-EG', {
       style: 'currency',
@@ -256,6 +345,10 @@ const ReportsPage: React.FC = () => {
               }}>
                 <FileText className='me-2' size={16} />
                 القوالب
+              </Button>
+              <Button variant='warning' onClick={() => setShowClientReportModal(true)}>
+                <FileText className='me-2' size={16} />
+                تقرير عميل (فرانكي)
               </Button>
               <Button variant='success' onClick={() => setShowExportOptions(true)}>
                 <Download className='me-2' size={16} />
@@ -815,12 +908,140 @@ const ReportsPage: React.FC = () => {
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant='success'>
+          <Button
+            variant='success'
+            onClick={() => {
+              setShowDetailedReport(false);
+              setShowExportOptions(true);
+            }}
+          >
             <Download className='me-2' size={16} />
             تصدير
           </Button>
           <Button variant='secondary' onClick={() => setShowDetailedReport(false)}>
             إغلاق
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Export Options Modal */}
+      <Modal show={showExportOptions} onHide={() => setShowExportOptions(false)} size='lg'>
+        <Modal.Header closeButton>
+          <Modal.Title>خيارات التصدير</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Row>
+            <Col md={6}>
+              <Card className='h-100 border-primary'>
+                <Card.Body className='text-center'>
+                  <FileText size={48} className='text-primary mb-3' />
+                  <h5>تقرير عميل محدد</h5>
+                  <p className='text-muted mb-3'>إنشاء تقرير فرانكي لعميل واحد مع جميع قضاياه</p>
+                  <Button
+                    variant='primary'
+                    onClick={() => {
+                      setShowExportOptions(false);
+                      setShowClientReportModal(true);
+                    }}
+                  >
+                    <FileText className='me-2' size={16} />
+                    تقرير العميل
+                  </Button>
+                </Card.Body>
+              </Card>
+            </Col>
+            <Col md={6}>
+              <Card className='h-100 border-secondary'>
+                <Card.Body className='text-center'>
+                  <Download size={48} className='text-secondary mb-3' />
+                  <h5>تصدير البيانات الحالية</h5>
+                  <p className='text-muted mb-3'>تصدير البيانات المعروضة حالياً كـ CSV أو Excel</p>
+                  <div className='d-grid gap-2'>
+                    <Button variant='outline-success' disabled>
+                      <Download className='me-2' size={16} />
+                      CSV
+                    </Button>
+                    <Button variant='outline-info' disabled>
+                      <Download className='me-2' size={16} />
+                      Excel
+                    </Button>
+                  </div>
+                  <small className='text-muted'>قريباً</small>
+                </Card.Body>
+              </Card>
+            </Col>
+          </Row>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant='secondary' onClick={() => setShowExportOptions(false)}>
+            إغلاق
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Client Report Modal */}
+      <Modal show={showClientReportModal} onHide={() => setShowClientReportModal(false)} size='lg'>
+        <Modal.Header closeButton>
+          <Modal.Title>إنشاء تقرير عميل - قالب فرانكي</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Row>
+            <Col md={6}>
+              <Form.Group className='mb-3'>
+                <Form.Label>اختر العميل</Form.Label>
+                <Form.Select
+                  value={selectedClientId}
+                  onChange={(e) => setSelectedClientId(e.target.value)}
+                  disabled={clientReportLoading}
+                >
+                  <option value=''>-- اختر العميل --</option>
+                  {clientsList.map((client) => (
+                    <option key={client.id} value={client.id}>
+                      {client.client_name_ar || client.client_name_en}
+                      {client.client_type && ` (${client.client_type})`}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
+            </Col>
+            <Col md={6}>
+              <Form.Group className='mb-3'>
+                <Form.Label>تنسيق التصدير</Form.Label>
+                <Form.Select
+                  value={reportFormat}
+                  onChange={(e) => setReportFormat(e.target.value as 'pdf' | 'jpg')}
+                  disabled={clientReportLoading}
+                >
+                  <option value='pdf'>PDF</option>
+                  <option value='jpg'>JPG</option>
+                </Form.Select>
+              </Form.Group>
+            </Col>
+          </Row>
+
+          <Alert variant='info'>
+            <strong>قالب فرانكي:</strong> سيتم إنشاء تقرير بموقف العميل يتضمن جميع القضايا وحالتها،
+            مع الشعارات المزدوجة (صارى الدين ومشاركوه + فرانكي) وتنسيق مناسب للطباعة.
+          </Alert>
+
+          {selectedClientId && (
+            <Alert variant='secondary'>
+              <strong>العميل المحدد:</strong> {clientsList.find(c => c.id === parseInt(selectedClientId))?.client_name_ar}
+            </Alert>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant='secondary' onClick={() => setShowClientReportModal(false)} disabled={clientReportLoading}>
+            إلغاء
+          </Button>
+          <Button
+            variant='primary'
+            onClick={generateClientReport}
+            disabled={clientReportLoading || !selectedClientId}
+          >
+            {clientReportLoading && <Spinner size='sm' className='me-2' />}
+            <Download className='me-2' size={16} />
+            إنشاء التقرير
           </Button>
         </Modal.Footer>
       </Modal>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Report Test - Franke Template</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            direction: rtl;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        select, button {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔗 اختبار تقرير العميل - قالب فرانكي</h1>
+
+        <div class="info">
+            <strong>📋 وصف الوظيفة:</strong><br>
+            يقوم هذا الاختبار بإنشاء تقرير فرانكي للعميل المحدد، يتضمن جميع قضاياه وحالتها.
+            التقرير يحتوي على الشعارات المزدوجة والتنسيق المناسب للطباعة.
+        </div>
+
+        <div class="form-group">
+            <label for="clientSelect">اختر العميل:</label>
+            <select id="clientSelect">
+                <option value="">-- اختر العميل --</option>
+                <option value="1">صارى الدين ومشاركوه (company) - 6 قضايا</option>
+                <option value="2">الفطيم (company)</option>
+                <option value="3">تويوتا مصر (company)</option>
+                <option value="4">ترانس أوشن (company)</option>
+                <option value="5">شركة الخليج للسكر (company)</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="formatSelect">تنسيق التصدير:</label>
+            <select id="formatSelect">
+                <option value="pdf">📄 PDF (للطباعة)</option>
+                <option value="jpg">🖼️ JPG (صورة)</option>
+            </select>
+        </div>
+
+        <button onclick="generateReport()">📊 إنشاء تقرير فرانكي</button>
+
+        <div id="result" class="result">
+            <h3>✅ تم إنشاء التقرير بنجاح!</h3>
+            <p id="resultDetails"></p>
+            <p><strong>ملاحظة:</strong> التقرير سيفتح في نافذة جديدة للطباعة كـ PDF أو التحويل إلى JPG.</p>
+        </div>
+    </div>
+
+    <script>
+        async function generateReport() {
+            const clientId = document.getElementById('clientSelect').value;
+            const format = document.getElementById('formatSelect').value;
+
+            if (!clientId) {
+                alert('يرجى اختيار عميل');
+                return;
+            }
+
+            try {
+                // Make API call to generate report
+                const response = await fetch(`http://lit.local:8080/api/reports/client-report?client_id=${clientId}&format=${format}&template=franke`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJsaXRpZ2F0aW9uX3N5c3RlbSIsImF1ZCI6ImxpdGlnYXRpb25fc3lzdGVtIiwiaWF0IjoxNzMyMTkwNjg1LCJleHAiOjE3MzIyNzcwODUsInVzZXJfaWQiOjEsInVzZXJfZW1haWwiOiJ0ZXN0QGV4YW1wbGUuY29tIn0.VhZ-9mmoDiI43R3OwRJfPn5AflcK7AQDbgxW2q61JmU',
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const reportData = data.data;
+
+                    // Show success message
+                    document.getElementById('resultDetails').innerHTML = `
+                        📊 <strong>تقرير:</strong> ${reportData.filename}<br>
+                        👤 <strong>العميل:</strong> ${reportData.client_name}<br>
+                        📁 <strong>عدد القضايا:</strong> ${reportData.total_cases}<br>
+                        📅 <strong>تاريخ الإنشاء:</strong> ${reportData.generated_at}
+                    `;
+                    document.getElementById('result').style.display = 'block';
+
+                    // Open report in new window
+                    if (reportData.type === 'html_for_pdf') {
+                        const printWindow = window.open('', '_blank');
+                        printWindow.document.write(reportData.html_content);
+                        printWindow.document.close();
+
+                        printWindow.onload = () => {
+                            setTimeout(() => {
+                                printWindow.print();
+                            }, 1000);
+                        };
+                    } else if (reportData.type === 'html_for_jpg') {
+                        const printWindow = window.open('', '_blank');
+                        const jpgContent = reportData.html_content +
+                            '<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"><\/script>' +
+                            '<script>' +
+                                'window.onload = function() {' +
+                                    'setTimeout(() => {' +
+                                        'html2canvas(document.body, {' +
+                                            'useCORS: true,' +
+                                            'scale: 2,' +
+                                            'width: document.body.scrollWidth,' +
+                                            'height: document.body.scrollHeight' +
+                                        '}).then(function(canvas) {' +
+                                            'const link = document.createElement("a");' +
+                                            'link.download = "' + reportData.filename + '";' +
+                                            'link.href = canvas.toDataURL("image/jpeg", 0.9);' +
+                                            'link.click();' +
+                                        '});' +
+                                    '}, 2000);' +
+                                '};' +
+                            '<\/script>';
+                        printWindow.document.write(jpgContent);
+                        printWindow.document.close();
+                    }
+                } else {
+                    alert('خطأ في إنشاء التقرير: ' + (data.message || 'خطأ غير معروف'));
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('خطأ في الاتصال بالخادم');
+            }
+        }
+    </script>
+</body>
+</html>

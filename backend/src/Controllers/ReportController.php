@@ -1022,6 +1022,301 @@ class ReportController {
         }
     }
 
+    public function generateClientReport(Request $request) {
+        try {
+            // Check authentication
+            if (!Auth::check()) {
+                return Response::unauthorized('Authentication required');
+            }
+
+            $clientId = $request->get('client_id');
+            $format = $request->get('format', 'pdf'); // pdf or jpg
+            $template = $request->get('template', 'franke'); // specific template type
+
+            if (!$clientId) {
+                return Response::badRequest('Client ID is required');
+            }
+
+            $db = Database::getInstance();
+
+            // Get client information
+            $client = $db->fetch("SELECT * FROM clients WHERE id = ?", [$clientId]);
+            if (!$client) {
+                return Response::notFound('Client not found');
+            }
+
+            // Get client's cases with detailed information
+            $cases = $db->fetchAll("
+                SELECT
+                    c.id,
+                    c.matter_id as case_number,
+                    c.matter_ar as case_title,
+                    c.matter_court as court_name,
+                    c.client_capacity,
+                    c.opponent_capacity,
+                    c.matter_subject,
+                    c.matter_status,
+                    COALESCE(
+                        (SELECT CONCAT(hearing_result, ' - ', DATE_FORMAT(hearing_date, '%Y/%m/%d'))
+                         FROM hearings h
+                         WHERE h.case_id = c.id
+                         ORDER BY h.hearing_date DESC
+                         LIMIT 1),
+                        'لا توجد جلسات'
+                    ) as last_hearing_decision
+                FROM cases c
+                WHERE c.client_id = ?
+                ORDER BY c.created_at DESC
+            ", [$clientId]);
+
+            // Generate report based on template
+            $reportData = [
+                'client' => $client,
+                'cases' => $cases,
+                'total_cases' => count($cases),
+                'generated_at' => date('Y/m/d'),
+                'generated_time' => date('H:i') . ' ص', // Arabic AM format
+                'template' => $template
+            ];
+
+            if ($template === 'franke') {
+                return $this->generateFrankeReport($reportData, $format);
+            }
+
+            return Response::badRequest('Unsupported template type');
+
+        } catch (Exception $e) {
+            error_log("Generate client report error: " . $e->getMessage());
+            return Response::serverError('Failed to generate client report: ' . $e->getMessage());
+        }
+    }
+
+    private function generateFrankeReport($data, $format) {
+        try {
+            // Generate HTML template for the report
+            $html = $this->buildFrankeReportHTML($data);
+
+            if ($format === 'pdf') {
+                return $this->generatePDFFromHTML($html, $data);
+            } elseif ($format === 'jpg') {
+                return $this->generateJPGFromHTML($html, $data);
+            }
+
+            return Response::badRequest('Unsupported format');
+
+        } catch (Exception $e) {
+            error_log("Generate Franke report error: " . $e->getMessage());
+            return Response::serverError('Failed to generate Franke report: ' . $e->getMessage());
+        }
+    }
+
+    private function buildFrankeReportHTML($data) {
+        $client = $data['client'];
+        $cases = $data['cases'];
+        $totalCases = $data['total_cases'];
+        $generatedAt = $data['generated_at'];
+        $generatedTime = $data['generated_time'];
+
+        // Build table rows
+        $tableRows = '';
+        $rowNumber = 1;
+
+        foreach ($cases as $case) {
+            $tableRows .= "
+                <tr>
+                    <td style='text-align: center; padding: 8px; border: 1px solid #000;'>{$rowNumber}</td>
+                    <td style='text-align: center; padding: 8px; border: 1px solid #000;'>" . htmlspecialchars($case['case_number'] ?? '') . "</td>
+                    <td style='text-align: center; padding: 8px; border: 1px solid #000;'>" . htmlspecialchars($case['court_name'] ?? '') . "</td>
+                    <td style='text-align: center; padding: 8px; border: 1px solid #000;'>" . htmlspecialchars($case['client_capacity'] ?? '') . "</td>
+                    <td style='text-align: center; padding: 8px; border: 1px solid #000;'>" . htmlspecialchars($case['opponent_capacity'] ?? '') . "</td>
+                    <td style='text-align: center; padding: 8px; border: 1px solid #000;'>" . htmlspecialchars($case['matter_subject'] ?? '') . "</td>
+                    <td style='text-align: center; padding: 8px; border: 1px solid #000;'>" . htmlspecialchars($case['last_hearing_decision'] ?? '') . "</td>
+                </tr>
+            ";
+            $rowNumber++;
+        }
+
+        // HTML template matching the Franke report design
+        $html = "
+        <!DOCTYPE html>
+        <html dir='rtl' lang='ar'>
+        <head>
+            <meta charset='UTF-8'>
+            <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+            <title>بيان بموقف " . htmlspecialchars($client['client_name_ar']) . "</title>
+            <style>
+                @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700&display=swap');
+
+                body {
+                    font-family: 'Noto Sans Arabic', Arial, sans-serif;
+                    direction: rtl;
+                    margin: 0;
+                    padding: 20px;
+                    background: white;
+                    color: #000;
+                    line-height: 1.4;
+                }
+
+                .header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    margin-bottom: 20px;
+                    padding-bottom: 10px;
+                }
+
+                .logo-left {
+                    width: 150px;
+                    height: auto;
+                }
+
+                .logo-right {
+                    width: 100px;
+                    height: auto;
+                    background: #d32f2f;
+                    color: white;
+                    padding: 10px;
+                    text-align: center;
+                    font-weight: bold;
+                    border-radius: 4px;
+                }
+
+                .title {
+                    text-align: center;
+                    font-size: 18px;
+                    font-weight: bold;
+                    margin: 20px 0;
+                }
+
+                .report-table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin: 20px 0;
+                    font-size: 12px;
+                }
+
+                .report-table th {
+                    background: #f0f0f0;
+                    padding: 10px 8px;
+                    border: 1px solid #000;
+                    text-align: center;
+                    font-weight: bold;
+                }
+
+                .report-table td {
+                    padding: 8px;
+                    border: 1px solid #000;
+                    text-align: center;
+                    vertical-align: top;
+                }
+
+                .summary {
+                    margin: 20px 0;
+                    text-align: right;
+                }
+
+                .total-box {
+                    display: inline-block;
+                    background: #f0f0f0;
+                    padding: 5px 15px;
+                    border-radius: 4px;
+                    margin-right: 10px;
+                }
+
+                .footer {
+                    margin-top: 30px;
+                    display: flex;
+                    justify-content: space-between;
+                    font-size: 11px;
+                    color: #666;
+                }
+
+                @media print {
+                    body { margin: 0; }
+                    .header, .footer { page-break-inside: avoid; }
+                }
+            </style>
+        </head>
+        <body>
+            <div class='header'>
+                <div class='logo-left'>
+                    <div style='color: #2e7d32; font-weight: bold; font-size: 14px;'>
+                        صارى الدين ومشاركوه<br>
+                        <span style='font-size: 12px;'>للمحاماة والاستشارات القانونية</span>
+                    </div>
+                </div>
+                <div class='logo-right'>
+                    FRANKE
+                </div>
+            </div>
+
+            <div class='title'>
+                بيان بموقف " . htmlspecialchars($client['client_name_ar']) . "
+            </div>
+
+            <table class='report-table'>
+                <thead>
+                    <tr>
+                        <th style='width: 5%;'>م</th>
+                        <th style='width: 12%;'>رقم الدعوى</th>
+                        <th style='width: 15%;'>المحكمة</th>
+                        <th style='width: 15%;'>الموكل وصفته</th>
+                        <th style='width: 15%;'>المخصم وصفته</th>
+                        <th style='width: 20%;'>موضوع الدعوى</th>
+                        <th style='width: 18%;'>قرار اخر جلسة/إجراء</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {$tableRows}
+                </tbody>
+            </table>
+
+            <div class='summary'>
+                <span>إجمالى عدد الدعاوى</span>
+                <span class='total-box'>{$totalCases}</span>
+            </div>
+
+            <div class='footer'>
+                <div>صفحة ١ من ١</div>
+                <div>{$generatedAt} {$generatedTime}</div>
+            </div>
+        </body>
+        </html>
+        ";
+
+        return $html;
+    }
+
+    private function generatePDFFromHTML($html, $data) {
+        // For now, return the HTML content for frontend processing
+        // In a full implementation, this would use a library like TCPDF or wkhtmltopdf
+        $filename = 'client_report_' . $data['client']['id'] . '_' . date('Y-m-d_H-i-s');
+
+        return Response::success([
+            'type' => 'html_for_pdf',
+            'html_content' => $html,
+            'filename' => $filename . '.pdf',
+            'client_name' => $data['client']['client_name_ar'],
+            'total_cases' => $data['total_cases'],
+            'generated_at' => $data['generated_at']
+        ]);
+    }
+
+    private function generateJPGFromHTML($html, $data) {
+        // For now, return the HTML content for frontend processing
+        // In a full implementation, this would use a headless browser or image generation library
+        $filename = 'client_report_' . $data['client']['id'] . '_' . date('Y-m-d_H-i-s');
+
+        return Response::success([
+            'type' => 'html_for_jpg',
+            'html_content' => $html,
+            'filename' => $filename . '.jpg',
+            'client_name' => $data['client']['client_name_ar'],
+            'total_cases' => $data['total_cases'],
+            'generated_at' => $data['generated_at']
+        ]);
+    }
+
     public function getReportTemplates(Request $request) {
         try {
             // Check authentication
