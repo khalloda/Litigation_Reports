@@ -1,0 +1,243 @@
+{
+  "project": {
+    "name": "litigation-management-system",
+    "version": "1.0.0",
+    "description": "Professional litigation management web application with React frontend and PHP backend",
+    "type": "monolith",
+    "languages": ["php", "typescript", "javascript", "scss"],
+    "frameworks": ["react", "vite", "bootstrap", "sass"],
+    "homepage": "https://lit.sarieldin.com"
+  },
+  "packages": [
+    {
+      "name": "frontend",
+      "type": "frontend",
+      "language": "typescript",
+      "framework": "react",
+      "entrypoints": [
+        "src/main.tsx",
+        "index.html"
+      ],
+      "buildCommands": [
+        "npm run build",
+        "npm run dev",
+        "npm run preview"
+      ],
+      "testCommands": [
+        "npm test",
+        "npm run test:e2e",
+        "npm run test:coverage"
+      ],
+      "dependencies": {
+        "runtime": [
+          "react",
+          "react-dom",
+          "react-router-dom",
+          "axios",
+          "bootstrap",
+          "i18next",
+          "react-i18next",
+          "react-query",
+          "react-hook-form",
+          "zod"
+        ],
+        "dev": [
+          "vite",
+          "typescript",
+          "eslint",
+          "@playwright/test",
+          "@storybook/react",
+          "vitest",
+          "@testing-library/react"
+        ]
+      },
+      "location": "root",
+      "configFiles": [
+        "package.json",
+        "vite.config.ts",
+        "vitest.config.ts",
+        "tsconfig.json",
+        "tsconfig.node.json",
+        "playwright.config.mjs",
+        ".env",
+        ".env.development"
+      ]
+    },
+    {
+      "name": "backend",
+      "type": "backend",
+      "language": "php",
+      "framework": "custom-mvc",
+      "entrypoints": [
+        "api-server.php",
+        "backend/api/index.php",
+        "backend/public/index.php",
+        "router.php"
+      ],
+      "buildCommands": [
+        "php -S localhost:8000 -t backend/public",
+        "npm run start:backend"
+      ],
+      "dependencies": {
+        "runtime": [],
+        "dev": []
+      },
+      "location": "root",
+      "configFiles": [
+        "config/config.php",
+        "config/config.production.php",
+        "config/database.php",
+        "config/database_sqlite.php",
+        "backend/config/config.php",
+        "backend/config/database.php"
+      ]
+    }
+  ],
+  "duplicatedDirectories": [
+    {
+      "type": "api",
+      "instances": [
+        "api-server.php (root)",
+        "backend/api/",
+        "backend/public/ (contains API assets)"
+      ],
+      "recommendedAction": "Consolidate into single /apps/api structure"
+    },
+    {
+      "type": "config",
+      "instances": [
+        "config/ (root)",
+        "backend/config/"
+      ],
+      "recommendedAction": "Consolidate into /config directory"
+    },
+    {
+      "type": "frontend_assets",
+      "instances": [
+        "backend/public/assets/ (compiled)",
+        "src/ (source)",
+        "node_modules/"
+      ],
+      "recommendedAction": "Move compiled assets to /apps/web/public/"
+    },
+    {
+      "type": "test_files",
+      "instances": [
+        "tests/",
+        "src/test/",
+        "playwright-report/",
+        "Numerous test-*.php files in root"
+      ],
+      "recommendedAction": "Consolidate into /tests directory"
+    },
+    {
+      "type": "documentation",
+      "instances": [
+        "README.md",
+        "README-DEV.md",
+        "README-REACT.md",
+        "README-PLAYWRIGHT.md",
+        "docs/"
+      ],
+      "recommendedAction": "Consolidate into /docs directory"
+    }
+  ],
+  "configFootprint": [
+    "config/config.php",
+    "config/config.production.php",
+    "config/database.php",
+    "config/database_sqlite.php",
+    "backend/config/config.php",
+    "backend/config/config.production.php",
+    "backend/config/database.php",
+    "backend/config/database_sqlite.php",
+    ".env",
+    ".env.development",
+    "package.json",
+    "vite.config.ts",
+    "vitest.config.ts",
+    "tsconfig.json",
+    "tsconfig.node.json",
+    "playwright.config.mjs",
+    "webpack.config.js"
+  ],
+  "scripts": [
+    {
+      "name": "build-production",
+      "files": ["scripts/build-production.bat", "scripts/build-production.sh"],
+      "description": "Production build scripts"
+    },
+    {
+      "name": "deploy-to-godaddy",
+      "files": ["scripts/deploy-to-godaddy.sh"],
+      "description": "FTP deployment script"
+    },
+    {
+      "name": "test-setup",
+      "files": ["scripts/setup-tests.sh", "scripts/run-tests.sh"],
+      "description": "Test environment setup and execution"
+    }
+  ],
+  "deploymentTargets": [
+    {
+      "name": "godaddy",
+      "type": "ftp",
+      "script": "scripts/deploy-to-godaddy.sh",
+      "documentation": "GODADDY_INSTALLATION_GUIDE.md"
+    },
+    {
+      "name": "apache",
+      "type": "webserver",
+      "documentation": "APACHE_SETUP.md"
+    }
+  ],
+  "similarModules": [
+    {
+      "name": "auth",
+      "locations": [
+        "src/contexts/AuthContext.tsx",
+        "src/components/auth/AuthProvider.tsx",
+        "backend/src/Controllers/AuthController.php",
+        "backend/src/Core/Auth.php",
+        "backend/src/Middleware/AuthMiddleware.php"
+      ],
+      "recommendedAction": "Create shared /packages/auth module"
+    },
+    {
+      "name": "language_switcher",
+      "locations": [
+        "src/components/LanguageSwitcher.tsx",
+        "src/components/ui/LanguageSwitcher.tsx"
+      ],
+      "recommendedAction": "Consolidate into single component"
+    },
+    {
+      "name": "dashboard",
+      "locations": [
+        "src/components/Dashboard.tsx",
+        "src/pages/Dashboard.tsx"
+      ],
+      "recommendedAction": "Consolidate into single component"
+    }
+  ],
+  "dependencyGraph": {
+    "frontend": {
+      "dependsOn": ["backend"],
+      "provides": ["ui", "user_interface"]
+    },
+    "backend": {
+      "dependsOn": [],
+      "provides": ["api", "data_access", "authentication"]
+    }
+  },
+  "crossPackageEdges": [
+    {
+      "from": "frontend",
+      "to": "backend",
+      "type": "api_calls",
+      "description": "Frontend makes API calls to backend endpoints"
+    }
+  ],
+  "auditTimestamp": "2025-01-22T11:30:00Z",
+  "auditVersion": "1.0"
+}

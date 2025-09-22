@@ -1,0 +1,68 @@
+# CODEOWNERS File
+# This file defines the code owners for different parts of the repository
+# Code owners will be automatically requested for review when changes are made
+# to files they own
+
+# Global Owners - Require approval from at least one
+* @law-firm-dev-team/principal-architect @law-firm-dev-team/senior-developer
+
+# Frontend Service
+/apps/web/ @law-firm-dev-team/frontend-lead @law-firm-dev-team/senior-frontend
+/apps/web/src/ @law-firm-dev-team/frontend-lead @law-firm-dev-team/senior-frontend
+/apps/web/public/ @law-firm-dev-team/frontend-lead @law-firm-dev-team/devops
+
+# API Service
+/apps/api/ @law-firm-dev-team/backend-lead @law-firm-dev-team/senior-backend
+/apps/api/src/ @law-firm-dev-team/backend-lead @law-firm-dev-team/senior-backend
+
+# Configuration Files - Require senior review
+/config/ @law-firm-dev-team/principal-architect @law-firm-dev-team/devops-lead
+.env* @law-firm-dev-team/principal-architect @law-firm-dev-team/devops-lead
+
+# Documentation
+/docs/ @law-firm-dev-team/technical-writer @law-firm-dev-team/principal-architect
+README.md @law-firm-dev-team/technical-writer @law-firm-dev-team/principal-architect
+CHANGELOG.md @law-firm-dev-team/technical-writer @law-firm-dev-team/principal-architect
+
+# Deployment and Infrastructure
+/scripts/ @law-firm-dev-team/devops-lead @law-firm-dev-team/principal-architect
+.github/ @law-firm-dev-team/devops-lead @law-firm-dev-team/principal-architect
+
+# Testing
+/tests/ @law-firm-dev-team/qa-lead @law-firm-dev-team/senior-backend @law-firm-dev-team/senior-frontend
+playwright.config.* @law-firm-dev-team/qa-lead @law-firm-dev-team/senior-frontend
+vitest.config.* @law-firm-dev-team/qa-lead @law-firm-dev-team/senior-frontend
+
+# Security and Compliance
+/SECURITY.md @law-firm-dev-team/security-lead @law-firm-dev-team/principal-architect
+/CONTRIBUTING.md @law-firm-dev-team/principal-architect @law-firm-dev-team/technical-writer
+
+# Audit and Architecture
+/_arch_audit/ @law-firm-dev-team/principal-architect
+/docs/adr/ @law-firm-dev-team/principal-architect
+
+# CI/CD and Build Configuration
+/package.json @law-firm-dev-team/devops-lead @law-firm-dev-team/principal-architect
+/vite.config.ts @law-firm-dev-team/frontend-lead @law-firm-dev-team/devops-lead
+/tsconfig.json @law-firm-dev-team/senior-frontend @law-firm-dev-team/devops-lead
+
+# Database and Data Layer
+/database/ @law-firm-dev-team/backend-lead @law-firm-dev-team/senior-backend
+/DB_DUMP/ @law-firm-dev-team/backend-lead @law-firm-dev-team/devops-lead
+
+# Package Management
+/node_modules/ @law-firm-dev-team/devops-lead
+/package-lock.json @law-firm-dev-team/devops-lead
+
+# Emergency Contacts for Critical Changes
+# The following owners should be notified for any critical changes:
+/apps/api/src/controllers/AuthController.php @law-firm-dev-team/security-lead
+/apps/api/src/middleware/AuthMiddleware.php @law-firm-dev-team/security-lead
+/config/config.php @law-firm-dev-team/security-lead
+
+# File Types - Special handling
+*.php @law-firm-dev-team/backend-lead @law-firm-dev-team/senior-backend
+*.tsx @law-firm-dev-team/frontend-lead @law-firm-dev-team/senior-frontend
+*.ts @law-firm-dev-team/frontend-lead @law-firm-dev-team/senior-frontend
+*.scss @law-firm-dev-team/frontend-lead @law-firm-dev-team/senior-frontend
+*.sql @law-firm-dev-team/backend-lead @law-firm-dev-team/senior-backend

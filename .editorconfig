@@ -1,0 +1,103 @@
+# EditorConfig is awesome: https://EditorConfig.org
+
+# top-most EditorConfig file
+root = true
+
+# Unix-style newlines with a newline ending every file
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+# PHP files
+[*.php]
+indent_size = 4
+
+# JavaScript/TypeScript files
+[*.{js,jsx,ts,tsx}]
+indent_size = 2
+
+# JSON files
+[*.json]
+indent_size = 2
+
+# YAML files
+[*.{yml,yaml}]
+indent_size = 2
+
+# Markdown files
+[*.md]
+trim_trailing_whitespace = false
+max_line_length = 100
+
+# Configuration files
+[*.{config,conf,ini}]
+indent_size = 4
+
+# Package files
+[{package.json,package-lock.json}]
+indent_size = 2
+
+# SCSS files
+[*.scss]
+indent_size = 2
+
+# SQL files
+[*.sql]
+indent_size = 4
+
+# Shell scripts
+[*.{sh,bash}]
+end_of_line = lf
+indent_size = 2
+
+# Windows-specific files
+[*.{bat,cmd,ps1}]
+end_of_line = crlf
+
+# Documentation directory
+[docs/**]
+max_line_length = 120
+
+# Source code directories
+[src/**]
+indent_size = 2
+
+[apps/**]
+indent_size = 2
+
+# Configuration directory
+[config/**]
+indent_size = 4
+
+# Test directories
+[tests/**]
+indent_size = 2
+
+# Audit directory (generated content)
+[_arch_audit/**]
+trim_trailing_whitespace = true
+max_line_length = 120
+
+# Specific file overrides
+[package.json]
+indent_size = 2
+
+[tsconfig.json]
+indent_size = 2
+
+[vite.config.ts]
+indent_size = 2
+
+[playwright.config.*]
+indent_size = 2
+
+# Backend specific files
+[backend/**]
+indent_size = 4
+
+[*.php]
+indent_size = 4
