@@ -27,7 +27,7 @@ class User
     public static function findById($id)
     {
         $db = Database::getInstance();
-        $user = $db->fetch("SELECT * FROM " . self::$table . " WHERE id = :id", ['id' => $id]);
+        $user = $db->fetch("SELECT * FROM " . self::$table . " WHERE id = ?", [$id]);
 
         if ($user) {
             // Map database columns to expected format
@@ -42,7 +42,7 @@ class User
     public static function findByEmail($email)
     {
         $db = Database::getInstance();
-        $user = $db->fetch("SELECT * FROM " . self::$table . " WHERE email = :email", ['email' => $email]);
+        $user = $db->fetch("SELECT * FROM " . self::$table . " WHERE email = ?", [$email]);
 
         if ($user) {
             // Map database columns to expected format
@@ -57,7 +57,7 @@ class User
     public static function findByPasswordResetToken($token)
     {
         $db = Database::getInstance();
-        return $db->fetch("SELECT * FROM " . self::$table . " WHERE password_reset_token = :token", ['token' => $token]);
+        return $db->fetch("SELECT * FROM " . self::$table . " WHERE password_reset_token = ?", [$token]);
     }
 
     public static function create($data)
@@ -96,7 +96,15 @@ class User
         $dbData['created_at'] = date('Y-m-d H:i:s');
         $dbData['updated_at'] = date('Y-m-d H:i:s');
 
-        return $db->insert(self::$table, $dbData);
+        // Build SQL query
+        $columns = implode(', ', array_keys($dbData));
+        $placeholders = implode(', ', array_fill(0, count($dbData), '?'));
+
+        $sql = "INSERT INTO " . self::$table . " ($columns) VALUES ($placeholders)";
+        $params = array_values($dbData);
+
+        $success = $db->execute($sql, $params);
+        return $success ? $db->lastInsertId() : false;
     }
 
     public static function update($id, $data)
@@ -130,13 +138,27 @@ class User
 
         $dbData['updated_at'] = date('Y-m-d H:i:s');
 
-        return $db->update(self::$table, $dbData, 'id = :id', ['id' => $id]);
+        // Build SQL query
+        $setParts = [];
+        $params = [];
+
+        foreach ($dbData as $column => $value) {
+            $setParts[] = "$column = ?";
+            $params[] = $value;
+        }
+
+        $params[] = $id; // Add ID for WHERE clause
+
+        $setClause = implode(', ', $setParts);
+        $sql = "UPDATE " . self::$table . " SET $setClause WHERE id = ?";
+
+        return $db->execute($sql, $params);
     }
 
     public static function delete($id)
     {
         $db = Database::getInstance();
-        return $db->delete(self::$table, 'id = :id', ['id' => $id]);
+        return $db->execute("DELETE FROM " . self::$table . " WHERE id = ?", [$id]);
     }
 
     public static function getAll($page = 1, $limit = DEFAULT_PAGE_SIZE, $filters = [])
@@ -156,15 +178,28 @@ class User
         }
 
         if (!empty($filters['role'])) {
-            $whereClause .= ' AND role = :role';
-            $params['role'] = $filters['role'];
+            $whereClause .= ' AND role = ?';
+            $params[] = $filters['role'];
         }
 
         if (!empty($filters['search'])) {
-            $whereClause .= ' AND (full_name_en LIKE :search OR full_name_ar LIKE :search OR email LIKE :search OR username LIKE :search)';
-            $params['search'] = '%' . $filters['search'] . '%';
+            $search = '%' . $filters['search'] . '%';
+            $whereClause .= ' AND (full_name_en LIKE ? OR full_name_ar LIKE ? OR email LIKE ? OR username LIKE ?)';
+            $params[] = $search;
+            $params[] = $search;
+            $params[] = $search;
+            $params[] = $search;
         }
 
+        // Calculate offset
+        $offset = ($page - 1) * $limit;
+
+        // Get total count
+        $countSql = "SELECT COUNT(*) as total FROM " . self::$table . " WHERE {$whereClause}";
+        $totalResult = $db->fetch($countSql, $params);
+        $total = $totalResult ? $totalResult['total'] : 0;
+
+        // Main query with pagination
         $sql = "SELECT
                     id,
                     COALESCE(full_name_en, full_name_ar, username) as name,
@@ -176,15 +211,31 @@ class User
                     last_login
                 FROM " . self::$table . "
                 WHERE {$whereClause}
-                ORDER BY created_at DESC";
+                ORDER BY created_at DESC
+                LIMIT ? OFFSET ?";
 
-        return $db->paginate($sql, $params, $page, $limit);
+        $params[] = $limit;
+        $params[] = $offset;
+
+        $data = $db->fetchAll($sql, $params);
+
+        return [
+            'data' => $data,
+            'pagination' => [
+                'current_page' => $page,
+                'per_page' => $limit,
+                'total' => $total,
+                'total_pages' => ceil($total / $limit),
+                'has_next' => $page < ceil($total / $limit),
+                'has_prev' => $page > 1
+            ]
+        ];
     }
 
     public static function updateLastLogin($id)
     {
         $db = Database::getInstance();
-        return $db->update(self::$table, ['last_login' => date('Y-m-d H:i:s')], 'id = :id', ['id' => $id]);
+        return $db->execute("UPDATE " . self::$table . " SET last_login = ? WHERE id = ?", [date('Y-m-d H:i:s'), $id]);
     }
 
     public static function setPasswordResetToken($email, $token)
@@ -192,28 +243,18 @@ class User
         $db = Database::getInstance();
         $expires = date('Y-m-d H:i:s', time() + 3600); // 1 hour
 
-        return $db->update(
-            self::$table,
-            [
-                'password_reset_token' => $token,
-                'password_reset_expires' => $expires
-            ],
-            'email = :email',
-            ['email' => $email]
+        return $db->execute(
+            "UPDATE " . self::$table . " SET password_reset_token = ?, password_reset_expires = ? WHERE email = ?",
+            [$token, $expires, $email]
         );
     }
 
     public static function clearPasswordResetToken($id)
     {
         $db = Database::getInstance();
-        return $db->update(
-            self::$table,
-            [
-                'password_reset_token' => null,
-                'password_reset_expires' => null
-            ],
-            'id = :id',
-            ['id' => $id]
+        return $db->execute(
+            "UPDATE " . self::$table . " SET password_reset_token = NULL, password_reset_expires = NULL WHERE id = ?",
+            [$id]
         );
     }
 
@@ -222,15 +263,9 @@ class User
         $db = Database::getInstance();
         $hashedPassword = Auth::hashPassword($newPassword);
 
-        return $db->update(
-            self::$table,
-            [
-                'password' => $hashedPassword,
-                'password_reset_token' => null,
-                'password_reset_expires' => null
-            ],
-            'id = :id',
-            ['id' => $id]
+        return $db->execute(
+            "UPDATE " . self::$table . " SET password_hash = ?, password_reset_token = NULL, password_reset_expires = NULL WHERE id = ?",
+            [$hashedPassword, $id]
         );
     }
 
@@ -252,10 +287,11 @@ class User
         }
 
         // Users by status
-        $statuses = $db->fetchAll("SELECT status, COUNT(*) as count FROM " . self::$table . " GROUP BY status");
+        $statuses = $db->fetchAll("SELECT is_active, COUNT(*) as count FROM " . self::$table . " GROUP BY is_active");
         $stats['by_status'] = [];
         foreach ($statuses as $status) {
-            $stats['by_status'][$status['status']] = $status['count'];
+            $statusName = $status['is_active'] ? 'active' : 'inactive';
+            $stats['by_status'][$statusName] = $status['count'];
         }
 
         // Recent logins (last 30 days)
@@ -271,12 +307,13 @@ class User
 
         $sql = "CREATE TABLE IF NOT EXISTS " . self::$table . " (
             id INT AUTO_INCREMENT PRIMARY KEY,
-            name VARCHAR(255) NOT NULL,
+            full_name_en VARCHAR(255) NULL,
+            full_name_ar VARCHAR(255) NULL,
+            username VARCHAR(255) NOT NULL,
             email VARCHAR(255) UNIQUE NOT NULL,
-            password VARCHAR(255) NOT NULL,
+            password_hash VARCHAR(255) NOT NULL,
             role ENUM('super_admin', 'admin', 'lawyer', 'staff') DEFAULT 'staff',
-            status ENUM('active', 'inactive', 'suspended') DEFAULT 'active',
-            remember_token VARCHAR(100) NULL,
+            is_active TINYINT(1) DEFAULT 1,
             password_reset_token VARCHAR(100) NULL,
             password_reset_expires DATETIME NULL,
             last_login_at DATETIME NULL,
@@ -284,7 +321,7 @@ class User
             updated_at DATETIME NOT NULL,
             INDEX idx_email (email),
             INDEX idx_role (role),
-            INDEX idx_status (status),
+            INDEX idx_is_active (is_active),
             INDEX idx_password_reset_token (password_reset_token)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
 

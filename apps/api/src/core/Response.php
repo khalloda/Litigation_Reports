@@ -56,12 +56,12 @@ class Response {
     public function send() {
         // Set status code
         http_response_code($this->statusCode);
-        
+
         // Set headers
         foreach ($this->headers as $name => $value) {
             header("{$name}: {$value}");
         }
-        
+
         // Send response body
         if ($this->data !== null) {
             if (is_array($this->data) || is_object($this->data)) {
@@ -70,8 +70,19 @@ class Response {
                 echo $this->data;
             }
         }
-        
+
         exit();
+    }
+
+    public function toJson() {
+        if ($this->data !== null) {
+            if (is_array($this->data) || is_object($this->data)) {
+                return json_encode($this->data, JSON_UNESCAPED_UNICODE);
+            } else {
+                return json_encode($this->data);
+            }
+        }
+        return '';
     }
     
     public static function success($data = null, $message = null, $statusCode = 200) {
