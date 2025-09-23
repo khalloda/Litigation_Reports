@@ -440,39 +440,43 @@ const ReportsPage: React.FC = () => {
                   </h5>
                 </Card.Header>
                 <Card.Body>
-                  <Row>
-                    <Col md={4} className='text-center mb-3'>
-                      <div className='mb-2'>
-                        <TrendingUp size={24} className='text-success' />
-                      </div>
-                      <h4 className='text-success'>
-                        {formatCurrency(dashboardData.financial_summary.paid_amount)}
-                      </h4>
-                      <p className='text-muted mb-0'>
-                        المدفوع ({dashboardData.financial_summary.paid_count} فاتورة)
-                      </p>
-                    </Col>
-                    <Col md={4} className='text-center mb-3'>
-                      <div className='mb-2'>
-                        <TrendingUp size={24} className='text-warning' />
-                      </div>
-                      <h4 className='text-warning'>
-                        {formatCurrency(dashboardData.financial_summary.pending_amount)}
-                      </h4>
-                      <p className='text-muted mb-0'>
-                        المعلق ({dashboardData.financial_summary.pending_count} فاتورة)
-                      </p>
-                    </Col>
-                    <Col md={4} className='text-center mb-3'>
-                      <div className='mb-2'>
-                        <TrendingUp size={24} className='text-danger' />
-                      </div>
-                      <h4 className='text-danger'>
-                        {dashboardData.financial_summary.overdue_count}
-                      </h4>
-                      <p className='text-muted mb-0'>فواتير متأخرة</p>
-                    </Col>
-                  </Row>
+                  {dashboardData.financial_summary ? (
+                    <Row>
+                      <Col md={4} className='text-center mb-3'>
+                        <div className='mb-2'>
+                          <TrendingUp size={24} className='text-success' />
+                        </div>
+                        <h4 className='text-success'>
+                          {formatCurrency(dashboardData.financial_summary.paid_amount || 0)}
+                        </h4>
+                        <p className='text-muted mb-0'>
+                          المدفوع ({dashboardData.financial_summary.paid_count || 0} فاتورة)
+                        </p>
+                      </Col>
+                      <Col md={4} className='text-center mb-3'>
+                        <div className='mb-2'>
+                          <TrendingUp size={24} className='text-warning' />
+                        </div>
+                        <h4 className='text-warning'>
+                          {formatCurrency(dashboardData.financial_summary.pending_amount || 0)}
+                        </h4>
+                        <p className='text-muted mb-0'>
+                          المعلق ({dashboardData.financial_summary.pending_count || 0} فاتورة)
+                        </p>
+                      </Col>
+                      <Col md={4} className='text-center mb-3'>
+                        <div className='mb-2'>
+                          <TrendingUp size={24} className='text-danger' />
+                        </div>
+                        <h4 className='text-danger'>
+                          {dashboardData.financial_summary.overdue_count || 0}
+                        </h4>
+                        <p className='text-muted mb-0'>فواتير متأخرة</p>
+                      </Col>
+                    </Row>
+                  ) : (
+                    <p className='text-muted text-center'>لا توجد بيانات مالية متاحة</p>
+                  )}
                 </Card.Body>
               </Card>
             </Col>
@@ -485,15 +489,19 @@ const ReportsPage: React.FC = () => {
                   </h5>
                 </Card.Header>
                 <Card.Body>
-                  {Object.entries(dashboardData.case_statistics).map(([status, count]) => (
-                    <div
-                      key={status}
-                      className='d-flex justify-content-between align-items-center mb-2'
-                    >
-                      <span>{status}</span>
-                      <Badge bg='primary'>{count}</Badge>
-                    </div>
-                  ))}
+                  {dashboardData.case_statistics ? (
+                    Object.entries(dashboardData.case_statistics).map(([status, count]) => (
+                      <div
+                        key={status}
+                        className='d-flex justify-content-between align-items-center mb-2'
+                      >
+                        <span>{status}</span>
+                        <Badge bg='primary'>{count}</Badge>
+                      </div>
+                    ))
+                  ) : (
+                    <p className='text-muted text-center'>لا توجد إحصائيات قضايا متاحة</p>
+                  )}
                 </Card.Body>
               </Card>
             </Col>
@@ -510,7 +518,7 @@ const ReportsPage: React.FC = () => {
                   </h5>
                 </Card.Header>
                 <Card.Body>
-                  {dashboardData.recent_activities.length === 0 ? (
+                  {!dashboardData.recent_activities || dashboardData.recent_activities.length === 0 ? (
                     <p className='text-muted text-center'>لا توجد أنشطة حديثة</p>
                   ) : (
                     <div className='table-responsive'>
@@ -550,7 +558,7 @@ const ReportsPage: React.FC = () => {
                   </h5>
                 </Card.Header>
                 <Card.Body>
-                  {dashboardData.upcoming_hearings.length === 0 ? (
+                  {!dashboardData.upcoming_hearings || dashboardData.upcoming_hearings.length === 0 ? (
                     <p className='text-muted text-center'>لا توجد جلسات قادمة</p>
                   ) : (
                     <div className='table-responsive'>

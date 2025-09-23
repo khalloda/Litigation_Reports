@@ -268,7 +268,7 @@ export function Invoices() {
     return (
       <Badge bg={config.variant}>
         {config.icon}
-        <span className='ms-1'>{options.status[status] || status}</span>
+        <span className='ms-1'>{options.status?.[status] || status}</span>
       </Badge>
     );
   };
@@ -280,7 +280,7 @@ export function Invoices() {
       advance: 'info',
     };
 
-    return <Badge bg={typeColors[type] || 'secondary'}>{options.type[type] || type}</Badge>;
+    return <Badge bg={typeColors[type] || 'secondary'}>{options.type?.[type] || type}</Badge>;
   };
 
   const formatAmount = (amount: number, currency: string) => {
@@ -356,11 +356,11 @@ export function Invoices() {
                   onChange={(e) => handleFilterChange('invoice_status', e.target.value)}
                 >
                   <option value=''>جميع الحالات</option>
-                  {Object.entries(options.status).map(([key, value]) => (
+                  {options.status ? Object.entries(options.status).map(([key, value]) => (
                     <option key={key} value={key}>
                       {value}
                     </option>
-                  ))}
+                  )) : null}
                 </Form.Select>
               </Form.Group>
             </Col>
@@ -372,11 +372,11 @@ export function Invoices() {
                   onChange={(e) => handleFilterChange('invoice_type', e.target.value)}
                 >
                   <option value=''>جميع الأنواع</option>
-                  {Object.entries(options.type).map(([key, value]) => (
+                  {options.type ? Object.entries(options.type).map(([key, value]) => (
                     <option key={key} value={key}>
                       {value}
                     </option>
-                  ))}
+                  )) : null}
                 </Form.Select>
               </Form.Group>
             </Col>
@@ -388,11 +388,11 @@ export function Invoices() {
                   onChange={(e) => handleFilterChange('currency', e.target.value)}
                 >
                   <option value=''>جميع العملات</option>
-                  {Object.entries(options.currency).map(([key, value]) => (
+                  {options.currency ? Object.entries(options.currency).map(([key, value]) => (
                     <option key={key} value={key}>
                       {value}
                     </option>
-                  ))}
+                  )) : null}
                 </Form.Select>
               </Form.Group>
             </Col>
@@ -643,7 +643,7 @@ export function Invoices() {
                     value={formData.currency}
                     onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
                   >
-                    {Object.entries(options.currency).map(([key, value]) => (
+                    {options.currency ? Object.entries(options.currency).map(([key, value]) => (
                       <option key={key} value={key}>
                         {value}
                       </option>
@@ -673,7 +673,7 @@ export function Invoices() {
                     value={formData.invoice_type}
                     onChange={(e) => setFormData({ ...formData, invoice_type: e.target.value })}
                   >
-                    {Object.entries(options.type).map(([key, value]) => (
+                    {options.type ? Object.entries(options.type).map(([key, value]) => (
                       <option key={key} value={key}>
                         {value}
                       </option>
@@ -688,7 +688,7 @@ export function Invoices() {
                     value={formData.invoice_status}
                     onChange={(e) => setFormData({ ...formData, invoice_status: e.target.value })}
                   >
-                    {Object.entries(options.status).map(([key, value]) => (
+                    {options.status ? Object.entries(options.status).map(([key, value]) => (
                       <option key={key} value={key}>
                         {value}
                       </option>

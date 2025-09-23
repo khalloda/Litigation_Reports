@@ -89,6 +89,26 @@ switch ($path) {
         }
         break;
 
+    case '/invoices':
+        if ($method === 'GET') {
+            handleGetInvoices();
+        } elseif ($method === 'POST') {
+            handleCreateInvoice();
+        } else {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method not allowed']);
+        }
+        break;
+
+    case '/invoices/options':
+        if ($method === 'GET') {
+            handleGetInvoiceOptions();
+        } else {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method not allowed']);
+        }
+        break;
+
     case '/reports/dashboard':
         if ($method === 'GET') {
             handleReportsDashboard();
@@ -110,6 +130,46 @@ switch ($path) {
     case '/reports/client-report':
         if ($method === 'GET') {
             handleClientReport();
+        } else {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method not allowed']);
+        }
+        break;
+
+    case '/lawyers':
+        if ($method === 'GET') {
+            handleGetLawyers();
+        } elseif ($method === 'POST') {
+            handleCreateLawyer();
+        } else {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method not allowed']);
+        }
+        break;
+
+    case '/documents':
+        if ($method === 'GET') {
+            handleGetDocuments();
+        } elseif ($method === 'POST') {
+            handleCreateDocument();
+        } else {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method not allowed']);
+        }
+        break;
+
+    case '/documents/stats':
+        if ($method === 'GET') {
+            handleGetDocumentStats();
+        } else {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method not allowed']);
+        }
+        break;
+
+    case '/documents/options':
+        if ($method === 'GET') {
+            handleGetDocumentOptions();
         } else {
             http_response_code(405);
             echo json_encode(['error' => 'Method not allowed']);
@@ -150,6 +210,30 @@ switch ($path) {
                 handleUpdateHearing($id);
             } elseif ($method === 'DELETE') {
                 handleDeleteHearing($id);
+            } else {
+                http_response_code(405);
+                echo json_encode(['error' => 'Method not allowed']);
+            }
+        } elseif (preg_match('/^\/lawyers\/(\d+)$/', $path, $matches)) {
+            $id = $matches[1];
+            if ($method === 'GET') {
+                handleGetLawyer($id);
+            } elseif ($method === 'PUT' || $method === 'PATCH') {
+                handleUpdateLawyer($id);
+            } elseif ($method === 'DELETE') {
+                handleDeleteLawyer($id);
+            } else {
+                http_response_code(405);
+                echo json_encode(['error' => 'Method not allowed']);
+            }
+        } elseif (preg_match('/^\/documents\/(\d+)$/', $path, $matches)) {
+            $id = $matches[1];
+            if ($method === 'GET') {
+                handleGetDocument($id);
+            } elseif ($method === 'PUT' || $method === 'PATCH') {
+                handleUpdateDocument($id);
+            } elseif ($method === 'DELETE') {
+                handleDeleteDocument($id);
             } else {
                 http_response_code(405);
                 echo json_encode(['error' => 'Method not allowed']);
@@ -548,37 +632,192 @@ function handleDeleteHearing($id) {
     echo json_encode(['error' => 'Delete hearing not implemented yet']);
 }
 
+// Invoice handler functions
+function handleGetInvoices() {
+    $db = Database::getInstance();
+
+    try {
+        // Get pagination parameters
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+        $offset = ($page - 1) * $limit;
+
+        // Get total count
+        $totalResult = $db->fetch("SELECT COUNT(*) as total FROM invoices");
+        $total = $totalResult['total'] ?? 0;
+
+        // Get invoices with pagination
+        $invoices = $db->fetchAll("
+            SELECT i.*
+            FROM invoices i
+            ORDER BY i.created_at DESC
+            LIMIT $limit OFFSET $offset
+        ");
+
+        // Calculate pagination info
+        $totalPages = ceil($total / $limit);
+
+        echo json_encode([
+            'success' => true,
+            'data' => [
+                'data' => $invoices,
+                'pagination' => [
+                    'current_page' => $page,
+                    'per_page' => $limit,
+                    'total' => $total,
+                    'total_pages' => $totalPages,
+                    'has_next' => $page < $totalPages,
+                    'has_prev' => $page > 1,
+                    'next_page' => $page < $totalPages ? $page + 1 : null,
+                    'prev_page' => $page > 1 ? $page - 1 : null
+                ]
+            ]
+        ]);
+    } catch (Exception $e) {
+        error_log("Get invoices error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to fetch invoices']);
+    }
+}
+
+function handleGetInvoiceOptions() {
+    $db = Database::getInstance();
+
+    try {
+        // Get clients for dropdown
+        $clients = $db->fetchAll("
+            SELECT id, client_name_ar as name_ar, client_name_en as name_en
+            FROM clients
+            ORDER BY client_name_ar
+        ");
+
+        // Get cases for dropdown
+        $cases = $db->fetchAll("
+            SELECT id, matter_ar, matter_en, client_id
+            FROM cases
+            ORDER BY matter_ar
+        ");
+
+        echo json_encode([
+            'success' => true,
+            'data' => [
+                'clients' => $clients,
+                'cases' => $cases,
+                'status' => [
+                    'draft' => 'مسودة',
+                    'sent' => 'مرسلة',
+                    'paid' => 'مدفوعة',
+                    'overdue' => 'متأخرة',
+                    'cancelled' => 'ملغاة'
+                ],
+                'type' => [
+                    'service' => 'خدمات',
+                    'expenses' => 'مصروفات',
+                    'advance' => 'مقدم'
+                ],
+                'currency' => [
+                    'EGP' => 'جنيه مصري',
+                    'USD' => 'دولار أمريكي',
+                    'EUR' => 'يورو'
+                ]
+            ]
+        ]);
+    } catch (Exception $e) {
+        error_log("Get invoice options error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to fetch invoice options']);
+    }
+}
+
+function handleCreateInvoice() {
+    http_response_code(501);
+    echo json_encode(['error' => 'Create invoice not implemented yet']);
+}
+
 // Reports handler functions
 function handleReportsDashboard() {
     $db = Database::getInstance();
 
     try {
         // Get basic counts for dashboard
-        $clientsResult = $db->fetch("SELECT COUNT(*) as count FROM clients WHERE status = 'active'");
+        $clientsResult = $db->fetch("SELECT COUNT(*) as count FROM clients");
         $clientsCount = $clientsResult['count'] ?? 0;
 
         $casesResult = $db->fetch("SELECT COUNT(*) as count FROM cases");
         $casesCount = $casesResult['count'] ?? 0;
 
-        $hearingsResult = $db->fetch("SELECT COUNT(*) as count FROM hearings WHERE hearing_date >= CURDATE()");
+        $hearingsResult = $db->fetch("SELECT COUNT(*) as count FROM hearings");
         $hearingsCount = $hearingsResult['count'] ?? 0;
+
+        $invoicesResult = $db->fetch("SELECT COUNT(*) as count FROM invoices");
+        $invoicesCount = $invoicesResult['count'] ?? 0;
+
+        $lawyersResult = $db->fetch("SELECT COUNT(*) as count FROM lawyers");
+        $lawyersCount = $lawyersResult['count'] ?? 0;
+
+        // Get case statistics by status
+        $caseStats = [];
+        $caseStatsResult = $db->fetchAll("
+            SELECT matter_status, COUNT(*) as count
+            FROM cases
+            WHERE matter_status IS NOT NULL
+            GROUP BY matter_status
+        ");
+        foreach ($caseStatsResult as $stat) {
+            $caseStats[$stat['matter_status']] = (int)$stat['count'];
+        }
+
+        // Get upcoming hearings
+        $upcomingHearings = $db->fetchAll("
+            SELECT h.id, h.hearing_date, h.hearing_type,
+                   c.matter_ar, cl.client_name_ar
+            FROM hearings h
+            LEFT JOIN cases c ON h.case_id = c.id
+            LEFT JOIN clients cl ON c.client_id = cl.id
+            WHERE h.hearing_date >= CURDATE()
+            ORDER BY h.hearing_date ASC
+            LIMIT 10
+        ");
+
+        // Get recent activities (simplified)
+        $recentActivities = [
+            [
+                'type' => 'case',
+                'name' => 'إضافة قضية جديدة',
+                'action' => 'تم إنشاؤها',
+                'created_at' => date('Y-m-d H:i:s')
+            ]
+        ];
 
         echo json_encode([
             'success' => true,
             'data' => [
-                'clients_count' => $clientsCount,
-                'cases_count' => $casesCount,
-                'hearings_count' => $hearingsCount,
+                'total_clients' => $clientsCount,
+                'total_cases' => $casesCount,
+                'total_hearings' => $hearingsCount,
+                'total_invoices' => $invoicesCount,
+                'total_lawyers' => $lawyersCount,
+                'case_statistics' => $caseStats,
+                'upcoming_hearings' => $upcomingHearings,
+                'recent_activities' => $recentActivities,
                 'financial_summary' => [
                     'total_revenue' => 0,
+                    'paid_amount' => 0,
                     'pending_amount' => 0,
-                    'overdue_invoices' => 0
-                ]
+                    'paid_count' => 0,
+                    'pending_count' => 0,
+                    'overdue_count' => 0
+                ],
+                'hearing_statistics' => [
+                    'scheduled' => $hearingsCount
+                ],
+                'revenue_trend' => []
             ]
         ]);
     } catch (Exception $e) {
+        error_log("Dashboard API Error: " . $e->getMessage());
         http_response_code(500);
-        echo json_encode(['error' => 'Failed to load dashboard data']);
+        echo json_encode(['error' => 'Failed to load dashboard data: ' . $e->getMessage()]);
     }
 }
 
@@ -800,5 +1039,542 @@ function generateFrankeReport($client, $cases, $format) {
 function generateBasicReport($client, $cases, $format) {
     // Basic report template
     return '<html><body><h1>Basic Report</h1><p>Client: ' . htmlspecialchars($client['client_name_ar'] ?: $client['client_name_en']) . '</p></body></html>';
+}
+
+// Lawyers handler functions
+function handleGetLawyers() {
+    $db = Database::getInstance();
+
+    try {
+        // Get pagination parameters
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+        $offset = ($page - 1) * $limit;
+
+        // Get filters
+        $search = $_GET['search'] ?? '';
+        $is_active = $_GET['is_active'] ?? '';
+
+        // Build WHERE clause
+        $whereClause = '1=1';
+        $params = [];
+
+        if (!empty($search)) {
+            $whereClause .= ' AND (lawyer_name_ar LIKE ? OR lawyer_name_en LIKE ? OR lawyer_email LIKE ?)';
+            $searchParam = '%' . $search . '%';
+            $params[] = $searchParam;
+            $params[] = $searchParam;
+            $params[] = $searchParam;
+        }
+
+        if ($is_active !== '') {
+            $whereClause .= ' AND is_active = ?';
+            $params[] = (int)$is_active;
+        }
+
+        // Get total count
+        $totalResult = $db->fetch("SELECT COUNT(*) as total FROM lawyers WHERE {$whereClause}", $params);
+        $total = $totalResult['total'] ?? 0;
+
+        // Get lawyers with pagination
+        $lawyers = $db->fetchAll("
+            SELECT *
+            FROM lawyers
+            WHERE {$whereClause}
+            ORDER BY lawyer_name_ar
+            LIMIT $limit OFFSET $offset
+        ", $params);
+
+        // Calculate pagination info
+        $totalPages = ceil($total / $limit);
+
+        echo json_encode([
+            'success' => true,
+            'data' => [
+                'data' => $lawyers,
+                'pagination' => [
+                    'current_page' => $page,
+                    'per_page' => $limit,
+                    'total' => $total,
+                    'total_pages' => $totalPages,
+                    'has_next' => $page < $totalPages,
+                    'has_prev' => $page > 1,
+                    'next_page' => $page < $totalPages ? $page + 1 : null,
+                    'prev_page' => $page > 1 ? $page - 1 : null
+                ]
+            ]
+        ]);
+    } catch (Exception $e) {
+        error_log("Get lawyers error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to fetch lawyers']);
+    }
+}
+
+function handleGetLawyer($id) {
+    $db = Database::getInstance();
+
+    try {
+        $lawyer = $db->fetch("SELECT * FROM lawyers WHERE id = ?", [$id]);
+
+        if ($lawyer) {
+            echo json_encode([
+                'success' => true,
+                'data' => $lawyer
+            ]);
+        } else {
+            http_response_code(404);
+            echo json_encode(['error' => 'Lawyer not found']);
+        }
+    } catch (Exception $e) {
+        error_log("Get lawyer error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to retrieve lawyer']);
+    }
+}
+
+function handleCreateLawyer() {
+    $db = Database::getInstance();
+    $input = json_decode(file_get_contents('php://input'), true);
+
+    if (!$input) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid JSON input']);
+        return;
+    }
+
+    // Validate required fields
+    if (empty($input['lawyer_name_ar'])) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Arabic name is required']);
+        return;
+    }
+
+    try {
+        $result = $db->execute(
+            "INSERT INTO lawyers (lawyer_name_ar, lawyer_name_en, lawyer_email, is_active) VALUES (?, ?, ?, ?)",
+            [
+                $input['lawyer_name_ar'],
+                $input['lawyer_name_en'] ?? '',
+                $input['lawyer_email'] ?? '',
+                isset($input['is_active']) ? (int)$input['is_active'] : 1
+            ]
+        );
+
+        if ($result) {
+            $newId = $db->getLastInsertId();
+            $newLawyer = $db->fetch("SELECT * FROM lawyers WHERE id = ?", [$newId]);
+
+            echo json_encode([
+                'success' => true,
+                'data' => $newLawyer,
+                'message' => 'Lawyer created successfully'
+            ]);
+        } else {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to create lawyer']);
+        }
+    } catch (Exception $e) {
+        error_log("Create lawyer error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to create lawyer']);
+    }
+}
+
+function handleUpdateLawyer($id) {
+    $db = Database::getInstance();
+    $input = json_decode(file_get_contents('php://input'), true);
+
+    if (!$input) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid JSON input']);
+        return;
+    }
+
+    try {
+        // Check if lawyer exists
+        $existing = $db->fetch("SELECT id FROM lawyers WHERE id = ?", [$id]);
+        if (!$existing) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Lawyer not found']);
+            return;
+        }
+
+        $result = $db->execute(
+            "UPDATE lawyers SET lawyer_name_ar = ?, lawyer_name_en = ?, lawyer_email = ?, is_active = ? WHERE id = ?",
+            [
+                $input['lawyer_name_ar'],
+                $input['lawyer_name_en'] ?? '',
+                $input['lawyer_email'] ?? '',
+                isset($input['is_active']) ? (int)$input['is_active'] : 1,
+                $id
+            ]
+        );
+
+        if ($result) {
+            $updatedLawyer = $db->fetch("SELECT * FROM lawyers WHERE id = ?", [$id]);
+
+            echo json_encode([
+                'success' => true,
+                'data' => $updatedLawyer,
+                'message' => 'Lawyer updated successfully'
+            ]);
+        } else {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to update lawyer']);
+        }
+    } catch (Exception $e) {
+        error_log("Update lawyer error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to update lawyer']);
+    }
+}
+
+function handleDeleteLawyer($id) {
+    $db = Database::getInstance();
+
+    try {
+        // Check if lawyer exists
+        $existing = $db->fetch("SELECT id FROM lawyers WHERE id = ?", [$id]);
+        if (!$existing) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Lawyer not found']);
+            return;
+        }
+
+        $result = $db->execute("DELETE FROM lawyers WHERE id = ?", [$id]);
+
+        if ($result) {
+            echo json_encode([
+                'success' => true,
+                'message' => 'Lawyer deleted successfully'
+            ]);
+        } else {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to delete lawyer']);
+        }
+    } catch (Exception $e) {
+        error_log("Delete lawyer error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to delete lawyer']);
+    }
+}
+
+// Documents handler functions
+function handleGetDocuments() {
+    $db = Database::getInstance();
+
+    try {
+        // Get pagination parameters
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $limit = isset($_GET['limit']) ? (int)$_GET['limit'] : 10;
+        $offset = ($page - 1) * $limit;
+
+        // Get filters
+        $search = $_GET['search'] ?? '';
+        $document_type = $_GET['document_type'] ?? '';
+        $entity_type = $_GET['entity_type'] ?? '';
+        $entity_id = $_GET['entity_id'] ?? '';
+        $uploaded_by = $_GET['uploaded_by'] ?? '';
+        $date_from = $_GET['date_from'] ?? '';
+        $date_to = $_GET['date_to'] ?? '';
+
+        // Build WHERE clause
+        $whereClause = '1=1';
+        $params = [];
+
+        if (!empty($search)) {
+            $whereClause .= ' AND (d.title LIKE ? OR d.description LIKE ? OR d.original_filename LIKE ?)';
+            $searchParam = '%' . $search . '%';
+            $params[] = $searchParam;
+            $params[] = $searchParam;
+            $params[] = $searchParam;
+        }
+
+        if (!empty($document_type)) {
+            $whereClause .= ' AND d.document_type = ?';
+            $params[] = $document_type;
+        }
+
+        if (!empty($entity_type)) {
+            $whereClause .= ' AND d.entity_type = ?';
+            $params[] = $entity_type;
+        }
+
+        if (!empty($entity_id)) {
+            $whereClause .= ' AND d.entity_id = ?';
+            $params[] = $entity_id;
+        }
+
+        if (!empty($uploaded_by)) {
+            $whereClause .= ' AND d.uploaded_by = ?';
+            $params[] = $uploaded_by;
+        }
+
+        if (!empty($date_from)) {
+            $whereClause .= ' AND DATE(d.created_at) >= ?';
+            $params[] = $date_from;
+        }
+
+        if (!empty($date_to)) {
+            $whereClause .= ' AND DATE(d.created_at) <= ?';
+            $params[] = $date_to;
+        }
+
+        // Get total count
+        $totalResult = $db->fetch("SELECT COUNT(*) as total FROM documents d WHERE {$whereClause}", $params);
+        $total = $totalResult['total'] ?? 0;
+
+        // Get documents with pagination and uploader info
+        $documents = $db->fetchAll("
+            SELECT d.*, u.full_name_ar as uploader_name,
+                   CASE
+                       WHEN d.entity_type = 'client' THEN (SELECT client_name_ar FROM clients WHERE id = d.entity_id)
+                       WHEN d.entity_type = 'case' THEN (SELECT matter_ar FROM cases WHERE id = d.entity_id)
+                       ELSE NULL
+                   END as entity_name,
+                   CASE
+                       WHEN d.entity_type = 'client' THEN (SELECT client_name_en FROM clients WHERE id = d.entity_id)
+                       WHEN d.entity_type = 'case' THEN (SELECT matter_en FROM cases WHERE id = d.entity_id)
+                       ELSE NULL
+                   END as entity_name_en
+            FROM documents d
+            LEFT JOIN users u ON d.uploaded_by = u.id
+            WHERE {$whereClause}
+            ORDER BY d.created_at DESC
+            LIMIT $limit OFFSET $offset
+        ", $params);
+
+        // Calculate pagination info
+        $totalPages = ceil($total / $limit);
+
+        echo json_encode([
+            'success' => true,
+            'data' => [
+                'data' => $documents,
+                'pagination' => [
+                    'current_page' => $page,
+                    'per_page' => $limit,
+                    'total' => $total,
+                    'total_pages' => $totalPages,
+                    'has_next' => $page < $totalPages,
+                    'has_prev' => $page > 1,
+                    'next_page' => $page < $totalPages ? $page + 1 : null,
+                    'prev_page' => $page > 1 ? $page - 1 : null
+                ]
+            ]
+        ]);
+    } catch (Exception $e) {
+        error_log("Get documents error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to fetch documents']);
+    }
+}
+
+function handleGetDocumentStats() {
+    $db = Database::getInstance();
+
+    try {
+        // Get total documents count
+        $totalResult = $db->fetch("SELECT COUNT(*) as total FROM documents");
+        $total = $totalResult['total'] ?? 0;
+
+        // Get counts by document type
+        $typeStats = $db->fetchAll("
+            SELECT document_type, COUNT(*) as count
+            FROM documents
+            GROUP BY document_type
+        ");
+
+        $stats = [
+            'total_documents' => $total,
+            'contracts' => 0,
+            'evidence' => 0,
+            'correspondence' => 0,
+            'legal_memos' => 0,
+            'court_filings' => 0,
+            'other' => 0
+        ];
+
+        foreach ($typeStats as $stat) {
+            $type = $stat['document_type'];
+            $count = $stat['count'];
+
+            switch ($type) {
+                case 'contract':
+                    $stats['contracts'] = $count;
+                    break;
+                case 'evidence':
+                    $stats['evidence'] = $count;
+                    break;
+                case 'correspondence':
+                    $stats['correspondence'] = $count;
+                    break;
+                case 'legal_memo':
+                    $stats['legal_memos'] = $count;
+                    break;
+                case 'court_filing':
+                    $stats['court_filings'] = $count;
+                    break;
+                default:
+                    $stats['other'] += $count;
+                    break;
+            }
+        }
+
+        // Get total file size
+        $sizeResult = $db->fetch("SELECT SUM(file_size) as total_size FROM documents");
+        $totalSize = $sizeResult['total_size'] ?? 0;
+        $stats['total_size_mb'] = round($totalSize / (1024 * 1024), 2);
+
+        // Get public/private counts
+        $publicResult = $db->fetch("SELECT COUNT(*) as count FROM documents WHERE is_public = 1");
+        $privateResult = $db->fetch("SELECT COUNT(*) as count FROM documents WHERE is_public = 0");
+
+        $stats['public_documents'] = $publicResult['count'] ?? 0;
+        $stats['private_documents'] = $privateResult['count'] ?? 0;
+
+        echo json_encode([
+            'success' => true,
+            'data' => $stats
+        ]);
+    } catch (Exception $e) {
+        error_log("Get document stats error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to fetch document statistics']);
+    }
+}
+
+function handleGetDocumentOptions() {
+    $db = Database::getInstance();
+
+    try {
+        // Get clients for dropdown
+        $clients = $db->fetchAll("
+            SELECT id, client_name_ar as name_ar, client_name_en as name_en
+            FROM clients
+            ORDER BY client_name_ar
+        ");
+
+        // Get cases for dropdown
+        $cases = $db->fetchAll("
+            SELECT id, matter_ar, matter_en, client_id
+            FROM cases
+            ORDER BY matter_ar
+        ");
+
+        // Get users for uploader dropdown
+        $users = $db->fetchAll("
+            SELECT id, full_name_ar as name, email
+            FROM users
+            WHERE is_active = 1
+            ORDER BY full_name_ar
+        ");
+
+        echo json_encode([
+            'success' => true,
+            'data' => [
+                'clients' => $clients,
+                'cases' => $cases,
+                'users' => $users,
+                'document_types' => [
+                    'contract' => 'عقد',
+                    'evidence' => 'دليل',
+                    'correspondence' => 'مراسلات',
+                    'legal_memo' => 'مذكرة قانونية',
+                    'court_filing' => 'مذكرة محكمة',
+                    'power_of_attorney' => 'توكيل',
+                    'settlement' => 'تسوية',
+                    'judgment' => 'حكم',
+                    'appeal' => 'استئناف',
+                    'expert_report' => 'تقرير خبير',
+                    'financial_document' => 'مستند مالي',
+                    'identification' => 'هوية',
+                    'other' => 'أخرى'
+                ],
+                'entity_types' => [
+                    'client' => 'عميل',
+                    'case' => 'قضية',
+                    'hearing' => 'جلسة',
+                    'invoice' => 'فاتورة',
+                    'general' => 'عام'
+                ]
+            ]
+        ]);
+    } catch (Exception $e) {
+        error_log("Get document options error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to fetch document options']);
+    }
+}
+
+function handleCreateDocument() {
+    http_response_code(501);
+    echo json_encode(['error' => 'Document upload not implemented yet']);
+}
+
+function handleGetDocument($id) {
+    $db = Database::getInstance();
+
+    try {
+        $document = $db->fetch("
+            SELECT d.*, u.full_name_ar as uploader_name
+            FROM documents d
+            LEFT JOIN users u ON d.uploaded_by = u.id
+            WHERE d.id = ?
+        ", [$id]);
+
+        if ($document) {
+            echo json_encode([
+                'success' => true,
+                'data' => $document
+            ]);
+        } else {
+            http_response_code(404);
+            echo json_encode(['error' => 'Document not found']);
+        }
+    } catch (Exception $e) {
+        error_log("Get document error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to retrieve document']);
+    }
+}
+
+function handleUpdateDocument($id) {
+    http_response_code(501);
+    echo json_encode(['error' => 'Update document not implemented yet']);
+}
+
+function handleDeleteDocument($id) {
+    $db = Database::getInstance();
+
+    try {
+        // Check if document exists
+        $existing = $db->fetch("SELECT id, file_path FROM documents WHERE id = ?", [$id]);
+        if (!$existing) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Document not found']);
+            return;
+        }
+
+        $result = $db->execute("DELETE FROM documents WHERE id = ?", [$id]);
+
+        if ($result) {
+            // Optionally delete the physical file here
+            // unlink($existing['file_path']);
+
+            echo json_encode([
+                'success' => true,
+                'message' => 'Document deleted successfully'
+            ]);
+        } else {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to delete document']);
+        }
+    } catch (Exception $e) {
+        error_log("Delete document error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to delete document']);
+    }
 }
 ?>

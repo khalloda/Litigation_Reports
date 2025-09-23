@@ -129,9 +129,11 @@ export function Documents() {
   const [entityTypes, setEntityTypes] = useState<any>({});
 
   useEffect(() => {
-    loadDocuments();
-    loadStats();
-    loadOptions();
+    if (typeof currentPage === 'number' && filters) {
+      loadDocuments();
+      loadStats();
+      loadOptions();
+    }
   }, [currentPage, filters]);
 
   const loadDocuments = async () => {
@@ -140,9 +142,9 @@ export function Documents() {
       setError(null);
 
       const params = new URLSearchParams({
-        page: currentPage.toString(),
+        page: (currentPage || 1).toString(),
         limit: '20',
-        ...Object.fromEntries(Object.entries(filters).filter(([_, value]) => value !== '')),
+        ...Object.fromEntries(Object.entries(filters || {}).filter(([_, value]) => value && value !== '')),
       });
 
       const response = await api.get(`/documents?${params}`);
@@ -188,7 +190,7 @@ export function Documents() {
 
   const handleFilterChange = (field: keyof DocumentFilters, value: string) => {
     setFilters((prev) => ({ ...prev, [field]: value }));
-    setCurrentPage(1);
+    if (setCurrentPage) setCurrentPage(1);
   };
 
   const handleUploadDocument = async () => {
@@ -205,7 +207,7 @@ export function Documents() {
       formData.append('document_type', uploadData.document_type);
       formData.append('entity_type', uploadData.entity_type);
       formData.append('entity_id', uploadData.entity_id);
-      formData.append('is_public', uploadData.is_public.toString());
+      formData.append('is_public', (uploadData.is_public || false).toString());
       formData.append('tags', uploadData.tags);
 
       const response = await api.post('/documents', formData, {
@@ -385,11 +387,11 @@ export function Documents() {
                 onChange={(e) => handleFilterChange('document_type', e.target.value)}
               >
                 <option value=''>جميع الأنواع</option>
-                {Object.entries(documentTypes).map(([key, value]) => (
+                {documentTypes ? Object.entries(documentTypes).map(([key, value]) => (
                   <option key={key} value={key}>
                     {value as string}
                   </option>
-                ))}
+                )) : null}
               </Form.Select>
             </Col>
             <Col md={3}>
@@ -398,11 +400,11 @@ export function Documents() {
                 onChange={(e) => handleFilterChange('entity_type', e.target.value)}
               >
                 <option value=''>جميع الكيانات</option>
-                {Object.entries(entityTypes).map(([key, value]) => (
+                {entityTypes ? Object.entries(entityTypes).map(([key, value]) => (
                   <option key={key} value={key}>
                     {value as string}
                   </option>
-                ))}
+                )) : null}
               </Form.Select>
             </Col>
           </Row>
@@ -621,11 +623,11 @@ export function Documents() {
                       setUploadData((prev) => ({ ...prev, document_type: e.target.value }))
                     }
                   >
-                    {Object.entries(documentTypes).map(([key, value]) => (
+                    {documentTypes ? Object.entries(documentTypes).map(([key, value]) => (
                       <option key={key} value={key}>
                         {value as string}
                       </option>
-                    ))}
+                    )) : null}
                   </Form.Select>
                 </Form.Group>
               </Col>
@@ -654,11 +656,11 @@ export function Documents() {
                     }
                   >
                     <option value=''>غير مرتبط</option>
-                    {Object.entries(entityTypes).map(([key, value]) => (
+                    {entityTypes ? Object.entries(entityTypes).map(([key, value]) => (
                       <option key={key} value={key}>
                         {value as string}
                       </option>
-                    ))}
+                    )) : null}
                   </Form.Select>
                 </Form.Group>
               </Col>
