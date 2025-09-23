@@ -96,9 +96,9 @@ export function Documents() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   // Pagination
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalDocuments, setTotalDocuments] = useState(0);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [totalDocuments, setTotalDocuments] = useState<number>(0);
 
   // Filters
   const [filters, setFilters] = useState<DocumentFilters>({
@@ -128,12 +128,16 @@ export function Documents() {
   const [documentTypes, setDocumentTypes] = useState<any>({});
   const [entityTypes, setEntityTypes] = useState<any>({});
 
+  // Safe function to set current page
+  const safeSetCurrentPage = (page: number | undefined | null) => {
+    const safePage = Math.max(1, Math.min(Number(page) || 1, totalPages || 1));
+    setCurrentPage(safePage);
+  };
+
   useEffect(() => {
-    if (typeof currentPage === 'number' && filters) {
-      loadDocuments();
-      loadStats();
-      loadOptions();
-    }
+    loadDocuments();
+    loadStats();
+    loadOptions();
   }, [currentPage, filters]);
 
   const loadDocuments = async () => {
@@ -141,25 +145,40 @@ export function Documents() {
       setLoading(true);
       setError(null);
 
+      // Build params more safely
+      const safeFilters = filters || {};
+      const validFilters = Object.fromEntries(
+        Object.entries(safeFilters).filter(([_, value]) =>
+          value != null && value !== '' && typeof value === 'string'
+        )
+      );
+
       const params = new URLSearchParams({
-        page: (currentPage || 1).toString(),
+        page: String(currentPage || 1),
         limit: '20',
-        ...Object.fromEntries(Object.entries(filters || {}).filter(([_, value]) => value && value !== '')),
+        ...validFilters
       });
 
+      console.log('Making API request to:', `/documents?${params}`);
       const response = await api.get(`/documents?${params}`);
+      console.log('API response:', response);
 
-      if (response.success) {
-        setDocuments(response.data.data);
-        setCurrentPage(response.data.pagination.page);
-        setTotalPages(response.data.pagination.total_pages);
-        setTotalDocuments(response.data.pagination.total);
+      if (response && response.success) {
+        setDocuments(Array.isArray(response.data?.data) ? response.data.data : []);
+        const newTotalPages = Number(response.data?.pagination?.total_pages) || 1;
+        setTotalPages(newTotalPages);
+        setTotalDocuments(Number(response.data?.pagination?.total) || 0);
+        safeSetCurrentPage(response.data?.pagination?.current_page);
       } else {
+        console.error('API returned error:', response);
         setError('فشل في تحميل المستندات');
       }
     } catch (err) {
       console.error('Documents load error:', err);
-      setError('خطأ في تحميل المستندات');
+      // Only set error if we're not on initial load
+      if (documents.length > 0 || currentPage > 1) {
+        setError('خطأ في تحميل المستندات');
+      }
     } finally {
       setLoading(false);
     }
@@ -190,7 +209,7 @@ export function Documents() {
 
   const handleFilterChange = (field: keyof DocumentFilters, value: string) => {
     setFilters((prev) => ({ ...prev, [field]: value }));
-    if (setCurrentPage) setCurrentPage(1);
+    safeSetCurrentPage(1);
   };
 
   const handleUploadDocument = async () => {
@@ -210,11 +229,7 @@ export function Documents() {
       formData.append('is_public', (uploadData.is_public || false).toString());
       formData.append('tags', uploadData.tags);
 
-      const response = await api.post('/documents', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await api.post('/documents', formData);
 
       if (response.success) {
         setShowUploadModal(false);
@@ -265,6 +280,37 @@ export function Documents() {
     } catch (err) {
       console.error('Delete error:', err);
       alert('خطأ في حذف المستند');
+    }
+  };
+
+  const handleUpdateDocument = async () => {
+    if (!selectedDocument) return;
+
+    try {
+      const updateData = {
+        title: selectedDocument.title,
+        description: selectedDocument.description,
+        document_type: selectedDocument.document_type,
+        entity_type: selectedDocument.entity_type,
+        entity_id: selectedDocument.entity_id,
+        is_public: selectedDocument.is_public,
+        tags: selectedDocument.tags
+      };
+
+      const response = await api.put(`/documents/${selectedDocument.id}`, updateData);
+
+      if (response.success) {
+        setShowEditModal(false);
+        setSelectedDocument(null);
+        loadDocuments();
+        loadStats();
+        alert('تم تحديث المستند بنجاح');
+      } else {
+        alert(response.message || 'فشل في تحديث المستند');
+      }
+    } catch (err) {
+      console.error('Update error:', err);
+      alert('خطأ في تحديث المستند');
     }
   };
 
@@ -447,7 +493,7 @@ export function Documents() {
           <h5 className='mb-0'>قائمة المستندات ({totalDocuments})</h5>
         </Card.Header>
         <Card.Body>
-          {error && <Alert variant='danger'>{error}</Alert>}
+          {error && <Alert variant='danger'>{String(error || '')}</Alert>}
 
           {loading ? (
             <div className='text-center py-5'>
@@ -509,7 +555,7 @@ export function Documents() {
                       <td>
                         <div className='d-flex align-items-center'>
                           <Calendar size={14} className='me-1' />
-                          {new Date(document.created_at).toLocaleDateString('en-GB')}
+                          {document.created_at ? new Date(document.created_at).toLocaleDateString('en-GB') : '-'}
                         </div>
                       </td>
                       <td>
@@ -560,24 +606,24 @@ export function Documents() {
                 <div className='d-flex justify-content-center mt-4'>
                   <Pagination>
                     <Pagination.Prev
-                      disabled={currentPage === 1}
-                      onClick={() => setCurrentPage(currentPage - 1)}
+                      disabled={currentPage <= 1}
+                      onClick={() => safeSetCurrentPage(currentPage - 1)}
                     />
                     {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                       const page = i + 1;
                       return (
                         <Pagination.Item
-                          key={page}
+                          key={`page-${page}`}
                           active={page === currentPage}
-                          onClick={() => setCurrentPage(page)}
+                          onClick={() => safeSetCurrentPage(page)}
                         >
                           {page}
                         </Pagination.Item>
                       );
                     })}
                     <Pagination.Next
-                      disabled={currentPage === totalPages}
-                      onClick={() => setCurrentPage(currentPage + 1)}
+                      disabled={currentPage >= totalPages}
+                      onClick={() => safeSetCurrentPage(currentPage + 1)}
                     />
                   </Pagination>
                 </div>
@@ -748,6 +794,135 @@ export function Documents() {
           <Button variant='danger' onClick={handleDelete}>
             <Trash2 size={16} className='me-1' />
             حذف المستند
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Edit Modal */}
+      <Modal
+        show={showEditModal}
+        onHide={() => setShowEditModal(false)}
+        size='lg'
+        dir={isRTL ? 'rtl' : 'ltr'}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <Edit size={20} className='me-2' />
+            تعديل المستند
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedDocument && (
+            <Form>
+              <Row>
+                <Col md={6}>
+                  <Form.Group className='mb-3'>
+                    <Form.Label>العنوان *</Form.Label>
+                    <Form.Control
+                      type='text'
+                      value={selectedDocument.title}
+                      onChange={(e) => setSelectedDocument(prev =>
+                        prev ? { ...prev, title: e.target.value } : null
+                      )}
+                      required
+                    />
+                  </Form.Group>
+                </Col>
+                <Col md={6}>
+                  <Form.Group className='mb-3'>
+                    <Form.Label>نوع المستند *</Form.Label>
+                    <Form.Select
+                      value={selectedDocument.document_type}
+                      onChange={(e) => setSelectedDocument(prev =>
+                        prev ? { ...prev, document_type: e.target.value } : null
+                      )}
+                    >
+                      {documentTypes ? Object.entries(documentTypes).map(([key, value]) => (
+                        <option key={key} value={key}>
+                          {value as string}
+                        </option>
+                      )) : null}
+                    </Form.Select>
+                  </Form.Group>
+                </Col>
+              </Row>
+
+              <Form.Group className='mb-3'>
+                <Form.Label>الوصف</Form.Label>
+                <Form.Control
+                  as='textarea'
+                  rows={3}
+                  value={selectedDocument.description || ''}
+                  onChange={(e) => setSelectedDocument(prev =>
+                    prev ? { ...prev, description: e.target.value } : null
+                  )}
+                />
+              </Form.Group>
+
+              <Row>
+                <Col md={6}>
+                  <Form.Group className='mb-3'>
+                    <Form.Label>نوع الكيان</Form.Label>
+                    <Form.Select
+                      value={selectedDocument.entity_type || ''}
+                      onChange={(e) => setSelectedDocument(prev =>
+                        prev ? { ...prev, entity_type: e.target.value || null } : null
+                      )}
+                    >
+                      <option value=''>غير مرتبط</option>
+                      {entityTypes ? Object.entries(entityTypes).map(([key, value]) => (
+                        <option key={key} value={key}>
+                          {value as string}
+                        </option>
+                      )) : null}
+                    </Form.Select>
+                  </Form.Group>
+                </Col>
+                <Col md={6}>
+                  <Form.Group className='mb-3'>
+                    <Form.Label>معرف الكيان</Form.Label>
+                    <Form.Control
+                      type='number'
+                      value={selectedDocument.entity_id || ''}
+                      onChange={(e) => setSelectedDocument(prev =>
+                        prev ? { ...prev, entity_id: e.target.value ? parseInt(e.target.value) : null } : null
+                      )}
+                    />
+                  </Form.Group>
+                </Col>
+              </Row>
+
+              <Form.Group className='mb-3'>
+                <Form.Label>العلامات</Form.Label>
+                <Form.Control
+                  type='text'
+                  value={selectedDocument.tags || ''}
+                  onChange={(e) => setSelectedDocument(prev =>
+                    prev ? { ...prev, tags: e.target.value } : null
+                  )}
+                  placeholder='علامات مفصولة بفواصل'
+                />
+              </Form.Group>
+
+              <Form.Check
+                type='checkbox'
+                id='edit-is-public'
+                label='مستند عام'
+                checked={selectedDocument.is_public}
+                onChange={(e) => setSelectedDocument(prev =>
+                  prev ? { ...prev, is_public: e.target.checked } : null
+                )}
+              />
+            </Form>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant='outline-secondary' onClick={() => setShowEditModal(false)}>
+            إلغاء
+          </Button>
+          <Button variant='primary' onClick={handleUpdateDocument}>
+            <Edit size={16} className='me-1' />
+            حفظ التعديلات
           </Button>
         </Modal.Footer>
       </Modal>

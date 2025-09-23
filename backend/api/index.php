@@ -226,6 +226,14 @@ switch ($path) {
                 http_response_code(405);
                 echo json_encode(['error' => 'Method not allowed']);
             }
+        } elseif (preg_match('/^\/documents\/(\d+)\/download$/', $path, $matches)) {
+            $id = $matches[1];
+            if ($method === 'GET') {
+                handleDownloadDocument($id);
+            } else {
+                http_response_code(405);
+                echo json_encode(['error' => 'Method not allowed']);
+            }
         } elseif (preg_match('/^\/documents\/(\d+)$/', $path, $matches)) {
             $id = $matches[1];
             if ($method === 'GET') {
@@ -1162,7 +1170,7 @@ function handleCreateLawyer() {
         );
 
         if ($result) {
-            $newId = $db->getLastInsertId();
+            $newId = $db->lastInsertId();
             $newLawyer = $db->fetch("SELECT * FROM lawyers WHERE id = ?", [$newId]);
 
             echo json_encode([
@@ -1509,8 +1517,111 @@ function handleGetDocumentOptions() {
 }
 
 function handleCreateDocument() {
-    http_response_code(501);
-    echo json_encode(['error' => 'Document upload not implemented yet']);
+    $db = Database::getInstance();
+
+    try {
+        // Check if file was uploaded
+        if (!isset($_FILES['file']) || $_FILES['file']['error'] !== UPLOAD_ERR_OK) {
+            http_response_code(400);
+            echo json_encode(['error' => 'No file uploaded or upload error']);
+            return;
+        }
+
+        // Get form data
+        $title = $_POST['title'] ?? '';
+        $description = $_POST['description'] ?? '';
+        $document_type = $_POST['document_type'] ?? 'other';
+        $entity_type = $_POST['entity_type'] ?? null;
+        $entity_id = !empty($_POST['entity_id']) ? (int)$_POST['entity_id'] : null;
+        $is_public = isset($_POST['is_public']) ? (bool)$_POST['is_public'] : false;
+        $tags = $_POST['tags'] ?? '';
+
+        // Validate required fields
+        if (empty($title)) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Title is required']);
+            return;
+        }
+
+        // Get file info
+        $file = $_FILES['file'];
+        $originalFilename = $file['name'];
+        $fileSize = $file['size'];
+        $mimeType = $file['type'];
+        $tempPath = $file['tmp_name'];
+
+        // Generate unique filename
+        $extension = pathinfo($originalFilename, PATHINFO_EXTENSION);
+        $storedFilename = uniqid() . '_' . time() . '.' . $extension;
+
+        // Create uploads directory if it doesn't exist
+        $uploadDir = __DIR__ . '/../uploads/documents/';
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
+        $filePath = $uploadDir . $storedFilename;
+        $relativeFilePath = 'uploads/documents/' . $storedFilename;
+
+        // Move uploaded file
+        if (!move_uploaded_file($tempPath, $filePath)) {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to save uploaded file']);
+            return;
+        }
+
+        // Get current user ID (simplified for now)
+        $uploadedBy = 1; // Default admin user
+
+        // Insert document record
+        $result = $db->execute(
+            "INSERT INTO documents (title, description, document_type, entity_type, entity_id,
+             original_filename, stored_filename, file_path, file_size, mime_type, uploaded_by,
+             is_public, tags) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            [
+                $title,
+                $description,
+                $document_type,
+                $entity_type,
+                $entity_id,
+                $originalFilename,
+                $storedFilename,
+                $relativeFilePath,
+                $fileSize,
+                $mimeType,
+                $uploadedBy,
+                $is_public ? 1 : 0,
+                $tags
+            ]
+        );
+
+        if ($result) {
+            $newId = $db->lastInsertId();
+            $newDocument = $db->fetch("
+                SELECT d.*, u.full_name_ar as uploader_name
+                FROM documents d
+                LEFT JOIN users u ON d.uploaded_by = u.id
+                WHERE d.id = ?
+            ", [$newId]);
+
+            echo json_encode([
+                'success' => true,
+                'data' => $newDocument,
+                'message' => 'Document uploaded successfully'
+            ]);
+        } else {
+            // Clean up file if database insert failed
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to save document record']);
+        }
+    } catch (Exception $e) {
+        error_log("Create document error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to upload document']);
+    }
 }
 
 function handleGetDocument($id) {
@@ -1541,8 +1652,69 @@ function handleGetDocument($id) {
 }
 
 function handleUpdateDocument($id) {
-    http_response_code(501);
-    echo json_encode(['error' => 'Update document not implemented yet']);
+    $db = Database::getInstance();
+    $input = json_decode(file_get_contents('php://input'), true);
+
+    if (!$input) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid JSON input']);
+        return;
+    }
+
+    try {
+        // Check if document exists
+        $existing = $db->fetch("SELECT id FROM documents WHERE id = ?", [$id]);
+        if (!$existing) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Document not found']);
+            return;
+        }
+
+        // Validate required fields
+        if (empty($input['title'])) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Title is required']);
+            return;
+        }
+
+        $result = $db->execute(
+            "UPDATE documents SET title = ?, description = ?, document_type = ?,
+             entity_type = ?, entity_id = ?, is_public = ?, tags = ?, updated_at = CURRENT_TIMESTAMP
+             WHERE id = ?",
+            [
+                $input['title'],
+                $input['description'] ?? '',
+                $input['document_type'] ?? 'other',
+                !empty($input['entity_type']) ? $input['entity_type'] : null,
+                !empty($input['entity_id']) ? (int)$input['entity_id'] : null,
+                isset($input['is_public']) ? (int)$input['is_public'] : 0,
+                $input['tags'] ?? '',
+                $id
+            ]
+        );
+
+        if ($result) {
+            $updatedDocument = $db->fetch("
+                SELECT d.*, u.full_name_ar as uploader_name
+                FROM documents d
+                LEFT JOIN users u ON d.uploaded_by = u.id
+                WHERE d.id = ?
+            ", [$id]);
+
+            echo json_encode([
+                'success' => true,
+                'data' => $updatedDocument,
+                'message' => 'Document updated successfully'
+            ]);
+        } else {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to update document']);
+        }
+    } catch (Exception $e) {
+        error_log("Update document error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to update document']);
+    }
 }
 
 function handleDeleteDocument($id) {
@@ -1575,6 +1747,49 @@ function handleDeleteDocument($id) {
         error_log("Delete document error: " . $e->getMessage());
         http_response_code(500);
         echo json_encode(['error' => 'Failed to delete document']);
+    }
+}
+
+function handleDownloadDocument($id) {
+    $db = Database::getInstance();
+
+    try {
+        // Get document info
+        $document = $db->fetch("
+            SELECT * FROM documents WHERE id = ?
+        ", [$id]);
+
+        if (!$document) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Document not found']);
+            return;
+        }
+
+        // Build full file path
+        $filePath = __DIR__ . '/../' . $document['file_path'];
+
+        // Check if file exists
+        if (!file_exists($filePath)) {
+            http_response_code(404);
+            echo json_encode(['error' => 'File not found on disk']);
+            return;
+        }
+
+        // Set headers for file download
+        header('Content-Type: ' . $document['mime_type']);
+        header('Content-Disposition: attachment; filename="' . $document['original_filename'] . '"');
+        header('Content-Length: ' . $document['file_size']);
+        header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+        header('Pragma: no-cache');
+
+        // Stream the file
+        readfile($filePath);
+        exit;
+
+    } catch (Exception $e) {
+        error_log("Download document error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to download document']);
     }
 }
 ?>

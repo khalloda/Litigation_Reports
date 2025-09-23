@@ -556,12 +556,13 @@ class ApiService {
   }
 
   async post(endpoint: string, data?: any): Promise<ApiResponse<any>> {
-    // Check if data contains files
-    const hasFiles = data && this.hasFileFields(data);
+    // Check if data is already FormData or contains files
+    const isFormData = data instanceof FormData;
+    const hasFiles = data && !isFormData && this.hasFileFields(data);
 
-    if (hasFiles) {
+    if (isFormData || hasFiles) {
       // Use FormData for file uploads
-      const formData = this.createFormData(data);
+      const formData = isFormData ? data : this.createFormData(data);
       return this.request(endpoint, {
         method: 'POST',
         body: formData,
@@ -579,13 +580,13 @@ class ApiService {
   }
 
   async put(endpoint: string, data?: any): Promise<ApiResponse<any>> {
-    // Check if data contains files
-    const hasFiles = data && this.hasFileFields(data);
+    // Check if data is already FormData or contains files
+    const isFormData = data instanceof FormData;
+    const hasFiles = data && !isFormData && this.hasFileFields(data);
 
-    if (hasFiles) {
+    if (isFormData || hasFiles) {
       // Use FormData for file uploads in PUT requests
-      // This will work correctly with the backend
-      const formData = this.createFormData(data);
+      const formData = isFormData ? data : this.createFormData(data);
       return this.request(endpoint, {
         method: 'PUT',
         body: formData,

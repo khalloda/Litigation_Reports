@@ -647,7 +647,7 @@ export function Invoices() {
                       <option key={key} value={key}>
                         {value}
                       </option>
-                    ))}
+                    )) : null}
                   </Form.Select>
                 </Form.Group>
               </Col>
@@ -677,7 +677,7 @@ export function Invoices() {
                       <option key={key} value={key}>
                         {value}
                       </option>
-                    ))}
+                    )) : null}
                   </Form.Select>
                 </Form.Group>
               </Col>
@@ -692,7 +692,7 @@ export function Invoices() {
                       <option key={key} value={key}>
                         {value}
                       </option>
-                    ))}
+                    )) : null}
                   </Form.Select>
                 </Form.Group>
               </Col>

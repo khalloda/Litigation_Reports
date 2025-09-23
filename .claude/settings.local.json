@@ -111,7 +111,19 @@
       "Bash(\"D:\\wamp64\\bin\\mysql\\mysql9.1.0\\bin\\mysql.exe\" -u root -p1234 -e \"DESCRIBE documents\" litigation_db)",
       "Bash(BASE_URL=http://lit.local:8080 timeout 120 npx playwright test tests/lawyers-and-documents-pages-test.spec.ts --reporter=line --config=playwright.config.simple.mjs)",
       "Bash(BASE_URL=http://lit.local:8080 timeout 90 npx playwright test tests/lawyers-and-documents-pages-test.spec.ts:96 --reporter=line --config=playwright.config.simple.mjs)",
-      "Bash(BASE_URL=http://lit.local:8080 timeout 60 npx playwright test tests/lawyers-and-documents-pages-test.spec.ts:170 --reporter=line --config=playwright.config.simple.mjs)"
+      "Bash(BASE_URL=http://lit.local:8080 timeout 60 npx playwright test tests/lawyers-and-documents-pages-test.spec.ts:170 --reporter=line --config=playwright.config.simple.mjs)",
+      "Bash(BASE_URL=http://lit.local:8080 timeout 90 npx playwright test tests/documents-page-fix.spec.ts --reporter=line --config=playwright.config.simple.mjs)",
+      "Bash(BASE_URL=http://lit.local:8080 timeout 60 npx playwright test tests/documents-page-fix.spec.ts:6 --reporter=line --config=playwright.config.simple.mjs)",
+      "Bash(BASE_URL=http://lit.local:8080 timeout 60 npx playwright test tests/reports-page-fix.spec.ts:6 --reporter=line --config=playwright.config.simple.mjs)",
+      "Bash(BASE_URL=http://lit.local:8080 timeout 60 npx playwright test tests/invoices-page-test.spec.ts --reporter=line --config=playwright.config.simple.mjs)",
+      "Bash(BASE_URL=http://lit.local:8080 timeout 120 npx playwright test tests/documents-comprehensive-test.spec.ts --reporter=line --config=playwright.config.simple.mjs)",
+      "Bash(BASE_URL=http://lit.local:8080 timeout 60 npx playwright test tests/documents-comprehensive-test.spec.ts:25 --reporter=line --config=playwright.config.simple.mjs)",
+      "Bash(BASE_URL=http://lit.local:8080 timeout 120 npx playwright test tests/document-upload-fix-test.spec.ts --reporter=line --config=playwright.config.simple.mjs)",
+      "Bash(BASE_URL=http://lit.local:8080 timeout 90 npx playwright test tests/document-upload-debug.spec.ts --reporter=line --config=playwright.config.simple.mjs)",
+      "Bash(BASE_URL=http://lit.local:8080 timeout 120 npx playwright test tests/document-upload-final-test.spec.ts --reporter=line --config=playwright.config.simple.mjs)",
+      "Bash(BASE_URL=http://lit.local:8080 timeout 90 npx playwright test tests/document-upload-alert-debug.spec.ts --reporter=line --config=playwright.config.simple.mjs)",
+      "Bash(BASE_URL=http://lit.local:8080 timeout 60 npx playwright test tests/document-upload-console-debug.spec.ts --reporter=line --config=playwright.config.simple.mjs)",
+      "Bash(BASE_URL=http://lit.local:8080 timeout 90 npx playwright test tests/document-upload-corrected-test.spec.ts --reporter=line --config=playwright.config.simple.mjs)"
     ],
     "deny": [],
     "ask": []
