@@ -136,6 +136,44 @@ switch ($path) {
         }
         break;
 
+    case '/reports/clients':
+        if ($method === 'GET') {
+            handleClientsReport();
+        } else {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method not allowed']);
+        }
+        break;
+
+    case '/reports/cases':
+        if ($method === 'GET') {
+            handleCasesReport();
+        } else {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method not allowed']);
+        }
+        break;
+
+    case '/reports/hearings':
+        if ($method === 'GET') {
+            handleHearingsReport();
+        } else {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method not allowed']);
+        }
+        break;
+
+    case '/reports/custom':
+        if ($method === 'GET') {
+            handleCustomReportOptions();
+        } elseif ($method === 'POST') {
+            handleGenerateCustomReport();
+        } else {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method not allowed']);
+        }
+        break;
+
     case '/lawyers':
         if ($method === 'GET') {
             handleGetLawyers();
@@ -1790,6 +1828,515 @@ function handleDownloadDocument($id) {
         error_log("Download document error: " . $e->getMessage());
         http_response_code(500);
         echo json_encode(['error' => 'Failed to download document']);
+    }
+}
+
+// Additional Reports handler functions
+function handleClientsReport() {
+    $db = Database::getInstance();
+
+    try {
+        // Get filters from query parameters
+        $filters = [];
+        $params = [];
+        $whereConditions = [];
+
+        if (!empty($_GET['status'])) {
+            $whereConditions[] = "c.status = ?";
+            $params[] = $_GET['status'];
+            $filters['status'] = $_GET['status'];
+        }
+
+        if (!empty($_GET['client_type'])) {
+            $whereConditions[] = "c.client_type = ?";
+            $params[] = $_GET['client_type'];
+            $filters['client_type'] = $_GET['client_type'];
+        }
+
+        if (!empty($_GET['date_from'])) {
+            $whereConditions[] = "c.created_at >= ?";
+            $params[] = $_GET['date_from'];
+            $filters['date_from'] = $_GET['date_from'];
+        }
+
+        if (!empty($_GET['date_to'])) {
+            $whereConditions[] = "c.created_at <= ?";
+            $params[] = $_GET['date_to'] . ' 23:59:59';
+            $filters['date_to'] = $_GET['date_to'];
+        }
+
+        $whereClause = '';
+        if (!empty($whereConditions)) {
+            $whereClause = 'WHERE ' . implode(' AND ', $whereConditions);
+        }
+
+        // Get clients data
+        $sql = "SELECT c.*,
+                       COUNT(cases.id) as total_cases,
+                       COUNT(CASE WHEN cases.matter_status = 'active' THEN 1 END) as active_cases,
+                       COUNT(CASE WHEN cases.matter_status = 'closed' THEN 1 END) as closed_cases
+                FROM clients c
+                LEFT JOIN cases ON c.id = cases.client_id
+                $whereClause
+                GROUP BY c.id
+                ORDER BY c.created_at DESC";
+
+        $clients = $db->fetchAll($sql, $params);
+
+        // Get summary statistics
+        $summarySQL = "SELECT
+                         COUNT(*) as total_clients,
+                         COUNT(CASE WHEN status = 'active' THEN 1 END) as active_clients,
+                         COUNT(CASE WHEN status = 'inactive' THEN 1 END) as inactive_clients,
+                         COUNT(CASE WHEN client_type = 'individual' THEN 1 END) as individual_clients,
+                         COUNT(CASE WHEN client_type = 'company' THEN 1 END) as company_clients
+                       FROM clients c $whereClause";
+
+        $summary = $db->fetch($summarySQL, $params);
+
+        echo json_encode([
+            'success' => true,
+            'data' => $clients,
+            'summary' => $summary,
+            'filters' => $filters,
+            'available_columns' => [
+                'client_name_ar' => 'اسم العميل (عربي)',
+                'client_name_en' => 'اسم العميل (إنجليزي)',
+                'client_type' => 'نوع العميل',
+                'status' => 'الحالة',
+                'email' => 'البريد الإلكتروني',
+                'phone' => 'الهاتف',
+                'total_cases' => 'إجمالي القضايا',
+                'active_cases' => 'القضايا النشطة',
+                'closed_cases' => 'القضايا المغلقة',
+                'created_at' => 'تاريخ الإنشاء'
+            ]
+        ]);
+
+    } catch (Exception $e) {
+        error_log("Clients report error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to generate clients report']);
+    }
+}
+
+function handleCasesReport() {
+    $db = Database::getInstance();
+
+    try {
+        // Get filters from query parameters
+        $filters = [];
+        $params = [];
+        $whereConditions = [];
+
+        if (!empty($_GET['status'])) {
+            $whereConditions[] = "cases.matter_status = ?";
+            $params[] = $_GET['status'];
+            $filters['status'] = $_GET['status'];
+        }
+
+        if (!empty($_GET['matter_category'])) {
+            $whereConditions[] = "cases.matter_category = ?";
+            $params[] = $_GET['matter_category'];
+            $filters['matter_category'] = $_GET['matter_category'];
+        }
+
+        if (!empty($_GET['matter_importance'])) {
+            $whereConditions[] = "cases.matter_importance = ?";
+            $params[] = $_GET['matter_importance'];
+            $filters['matter_importance'] = $_GET['matter_importance'];
+        }
+
+        if (!empty($_GET['date_from'])) {
+            $whereConditions[] = "cases.created_at >= ?";
+            $params[] = $_GET['date_from'];
+            $filters['date_from'] = $_GET['date_from'];
+        }
+
+        if (!empty($_GET['date_to'])) {
+            $whereConditions[] = "cases.created_at <= ?";
+            $params[] = $_GET['date_to'] . ' 23:59:59';
+            $filters['date_to'] = $_GET['date_to'];
+        }
+
+        $whereClause = '';
+        if (!empty($whereConditions)) {
+            $whereClause = 'WHERE ' . implode(' AND ', $whereConditions);
+        }
+
+        // Get cases data with client information
+        $sql = "SELECT cases.*,
+                       c.client_name_ar,
+                       c.client_name_en,
+                       COUNT(h.id) as total_hearings,
+                       COUNT(CASE WHEN h.hearing_result = 'pending' THEN 1 END) as pending_hearings,
+                       COUNT(CASE WHEN h.hearing_result = 'won' THEN 1 END) as won_hearings
+                FROM cases
+                LEFT JOIN clients c ON cases.client_id = c.id
+                LEFT JOIN hearings h ON cases.id = h.case_id
+                $whereClause
+                GROUP BY cases.id
+                ORDER BY cases.created_at DESC";
+
+        $cases = $db->fetchAll($sql, $params);
+
+        // Get summary statistics
+        $summarySQL = "SELECT
+                         COUNT(*) as total_cases,
+                         COUNT(CASE WHEN matter_status = 'active' THEN 1 END) as active_cases,
+                         COUNT(CASE WHEN matter_status = 'closed' THEN 1 END) as closed_cases,
+                         COUNT(CASE WHEN matter_importance = 'high' THEN 1 END) as high_importance_cases,
+                         COUNT(CASE WHEN matter_importance = 'medium' THEN 1 END) as medium_importance_cases,
+                         COUNT(CASE WHEN matter_importance = 'low' THEN 1 END) as low_importance_cases
+                       FROM cases $whereClause";
+
+        $summary = $db->fetch($summarySQL, $params);
+
+        echo json_encode([
+            'success' => true,
+            'data' => $cases,
+            'summary' => $summary,
+            'filters' => $filters,
+            'available_columns' => [
+                'matter_ar' => 'موضوع القضية (عربي)',
+                'matter_en' => 'موضوع القضية (إنجليزي)',
+                'matter_court' => 'المحكمة',
+                'status' => 'الحالة',
+                'case_type' => 'نوع القضية',
+                'priority' => 'الأولوية',
+                'client_name_ar' => 'اسم العميل',
+                'total_hearings' => 'إجمالي الجلسات',
+                'scheduled_hearings' => 'الجلسات المجدولة',
+                'completed_hearings' => 'الجلسات المكتملة',
+                'created_at' => 'تاريخ الإنشاء'
+            ]
+        ]);
+
+    } catch (Exception $e) {
+        error_log("Cases report error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to generate cases report']);
+    }
+}
+
+function handleHearingsReport() {
+    $db = Database::getInstance();
+
+    try {
+        // Get filters from query parameters
+        $filters = [];
+        $params = [];
+        $whereConditions = [];
+
+        if (!empty($_GET['hearing_result'])) {
+            $whereConditions[] = "h.hearing_result = ?";
+            $params[] = $_GET['hearing_result'];
+            $filters['hearing_result'] = $_GET['hearing_result'];
+        }
+
+        if (!empty($_GET['hearing_type'])) {
+            $whereConditions[] = "h.hearing_type = ?";
+            $params[] = $_GET['hearing_type'];
+            $filters['hearing_type'] = $_GET['hearing_type'];
+        }
+
+        if (!empty($_GET['hearing_result'])) {
+            $whereConditions[] = "h.hearing_result = ?";
+            $params[] = $_GET['hearing_result'];
+            $filters['hearing_result'] = $_GET['hearing_result'];
+        }
+
+        if (!empty($_GET['date_from'])) {
+            $whereConditions[] = "h.hearing_date >= ?";
+            $params[] = $_GET['date_from'];
+            $filters['date_from'] = $_GET['date_from'];
+        }
+
+        if (!empty($_GET['date_to'])) {
+            $whereConditions[] = "h.hearing_date <= ?";
+            $params[] = $_GET['date_to'] . ' 23:59:59';
+            $filters['date_to'] = $_GET['date_to'];
+        }
+
+        $whereClause = '';
+        if (!empty($whereConditions)) {
+            $whereClause = 'WHERE ' . implode(' AND ', $whereConditions);
+        }
+
+        // Get hearings data with case and client information
+        $sql = "SELECT h.*,
+                       cases.matter_ar,
+                       cases.matter_court,
+                       c.client_name_ar,
+                       c.client_name_en
+                FROM hearings h
+                LEFT JOIN cases ON h.case_id = cases.id
+                LEFT JOIN clients c ON cases.client_id = c.id
+                $whereClause
+                ORDER BY h.hearing_date DESC";
+
+        $hearings = $db->fetchAll($sql, $params);
+
+        // Get summary statistics
+        $summarySQL = "SELECT
+                         COUNT(*) as total_hearings,
+                         COUNT(CASE WHEN hearing_result = 'pending' THEN 1 END) as pending_hearings,
+                         COUNT(CASE WHEN hearing_result = 'won' THEN 1 END) as won_hearings,
+                         COUNT(CASE WHEN hearing_result = 'lost' THEN 1 END) as lost_hearings,
+                         COUNT(CASE WHEN hearing_result = 'postponed' THEN 1 END) as postponed_hearings
+                       FROM hearings h $whereClause";
+
+        $summary = $db->fetch($summarySQL, $params);
+
+        echo json_encode([
+            'success' => true,
+            'data' => $hearings,
+            'summary' => $summary,
+            'filters' => $filters,
+            'available_columns' => [
+                'hearing_date' => 'تاريخ الجلسة',
+                'hearing_type' => 'نوع الجلسة',
+                'status' => 'الحالة',
+                'outcome' => 'النتيجة',
+                'notes' => 'ملاحظات',
+                'matter_ar' => 'موضوع القضية',
+                'matter_court' => 'المحكمة',
+                'client_name_ar' => 'اسم العميل',
+                'created_at' => 'تاريخ الإنشاء'
+            ]
+        ]);
+
+    } catch (Exception $e) {
+        error_log("Hearings report error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to generate hearings report']);
+    }
+}
+
+function handleCustomReportOptions() {
+    try {
+        $type = $_GET['type'] ?? 'clients';
+
+        $options = [
+            'available_entities' => [
+                'clients' => 'العملاء',
+                'cases' => 'القضايا',
+                'hearings' => 'الجلسات',
+                'invoices' => 'الفواتير',
+                'documents' => 'المستندات'
+            ]
+        ];
+
+        switch ($type) {
+            case 'clients':
+                $options['available_columns'] = [
+                    'client_name_ar' => 'اسم العميل (عربي)',
+                    'client_name_en' => 'اسم العميل (إنجليزي)',
+                    'client_type' => 'نوع العميل',
+                    'status' => 'الحالة',
+                    'email' => 'البريد الإلكتروني',
+                    'phone' => 'الهاتف',
+                    'address' => 'العنوان',
+                    'created_at' => 'تاريخ الإنشاء'
+                ];
+                $options['available_filters'] = [
+                    'status' => ['active' => 'نشط', 'inactive' => 'غير نشط'],
+                    'client_type' => ['individual' => 'فرد', 'company' => 'شركة', 'government' => 'حكومي']
+                ];
+                break;
+
+            case 'cases':
+                $options['available_columns'] = [
+                    'matter_ar' => 'موضوع القضية (عربي)',
+                    'matter_en' => 'موضوع القضية (إنجليزي)',
+                    'matter_court' => 'المحكمة',
+                    'status' => 'الحالة',
+                    'case_type' => 'نوع القضية',
+                    'priority' => 'الأولوية',
+                    'client_name_ar' => 'اسم العميل',
+                    'created_at' => 'تاريخ الإنشاء'
+                ];
+                $options['available_filters'] = [
+                    'status' => ['active' => 'نشطة', 'closed' => 'مغلقة', 'suspended' => 'معلقة'],
+                    'case_type' => ['civil' => 'مدنية', 'criminal' => 'جنائية', 'commercial' => 'تجارية'],
+                    'priority' => ['high' => 'عالية', 'medium' => 'متوسطة', 'low' => 'منخفضة']
+                ];
+                break;
+
+            case 'hearings':
+                $options['available_columns'] = [
+                    'hearing_date' => 'تاريخ الجلسة',
+                    'hearing_type' => 'نوع الجلسة',
+                    'status' => 'الحالة',
+                    'outcome' => 'النتيجة',
+                    'notes' => 'ملاحظات',
+                    'matter_ar' => 'موضوع القضية',
+                    'client_name_ar' => 'اسم العميل',
+                    'created_at' => 'تاريخ الإنشاء'
+                ];
+                $options['available_filters'] = [
+                    'status' => ['scheduled' => 'مجدولة', 'completed' => 'مكتملة', 'postponed' => 'مؤجلة'],
+                    'hearing_type' => ['initial' => 'أولى', 'follow_up' => 'متابعة', 'final' => 'نهائية'],
+                    'outcome' => ['for' => 'لصالح', 'against' => 'ضد', 'pending' => 'معلقة']
+                ];
+                break;
+
+            default:
+                http_response_code(400);
+                echo json_encode(['error' => 'Invalid report type']);
+                return;
+        }
+
+        echo json_encode([
+            'success' => true,
+            'data' => $options
+        ]);
+
+    } catch (Exception $e) {
+        error_log("Custom report options error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to get custom report options']);
+    }
+}
+
+function handleGenerateCustomReport() {
+    $db = Database::getInstance();
+
+    try {
+        $input = json_decode(file_get_contents('php://input'), true);
+
+        if (!$input) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Invalid JSON input']);
+            return;
+        }
+
+        $entity = $input['entity'] ?? 'clients';
+        $filters = $input['filters'] ?? [];
+        $columns = $input['columns'] ?? [];
+        $limit = $input['limit'] ?? 100;
+        $page = $input['page'] ?? 1;
+        $offset = ($page - 1) * $limit;
+
+        $whereConditions = [];
+        $params = [];
+
+        // Build dynamic query based on entity type
+        switch ($entity) {
+            case 'clients':
+                $tableName = 'clients';
+                $baseSQL = "SELECT c.* FROM clients c";
+
+                if (!empty($filters['status'])) {
+                    $whereConditions[] = "c.status = ?";
+                    $params[] = $filters['status'];
+                }
+                if (!empty($filters['client_type'])) {
+                    $whereConditions[] = "c.client_type = ?";
+                    $params[] = $filters['client_type'];
+                }
+                if (!empty($filters['date_from'])) {
+                    $whereConditions[] = "c.created_at >= ?";
+                    $params[] = $filters['date_from'];
+                }
+                if (!empty($filters['date_to'])) {
+                    $whereConditions[] = "c.created_at <= ?";
+                    $params[] = $filters['date_to'] . ' 23:59:59';
+                }
+                break;
+
+            case 'cases':
+                $tableName = 'cases';
+                $baseSQL = "SELECT cases.*, c.client_name_ar, c.client_name_en FROM cases LEFT JOIN clients c ON cases.client_id = c.id";
+
+                if (!empty($filters['status'])) {
+                    $whereConditions[] = "cases.matter_status = ?";
+                    $params[] = $filters['status'];
+                }
+                if (!empty($filters['case_type'])) {
+                    $whereConditions[] = "cases.case_type = ?";
+                    $params[] = $filters['case_type'];
+                }
+                if (!empty($filters['priority'])) {
+                    $whereConditions[] = "cases.priority = ?";
+                    $params[] = $filters['priority'];
+                }
+                if (!empty($filters['date_from'])) {
+                    $whereConditions[] = "cases.created_at >= ?";
+                    $params[] = $filters['date_from'];
+                }
+                if (!empty($filters['date_to'])) {
+                    $whereConditions[] = "cases.created_at <= ?";
+                    $params[] = $filters['date_to'] . ' 23:59:59';
+                }
+                break;
+
+            case 'hearings':
+                $tableName = 'hearings';
+                $baseSQL = "SELECT h.*, cases.matter_ar, c.client_name_ar FROM hearings h LEFT JOIN cases ON h.case_id = cases.id LEFT JOIN clients c ON cases.client_id = c.id";
+
+                if (!empty($filters['status'])) {
+                    $whereConditions[] = "h.status = ?";
+                    $params[] = $filters['status'];
+                }
+                if (!empty($filters['hearing_type'])) {
+                    $whereConditions[] = "h.hearing_type = ?";
+                    $params[] = $filters['hearing_type'];
+                }
+                if (!empty($filters['outcome'])) {
+                    $whereConditions[] = "h.outcome = ?";
+                    $params[] = $filters['outcome'];
+                }
+                if (!empty($filters['date_from'])) {
+                    $whereConditions[] = "h.hearing_date >= ?";
+                    $params[] = $filters['date_from'];
+                }
+                if (!empty($filters['date_to'])) {
+                    $whereConditions[] = "h.hearing_date <= ?";
+                    $params[] = $filters['date_to'] . ' 23:59:59';
+                }
+                break;
+
+            default:
+                http_response_code(400);
+                echo json_encode(['error' => 'Invalid entity type']);
+                return;
+        }
+
+        $whereClause = '';
+        if (!empty($whereConditions)) {
+            $whereClause = 'WHERE ' . implode(' AND ', $whereConditions);
+        }
+
+        $sql = $baseSQL . ' ' . $whereClause . ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
+        $params[] = $limit;
+        $params[] = $offset;
+
+        $data = $db->fetchAll($sql, $params);
+
+        // Get total count for pagination
+        $countSQL = "SELECT COUNT(*) as total FROM ($baseSQL $whereClause) as subquery";
+        $countParams = array_slice($params, 0, -2); // Remove limit and offset
+        $totalResult = $db->fetch($countSQL, $countParams);
+        $total = $totalResult['total'];
+
+        echo json_encode([
+            'success' => true,
+            'data' => $data,
+            'pagination' => [
+                'current_page' => $page,
+                'per_page' => $limit,
+                'total' => $total,
+                'total_pages' => ceil($total / $limit)
+            ],
+            'filters' => $filters,
+            'columns' => $columns
+        ]);
+
+    } catch (Exception $e) {
+        error_log("Generate custom report error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to generate custom report']);
     }
 }
 ?>

@@ -178,7 +178,7 @@ const ReportsPage: React.FC = () => {
       setReportLoading(true);
       const response = await api.get(`/reports/${type}`, { params: filters });
       if (response.success) {
-        setReportData(response.data);
+        setReportData(response);
         setCurrentReportType(type);
         setShowDetailedReport(true);
       }
@@ -194,7 +194,7 @@ const ReportsPage: React.FC = () => {
       setReportLoading(true);
       const response = await api.post('/reports/custom', config);
       if (response.success) {
-        setReportData(response.data);
+        setReportData(response);
         setShowDetailedReport(true);
         setShowReportBuilder(false);
       }
@@ -910,8 +910,16 @@ const ReportsPage: React.FC = () => {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body style={{ maxHeight: '70vh', overflowY: 'auto' }}>
+          {reportLoading && (
+            <div className='text-center py-4'>
+              <Spinner animation='border' />
+              <p className='mt-2'>جاري تحميل التقرير...</p>
+            </div>
+          )}
+
           {reportData && (
             <>
+
               {/* Summary */}
               <Card className='mb-3'>
                 <Card.Body>
