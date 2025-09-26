@@ -10,12 +10,14 @@ import {
   Badge,
   Spinner,
   Alert,
+  Dropdown,
 } from 'react-bootstrap';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Plus, Search, Filter, Eye, Edit, Trash, Calendar, User, Gavel } from 'lucide-react';
+import { Plus, Search, Filter, Eye, Edit, Trash, Calendar, User, Gavel, Download } from 'lucide-react';
 import { apiService as api } from '../services/api';
 import CaseModal from '../components/modals/CaseModal';
+import { exportToCSV, exportToExcel, exportToPDF, EXPORT_COLUMNS } from '../utils/exportUtils';
 
 interface Case {
   id: number;
@@ -175,6 +177,52 @@ const CasesPage: React.FC = () => {
     }
   };
 
+  // Export functionality
+  const handleExportCSV = () => {
+    if (!cases || cases.length === 0) {
+      toast.error('لا توجد بيانات للتصدير');
+      return;
+    }
+
+    exportToCSV(cases, {
+      filename: `cases_export_${new Date().toISOString().split('T')[0]}`,
+      columns: EXPORT_COLUMNS.cases,
+      title: 'تقرير القضايا',
+    });
+
+    toast.success('تم تصدير ملف CSV بنجاح');
+  };
+
+  const handleExportExcel = () => {
+    if (!cases || cases.length === 0) {
+      toast.error('لا توجد بيانات للتصدير');
+      return;
+    }
+
+    exportToExcel(cases, {
+      filename: `cases_export_${new Date().toISOString().split('T')[0]}`,
+      columns: EXPORT_COLUMNS.cases,
+      title: 'تقرير القضايا',
+    });
+
+    toast.success('تم تصدير ملف Excel بنجاح');
+  };
+
+  const handleExportPDF = () => {
+    if (!cases || cases.length === 0) {
+      toast.error('لا توجد بيانات للتصدير');
+      return;
+    }
+
+    exportToPDF(cases, {
+      filename: `cases_export_${new Date().toISOString().split('T')[0]}`,
+      columns: EXPORT_COLUMNS.cases,
+      title: 'تقرير القضايا',
+    });
+
+    toast.success('تم تصدير ملف PDF بنجاح');
+  };
+
   const getStatusBadge = (status: string) => {
     const statusColors: Record<string, string> = {
       active: 'success',
@@ -233,10 +281,36 @@ const CasesPage: React.FC = () => {
               </h2>
               <p className='text-muted mb-0'>إدارة وتتبع جميع القضايا القانونية</p>
             </div>
-            <Button variant='primary' size='lg' onClick={handleAddCase}>
-              <Plus className='me-2' />
-              إضافة قضية جديدة
-            </Button>
+            <div className='d-flex gap-2'>
+              <Button variant='primary' size='lg' onClick={handleAddCase}>
+                <Plus className='me-2' />
+                إضافة قضية جديدة
+              </Button>
+              <Dropdown>
+                <Dropdown.Toggle
+                  variant='success'
+                  size='lg'
+                  disabled={!cases || cases.length === 0}
+                >
+                  <Download className='me-2' size={18} />
+                  تصدير
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  <Dropdown.Item onClick={handleExportCSV}>
+                    <Download className='me-2' size={14} />
+                    تصدير CSV
+                  </Dropdown.Item>
+                  <Dropdown.Item onClick={handleExportExcel}>
+                    <Download className='me-2' size={14} />
+                    تصدير Excel
+                  </Dropdown.Item>
+                  <Dropdown.Item onClick={handleExportPDF}>
+                    <Download className='me-2' size={14} />
+                    تصدير PDF
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            </div>
           </div>
         </Col>
       </Row>

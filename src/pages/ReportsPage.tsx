@@ -287,6 +287,100 @@ const ReportsPage: React.FC = () => {
     }
   };
 
+  const exportCurrentData = async (format: 'csv' | 'excel') => {
+    try {
+      if (!reportData?.data || reportData.data.length === 0) {
+        alert('لا توجد بيانات للتصدير. يرجى إنشاء تقرير أولاً.');
+        return;
+      }
+
+      // Prepare export data
+      const filename = `${reportConfig.entity}_report_${new Date().toISOString().split('T')[0]}`;
+
+      if (format === 'csv') {
+        exportToCSV(reportData.data, filename, reportData.available_columns || {});
+      } else if (format === 'excel') {
+        exportToExcel(reportData.data, filename, reportData.available_columns || {});
+      }
+
+      setShowExportOptions(false);
+    } catch (err) {
+      console.error('Export error:', err);
+      alert('خطأ في التصدير: ' + (err instanceof Error ? err.message : 'خطأ غير معروف'));
+    }
+  };
+
+  const exportToCSV = (data: any[], filename: string, columnLabels: Record<string, string>) => {
+    if (!data || data.length === 0) {
+      alert('لا توجد بيانات للتصدير');
+      return;
+    }
+
+    // Get column headers
+    const columns = Object.keys(data[0]);
+    const headers = columns.map(col => columnLabels[col] || col);
+
+    // Build CSV content
+    const csvContent = [
+      headers.join(','), // Header row
+      ...data.map(row =>
+        columns.map(col => {
+          const value = row[col];
+          // Escape commas and quotes in CSV
+          if (typeof value === 'string' && (value.includes(',') || value.includes('"'))) {
+            return `"${value.replace(/"/g, '""')}"`;
+          }
+          return value || '';
+        }).join(',')
+      )
+    ].join('\n');
+
+    // Create and download file
+    const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `${filename}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const exportToExcel = (data: any[], filename: string, columnLabels: Record<string, string>) => {
+    try {
+      // For Excel export, we'll create a more structured format
+      const columns = Object.keys(data[0]);
+      const headers = columns.map(col => columnLabels[col] || col);
+
+      // Create tab-separated content (opens in Excel)
+      const excelContent = [
+        headers.join('\t'), // Header row
+        ...data.map(row =>
+          columns.map(col => {
+            const value = row[col];
+            return value || '';
+          }).join('\t')
+        )
+      ].join('\n');
+
+      // Create and download file
+      const blob = new Blob([excelContent], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `${filename}.xls`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      console.error('Excel export error:', err);
+      // Fallback to CSV if Excel export fails
+      exportToCSV(data, filename, columnLabels);
+    }
+  };
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('ar-EG', {
       style: 'currency',
@@ -1035,16 +1129,29 @@ const ReportsPage: React.FC = () => {
                   <h5>تصدير البيانات الحالية</h5>
                   <p className='text-muted mb-3'>تصدير البيانات المعروضة حالياً كـ CSV أو Excel</p>
                   <div className='d-grid gap-2'>
-                    <Button variant='outline-success' disabled>
+                    <Button
+                      variant='outline-success'
+                      onClick={() => exportCurrentData('csv')}
+                      disabled={!reportData?.data || reportData.data.length === 0}
+                    >
                       <Download className='me-2' size={16} />
                       CSV
                     </Button>
-                    <Button variant='outline-info' disabled>
+                    <Button
+                      variant='outline-info'
+                      onClick={() => exportCurrentData('excel')}
+                      disabled={!reportData?.data || reportData.data.length === 0}
+                    >
                       <Download className='me-2' size={16} />
                       Excel
                     </Button>
                   </div>
-                  <small className='text-muted'>قريباً</small>
+                  {(!reportData?.data || reportData.data.length === 0) && (
+                    <small className='text-muted'>يجب إنشاء تقرير أولاً</small>
+                  )}
+                  {reportData?.data && reportData.data.length > 0 && (
+                    <small className='text-success'>جاهز للتصدير - {reportData.data.length} سجل</small>
+                  )}
                 </Card.Body>
               </Card>
             </Col>

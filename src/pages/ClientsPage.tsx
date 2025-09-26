@@ -11,6 +11,7 @@ import {
   Spinner,
   Alert,
   Modal,
+  Dropdown,
 } from 'react-bootstrap';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -26,10 +27,13 @@ import {
   User,
   AlertTriangle,
   FileImage,
+  Download,
+  FileText,
 } from 'lucide-react';
 import { apiService as api } from '../services/api';
 import { ClientModal } from '../components/modals/ClientModal';
 import { useLanguage } from '../hooks/useLanguage';
+import { exportToCSV, exportToExcel, exportToPDF, EXPORT_COLUMNS } from '../utils/exportUtils';
 
 interface Client {
   id: number;
@@ -307,6 +311,52 @@ const ClientsPage: React.FC = () => {
     setDeleting(false);
   };
 
+  // Export functionality
+  const handleExportCSV = () => {
+    if (!clients || clients.length === 0) {
+      toast.error('لا توجد بيانات للتصدير');
+      return;
+    }
+
+    exportToCSV(clients, {
+      filename: `clients_export_${new Date().toISOString().split('T')[0]}`,
+      columns: EXPORT_COLUMNS.clients,
+      title: 'تقرير العملاء',
+    });
+
+    toast.success('تم تصدير ملف CSV بنجاح');
+  };
+
+  const handleExportExcel = () => {
+    if (!clients || clients.length === 0) {
+      toast.error('لا توجد بيانات للتصدير');
+      return;
+    }
+
+    exportToExcel(clients, {
+      filename: `clients_export_${new Date().toISOString().split('T')[0]}`,
+      columns: EXPORT_COLUMNS.clients,
+      title: 'تقرير العملاء',
+    });
+
+    toast.success('تم تصدير ملف Excel بنجاح');
+  };
+
+  const handleExportPDF = () => {
+    if (!clients || clients.length === 0) {
+      toast.error('لا توجد بيانات للتصدير');
+      return;
+    }
+
+    exportToPDF(clients, {
+      filename: `clients_export_${new Date().toISOString().split('T')[0]}`,
+      columns: EXPORT_COLUMNS.clients,
+      title: 'تقرير العملاء',
+    });
+
+    toast.success('تم تصدير ملف PDF بنجاح');
+  };
+
   const getStatusBadge = (status: string) => {
     const statusColors: Record<string, string> = {
       active: 'success',
@@ -365,10 +415,36 @@ const ClientsPage: React.FC = () => {
               </h2>
               <p className='text-muted mb-0'>إدارة وتتبع جميع العملاء والشركات</p>
             </div>
-            <Button variant='primary' size='lg' onClick={handleCreateClient}>
-              <Plus className='me-2' />
-              إضافة عميل جديد
-            </Button>
+            <div className='d-flex gap-2'>
+              <Button variant='primary' size='lg' onClick={handleCreateClient}>
+                <Plus className='me-2' />
+                إضافة عميل جديد
+              </Button>
+              <Dropdown>
+                <Dropdown.Toggle
+                  variant='success'
+                  size='lg'
+                  disabled={!clients || clients.length === 0}
+                >
+                  <Download className='me-2' size={18} />
+                  تصدير
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  <Dropdown.Item onClick={handleExportCSV}>
+                    <Download className='me-2' size={14} />
+                    تصدير CSV
+                  </Dropdown.Item>
+                  <Dropdown.Item onClick={handleExportExcel}>
+                    <Download className='me-2' size={14} />
+                    تصدير Excel
+                  </Dropdown.Item>
+                  <Dropdown.Item onClick={handleExportPDF}>
+                    <Download className='me-2' size={14} />
+                    تصدير PDF
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            </div>
           </div>
         </Col>
       </Row>

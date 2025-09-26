@@ -11,6 +11,7 @@ import {
   Spinner,
   Alert,
   Modal,
+  Dropdown,
 } from 'react-bootstrap';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -29,8 +30,10 @@ import {
   Clock,
   XCircle,
   FileX,
+  Download,
 } from 'lucide-react';
 import { apiService as api } from '../services/api';
+import { exportToCSV, exportToExcel, exportToPDF, EXPORT_COLUMNS } from '../utils/exportUtils';
 
 interface Invoice {
   id: number;
@@ -473,6 +476,52 @@ export function Invoices() {
     }
   };
 
+  // Export functionality
+  const handleExportCSV = () => {
+    if (!invoices || invoices.length === 0) {
+      toast.error('لا توجد بيانات للتصدير');
+      return;
+    }
+
+    exportToCSV(invoices, {
+      filename: `invoices_export_${new Date().toISOString().split('T')[0]}`,
+      columns: EXPORT_COLUMNS.invoices,
+      title: 'تقرير الفواتير',
+    });
+
+    toast.success('تم تصدير ملف CSV بنجاح');
+  };
+
+  const handleExportExcel = () => {
+    if (!invoices || invoices.length === 0) {
+      toast.error('لا توجد بيانات للتصدير');
+      return;
+    }
+
+    exportToExcel(invoices, {
+      filename: `invoices_export_${new Date().toISOString().split('T')[0]}`,
+      columns: EXPORT_COLUMNS.invoices,
+      title: 'تقرير الفواتير',
+    });
+
+    toast.success('تم تصدير ملف Excel بنجاح');
+  };
+
+  const handleExportPDF = () => {
+    if (!invoices || invoices.length === 0) {
+      toast.error('لا توجد بيانات للتصدير');
+      return;
+    }
+
+    exportToPDF(invoices, {
+      filename: `invoices_export_${new Date().toISOString().split('T')[0]}`,
+      columns: EXPORT_COLUMNS.invoices,
+      title: 'تقرير الفواتير',
+    });
+
+    toast.success('تم تصدير ملف PDF بنجاح');
+  };
+
   const getStatusBadge = (status: string) => {
     const statusConfig: Record<string, { variant: string; icon: React.ReactNode }> = {
       draft: { variant: 'secondary', icon: <FileText size={12} /> },
@@ -539,10 +588,36 @@ export function Invoices() {
               </h2>
               <p className='text-muted mb-0'>إدارة وتتبع جميع الفواتير والمدفوعات</p>
             </div>
-            <Button variant='primary' size='lg' onClick={handleCreateInvoice}>
-              <Plus className='me-2' />
-              إضافة فاتورة جديدة
-            </Button>
+            <div className='d-flex gap-2'>
+              <Button variant='primary' size='lg' onClick={handleCreateInvoice}>
+                <Plus className='me-2' />
+                إضافة فاتورة جديدة
+              </Button>
+              <Dropdown>
+                <Dropdown.Toggle
+                  variant='success'
+                  size='lg'
+                  disabled={!invoices || invoices.length === 0}
+                >
+                  <Download className='me-2' size={18} />
+                  تصدير
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  <Dropdown.Item onClick={handleExportCSV}>
+                    <Download className='me-2' size={14} />
+                    تصدير CSV
+                  </Dropdown.Item>
+                  <Dropdown.Item onClick={handleExportExcel}>
+                    <Download className='me-2' size={14} />
+                    تصدير Excel
+                  </Dropdown.Item>
+                  <Dropdown.Item onClick={handleExportPDF}>
+                    <Download className='me-2' size={14} />
+                    تصدير PDF
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            </div>
           </div>
         </Col>
       </Row>

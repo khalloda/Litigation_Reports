@@ -11,6 +11,7 @@ import {
   Spinner,
   Alert,
   Modal,
+  Dropdown,
 } from 'react-bootstrap';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -25,9 +26,11 @@ import {
   Clock,
   Gavel,
   Users,
+  Download,
 } from 'lucide-react';
 import { apiService as api } from '../services/api';
 import HearingModal from '../components/modals/HearingModal';
+import { exportToCSV, exportToExcel, exportToPDF, EXPORT_COLUMNS } from '../utils/exportUtils';
 
 interface Hearing {
   id: number;
@@ -355,6 +358,52 @@ const HearingsPage: React.FC = () => {
     }
   };
 
+  // Export functionality
+  const handleExportCSV = () => {
+    if (!hearings || hearings.length === 0) {
+      toast.error('لا توجد بيانات للتصدير');
+      return;
+    }
+
+    exportToCSV(hearings, {
+      filename: `hearings_export_${new Date().toISOString().split('T')[0]}`,
+      columns: EXPORT_COLUMNS.hearings,
+      title: 'تقرير الجلسات',
+    });
+
+    toast.success('تم تصدير ملف CSV بنجاح');
+  };
+
+  const handleExportExcel = () => {
+    if (!hearings || hearings.length === 0) {
+      toast.error('لا توجد بيانات للتصدير');
+      return;
+    }
+
+    exportToExcel(hearings, {
+      filename: `hearings_export_${new Date().toISOString().split('T')[0]}`,
+      columns: EXPORT_COLUMNS.hearings,
+      title: 'تقرير الجلسات',
+    });
+
+    toast.success('تم تصدير ملف Excel بنجاح');
+  };
+
+  const handleExportPDF = () => {
+    if (!hearings || hearings.length === 0) {
+      toast.error('لا توجد بيانات للتصدير');
+      return;
+    }
+
+    exportToPDF(hearings, {
+      filename: `hearings_export_${new Date().toISOString().split('T')[0]}`,
+      columns: EXPORT_COLUMNS.hearings,
+      title: 'تقرير الجلسات',
+    });
+
+    toast.success('تم تصدير ملف PDF بنجاح');
+  };
+
   const getResultBadge = (result: string) => {
     const resultColors: Record<string, string> = {
       won: 'success',
@@ -416,15 +465,41 @@ const HearingsPage: React.FC = () => {
               </h2>
               <p className='text-muted mb-0'>إدارة وتتبع جميع جلسات المحكمة</p>
             </div>
-            <Button
-              variant='primary'
-              size='lg'
-              onClick={handleAddHearing}
-              data-testid='add-hearing-button'
-            >
-              <Plus className='me-2' />
-              إضافة جلسة جديدة
-            </Button>
+            <div className='d-flex gap-2'>
+              <Button
+                variant='primary'
+                size='lg'
+                onClick={handleAddHearing}
+                data-testid='add-hearing-button'
+              >
+                <Plus className='me-2' />
+                إضافة جلسة جديدة
+              </Button>
+              <Dropdown>
+                <Dropdown.Toggle
+                  variant='success'
+                  size='lg'
+                  disabled={!hearings || hearings.length === 0}
+                >
+                  <Download className='me-2' size={18} />
+                  تصدير
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  <Dropdown.Item onClick={handleExportCSV}>
+                    <Download className='me-2' size={14} />
+                    تصدير CSV
+                  </Dropdown.Item>
+                  <Dropdown.Item onClick={handleExportExcel}>
+                    <Download className='me-2' size={14} />
+                    تصدير Excel
+                  </Dropdown.Item>
+                  <Dropdown.Item onClick={handleExportPDF}>
+                    <Download className='me-2' size={14} />
+                    تصدير PDF
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
+            </div>
           </div>
         </Col>
       </Row>
