@@ -1,6 +1,7 @@
 # Advanced Reporting System Documentation
 
 ## System Overview
+
 The Advanced Reporting System provides comprehensive, customizable, and filterable reports for all litigation management data including clients, cases, hearings, invoices, and lawyers. Built with React frontend and PHP backend serving from same-origin lit.local architecture.
 
 ## Architecture Components
@@ -8,6 +9,7 @@ The Advanced Reporting System provides comprehensive, customizable, and filterab
 ### Backend API Structure
 
 #### ReportController.php Endpoints
+
 ```php
 // Dashboard and Overview
 GET  /api/reports/dashboard     # Comprehensive dashboard metrics
@@ -28,6 +30,7 @@ GET  /api/reports/options       # Available filter and column options
 #### Key Backend Methods
 
 ##### Dashboard Data Generation
+
 ```php
 public function dashboard(Request $request) {
     return [
@@ -52,6 +55,7 @@ public function dashboard(Request $request) {
 ```
 
 ##### Advanced Filtering System
+
 ```php
 public function clients(Request $request) {
     $filters = [
@@ -79,6 +83,7 @@ public function clients(Request $request) {
 ```
 
 ##### Custom Report Builder
+
 ```php
 public function customReport(Request $request) {
     $reportType = $request->get('type', 'clients');
@@ -100,6 +105,7 @@ public function customReport(Request $request) {
 ```
 
 ##### Template Management System
+
 ```php
 public function getReportTemplates(Request $request) {
     return [
@@ -136,6 +142,7 @@ public function getReportTemplates(Request $request) {
 ### Frontend Implementation
 
 #### ReportsPage.tsx Structure
+
 ```typescript
 const ReportsPage: React.FC = () => {
   // State Management
@@ -170,6 +177,7 @@ const ReportsPage: React.FC = () => {
 ```
 
 #### Dashboard Metrics Display
+
 ```typescript
 // Key Metrics Cards
 <Row className='mb-4'>
@@ -210,6 +218,7 @@ const ReportsPage: React.FC = () => {
 ```
 
 #### Quick Report Access Cards
+
 ```typescript
 // Detailed Reports Section with View/Customize Buttons
 <Row>
@@ -249,6 +258,7 @@ const ReportsPage: React.FC = () => {
 ```
 
 #### Report Builder Modal
+
 ```typescript
 <Modal show={showReportBuilder} onHide={() => setShowReportBuilder(false)} size='lg'>
   <Modal.Header closeButton>
@@ -352,6 +362,7 @@ const ReportsPage: React.FC = () => {
 ```
 
 #### Templates Management
+
 ```typescript
 <Modal show={showTemplates} onHide={() => setShowTemplates(false)} size='lg'>
   <Modal.Header closeButton>
@@ -394,6 +405,7 @@ const ReportsPage: React.FC = () => {
 ### Data Models and Interfaces
 
 #### Core Report Interfaces
+
 ```typescript
 interface DashboardData {
   total_clients: number;
@@ -453,6 +465,7 @@ interface ReportTemplate {
 ```
 
 #### Filter Options Structure
+
 ```typescript
 interface FilterOptions {
   clients: {
@@ -478,6 +491,7 @@ interface FilterOptions {
 ### API Response Examples
 
 #### Dashboard Response
+
 ```json
 {
   "success": true,
@@ -526,6 +540,7 @@ interface FilterOptions {
 ```
 
 #### Custom Report Response
+
 ```json
 {
   "success": true,
@@ -567,6 +582,7 @@ interface FilterOptions {
 ### User Experience Features
 
 #### Real-time Interactivity
+
 - **Dynamic Filter Updates**: Filters update available options based on selections
 - **Column Preview**: Show sample data when selecting columns
 - **Instant Validation**: Form validation with real-time feedback
@@ -574,12 +590,14 @@ interface FilterOptions {
 - **Error Handling**: User-friendly error messages with retry options
 
 #### Responsive Design
+
 - **Mobile Optimization**: Responsive tables with horizontal scrolling
 - **Touch-Friendly**: Large buttons and touch targets for mobile
 - **Progressive Enhancement**: Core functionality works without JavaScript
 - **Accessibility**: Screen reader support and keyboard navigation
 
 #### Performance Optimization
+
 - **Pagination**: Large datasets split into manageable pages
 - **Lazy Loading**: Load report data on demand
 - **Caching**: Cache frequently accessed report configurations
@@ -589,6 +607,7 @@ interface FilterOptions {
 ### Security Considerations
 
 #### Data Access Control
+
 ```php
 // Role-based report access
 public function authorizeReportAccess($reportType, $user) {
@@ -613,6 +632,7 @@ public function filterDataByUser($query, $user) {
 ```
 
 #### Export Security
+
 - **File Access Control**: Temporary URLs with expiration
 - **Data Sanitization**: Clean data before export
 - **Size Limits**: Prevent large export attacks
@@ -621,6 +641,7 @@ public function filterDataByUser($query, $user) {
 ### Testing Strategy
 
 #### Unit Tests
+
 ```typescript
 describe('ReportBuilder', () => {
   test('should generate correct filter query', () => {
@@ -647,6 +668,7 @@ describe('ReportBuilder', () => {
 ```
 
 #### Integration Tests
+
 ```bash
 # Test API endpoints
 curl -X GET "http://lit.local:8080/api/reports/dashboard" \
@@ -659,6 +681,7 @@ curl -X POST "http://lit.local:8080/api/reports/custom" \
 ```
 
 #### End-to-End Tests
+
 ```typescript
 describe('Reporting System E2E', () => {
   test('should generate custom client report', async ({ page }) => {
@@ -689,6 +712,7 @@ describe('Reporting System E2E', () => {
 ### Deployment Configuration
 
 #### Production Setup
+
 ```apache
 # .htaccess for lit.local
 RewriteEngine On
@@ -705,6 +729,7 @@ RewriteRule . index.html [L]
 ```
 
 #### Environment Variables
+
 ```php
 // config/config.php
 define('REPORTS_CACHE_TTL', 300);        // 5 minutes
@@ -716,6 +741,7 @@ define('ENABLE_REPORT_CACHING', true);
 ### Future Enhancements
 
 #### Planned Features
+
 1. **Automated Report Scheduling**: Generate and email reports automatically
 2. **Advanced Charts**: Interactive charts and visualizations
 3. **Report Sharing**: Share reports with external stakeholders
@@ -724,6 +750,7 @@ define('ENABLE_REPORT_CACHING', true);
 6. **Performance Analytics**: Report generation performance metrics
 
 #### Scalability Considerations
+
 1. **Database Optimization**: Query performance improvements
 2. **Caching Layer**: Redis integration for report data
 3. **Queue System**: Background report generation
@@ -734,4 +761,4 @@ define('ENABLE_REPORT_CACHING', true);
 **Created**: 2025-09-20  
 **System**: Advanced Reporting System for Litigation Management  
 **Status**: Production Ready ✅  
-**Access**: http://lit.local:8080/reports (after authentication)
+**Access**: <http://lit.local:8080/reports> (after authentication)

@@ -8,6 +8,7 @@
 ## Context and Problem Statement
 
 The current repository structure violates multiple architectural principles:
+
 - 40+ test files scattered at root level (test-*.php, check-*.php, debug-*.php)
 - 20+ documentation files at root level with overlapping content
 - No clear separation between frontend (React) and backend (PHP) services
@@ -80,6 +81,7 @@ litigation-management-system/
 ### Monorepo with apps/ and packages/
 
 **Pros**:
+
 - Industry standard structure (used by Google, Facebook, Microsoft)
 - Clear service boundaries with shared code reuse
 - Single CI/CD pipeline can handle multiple services
@@ -88,6 +90,7 @@ litigation-management-system/
 - Easy code sharing between services
 
 **Cons**:
+
 - Complex initial migration
 - Need monorepo tooling for optimal performance
 - Single point of failure for CI/CD
@@ -96,12 +99,14 @@ litigation-management-system/
 ### Separate repositories
 
 **Pros**:
+
 - Complete service isolation
 - Independent CI/CD pipelines
 - Smaller, focused repositories
 - Different teams can own different repos
 
 **Cons**:
+
 - Cross-service changes require multiple PRs
 - Shared code becomes difficult to manage
 - Deployment coordination complexity
@@ -110,11 +115,13 @@ litigation-management-system/
 ### Clean root with organized subdirectories
 
 **Pros**:
+
 - Less radical change
 - Maintains single repository
 - Can be implemented incrementally
 
 **Cons**:
+
 - Doesn't solve service boundary issues
 - Still unclear what goes where
 - May become messy again over time
@@ -122,11 +129,13 @@ litigation-management-system/
 ### Keep current structure but add organization
 
 **Pros**:
+
 - Minimal disruption
 - No breaking changes
 - Can be done gradually
 
 **Cons**:
+
 - Doesn't solve fundamental problems
 - Technical debt continues to accumulate
 - Developer experience remains poor
@@ -134,6 +143,7 @@ litigation-management-system/
 ## Migration Strategy
 
 ### Phase 1: Core Service Migration (Week 1)
+
 ```bash
 # Create new structure
 mkdir -p apps/{api,web}
@@ -151,6 +161,7 @@ mv public/* apps/web/public/
 ```
 
 ### Phase 2: Shared Code Organization (Week 2)
+
 ```bash
 # Move configuration
 mv config/* packages/config/
@@ -165,6 +176,7 @@ rmdir database
 ```
 
 ### Phase 3: Test Organization (Week 2)
+
 ```bash
 # Organize API tests
 mv test-*-api.php tests/api/
@@ -180,6 +192,7 @@ rm test-*-debug.php
 ```
 
 ### Phase 4: Documentation Consolidation (Week 3)
+
 ```bash
 # Setup guides
 mv README-*.md docs/setup/
@@ -193,6 +206,7 @@ mv *TROUBLESHOOTING*.md docs/troubleshooting/
 ```
 
 ### Phase 5: Build and Governance (Week 3)
+
 ```bash
 # Consolidate scripts
 mv deploy/* scripts/deploy/
@@ -205,8 +219,11 @@ touch CODEOWNERS CONTRIBUTING.md SECURITY.md
 ## Impact Analysis
 
 ### Files to be moved: ~200 files
+
 ### Import statements to update: ~50 locations
+
 ### Documentation references to update: ~30 files
+
 ### CI/CD configurations to update: 5 files
 
 ## Risk Mitigation
@@ -228,6 +245,7 @@ touch CODEOWNERS CONTRIBUTING.md SECURITY.md
 ## Future Evolution
 
 This structure supports:
+
 - **Microservices**: Each app can become independent service
 - **Multiple frontends**: Mobile app, admin panel as separate apps
 - **Shared libraries**: Common utilities in packages

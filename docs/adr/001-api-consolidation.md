@@ -1,13 +1,25 @@
 # 001 API Consolidation and Single Source of Truth
 
-**Status**: Proposed
-**Date**: 2025-09-22
-**Deciders**: Principal Software Architect, Development Team
-**Technical Story**: Architecture audit revealed critical API duplication
+## Status
+
+Proposed
+
+## Date
+
+2025-09-22
+
+## Deciders
+
+Principal Software Architect, Development Team
+
+## Technical Story
+
+Architecture audit revealed critical API duplication
 
 ## Context and Problem Statement
 
 The litigation management system currently has three different API implementations competing for the same responsibilities:
+
 1. `backend/api/index.php` - A comprehensive 805-line MVC-structured API
 2. `api-server.php` - A 51-line development router that delegates to api-test.php
 3. `router.php` - A 50-line alternative router implementation
@@ -52,6 +64,7 @@ This creates confusion, maintenance overhead, and potential conflicts. There is 
 ### Keep backend/api/index.php as canonical
 
 **Pros**:
+
 - Most complete implementation (805 lines vs 51/50)
 - Proper MVC structure with Controllers, Models, Middleware
 - Handles authentication with JWT tokens
@@ -60,6 +73,7 @@ This creates confusion, maintenance overhead, and potential conflicts. There is 
 - Already follows 12-Factor principles (stateless, config via env)
 
 **Cons**:
+
 - More complex than alternatives
 - Requires updating any references to other APIs
 - May have dependencies on backend structure
@@ -67,11 +81,13 @@ This creates confusion, maintenance overhead, and potential conflicts. There is 
 ### Keep api-server.php as canonical
 
 **Pros**:
+
 - Simpler implementation
 - Good for development environments
 - Lighter weight
 
 **Cons**:
+
 - Incomplete functionality - delegates to api-test.php
 - No proper MVC structure
 - Limited endpoint support
@@ -80,10 +96,12 @@ This creates confusion, maintenance overhead, and potential conflicts. There is 
 ### Create new unified API
 
 **Pros**:
+
 - Clean slate, no legacy issues
 - Can incorporate best practices from all existing APIs
 
 **Cons**:
+
 - Significant development effort
 - Risk of introducing new bugs
 - Delays other architectural improvements
@@ -92,10 +110,12 @@ This creates confusion, maintenance overhead, and potential conflicts. There is 
 ### Keep all three APIs
 
 **Pros**:
+
 - No immediate breaking changes
 - Preserves existing functionality
 
 **Cons**:
+
 - Continues maintenance nightmare
 - No single source of truth
 - Potential for divergent behavior
@@ -104,23 +124,27 @@ This creates confusion, maintenance overhead, and potential conflicts. There is 
 ## Implementation Plan
 
 ### Phase 1: Backup and Analysis
+
 1. Create backup of all API files in `_arch_audit/backup/`
 2. Document all endpoints in each API implementation
 3. Identify any unique functionality in api-server.php or router.php
 
 ### Phase 2: Consolidation
+
 1. Remove `api-server.php` and `router.php`
 2. Remove `api-test.php` (referenced by api-server.php)
 3. Update any references to point to `backend/api/index.php`
 4. Update development server configuration
 
 ### Phase 3: Verification
+
 1. Test all API endpoints through canonical implementation
 2. Verify authentication flows work correctly
 3. Ensure all CRUD operations function properly
 4. Validate report generation endpoints
 
 ### Phase 4: Documentation
+
 1. Update API documentation to reflect single endpoint
 2. Update development setup guides
 3. Document any behavioral changes

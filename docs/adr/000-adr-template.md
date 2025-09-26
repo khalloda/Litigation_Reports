@@ -43,10 +43,12 @@
 [example | description | pointer to more information | …]
 
 **Pros**:
+
 - [Argument a]
 - [Argument b]
 
 **Cons**:
+
 - [Argument c]
 - [Argument d]
 
@@ -55,10 +57,12 @@
 [example | description | pointer to more information | …]
 
 **Pros**:
+
 - [Argument a]
 - [Argument b]
 
 **Cons**:
+
 - [Argument c]
 - [Argument d]
 
@@ -67,10 +71,12 @@
 [example | description | pointer to more information | …]
 
 **Pros**:
+
 - [Argument a]
 - [Argument b]
 
 **Cons**:
+
 - [Argument c]
 - [Argument d]
 

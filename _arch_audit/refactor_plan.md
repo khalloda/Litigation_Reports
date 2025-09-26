@@ -33,6 +33,7 @@ This plan transforms a chaotic repository with 40+ scattered test files, 3 compe
 ## 🛡️ Phase 0: Backup & Safety Preparation (Days 1-2)
 
 ### Objectives
+
 - Create comprehensive backups
 - Document current system behavior
 - Establish rollback procedures
@@ -41,6 +42,7 @@ This plan transforms a chaotic repository with 40+ scattered test files, 3 compe
 ### Detailed Tasks
 
 #### Day 1: Complete System Backup
+
 ```bash
 # 1. Create timestamped backup
 BACKUP_DIR="_arch_audit/backup/$(date +%Y%m%d_%H%M%S)"
@@ -60,6 +62,7 @@ find . -type f -name "*.php" -o -name "*.ts" -o -name "*.tsx" > "$BACKUP_DIR/cur
 ```
 
 #### Day 2: Behavior Documentation & Testing Setup
+
 ```bash
 # 1. Test all current functionality
 npm run test                    # Frontend tests
@@ -83,12 +86,14 @@ chmod +x "$BACKUP_DIR/rollback.sh"
 ```
 
 ### Success Criteria
+
 - [ ] Complete backup created and verified
 - [ ] All current functionality documented and tested
 - [ ] Rollback procedure tested on separate branch
 - [ ] Team notified of upcoming changes
 
 ### Risk Mitigation
+
 - **Risk**: Backup incomplete
   - **Mitigation**: Verify backup by restoring to temporary directory
 - **Risk**: Current system behavior unknown
@@ -99,11 +104,13 @@ chmod +x "$BACKUP_DIR/rollback.sh"
 ## ⚡ Phase 1: API Consolidation (Days 3-5) - CRITICAL PHASE
 
 ### Objectives
+
 - Eliminate competing API implementations
 - Establish single source of truth for API routing
 - Update all references to canonical API
 
 ### Pre-Phase Analysis
+
 ```bash
 # Identify all files that reference the APIs to be removed
 grep -r "api-server.php" . --exclude-dir=node_modules > api_references.txt
@@ -114,6 +121,7 @@ grep -r "api-test.php" . --exclude-dir=node_modules >> api_references.txt
 ### Day 3: API Endpoint Mapping & Validation
 
 #### Morning: Comprehensive API Analysis
+
 ```bash
 # 1. Test all APIs to understand behavior differences
 echo "Testing backend/api/index.php"
@@ -132,7 +140,9 @@ diff <(curl -s http://localhost:8000/backend/api/ping) <(curl -s http://localhos
 ```
 
 #### Afternoon: Create API Migration Map
+
 Create `_arch_audit/api_migration_map.md`:
+
 ```markdown
 # API Migration Mapping
 
@@ -155,6 +165,7 @@ Create `_arch_audit/api_migration_map.md`:
 ### Day 4: Execute API Consolidation
 
 #### Morning: Remove Competing APIs
+
 ```bash
 # 1. Move files to backup (don't delete yet)
 mv api-server.php "_arch_audit/backup/removed_apis/"
@@ -172,6 +183,7 @@ done
 ```
 
 #### Afternoon: Validate API Consolidation
+
 ```bash
 # 1. Test that canonical API still works
 npm run dev &
@@ -191,6 +203,7 @@ kill $FRONTEND_PID
 ### Day 5: API Integration Testing & Cleanup
 
 #### Full Integration Testing
+
 ```bash
 # 1. Start full system
 npm run start:backend &
@@ -211,12 +224,14 @@ kill $BACKEND_PID $FRONTEND_PID
 ```
 
 #### Update Documentation
+
 ```bash
 # Update any API documentation
 sed -i 's|/api/|/backend/api/|g' docs/api/*.md  # If they exist
 ```
 
 ### Success Criteria
+
 - [ ] Only backend/api/index.php handles API requests
 - [ ] All frontend API calls work correctly
 - [ ] All tests pass
@@ -224,6 +239,7 @@ sed -i 's|/api/|/backend/api/|g' docs/api/*.md  # If they exist
 - [ ] Performance maintained or improved
 
 ### Rollback Procedure
+
 ```bash
 # If anything goes wrong
 cp "_arch_audit/backup/removed_apis/api-server.php" .
@@ -238,6 +254,7 @@ git checkout HEAD -- src/services/api.ts  # If changed
 ## 🔧 Phase 2: Configuration Unification (Days 6-7)
 
 ### Objectives
+
 - Eliminate duplicate configuration files
 - Establish backend/config/ as single source of truth
 - Add environment variable support
@@ -245,6 +262,7 @@ git checkout HEAD -- src/services/api.ts  # If changed
 ### Day 6: Configuration Analysis & Environment Setup
 
 #### Morning: Config File Comparison
+
 ```bash
 # 1. Compare all config files
 diff config/config.php backend/config/config.php > config_diff.txt
@@ -256,6 +274,7 @@ grep -r "config/database.php" . --exclude-dir=node_modules >> config_references.
 ```
 
 #### Afternoon: Environment Variable Enhancement
+
 ```bash
 # 1. Create .env.example
 cat > .env.example << 'EOF'
@@ -289,6 +308,7 @@ EOF
 ### Day 7: Execute Configuration Consolidation
 
 #### Morning: Remove Duplicate Configs
+
 ```bash
 # 1. Backup duplicate configs
 mkdir -p "_arch_audit/backup/removed_configs"
@@ -304,6 +324,7 @@ rmdir config/  # If empty
 ```
 
 #### Afternoon: Update References & Test
+
 ```bash
 # 1. Update all references to point to backend/config/
 # This requires manual editing of PHP files that include config
@@ -316,6 +337,7 @@ php backend/api/index.php  # Should load without errors
 ```
 
 ### Success Criteria
+
 - [ ] Only backend/config/ contains configuration files
 - [ ] All config references updated and working
 - [ ] Environment variable support functional
@@ -326,6 +348,7 @@ php backend/api/index.php  # Should load without errors
 ## 🧪 Phase 3: Test Organization (Days 8-10)
 
 ### Objectives
+
 - Move 40+ test files into organized structure
 - Delete temporary/debug test files
 - Establish service-based testing strategy
@@ -333,6 +356,7 @@ php backend/api/index.php  # Should load without errors
 ### Day 8: Test File Categorization
 
 #### Morning: Test File Analysis
+
 ```bash
 # 1. Create test organization structure
 mkdir -p tests/{api/{auth,endpoints,database},integration,fixtures}
@@ -349,7 +373,9 @@ done
 ```
 
 #### Afternoon: Create Migration Map
+
 Create `_arch_audit/test_migration_map.md`:
+
 ```markdown
 # Test File Migration Plan
 
@@ -373,6 +399,7 @@ Create `_arch_audit/test_migration_map.md`:
 ### Day 9: Execute Test Migration
 
 #### Morning: Remove Debug Files
+
 ```bash
 # 1. Backup debug files (in case any are important)
 mkdir -p "_arch_audit/backup/debug_files"
@@ -383,6 +410,7 @@ echo "Removed debug files - these should not be needed"
 ```
 
 #### Afternoon: Migrate Test Files
+
 ```bash
 # 1. Move API tests
 mv test-api-*.php tests/api/endpoints/
@@ -406,6 +434,7 @@ done
 ### Day 10: Test Integration & Cleanup
 
 #### Update Test Configuration
+
 ```bash
 # 1. Update package.json scripts for new test structure
 # Add new scripts:
@@ -419,6 +448,7 @@ npm run test:e2e  # Existing Playwright tests
 ```
 
 ### Success Criteria
+
 - [ ] No test files at repository root
 - [ ] All tests organized by service and type
 - [ ] Debug/temporary files removed
@@ -429,6 +459,7 @@ npm run test:e2e  # Existing Playwright tests
 ## 📚 Phase 4: Documentation Consolidation (Days 11-13)
 
 ### Objectives
+
 - Organize 20+ documentation files into clear hierarchy
 - Create docs/ structure with setup, deployment, troubleshooting
 - Update internal documentation links
@@ -436,6 +467,7 @@ npm run test:e2e  # Existing Playwright tests
 ### Day 11: Documentation Audit
 
 #### Create Documentation Inventory
+
 ```bash
 # 1. List all documentation
 ls *.md > doc_inventory.txt
@@ -475,6 +507,7 @@ mv APACHE_SETUP.md docs/troubleshooting/apache.md
 ### Day 13: Documentation Links & Cleanup
 
 #### Update Internal Links
+
 ```bash
 # 1. Find and update all internal documentation links
 grep -r "README-" docs/ | while read line; do
@@ -509,6 +542,7 @@ EOF
 ## 🤖 Phase 5: CI/CD Pipeline Implementation (Days 14-17)
 
 ### Objectives
+
 - Set up GitHub Actions for automated testing
 - Implement quality gates
 - Add deployment automation
@@ -570,6 +604,7 @@ EOF
 ### Days 15-16: Quality Gates & Environment Setup
 
 #### Add Security Scanning
+
 ```yaml
 # Add to .github/workflows/ci.yml
   security:
@@ -585,6 +620,7 @@ EOF
 ```
 
 #### Environment Configuration
+
 ```bash
 # 1. Set up GitHub Secrets for different environments
 # - DATABASE_URL_STAGING
@@ -615,6 +651,7 @@ EOF
 ### Day 17: Deployment Automation
 
 #### Production Deployment Pipeline
+
 ```yaml
 # .github/workflows/deploy-production.yml
 name: Deploy to Production
@@ -642,6 +679,7 @@ jobs:
 ## 🏛️ Phase 6: Governance & Polish (Days 18-20)
 
 ### Objectives
+
 - Finalize governance files
 - Set up monitoring and alerts
 - Complete documentation
@@ -650,12 +688,14 @@ jobs:
 ### Day 18: Governance Completion
 
 #### Finalize CODEOWNERS
+
 ```bash
 # Verify CODEOWNERS file is complete and accurate
 # Test by creating a test PR and checking review assignments
 ```
 
 #### Update Contributing Guidelines
+
 ```bash
 # Ensure CONTRIBUTING.md reflects new structure
 # Add examples for new file locations
@@ -665,6 +705,7 @@ jobs:
 ### Day 19: Monitoring & Health Checks
 
 #### Add Health Monitoring
+
 ```php
 // backend/api/health.php
 <?php
@@ -697,6 +738,7 @@ function checkDatabase() {
 ### Day 20: Final Testing & Documentation
 
 #### Comprehensive System Test
+
 ```bash
 # 1. Full system integration test
 npm run test:all
@@ -712,6 +754,7 @@ npm run security:scan
 ```
 
 #### Create Migration Success Report
+
 ```bash
 # Document what was accomplished
 cat > _arch_audit/migration_success_report.md << 'EOF'
@@ -747,6 +790,7 @@ EOF
 ### Rollback Strategy by Phase
 
 #### Phase 1 Rollback (API Consolidation)
+
 ```bash
 # Emergency rollback if API consolidation fails
 cp "_arch_audit/backup/removed_apis/"* .
@@ -755,6 +799,7 @@ git checkout HEAD -- src/services/api.ts  # If modified
 ```
 
 #### Phase 2 Rollback (Configuration)
+
 ```bash
 # Restore duplicate configs if consolidation fails
 cp "_arch_audit/backup/removed_configs/"* config/
@@ -762,6 +807,7 @@ cp "_arch_audit/backup/removed_configs/"* config/
 ```
 
 #### Phase 3 Rollback (Tests)
+
 ```bash
 # Move test files back to root if organization fails
 mv tests/api/endpoints/*.spec.php .
@@ -773,14 +819,18 @@ mv tests/api/database/*.spec.php .
 ### Risk Monitoring
 
 #### Daily Risk Assessment
+
 During each phase, monitor:
+
 - **Test pass rate**: Should remain at 100%
 - **Performance**: No degradation > 10%
 - **Functionality**: All features continue to work
 - **Team velocity**: No significant slowdown
 
 #### Go/No-Go Criteria
+
 Before proceeding to next phase:
+
 - [ ] All tests passing
 - [ ] No production issues reported
 - [ ] Team comfortable with changes
@@ -793,12 +843,14 @@ Before proceeding to next phase:
 ### Technical Metrics
 
 #### Code Quality
+
 - **Duplicate Files**: 0 (currently 60+)
 - **Test Organization**: 100% organized (currently 0%)
 - **Config Management**: Single source of truth (currently 3 sources)
 - **API Endpoints**: 1 canonical (currently 3 competing)
 
 #### Performance
+
 - **Build Time**: < 5 minutes (currently unknown)
 - **Test Execution**: < 10 minutes for full suite
 - **File Discovery**: < 30 seconds for any file
@@ -807,6 +859,7 @@ Before proceeding to next phase:
 ### Developer Experience
 
 #### Before vs After
+
 | Metric | Before | After | Improvement |
 |--------|---------|-------|-------------|
 | **File Discovery Time** | 2-5 minutes | < 30 seconds | 75% faster |
@@ -817,12 +870,14 @@ Before proceeding to next phase:
 ### Business Impact
 
 #### Risk Reduction
+
 - **Deployment Failures**: 50% → 5% (90% reduction)
 - **Configuration Errors**: High → Low (environment variables)
 - **Developer Confusion**: High → Low (clear structure)
 - **Technical Debt**: Critical → Manageable
 
 #### Productivity Gains
+
 - **Feature Development**: 30% faster (less time fighting infrastructure)
 - **Bug Resolution**: 40% faster (better test organization)
 - **Code Reviews**: 50% faster (clear ownership and structure)
@@ -834,11 +889,13 @@ Before proceeding to next phase:
 ### Training Schedule
 
 #### Week 1 (During Migration)
+
 - **Daily Standups**: 15-minute updates on migration progress
 - **Architecture Sessions**: 30-minute explanations of new structure
 - **Q&A Sessions**: Address concerns and questions
 
 #### Week 2 (Post-Migration)
+
 - **New Structure Walkthrough**: 2-hour comprehensive overview
 - **CI/CD Training**: 1-hour hands-on with new pipeline
 - **Best Practices Workshop**: 2-hour session on maintaining the new structure
@@ -846,6 +903,7 @@ Before proceeding to next phase:
 ### Documentation Handover
 
 #### Developer Onboarding Updated
+
 ```markdown
 # New Developer Onboarding (Post-Migration)
 
@@ -877,12 +935,14 @@ Before proceeding to next phase:
 ### Monitoring & Alerts
 
 #### Set Up Alerts For
+
 - **Architecture Violations**: Files appearing in wrong locations
 - **Duplicate Files**: New duplicate configurations
 - **Test Organization**: Tests being added to wrong locations
 - **CI/CD Health**: Pipeline failure rates
 
 #### Weekly Reviews
+
 - **Structure Compliance**: Ensure new files follow patterns
 - **Documentation Currency**: Keep docs up to date
 - **Performance Monitoring**: Track build and test times
@@ -891,12 +951,14 @@ Before proceeding to next phase:
 ### Continuous Improvement
 
 #### Monthly Architecture Reviews
+
 - **Structure Effectiveness**: Is the new structure serving its purpose?
 - **Pain Points**: What's still causing friction?
 - **Evolution Needs**: How should the structure evolve?
 - **Tool Updates**: Are there better tools/practices available?
 
 #### Quarterly Strategic Reviews
+
 - **Microservices Readiness**: Is the codebase ready for service extraction?
 - **Scaling Needs**: How should the architecture evolve for team growth?
 - **Technology Updates**: Should any major technologies be updated?
@@ -908,6 +970,7 @@ Before proceeding to next phase:
 ### Migration Completion Checklist
 
 #### Technical Completion
+
 - [ ] Zero duplicate files in repository
 - [ ] Single API implementation (backend/api/index.php)
 - [ ] Configuration unified to backend/config/ with .env support
@@ -917,6 +980,7 @@ Before proceeding to next phase:
 - [ ] All governance files in place and accurate
 
 #### Quality Assurance
+
 - [ ] All existing functionality preserved
 - [ ] Performance maintained or improved
 - [ ] Security improved (environment variables)
@@ -924,12 +988,14 @@ Before proceeding to next phase:
 - [ ] Documentation complete and accurate
 
 #### Team Readiness
+
 - [ ] All team members trained on new structure
 - [ ] CODEOWNERS file accurately reflects team structure
 - [ ] Contributing guidelines updated and communicated
 - [ ] Rollback procedures documented and tested
 
 #### Business Validation
+
 - [ ] Development velocity maintained during migration
 - [ ] No production incidents related to migration
 - [ ] Stakeholder confidence in new architecture

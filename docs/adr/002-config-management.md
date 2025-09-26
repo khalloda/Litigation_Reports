@@ -8,6 +8,7 @@
 ## Context and Problem Statement
 
 The repository currently has identical configuration files scattered across multiple directories:
+
 - `config/config.php` (root level)
 - `backend/config/config.php` (backend level)
 - `config/database.php` vs `backend/config/database.php`
@@ -53,6 +54,7 @@ This violates the 12-Factor App principle of "Config in Environment" and creates
 ### Consolidate to backend/config/
 
 **Pros**:
+
 - Aligns with service-oriented architecture
 - Clear ownership and responsibility
 - Existing files already support environment variables
@@ -60,6 +62,7 @@ This violates the 12-Factor App principle of "Config in Environment" and creates
 - Minimal changes to backend code
 
 **Cons**:
+
 - Frontend may need separate config approach
 - Some root-level PHP files may break
 - Need to update include paths
@@ -67,11 +70,13 @@ This violates the 12-Factor App principle of "Config in Environment" and creates
 ### Move to root-level packages/config/
 
 **Pros**:
+
 - True shared configuration
 - Good for monorepo structure
 - Centralized management
 
 **Cons**:
+
 - More complex migration
 - May not align with service boundaries
 - Shared configs can become monolithic
@@ -79,11 +84,13 @@ This violates the 12-Factor App principle of "Config in Environment" and creates
 ### Environment variables only
 
 **Pros**:
+
 - True 12-Factor compliance
 - Maximum security
 - No config files in source code
 
 **Cons**:
+
 - Major breaking change
 - Existing PHP constants would need rewriting
 - Complex default value management
@@ -92,10 +99,12 @@ This violates the 12-Factor App principle of "Config in Environment" and creates
 ### Keep multiple configs but sync them
 
 **Pros**:
+
 - No immediate breaking changes
 - Preserves existing functionality
 
 **Cons**:
+
 - Doesn't solve the fundamental problem
 - Adds complexity with sync automation
 - Still violates single source of truth
@@ -103,27 +112,33 @@ This violates the 12-Factor App principle of "Config in Environment" and creates
 ## Implementation Plan
 
 ### Phase 1: Analysis and Backup
+
 1. Compare all config files to identify differences
 2. Create backup of all configuration files
 3. Document all code that references config files
 
 ### Phase 2: Configuration Consolidation
+
 1. Remove duplicate config files:
+
    ```bash
    rm config/config.php
    rm config/config.production.php
    rm config/database.php
    rm database/config/database.php
    ```
+
 2. Keep canonical versions in `backend/config/`
 3. Update all include/require statements to use canonical paths
 
 ### Phase 3: Environment Variable Enhancement
+
 1. Add `.env` file support to `backend/config/config.php`
 2. Create `.env.example` with all required variables
 3. Update config files to prioritize environment variables
 
 ### Phase 4: Documentation and Testing
+
 1. Document new configuration approach
 2. Update development setup guides
 3. Test all configuration-dependent functionality
@@ -141,6 +156,7 @@ define('JWT_SECRET', $_ENV['JWT_SECRET'] ?? getenv('JWT_SECRET') ?? 'change-in-p
 ```
 
 Required environment variables:
+
 - `DB_HOST`, `DB_USER`, `DB_PASS`, `DB_NAME`
 - `JWT_SECRET` (critical for security)
 - `APP_ENV` (development/staging/production)
@@ -150,6 +166,7 @@ Required environment variables:
 ## Migration Path to Future Structure
 
 This decision prepares for future migration to:
+
 ```
 apps/
 ├── api/

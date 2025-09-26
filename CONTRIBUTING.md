@@ -3,6 +3,7 @@
 Thank you for your interest in contributing to our litigation management system! This document provides guidelines for contributing to the project.
 
 ## Table of Contents
+
 - [Getting Started](#getting-started)
 - [Development Workflow](#development-workflow)
 - [Code Standards](#code-standards)
@@ -13,36 +14,43 @@ Thank you for your interest in contributing to our litigation management system!
 ## Getting Started
 
 ### Prerequisites
+
 - Node.js >= 18.0.0
 - PHP >= 8.0
 - MySQL >= 8.0 or MariaDB >= 10.6
 - Git
 
 ### Local Development Setup
+
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/your-org/litigation-management-system.git
    cd litigation-management-system
    ```
 
 2. Install dependencies:
+
    ```bash
    npm install
    ```
 
 3. Set up environment:
+
    ```bash
    cp .env.example .env
    # Edit .env with your local database credentials
    ```
 
 4. Set up database:
+
    ```bash
    php scripts/database/migrate.php
    php scripts/database/seed.php
    ```
 
 5. Start development servers:
+
    ```bash
    npm run dev          # Frontend (React + Vite)
    npm run start:backend # Backend (PHP)
@@ -51,6 +59,7 @@ Thank you for your interest in contributing to our litigation management system!
 ## Development Workflow
 
 ### Branch Strategy
+
 - `main` - Production-ready code
 - `develop` - Integration branch for features
 - `feature/*` - New features
@@ -58,6 +67,7 @@ Thank you for your interest in contributing to our litigation management system!
 - `hotfix/*` - Critical production fixes
 
 ### Conventional Commits
+
 We use [Conventional Commits](https://www.conventionalcommits.org/) for automated changelog generation:
 
 ```
@@ -69,6 +79,7 @@ We use [Conventional Commits](https://www.conventionalcommits.org/) for automate
 ```
 
 **Types:**
+
 - `feat` - New feature
 - `fix` - Bug fix
 - `docs` - Documentation changes
@@ -78,6 +89,7 @@ We use [Conventional Commits](https://www.conventionalcommits.org/) for automate
 - `chore` - Build process or auxiliary tool changes
 
 **Examples:**
+
 ```
 feat(api): add client report generation endpoint
 fix(auth): resolve JWT token expiration issue
@@ -86,7 +98,9 @@ test(api): add comprehensive auth endpoint tests
 ```
 
 ### Semantic Versioning
+
 We follow [SemVer](https://semver.org/):
+
 - `MAJOR` - Breaking changes
 - `MINOR` - New features (backward compatible)
 - `PATCH` - Bug fixes (backward compatible)
@@ -94,6 +108,7 @@ We follow [SemVer](https://semver.org/):
 ## Code Standards
 
 ### PHP (Backend)
+
 - Follow [PSR-12](https://www.php-fig.org/psr/psr-12/) coding standard
 - Use meaningful variable and function names
 - Add type hints for function parameters and return types
@@ -118,6 +133,7 @@ function create($data)
 ```
 
 ### TypeScript/React (Frontend)
+
 - Use TypeScript for all new code
 - Follow React best practices and hooks patterns
 - Use functional components over class components
@@ -141,6 +157,7 @@ const ClientForm = (props: any) => {
 ```
 
 ### General Guidelines
+
 - Write self-documenting code
 - Keep functions small and focused
 - Use descriptive commit messages
@@ -150,19 +167,23 @@ const ClientForm = (props: any) => {
 ## Testing Requirements
 
 ### Required Tests
+
 All contributions must include appropriate tests:
 
 **Backend (PHP):**
+
 - Unit tests for new functions/methods
 - Integration tests for API endpoints
 - Database tests for model changes
 
 **Frontend (React):**
+
 - Component tests for new components
 - Page tests for new pages
 - E2E tests for new user flows
 
 ### Running Tests
+
 ```bash
 # Run all tests
 npm test
@@ -178,6 +199,7 @@ npm run test:coverage
 ```
 
 ### Test Quality Standards
+
 - Tests must pass consistently (>99% reliability)
 - Aim for >80% code coverage on new code
 - Write clear test descriptions
@@ -186,16 +208,20 @@ npm run test:coverage
 ## Pull Request Process
 
 ### Before Submitting
+
 1. Ensure all tests pass locally
 2. Run linting and fix any issues:
+
    ```bash
    npm run lint:fix
    npm run type-check
    ```
+
 3. Update documentation if needed
 4. Add appropriate tests for new functionality
 
 ### PR Title and Description
+
 - Use conventional commit format for PR title
 - Provide clear description of changes
 - Link to related issues
@@ -203,6 +229,7 @@ npm run test:coverage
 - List any breaking changes
 
 ### PR Template
+
 ```markdown
 ## Summary
 Brief description of changes
@@ -228,6 +255,7 @@ Brief description of changes
 ```
 
 ### Review Process
+
 1. Automated checks must pass (CI/CD, linting, tests)
 2. At least one code review required
 3. Architecture changes require architect approval (see CODEOWNERS)
@@ -244,17 +272,20 @@ For significant architectural changes:
 5. **Implement**: Create implementation PR
 
 ### ADR Template
+
 Use the template in `/docs/adr/000-adr-template.md` for new architectural decisions.
 
 ## Code Review Guidelines
 
 ### For Authors
+
 - Keep PRs focused and reasonably sized (<500 lines when possible)
 - Provide clear description and context
 - Respond to feedback promptly and professionally
 - Test your changes thoroughly
 
 ### For Reviewers
+
 - Review within 24 hours when possible
 - Focus on code quality, security, and maintainability
 - Provide constructive feedback
@@ -265,12 +296,13 @@ Use the template in `/docs/adr/000-adr-template.md` for new architectural decisi
 - **General Questions**: Open a GitHub Discussion
 - **Bug Reports**: Create an issue with the bug template
 - **Feature Requests**: Create an issue with the feature template
-- **Security Issues**: Email security@litigation-system.com
+- **Security Issues**: Email <security@litigation-system.com>
 - **Urgent Issues**: Contact the on-call developer via Slack
 
 ## Recognition
 
 We appreciate all contributions! Contributors will be:
+
 - Listed in our CHANGELOG.md
 - Recognized in release notes
 - Invited to team events and discussions

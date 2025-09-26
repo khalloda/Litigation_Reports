@@ -11,9 +11,11 @@ import {
   Spinner,
   Alert,
 } from 'react-bootstrap';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { Plus, Search, Filter, Eye, Edit, Trash, Calendar, User, Gavel } from 'lucide-react';
 import { apiService as api } from '../services/api';
+import CaseModal from '../components/modals/CaseModal';
 
 interface Case {
   id: number;
@@ -65,6 +67,9 @@ const CasesPage: React.FC = () => {
     has_next: false,
     has_prev: false,
   });
+  const [showCaseModal, setShowCaseModal] = useState(false);
+  const [selectedCase, setSelectedCase] = useState<Case | null>(null);
+  const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
 
   useEffect(() => {
     loadCases();
@@ -116,6 +121,58 @@ const CasesPage: React.FC = () => {
 
   const handlePageChange = (page: number) => {
     setPagination((prev) => ({ ...prev, current_page: page }));
+  };
+
+  const handleViewCase = (caseItem: Case) => {
+    // For now, just show an alert with case details
+    // In the future, this could open a view modal
+    const details = `
+      رقم القضية: ${caseItem.matter_id || '-'}
+      الموضوع: ${caseItem.matter_ar}
+      العميل: ${caseItem.client_name_ar}
+      الحالة: ${options.status[caseItem.matter_status] || caseItem.matter_status}
+      الأهمية: ${options.importance[caseItem.matter_importance] || caseItem.matter_importance}
+      المحكمة: ${caseItem.matter_court || '-'}
+    `;
+    alert(details);
+  };
+
+  const handleEditCase = (caseItem: Case) => {
+    setSelectedCase(caseItem);
+    setModalMode('edit');
+    setShowCaseModal(true);
+  };
+
+  const handleAddCase = () => {
+    setSelectedCase(null);
+    setModalMode('create');
+    setShowCaseModal(true);
+  };
+
+  const handleCaseModalSave = () => {
+    loadCases(); // Refresh the cases list after save
+  };
+
+  const handleCaseModalHide = () => {
+    setShowCaseModal(false);
+    setSelectedCase(null);
+  };
+
+  const handleDeleteCase = async (caseItem: Case) => {
+    if (confirm(`هل أنت متأكد من حذف القضية ${caseItem.matter_id || caseItem.matter_ar}؟`)) {
+      try {
+        const response = await api.delete(`/cases/${caseItem.id}`);
+        if (response.success) {
+          toast.success('تم حذف القضية بنجاح');
+          loadCases(); // Refresh the list
+        } else {
+          toast.error(response.error || 'حدث خطأ أثناء حذف القضية');
+        }
+      } catch (err) {
+        console.error('Error deleting case:', err);
+        toast.error('حدث خطأ أثناء حذف القضية');
+      }
+    }
   };
 
   const getStatusBadge = (status: string) => {
@@ -176,7 +233,7 @@ const CasesPage: React.FC = () => {
               </h2>
               <p className='text-muted mb-0'>إدارة وتتبع جميع القضايا القانونية</p>
             </div>
-            <Button variant='primary' size='lg'>
+            <Button variant='primary' size='lg' onClick={handleAddCase}>
               <Plus className='me-2' />
               إضافة قضية جديدة
             </Button>
@@ -316,13 +373,28 @@ const CasesPage: React.FC = () => {
                       <td>{formatDate(caseItem.matter_start_date)}</td>
                       <td>
                         <div className='btn-group btn-group-sm'>
-                          <Button variant='outline-primary' size='sm'>
+                          <Button
+                            variant='outline-primary'
+                            size='sm'
+                            onClick={() => handleViewCase(caseItem)}
+                            title='عرض تفاصيل القضية'
+                          >
                             <Eye size={14} />
                           </Button>
-                          <Button variant='outline-secondary' size='sm'>
+                          <Button
+                            variant='outline-secondary'
+                            size='sm'
+                            onClick={() => handleEditCase(caseItem)}
+                            title='تعديل القضية'
+                          >
                             <Edit size={14} />
                           </Button>
-                          <Button variant='outline-danger' size='sm'>
+                          <Button
+                            variant='outline-danger'
+                            size='sm'
+                            onClick={() => handleDeleteCase(caseItem)}
+                            title='حذف القضية'
+                          >
                             <Trash size={14} />
                           </Button>
                         </div>
@@ -376,6 +448,15 @@ const CasesPage: React.FC = () => {
           </Card.Footer>
         )}
       </Card>
+
+      {/* Case Modal */}
+      <CaseModal
+        show={showCaseModal}
+        onHide={handleCaseModalHide}
+        onSave={handleCaseModalSave}
+        caseData={selectedCase}
+        mode={modalMode}
+      />
     </Container>
   );
 };

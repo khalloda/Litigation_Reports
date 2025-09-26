@@ -2,7 +2,8 @@
 
 ## Current Issue: PHP Internal Server Error
 
-### Test Steps:
+### Test Steps
+
 1. Try: `http://lit.local/phpinfo.php`
    - If this fails → PHP configuration issue
    - If this works → API-specific issue
@@ -10,9 +11,10 @@
 2. Try: `http://lit.local/api/ping.php`
    - Should return JSON with timestamp
 
-### Possible Solutions:
+### Possible Solutions
 
 #### Solution 1: Disable fcgid Module (Use Default PHP)
+
 Edit your virtual host to remove fcgid configuration:
 
 ```apache
@@ -43,13 +45,17 @@ Edit your virtual host to remove fcgid configuration:
 ```
 
 #### Solution 2: Fix fcgid PHP Version
+
 The fcgid config mentions PHP 8.4.0 but WAMP might be using 8.3.14. Change:
+
 ```apache
 Define FCGIPHPVERSION "8.3.14"
 ```
 
 #### Solution 3: Use localhost Instead
+
 Copy files to WAMP's default directory:
+
 ```
 Copy: D:\Claude\Litigation_Reports\backend\public\*
 To: D:\wamp64\www\litigation\
@@ -60,7 +66,8 @@ To: D:\wamp64\www\litigation\api\
 Access via: http://localhost/litigation/
 ```
 
-### Quick Test Commands:
+### Quick Test Commands
+
 ```bash
 # Check PHP version
 php -v

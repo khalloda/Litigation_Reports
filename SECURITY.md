@@ -19,9 +19,10 @@ We take the security of our litigation management system seriously. If you disco
 
 ### 2. Report Privately
 
-Send an email to: **security@litigation-system.com**
+Send an email to: **<security@litigation-system.com>**
 
 Include the following information:
+
 - Type of vulnerability
 - Affected component(s)
 - Steps to reproduce
@@ -38,6 +39,7 @@ Include the following information:
 ### 4. Responsible Disclosure
 
 Please give us reasonable time to investigate and fix the issue before making it public. We commit to:
+
 - Acknowledging your report promptly
 - Working diligently to understand and resolve the issue
 - Keeping you informed of our progress
@@ -245,6 +247,7 @@ header('Content-Security-Policy: default-src \'self\'');
 ### Update Notifications
 
 Security updates will be communicated through:
+
 - GitHub Security Advisories
 - Release notes with [SECURITY] prefix
 - Email notifications to registered administrators
@@ -252,19 +255,21 @@ Security updates will be communicated through:
 ### Emergency Updates
 
 Critical security fixes may be released outside the normal release cycle:
+
 - Hotfix branches for immediate deployment
 - Automated deployment for critical patches
 - Emergency notification procedures
 
 ## Contact Information
 
-- **Security Team**: security@litigation-system.com
-- **General Support**: support@litigation-system.com
+- **Security Team**: <security@litigation-system.com>
+- **General Support**: <support@litigation-system.com>
 - **Emergency Contact**: +1-XXX-XXX-XXXX (24/7 for critical issues)
 
 ## Recognition
 
 We appreciate responsible security researchers and offer:
+
 - Public recognition (if desired)
 - Detailed credit in release notes
 - Direct communication with our security team

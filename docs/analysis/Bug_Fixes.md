@@ -1,7 +1,9 @@
 # Bug Fixes Documentation
+
 ## Litigation Management System
 
 ### Document Information
+
 - **Project**: Litigation Management System
 - **Version**: 1.0 - In Development
 - **Date**: December 2024
@@ -24,15 +26,18 @@
 ## Detailed Bug Reports
 
 ### BUG-001: Sass Import Errors Causing White Page
+
 **Date**: December 2024  
 **Severity**: High  
 **Status**: ✅ Fixed  
 **Component**: Sass/SCSS Styling System  
 
 #### **Problem Description:**
+
 The application was showing a white page due to Sass import errors. The main.scss file was using incorrect Bootstrap import paths and the Vite configuration was using deprecated Sass syntax.
 
 #### **Error Messages:**
+
 ```
 Error: Can't find stylesheet to import.
 @import "~bootstrap/scss/bootstrap";
@@ -43,17 +48,20 @@ Deprecation Warning [import]: Sass @import rules are deprecated and will be remo
 ```
 
 #### **Root Cause Analysis:**
+
 1. **Incorrect Bootstrap Import Path**: The main.scss file was using `@import "~bootstrap/scss/bootstrap"` which is a Webpack-specific syntax not supported by Vite
 2. **Mixed Sass Syntax**: The file was using both `@use` and `@import` syntax inconsistently
 3. **Vite Configuration Issues**: The vite.config.ts was using modern `@use` syntax in additionalData while main.scss was using `@import`
 
 #### **Files Affected:**
+
 - `src/styles/main.scss`
 - `vite.config.ts`
 
 #### **Fix Applied:**
 
 **1. Fixed main.scss imports:**
+
 ```scss
 // Before (BROKEN)
 @use "bootstrap/scss/bootstrap";
@@ -69,6 +77,7 @@ Deprecation Warning [import]: Sass @import rules are deprecated and will be remo
 ```
 
 **2. Updated vite.config.ts:**
+
 ```typescript
 // Before (BROKEN)
 css: {
@@ -99,6 +108,7 @@ css: {
 ```
 
 #### **Verification:**
+
 - ✅ Sass compilation errors resolved
 - ✅ Bootstrap styles loading correctly
 - ✅ Development server running on localhost:3001
@@ -106,21 +116,25 @@ css: {
 - ⚠️ Sass deprecation warnings still present but silenced (non-blocking)
 
 #### **Impact:**
+
 - **Before**: White page due to CSS compilation failure
 - **After**: Application loads with proper styling and RTL support
 
 ---
 
 ### BUG-002: Duplicate Declaration Error in Users Component
+
 **Date**: December 2024  
 **Severity**: High  
 **Status**: ✅ Fixed  
 **Component**: React/TypeScript  
 
 #### **Problem Description:**
+
 The Users.tsx component had a naming conflict between the imported `Users` icon from lucide-react and the exported `Users` function, causing a duplicate declaration error.
 
 #### **Error Messages:**
+
 ```
 Pre-transform error: Duplicate declaration "Users"
 > 15 | export function Users() {
@@ -130,14 +144,17 @@ Internal server error: Duplicate declaration "Users"
 ```
 
 #### **Root Cause Analysis:**
+
 The import statement was importing both a `User` icon (aliased as `UserIcon`) and a `Users` icon, but the component function was also named `Users`, creating a naming conflict in the same scope.
 
 #### **Files Affected:**
+
 - `src/pages/Users.tsx`
 
 #### **Fix Applied:**
 
 **1. Fixed import statement:**
+
 ```typescript
 // Before (BROKEN)
 import { Plus, Edit, Trash2, Eye, Shield, User as UserIcon, Users } from 'lucide-react'
@@ -147,6 +164,7 @@ import { Plus, Edit, Trash2, Eye, Shield, User as UserIcon, Users as UsersIcon }
 ```
 
 **2. Updated icon usage:**
+
 ```typescript
 // Before (BROKEN)
 <Users className="me-2" />
@@ -156,27 +174,32 @@ import { Plus, Edit, Trash2, Eye, Shield, User as UserIcon, Users as UsersIcon }
 ```
 
 #### **Verification:**
+
 - ✅ TypeScript compilation errors resolved
 - ✅ Component renders without errors
 - ✅ Icon displays correctly in the header
 - ✅ No naming conflicts in the component scope
 
 #### **Impact:**
+
 - **Before**: Application crashed with TypeScript compilation error
 - **After**: Users page loads and displays correctly with proper icon
 
 ---
 
 ### BUG-003: Sass Deprecation Warnings
+
 **Date**: December 2024  
 **Severity**: Medium  
 **Status**: ✅ Fixed  
 **Component**: Vite Build System  
 
 #### **Problem Description:**
+
 The build process was generating numerous Sass deprecation warnings about `@import` rules, legacy JS API, and global builtin functions. While not blocking functionality, these warnings were cluttering the console output.
 
 #### **Warning Messages:**
+
 ```
 Deprecation Warning [import]: Sass @import rules are deprecated and will be removed in Dart Sass 3.0.0.
 Deprecation Warning [legacy-js-api]: The legacy JS API is deprecated and will be removed in Dart Sass 2.0.0.
@@ -185,16 +208,19 @@ Deprecation Warning [color-functions]: red() is deprecated.
 ```
 
 #### **Root Cause Analysis:**
+
 1. **Bootstrap Dependencies**: Bootstrap's Sass files still use deprecated `@import` syntax and global functions
 2. **Sass Version**: Using newer Dart Sass version that shows deprecation warnings for older syntax
 3. **Build Configuration**: Vite was not configured to silence these specific warnings
 
 #### **Files Affected:**
+
 - `vite.config.ts`
 
 #### **Fix Applied:**
 
 **Added silenceDeprecations configuration:**
+
 ```typescript
 css: {
   preprocessorOptions: {
@@ -215,37 +241,44 @@ css: {
 ```
 
 #### **Verification:**
+
 - ✅ Deprecation warnings silenced in console
 - ✅ Build process runs without warnings
 - ✅ Styles continue to work correctly
 - ✅ No impact on functionality
 
 #### **Impact:**
+
 - **Before**: Console cluttered with 200+ deprecation warnings
 - **After**: Clean console output with warnings silenced
 
 ---
 
 ### BUG-004: Client Logo Not Saving
+
 **Date**: September 18, 2025  
 **Severity**: High  
 **Status**: ✅ Fixed  
 **Component**: File Upload System  
 
 #### **Problem Description:**
+
 Client logos were not being saved when creating or updating clients. The file upload functionality was not working due to incorrect data format being sent from frontend to backend.
 
 #### **Error Messages:**
+
 - No explicit error messages, but logos were not being saved to the database
 - Files were not being uploaded to the server
 - Client records were created/updated without logo information
 
 #### **Root Cause Analysis:**
+
 1. **Frontend Issue**: The API service was sending all data as JSON (`JSON.stringify(data)`) instead of using `FormData` for file uploads
 2. **Backend Issue**: The backend was not properly handling file uploads from `$_FILES`
 3. **Missing File Processing**: No logic to process uploaded files and save them to the filesystem
 
 #### **Files Affected:**
+
 - `src/services/api.ts` - API service for handling requests
 - `src/Controllers/ClientController.php` - Backend controller for client operations
 - `uploads/logos/` - New directory created for storing client logos
@@ -253,6 +286,7 @@ Client logos were not being saved when creating or updating clients. The file up
 #### **Fix Applied:**
 
 **1. Updated API Service (src/services/api.ts):**
+
 ```typescript
 // Added file detection and FormData handling
 private hasFileFields(data: any): boolean {
@@ -303,6 +337,7 @@ async post(endpoint: string, data?: any): Promise<ApiResponse<any>> {
 ```
 
 **2. Updated Request Method:**
+
 ```typescript
 // Only set Content-Type for JSON requests, not for FormData
 if (!(options.body instanceof FormData)) {
@@ -311,6 +346,7 @@ if (!(options.body instanceof FormData)) {
 ```
 
 **3. Updated ClientController (src/Controllers/ClientController.php):**
+
 ```php
 // Handle logo file upload in store method
 $logoFile = $request->file('logo_file');
@@ -345,11 +381,13 @@ if ($logoFile && $logoFile['error'] === UPLOAD_ERR_OK) {
 ```
 
 **4. Created Upload Directory:**
+
 ```bash
 mkdir -p uploads/logos
 ```
 
 #### **Verification:**
+
 - ✅ File uploads now work correctly
 - ✅ Client logos are saved to the database
 - ✅ Files are stored in the uploads/logos directory
@@ -358,10 +396,12 @@ mkdir -p uploads/logos
 - ✅ Backend properly processes uploaded files
 
 #### **Impact:**
+
 - **Before**: Client logos were not being saved, file upload functionality was broken
 - **After**: Client logos are properly uploaded, stored, and displayed in the system
 
 #### **Technical Details:**
+
 - **File Types Supported**: JPEG, JPG, PNG, GIF, WebP
 - **File Size Limit**: 5MB maximum
 - **File Naming**: `client_{timestamp}_{uniqueid}.{extension}`
@@ -369,15 +409,18 @@ mkdir -p uploads/logos
 - **Database Field**: `logo` field stores the filename
 
 #### **Root Cause Analysis:**
+
 The issue was identified through comprehensive testing using Playwright automation. The problem was not with the logo upload functionality itself, but with the frontend login system that prevented access to the clients page where logo uploads are performed.
 
 **Key Findings:**
+
 1. **Backend API Working**: The login API (`http://localhost:8000/api/auth/login`) is functioning correctly and returns valid tokens
 2. **Frontend Login Issue**: The frontend login form is not properly submitting or processing the login request
 3. **Authentication State**: Users remain unauthenticated after login attempts, preventing access to protected routes like `/clients`
 4. **File Upload Ready**: The client logo upload functionality is properly implemented and ready to work once authentication is resolved
 
 #### **Testing Results:**
+
 - ✅ Backend API login endpoint working correctly
 - ✅ Client logo upload backend implementation complete
 - ✅ File upload FormData handling implemented
@@ -386,9 +429,11 @@ The issue was identified through comprehensive testing using Playwright automati
 - ❌ Users cannot access clients page to test logo upload
 
 #### **FINAL STATUS (December 2024):**
+
 **🎉 COMPLETE SUCCESS**: The client logo upload and save functionality is now fully working!
 
 **Final Test Results - COMPLETE SUCCESS:**
+
 1. ✅ **Login functionality working**: User authentication works perfectly
 2. ✅ **Navigation working**: Successfully navigated to clients page
 3. ✅ **Modal functionality working**: "Add Client" button opens modal correctly
@@ -400,18 +445,21 @@ The issue was identified through comprehensive testing using Playwright automati
 
 **Key Success Evidence:**
 The Playwright test found **14 success elements** (`.badge bg-success`) in the client list, proving that:
+
 - Multiple clients were successfully created with logo uploads
 - The logo upload functionality is working perfectly
 - The save operation completes successfully
 - The entire flow from login to logo upload to client creation works end-to-end
 
 **Technical Resolution:**
+
 1. ✅ **Route parameter extraction fixed**: Updated `ClientController` to use `$request->getRouteParam('id')`
 2. ✅ **Request object enhanced**: Added `setRouteParams()` and `getRouteParam()` methods
 3. ✅ **Router integration fixed**: Updated Router to properly store route parameters
 4. ✅ **File upload handling working**: Backend properly processes multipart/form-data requests
 
 **Final Impact:**
+
 - **Before**: Client logos were not being saved, file upload functionality was broken
 - **After**: Client logos are properly uploaded, stored, and displayed in the system
 - **Status**: 🎉 **COMPLETE SUCCESS** - The bug has been fully resolved!
@@ -421,37 +469,45 @@ The Playwright test found **14 success elements** (`.badge bg-success`) in the c
 ## Current Known Issues
 
 ### Issue-001: Options Endpoints Returning 404
+
 **Severity**: Low  
 **Status**: Not Fixed  
 **Component**: Backend/API  
 
 #### **Description:**
+
 Some API endpoints for options (dropdown data) are returning 404 errors. This affects the frontend's ability to load dropdown options for forms.
 
 #### **Impact:**
+
 - Dropdown options not loading in forms
 - Non-critical functionality affected
 - System still fully functional for core operations
 
 #### **Next Steps:**
+
 1. Implement missing options endpoints
 2. Add proper error handling for options
 3. Test all dropdown functionality
 
 ### Issue-002: Partial Data Migration
+
 **Severity**: Medium  
 **Status**: Not Fixed  
 **Component**: Database/Migration  
 
 #### **Description:**
+
 Only partial data has been migrated from the Access database. Currently only 6 cases, 10 clients, and 1 hearing are loaded, while the full dataset contains 6,388+ cases, 247+ clients, and 20,000+ hearings.
 
 #### **Impact:**
+
 - Limited data available for testing
 - Full system capabilities not demonstrated
 - Production deployment needs complete data
 
 #### **Next Steps:**
+
 1. Complete full data migration from Access
 2. Validate all migrated data
 3. Test system with full dataset
@@ -461,16 +517,19 @@ Only partial data has been migrated from the Access database. Currently only 6 c
 ## Bug Prevention Measures
 
 ### 1. **Code Quality Standards**
+
 - Use consistent import naming conventions
 - Avoid naming conflicts between imports and exports
 - Follow TypeScript best practices
 
 ### 2. **Build Configuration**
+
 - Configure build tools to handle deprecation warnings appropriately
 - Use consistent Sass syntax throughout the project
 - Test build process regularly
 
 ### 3. **Development Workflow**
+
 - Test changes in development environment before committing
 - Use linting tools to catch naming conflicts early
 - Maintain clear separation between frontend and backend concerns
@@ -480,6 +539,7 @@ Only partial data has been migrated from the Access database. Currently only 6 c
 ## Testing and Verification
 
 ### **Frontend Testing Status:**
+
 - ✅ Sass compilation working
 - ✅ TypeScript compilation working
 - ✅ React components rendering
@@ -487,6 +547,7 @@ Only partial data has been migrated from the Access database. Currently only 6 c
 - ✅ Development server running
 
 ### **Backend Testing Status:**
+
 - ✅ Backend fully tested and working
 - ✅ All API endpoints verified and functional
 - ✅ Database connections tested and working
@@ -497,6 +558,7 @@ Only partial data has been migrated from the Access database. Currently only 6 c
 ## Documentation Updates
 
 ### **Files Updated:**
+
 - ✅ `index_work.md` - Comprehensive project analysis
 - ✅ `index_files.md` - File structure analysis
 - ✅ `PRD.md` - Updated to reflect actual status
@@ -506,6 +568,7 @@ Only partial data has been migrated from the Access database. Currently only 6 c
 - 🔄 `README.md` - Pending update
 
 ### **Key Documentation Changes:**
+
 - Removed misleading "Production Ready" claims
 - Updated status to reflect frontend-only implementation
 - Added reality check sections
@@ -518,6 +581,7 @@ Only partial data has been migrated from the Access database. Currently only 6 c
 The litigation management system has been successfully transformed from a non-functional frontend-only application to a fully functional system with real data integration. All critical issues have been resolved, and the system is now operational with working authentication, database connectivity, and CRUD operations.
 
 **Current Status:**
+
 - **Frontend**: ✅ Working (fully functional with RTL support)
 - **Backend**: ✅ Working (PHP API with real data)
 - **Database**: ✅ Working (MySQL with migrated data)

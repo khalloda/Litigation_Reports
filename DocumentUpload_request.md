@@ -1,17 +1,24 @@
 # ⚙️ Debug & Fix “/api/documents” Upload 400 Error
+
 You are a Principal Software Architect / Senior Developer with 10+ years experience.
 Your task is to investigate, diagnose, and fully fix the issue where uploading documents fails, giving a **400 (Bad Request)** from `POST /api/documents`.
-As the same Document Upload Faliure issue is still there. 
-Note that the Edit function is working now.
+As the same Document Upload Faliure issue is still there.
+Note that the Edit function is working now
 ---
+
 ## Goals
+
 1. Identify the root cause(s) of the 400 error.  
 2. Write precise changes to frontend and backend to resolve it.  
 3. Ensure uploads work reliably under expected conditions (correct field names, size limits, headers, file type).  
 4. Add tests, logs, and documentation to prevent regressions.
+
 ---
+
 ## Requirements & Checks
+
 For each, verify and if needed, fix:
+
 | Area | What to Check / Fix |
 |------|---------------------|
 | **Route / Controller / Validation** | Locate `POST /api/documents` backend route; inspect file upload handler, required field names; inspect validation rules (file required, mimetypes, max size). |
@@ -22,21 +29,30 @@ For each, verify and if needed, fix:
 | **Frontend Behavior** | In the React code (or front end), build FormData correctly. Do not override `Content-Type` header manually. Ensure file is not empty. Check for large files / progress. |
 | **Cross Origin / CORS** | If frontend origin differs from backend, ensure OPTIONS preflight works. Backend must allow required headers, methods, origins. |
 | **Test Cases** | Create minimal test via `curl` or Postman to mimic frontend request. Confirm it passes. Also test invalid scenarios (wrong field, missing file, too large file). |
+
 ---
+
 ## Deliverables
+
 - A report of findings: **what was wrong and why**.  
 - A patch / PR plan with specific file changes: frontend and backend.  
 - Sample test (curl or Postman) to demonstrate working upload.  
 - Updated documentation in code or README explaining file upload endpoint: fields required, max size, error codes.  
 - Optional: add automated test(s) for upload endpoint (unit or integration).
+
 ---
+
 ## Constraints & Style
+
 - Do not make breaking changes without fallback. If you change field names, support old ones temporarily or provide migration notes.  
 - Follow existing code conventions (error structure, logging, response shapes).  
 - Use clear commit messages (e.g., `fix(upload): correct field name and increase size limit`).  
 - Ensure backward compatibility unless client requests breaking change.  
+
 ---
+
 ## Example Test
+
 ```bash
 curl -v -X POST http://YOUR_DOMAIN/api/documents \
   -H "Authorization: Bearer <PASTE_TOKEN_HERE>" \

@@ -3,6 +3,7 @@
 ## Current Problems
 
 The current repository structure violates multiple architectural principles:
+
 - **No clear service boundaries** (frontend and backend mixed)
 - **Configuration scattered** across 3 different locations
 - **No separation of concerns** (tests, scripts, docs all at root)
@@ -122,6 +123,7 @@ litigation-management-system/
 ## Service Boundaries (12-Factor Compliant)
 
 ### 1. API Service (`apps/api/`)
+
 - **Single Responsibility**: Handle all backend logic
 - **Stateless**: No session state, JWT-based auth
 - **Config via Environment**: All config from environment variables
@@ -129,12 +131,14 @@ litigation-management-system/
 - **Port Binding**: Self-contained HTTP service
 
 ### 2. Web Service (`apps/web/`)
+
 - **Single Responsibility**: User interface and client-side logic
 - **Build/Release/Run**: Clear separation via Vite
 - **Config via Environment**: Environment-specific builds
 - **Static Assets**: Served from CDN or static hosting
 
 ### 3. Shared Packages (`packages/`)
+
 - **DRY Principle**: Shared code between services
 - **Dependency Management**: Clear internal dependencies
 - **Versioned**: Each package can be versioned independently
@@ -142,11 +146,13 @@ litigation-management-system/
 ## Migration Benefits
 
 ### ✅ Single Source of Truth
+
 - **One API implementation**: `apps/api/src/`
 - **One config location**: `apps/api/config/` + environment variables
 - **One test strategy**: Organized by service and type
 
 ### ✅ Clear Separation of Concerns
+
 - **Applications**: Business logic and user interfaces
 - **Packages**: Shared utilities and data layer
 - **Scripts**: Automation and deployment
@@ -154,11 +160,13 @@ litigation-management-system/
 - **Docs**: Knowledge management
 
 ### ✅ Developer Experience
+
 - **Predictable structure**: Developers know where to find things
 - **Easy onboarding**: Clear setup documentation
 - **Maintainable**: Each service can be modified independently
 
 ### ✅ DevOps Benefits
+
 - **Environment parity**: Same structure dev → staging → production
 - **Scalable deployment**: Services can be deployed independently
 - **CI/CD optimization**: Test/build only what changed
@@ -166,21 +174,25 @@ litigation-management-system/
 ## Migration Strategy
 
 ### Phase 1: Core Services
+
 1. Create `apps/api/` and move `backend/` contents
 2. Create `apps/web/` and move `src/` contents
 3. Update build scripts to target new locations
 
 ### Phase 2: Shared Infrastructure
+
 1. Create `packages/config/` and consolidate config files
 2. Create `packages/database/` and move database utilities
 3. Update imports across services
 
 ### Phase 3: Testing & Documentation
+
 1. Reorganize all test files into `tests/` by service
 2. Consolidate documentation into `docs/` hierarchy
 3. Create ADRs for all major decisions
 
 ### Phase 4: Governance
+
 1. Add CODEOWNERS for each major path
 2. Set up GitHub workflows for new structure
 3. Create contributing guidelines

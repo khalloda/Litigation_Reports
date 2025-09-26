@@ -3,6 +3,7 @@
 ## Frontend Framework: React
 
 ### Core Libraries
+
 - **React 18+** - Primary UI library with hooks and concurrent features
 - **React Testing Library (RTL)** - Testing framework following best practices
 - **React Bootstrap** - UI component library with RTL support
@@ -11,6 +12,7 @@
 ### React Development Rules
 
 #### Component Patterns
+
 - Use functional components with hooks over class components
 - Prefer custom hooks for reusable stateful logic
 - Follow single responsibility principle for components
@@ -19,6 +21,7 @@
 - **Form Components**: Implement bilingual validation and mixed content handling
 
 #### State Management
+
 - `useState` for local component state
 - `useEffect` for side effects and lifecycle management
 - Custom hooks for complex state logic (e.g., `useLanguage`, `useRTL`)
@@ -26,6 +29,7 @@
 - **File Upload State**: Handle preview state, validation errors, and upload progress
 
 #### Data Fetching
+
 - Use `useEffect` with cleanup for API calls
 - Implement race condition protection with ignore flags
 - Consider server-side rendering for better performance
@@ -33,6 +37,7 @@
 - **CRUD Operations**: Implement optimistic updates with proper error handling
 
 #### Code Quality
+
 - Follow existing code conventions and patterns
 - Use TypeScript for type safety with proper interfaces
 - Implement proper error boundaries
@@ -42,11 +47,13 @@
 ### New Component Patterns (2025-09-17)
 
 #### Client Management Components
+
 - **ClientModal**: Multi-mode component (create/edit/view) with bilingual forms
 - **MixedContentInput**: Enhanced input component supporting RTL/LTR mixed content
 - **Logo Upload**: File upload component with drag-and-drop, validation, and preview
 
 #### Form Component Standards
+
 ```typescript
 interface ComponentProps {
   value: string
@@ -59,6 +66,7 @@ interface ComponentProps {
 ```
 
 #### File Upload Pattern
+
 - Client-side validation (file type, size limits)
 - Real-time preview functionality
 - Drag-and-drop interface with fallback
@@ -68,12 +76,14 @@ interface ComponentProps {
 ### React Testing Library (RTL) Rules
 
 #### Testing Philosophy
+
 - Test behavior, not implementation details
 - Query by accessibility attributes and user-facing text
 - Avoid testing internal component state directly
 - Focus on user interactions and outcomes
 
 #### Best Practices
+
 - Use semantic queries (getByRole, getByLabelText)
 - Test user workflows end-to-end
 - Mock external dependencies appropriately
@@ -82,6 +92,7 @@ interface ComponentProps {
 - **File Upload Testing**: Use fixtures for upload validation tests
 
 #### API Testing Integration
+
 - Combine UI tests with API validation when needed
 - Use proper test setup/teardown for API contexts
 - Verify both UI state and backend changes
@@ -89,10 +100,12 @@ interface ComponentProps {
 ### Browser Automation: Playwright
 
 #### When to Use Playwright vs RTL
+
 - **RTL**: Unit and integration testing of React components
 - **Playwright**: End-to-end testing, cross-browser validation, complex user flows
 
 #### Integration Patterns
+
 - Use `page.exposeFunction()` for Node.js-browser communication
 - Combine UI automation with API testing
 - Implement proper browser context management
@@ -100,6 +113,7 @@ interface ComponentProps {
 - **Test Helpers**: Create reusable helper classes for common operations
 
 #### E2E Testing Standards (2025-09-17)
+
 ```typescript
 // Test Helper Pattern
 export class ComponentHelpers {
@@ -113,18 +127,21 @@ export class ComponentHelpers {
 ### Internationalization (i18n)
 
 #### Language Management
+
 - **useLanguage Hook**: Custom hook for language state management
 - **useRTL Hook**: RTL layout detection and management
 - **Mixed Content Support**: Handle Arabic/English mixed text inputs
 - **LocalStorage Integration**: Persist language preferences
 
 #### Implementation Standards
+
 - Arabic-first approach in bilingual forms
 - CSS logical properties for RTL compatibility
 - Proper font stack for Arabic text rendering
 - Direction-aware component styling
 
 ### Development Workflow
+
 1. Write components following React best practices
 2. Add RTL tests for component behavior
 3. Use Playwright for E2E workflows
@@ -133,6 +150,7 @@ export class ComponentHelpers {
 6. **Update Memory Bank**: Document architectural decisions and patterns
 
 ### Performance Considerations
+
 - Implement proper memoization for expensive calculations
 - Use React.lazy for code splitting
 - Optimize bundle size and loading patterns
@@ -140,6 +158,7 @@ export class ComponentHelpers {
 - **File Upload Optimization**: Client-side image compression and validation
 
 ### Quality Standards
+
 - **TypeScript Coverage**: All components must have proper type definitions
 - **Test Coverage**: RTL unit tests + Playwright E2E tests for all CRUD operations
 - **Accessibility**: WCAG compliance with screen reader support

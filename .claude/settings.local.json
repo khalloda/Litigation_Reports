@@ -1,14 +1,17 @@
 {
   "permissions": {
     "allow": [
-      "Bash(BASE_URL=http://lit.local:8080 timeout 120 npx playwright test tests/reports-view-buttons-integration.spec.ts --reporter=line --config=playwright.config.simple.mjs)",
-      "Bash(BASE_URL=http://lit.local:8080 timeout 90 npx playwright test tests/reports-core-functionality.spec.ts --reporter=line --config=playwright.config.simple.mjs)",
-      "Bash(BASE_URL=http://lit.local:8080 timeout 120 npx playwright test tests/reports-data-display-fix.spec.ts --reporter=line --config=playwright.config.simple.mjs)",
-      "Bash(BASE_URL=http://lit.local:8080 timeout 60 npx playwright test tests/debug-report-data.spec.ts --reporter=line --config=playwright.config.simple.mjs)",
-      "Bash(BASE_URL=http://lit.local:8080 timeout 90 npx playwright test tests/reports-modal-specific.spec.ts --reporter=line --config=playwright.config.simple.mjs)",
-      "Bash(BASE_URL=http://lit.local:8080 timeout 60 npx playwright test tests/reports-modal-specific.spec.ts:116 --reporter=line --config=playwright.config.simple.mjs)",
-      "Bash(BASE_URL=http://lit.local:8080 timeout 60 npx playwright test tests/modal-html-capture.spec.ts --reporter=line --config=playwright.config.simple.mjs)",
-      "Bash(BASE_URL=http://lit.local:8080 timeout 60 npx playwright test tests/debug-console-logs.spec.ts --reporter=line --config=playwright.config.simple.mjs)"
+      "Bash(BASE_URL=http://lit.local:8080 timeout 120 npx playwright test tests/invoice-view-client-case-display-test.spec.ts --reporter=line --config=playwright.config.simple.mjs)",
+      "Bash(BASE_URL=http://lit.local:8080 timeout 90 npx playwright test tests/debug-clients-cases-loading.spec.ts --reporter=line --config=playwright.config.simple.mjs)",
+      "Bash(BASE_URL=http://lit.local:8080 timeout 120 npx playwright test tests/debug-with-console-logs.spec.ts --reporter=line --config=playwright.config.simple.mjs)",
+      "Bash(BASE_URL=http://lit.local:8080 timeout 120 npx playwright test tests/invoice-auto-number-generation-test.spec.ts --reporter=line --config=playwright.config.simple.mjs)",
+      "Bash(\"D:\\wamp64\\bin\\mysql\\mysql9.1.0\\bin\\mysql.exe\" -u root -p1234 -e \"SELECT id, invoice_number, amount, created_at FROM invoices ORDER BY id DESC LIMIT 3\" litigation_db)",
+      "Bash(BASE_URL=http://lit.local:8080 timeout 90 npx playwright test tests/debug-with-console-logs.spec.ts --reporter=line --config=playwright.config.simple.mjs)",
+      "Bash(BASE_URL=http://lit.local:8080 timeout 60 npx playwright test tests/debug-clients-cases-loading.spec.ts --reporter=line --config=playwright.config.simple.mjs)",
+      "Bash(BASE_URL=http://lit.local:8080 timeout 90 npx playwright test tests/test-api-direct.spec.ts --reporter=line --config=playwright.config.simple.mjs)",
+      "Bash(BASE_URL=http://lit.local:8080 timeout 90 npx playwright test tests/debug-timing-issue.spec.ts --reporter=line --config=playwright.config.simple.mjs)",
+      "Bash(BASE_URL=http://lit.local:8080 timeout 90 npx playwright test tests/debug-button-click.spec.ts --reporter=line --config=playwright.config.simple.mjs)",
+      "Bash(BASE_URL=http://lit.local:8080 timeout 120 npx playwright test tests/invoice-dropdown-final-test.spec.ts --reporter=line --config=playwright.config.simple.mjs)"
     ],
     "deny": [],
     "ask": []

@@ -12,11 +12,13 @@ This guide explains how to deploy the Litigation Management System to GoDaddy sh
 ## Development vs Production
 
 ### Development Setup ✅ **WORKING**
+
 - React dev server: `http://lit.local:3001` ✅ **FUNCTIONAL**
 - PHP API: `http://lit.local/api/` (proxied from dev server) ✅ **FUNCTIONAL**
 - Database: MySQL on localhost ✅ **FUNCTIONAL**
 
 ### Production Setup ✅ **READY**
+
 - Frontend: Static files served by Apache ✅ **READY**
 - PHP API: `http://yourdomain.com/api/` ✅ **READY**
 - Database: MySQL on cPanel ✅ **READY**
@@ -46,6 +48,7 @@ public_html/
 ```
 
 This will:
+
 - Build React app to `dist/`
 - Copy files to `public_html/`
 - Ensure API structure is in place
@@ -62,11 +65,13 @@ This will:
 ### 3. Deploy to GoDaddy
 
 #### Option A: Manual Upload
+
 1. Zip the `public_html/` directory
 2. Upload to cPanel File Manager
 3. Extract in `/public_html/`
 
 #### Option B: FTP Script
+
 1. Update credentials in `scripts/deploy-to-godaddy.sh`
 2. Run: `./scripts/deploy-to-godaddy.sh`
 
@@ -86,10 +91,12 @@ $password = 'your_database_password';
 ## Environment Configuration
 
 ### Development
+
 - Uses Vite proxy to `http://lit.local`
 - API calls go to `/api/*` (proxied)
 
 ### Production
+
 - Static files served by Apache
 - API calls go to `/api/*` (same origin)
 
@@ -173,6 +180,7 @@ curl http://yourdomain.com/api/auth/login -X POST -H "Content-Type: application/
 ## Support
 
 For issues with this deployment:
+
 1. Check the troubleshooting section
 2. Verify all files are uploaded correctly
 3. Test API endpoints individually

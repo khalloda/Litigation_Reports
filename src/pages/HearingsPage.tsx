@@ -27,6 +27,7 @@ import {
   Users,
 } from 'lucide-react';
 import { apiService as api } from '../services/api';
+import HearingModal from '../components/modals/HearingModal';
 
 interface Hearing {
   id: number;
@@ -113,6 +114,9 @@ const HearingsPage: React.FC = () => {
     has_next: false,
     has_prev: false,
   });
+  const [showHearingModal, setShowHearingModal] = useState(false);
+  const [selectedHearing, setSelectedHearing] = useState<Hearing | null>(null);
+  const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
 
   // Modal state
   const [showModal, setShowModal] = useState(false);
@@ -152,7 +156,7 @@ const HearingsPage: React.FC = () => {
       const params = new URLSearchParams({
         page: pagination.current_page.toString(),
         limit: pagination.per_page.toString(),
-        ...Object.fromEntries(Object.entries(filters).filter(([_, value]) => value)),
+        ...Object.fromEntries(filters ? Object.entries(filters).filter(([_, value]) => value) : []),
       });
 
       const response = await api.get(`/hearings?${params}`);
@@ -300,6 +304,57 @@ const HearingsPage: React.FC = () => {
     setPagination((prev) => ({ ...prev, current_page: page }));
   };
 
+  const handleViewHearing = (hearing: Hearing) => {
+    // For now, just show an alert with hearing details
+    // In the future, this could open a view modal
+    const details = `
+      تاريخ الجلسة: ${formatDate(hearing.hearing_date)}
+      نوع الجلسة: ${options.type[hearing.hearing_type] || hearing.hearing_type}
+      النتيجة: ${options.result[hearing.hearing_result] || hearing.hearing_result}
+      المدة: ${formatDuration(hearing.hearing_duration)}
+      القرار: ${hearing.hearing_decision || '-'}
+    `;
+    alert(details);
+  };
+
+  const handleEditHearing = (hearing: Hearing) => {
+    setSelectedHearing(hearing);
+    setModalMode('edit');
+    setShowHearingModal(true);
+  };
+
+  const handleAddHearing = () => {
+    setSelectedHearing(null);
+    setModalMode('create');
+    setShowHearingModal(true);
+  };
+
+  const handleHearingModalSave = () => {
+    loadHearings(); // Refresh the hearings list after save
+  };
+
+  const handleHearingModalHide = () => {
+    setShowHearingModal(false);
+    setSelectedHearing(null);
+  };
+
+  const handleDeleteHearing = async (hearing: Hearing) => {
+    if (confirm(`هل أنت متأكد من حذف جلسة ${formatDate(hearing.hearing_date)}؟`)) {
+      try {
+        const response = await api.delete(`/hearings/${hearing.id}`);
+        if (response.success) {
+          toast.success('تم حذف الجلسة بنجاح');
+          loadHearings(); // Refresh the list
+        } else {
+          toast.error(response.error || 'حدث خطأ أثناء حذف الجلسة');
+        }
+      } catch (err) {
+        console.error('Error deleting hearing:', err);
+        toast.error('حدث خطأ أثناء حذف الجلسة');
+      }
+    }
+  };
+
   const getResultBadge = (result: string) => {
     const resultColors: Record<string, string> = {
       won: 'success',
@@ -364,7 +419,7 @@ const HearingsPage: React.FC = () => {
             <Button
               variant='primary'
               size='lg'
-              onClick={handleModalOpen}
+              onClick={handleAddHearing}
               data-testid='add-hearing-button'
             >
               <Plus className='me-2' />
@@ -402,7 +457,7 @@ const HearingsPage: React.FC = () => {
                   onChange={(e) => handleFilterChange('hearing_result', e.target.value)}
                 >
                   <option value=''>جميع النتائج</option>
-                  {Object.entries(options.result).map(([key, value]) => (
+                  {options.result && Object.entries(options.result).map(([key, value]) => (
                     <option key={key} value={key}>
                       {value}
                     </option>
@@ -418,7 +473,7 @@ const HearingsPage: React.FC = () => {
                   onChange={(e) => handleFilterChange('hearing_type', e.target.value)}
                 >
                   <option value=''>جميع الأنواع</option>
-                  {Object.entries(options.type).map(([key, value]) => (
+                  {options.type && Object.entries(options.type).map(([key, value]) => (
                     <option key={key} value={key}>
                       {value}
                     </option>
@@ -547,13 +602,28 @@ const HearingsPage: React.FC = () => {
                       </td>
                       <td>
                         <div className='btn-group btn-group-sm'>
-                          <Button variant='outline-primary' size='sm'>
+                          <Button
+                            variant='outline-primary'
+                            size='sm'
+                            onClick={() => handleViewHearing(hearing)}
+                            title='عرض تفاصيل الجلسة'
+                          >
                             <Eye size={14} />
                           </Button>
-                          <Button variant='outline-secondary' size='sm'>
+                          <Button
+                            variant='outline-secondary'
+                            size='sm'
+                            onClick={() => handleEditHearing(hearing)}
+                            title='تعديل الجلسة'
+                          >
                             <Edit size={14} />
                           </Button>
-                          <Button variant='outline-danger' size='sm'>
+                          <Button
+                            variant='outline-danger'
+                            size='sm'
+                            onClick={() => handleDeleteHearing(hearing)}
+                            title='حذف الجلسة'
+                          >
                             <Trash size={14} />
                           </Button>
                         </div>
@@ -666,7 +736,7 @@ const HearingsPage: React.FC = () => {
                     data-testid='hearing-type-select'
                   >
                     <option value=''>اختر النوع</option>
-                    {Object.entries(options.type).map(([key, value]) => (
+                    {options.type && Object.entries(options.type).map(([key, value]) => (
                       <option key={key} value={key}>
                         {value}
                       </option>
@@ -687,7 +757,7 @@ const HearingsPage: React.FC = () => {
                     data-testid='hearing-result-select'
                   >
                     <option value=''>اختر النتيجة</option>
-                    {Object.entries(options.result).map(([key, value]) => (
+                    {options.result && Object.entries(options.result).map(([key, value]) => (
                       <option key={key} value={key}>
                         {value}
                       </option>
@@ -708,7 +778,7 @@ const HearingsPage: React.FC = () => {
                     data-testid='hearing-duration-select'
                   >
                     <option value=''>اختر المدة</option>
-                    {Object.entries(options.duration).map(([key, value]) => (
+                    {options.duration && Object.entries(options.duration).map(([key, value]) => (
                       <option key={key} value={key}>
                         {value}
                       </option>
@@ -826,6 +896,15 @@ const HearingsPage: React.FC = () => {
           </Button>
         </Modal.Footer>
       </Modal>
+
+      {/* Hearing Modal */}
+      <HearingModal
+        show={showHearingModal}
+        onHide={handleHearingModalHide}
+        onSave={handleHearingModalSave}
+        hearingData={selectedHearing}
+        mode={modalMode}
+      />
     </Container>
   );
 };

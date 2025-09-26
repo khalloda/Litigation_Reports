@@ -1,0 +1,401 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e4]:
+    - navigation [ref=e5]:
+      - generic [ref=e6]:
+        - button "Toggle sidebar" [ref=e7] [cursor=pointer]:
+          - img [ref=e8] [cursor=pointer]
+        - link "نظام إدارة القضايا" [ref=e11] [cursor=pointer]:
+          - /url: /dashboard
+        - generic [ref=e13]:
+          - button "اللغة الحالية" [ref=e15] [cursor=pointer]:
+            - img [ref=e16] [cursor=pointer]
+            - generic [ref=e19] [cursor=pointer]: 🇸🇦 العربية
+          - button "User menu" [ref=e21] [cursor=pointer]:
+            - img [ref=e22] [cursor=pointer]
+    - generic [ref=e25]:
+      - complementary [ref=e26]:
+        - generic [ref=e27]:
+          - heading "القائمة الرئيسية" [level=6] [ref=e28]
+          - button "Collapse sidebar" [ref=e29] [cursor=pointer]:
+            - img [ref=e30] [cursor=pointer]
+        - generic [ref=e32]:
+          - link "لوحة التحكم" [ref=e34] [cursor=pointer]:
+            - /url: /dashboard
+            - img [ref=e35] [cursor=pointer]
+            - generic [ref=e40] [cursor=pointer]: لوحة التحكم
+          - link "العملاء" [ref=e42] [cursor=pointer]:
+            - /url: /clients
+            - img [ref=e43] [cursor=pointer]
+            - generic [ref=e48] [cursor=pointer]: العملاء
+          - link "القضايا" [ref=e50] [cursor=pointer]:
+            - /url: /cases
+            - img [ref=e51] [cursor=pointer]
+            - generic [ref=e54] [cursor=pointer]: القضايا
+          - link "الجلسات" [ref=e56] [cursor=pointer]:
+            - /url: /hearings
+            - img [ref=e57] [cursor=pointer]
+            - generic [ref=e59] [cursor=pointer]: الجلسات
+          - link "الفواتير (الصفحة الحالية)" [ref=e61] [cursor=pointer]:
+            - /url: /invoices
+            - img [ref=e62] [cursor=pointer]
+            - generic [ref=e65] [cursor=pointer]: الفواتير
+            - generic [ref=e66] [cursor=pointer]: (الصفحة الحالية)
+          - link "المحامون" [ref=e68] [cursor=pointer]:
+            - /url: /lawyers
+            - img [ref=e69] [cursor=pointer]
+            - generic [ref=e73] [cursor=pointer]: المحامون
+          - link "المستندات" [ref=e75] [cursor=pointer]:
+            - /url: /documents
+            - img [ref=e76] [cursor=pointer]
+            - generic [ref=e78] [cursor=pointer]: المستندات
+          - link "التقارير" [ref=e80] [cursor=pointer]:
+            - /url: /reports
+            - img [ref=e81] [cursor=pointer]
+            - generic [ref=e83] [cursor=pointer]: التقارير
+          - link "المستخدمين" [ref=e85] [cursor=pointer]:
+            - /url: /users
+            - img [ref=e86] [cursor=pointer]
+            - generic [ref=e90] [cursor=pointer]: المستخدمين
+          - link "الإعدادات" [ref=e92] [cursor=pointer]:
+            - /url: /settings
+            - img [ref=e93] [cursor=pointer]
+            - generic [ref=e96] [cursor=pointer]: الإعدادات
+        - generic [ref=e98]: نظام إدارة القضايا v1.0
+      - main [ref=e99]:
+        - generic [ref=e101]:
+          - generic [ref=e104]:
+            - generic [ref=e105]:
+              - heading "إدارة الفواتير" [level=2] [ref=e106]:
+                - img [ref=e107]
+                - text: إدارة الفواتير
+              - paragraph [ref=e110]: إدارة وتتبع جميع الفواتير والمدفوعات
+            - button "إضافة فاتورة جديدة" [ref=e111] [cursor=pointer]:
+              - img [ref=e112] [cursor=pointer]
+              - text: إضافة فاتورة جديدة
+          - generic [ref=e115]:
+            - generic [ref=e117]:
+              - generic [ref=e118]: البحث
+              - generic [ref=e119]:
+                - img [ref=e121]
+                - textbox "البحث في الفواتير..." [ref=e124]
+            - generic [ref=e126]:
+              - generic [ref=e127]: الحالة
+              - combobox [ref=e128]:
+                - option "جميع الحالات" [selected]
+                - option "مسودة"
+                - option "مرسلة"
+                - option "مدفوعة"
+                - option "متأخرة"
+                - option "ملغاة"
+            - generic [ref=e130]:
+              - generic [ref=e131]: النوع
+              - combobox [ref=e132]:
+                - option "جميع الأنواع" [selected]
+                - option "خدمات"
+                - option "مصروفات"
+                - option "مقدم"
+            - generic [ref=e134]:
+              - generic [ref=e135]: العملة
+              - combobox [ref=e136]:
+                - option "جميع العملات" [selected]
+                - option "جنيه مصري"
+                - option "دولار أمريكي"
+                - option "يورو"
+            - generic [ref=e138]:
+              - generic [ref=e139]: من تاريخ
+              - textbox [ref=e140]
+            - button "تطبيق" [ref=e142] [cursor=pointer]:
+              - img [ref=e143] [cursor=pointer]
+              - text: تطبيق
+          - generic [ref=e145]:
+            - generic [ref=e147]:
+              - heading "قائمة الفواتير" [level=5] [ref=e148]
+              - generic [ref=e149]: "إجمالي: 3 فاتورة"
+            - table [ref=e152]:
+              - rowgroup [ref=e153]:
+                - row "رقم الفاتورة تاريخ الفاتورة المبلغ النوع الحالة العقد تاريخ الدفع الإجراءات" [ref=e154]:
+                  - cell "رقم الفاتورة" [ref=e155]
+                  - cell "تاريخ الفاتورة" [ref=e156]
+                  - cell "المبلغ" [ref=e157]
+                  - cell "النوع" [ref=e158]
+                  - cell "الحالة" [ref=e159]
+                  - cell "العقد" [ref=e160]
+                  - cell "تاريخ الدفع" [ref=e161]
+                  - cell "الإجراءات" [ref=e162]
+              - rowgroup [ref=e163]:
+                - row "INV-2025-0555 26/09/2025 ‏٥٬٠٠٠٫٠٠ ج.م.‏0 خدمات مسودة - - View Edit Delete" [ref=e164]:
+                  - cell "INV-2025-0555" [ref=e165]:
+                    - generic [ref=e166]:
+                      - img [ref=e167]
+                      - text: INV-2025-0555
+                  - cell "26/09/2025" [ref=e170]:
+                    - generic [ref=e171]:
+                      - img [ref=e172]
+                      - text: 26/09/2025
+                  - cell "‏٥٬٠٠٠٫٠٠ ج.م.‏0" [ref=e174]:
+                    - generic [ref=e175]:
+                      - img [ref=e176]
+                      - text: ‏٥٬٠٠٠٫٠٠ ج.م.‏0
+                  - cell "خدمات" [ref=e178]:
+                    - generic [ref=e179]: خدمات
+                  - cell "مسودة" [ref=e180]:
+                    - generic [ref=e181]:
+                      - img [ref=e182]
+                      - generic [ref=e185]: مسودة
+                  - cell "-" [ref=e186]
+                  - cell "-" [ref=e187]
+                  - cell "View Edit Delete" [ref=e188]:
+                    - generic [ref=e189]:
+                      - button "View" [ref=e190] [cursor=pointer]:
+                        - img [ref=e191] [cursor=pointer]
+                      - button "Edit" [ref=e194] [cursor=pointer]:
+                        - img [ref=e195] [cursor=pointer]
+                      - button "Delete" [ref=e198] [cursor=pointer]:
+                        - img [ref=e199] [cursor=pointer]
+                - row "INV-2025-8876 26/09/2025 ‏٥٬٠٠٠٫٠٠ ج.م.‏0 خدمات مسودة - - View Edit Delete" [ref=e202]:
+                  - cell "INV-2025-8876" [ref=e203]:
+                    - generic [ref=e204]:
+                      - img [ref=e205]
+                      - text: INV-2025-8876
+                  - cell "26/09/2025" [ref=e208]:
+                    - generic [ref=e209]:
+                      - img [ref=e210]
+                      - text: 26/09/2025
+                  - cell "‏٥٬٠٠٠٫٠٠ ج.م.‏0" [ref=e212]:
+                    - generic [ref=e213]:
+                      - img [ref=e214]
+                      - text: ‏٥٬٠٠٠٫٠٠ ج.م.‏0
+                  - cell "خدمات" [ref=e216]:
+                    - generic [ref=e217]: خدمات
+                  - cell "مسودة" [ref=e218]:
+                    - generic [ref=e219]:
+                      - img [ref=e220]
+                      - generic [ref=e223]: مسودة
+                  - cell "-" [ref=e224]
+                  - cell "-" [ref=e225]
+                  - cell "View Edit Delete" [ref=e226]:
+                    - generic [ref=e227]:
+                      - button "View" [ref=e228] [cursor=pointer]:
+                        - img [ref=e229] [cursor=pointer]
+                      - button "Edit" [ref=e232] [cursor=pointer]:
+                        - img [ref=e233] [cursor=pointer]
+                      - button "Delete" [ref=e236] [cursor=pointer]:
+                        - img [ref=e237] [cursor=pointer]
+                - row "- 23/09/2025 ‏١٧٬٠٠٠٫٠٠ ج.م.‏0 مصروفات مرسلة 3453334 26/09/2025 View Edit Delete" [ref=e240]:
+                  - cell "-" [ref=e241]:
+                    - generic [ref=e242]:
+                      - img [ref=e243]
+                      - text: "-"
+                  - cell "23/09/2025" [ref=e246]:
+                    - generic [ref=e247]:
+                      - img [ref=e248]
+                      - text: 23/09/2025
+                  - cell "‏١٧٬٠٠٠٫٠٠ ج.م.‏0" [ref=e250]:
+                    - generic [ref=e251]:
+                      - img [ref=e252]
+                      - text: ‏١٧٬٠٠٠٫٠٠ ج.م.‏0
+                  - cell "مصروفات" [ref=e254]:
+                    - generic [ref=e255]: مصروفات
+                  - cell "مرسلة" [ref=e256]:
+                    - generic [ref=e257]:
+                      - img [ref=e258]
+                      - generic [ref=e261]: مرسلة
+                  - cell "3453334" [ref=e262]
+                  - cell "26/09/2025" [ref=e263]:
+                    - generic [ref=e264]:
+                      - img [ref=e265]
+                      - text: 26/09/2025
+                  - cell "View Edit Delete" [ref=e267]:
+                    - generic [ref=e268]:
+                      - button "View" [ref=e269] [cursor=pointer]:
+                        - img [ref=e270] [cursor=pointer]
+                      - button "Edit" [ref=e273] [cursor=pointer]:
+                        - img [ref=e274] [cursor=pointer]
+                      - button "Delete" [ref=e277] [cursor=pointer]:
+                        - img [ref=e278] [cursor=pointer]
+    - contentinfo [ref=e281]:
+      - generic [ref=e283]:
+        - generic [ref=e285]: © 2025 مكتب المحاماة. جميع الحقوق محفوظة.
+        - generic [ref=e287]: نظام إدارة القضايا القانونية v1.0
+  - dialog [active] [ref=e289]:
+    - generic [ref=e290]:
+      - generic [ref=e291]:
+        - generic [ref=e292]: تعديل الفاتورة
+        - button "Close" [ref=e293] [cursor=pointer]
+      - generic [ref=e295]:
+        - generic [ref=e296]:
+          - generic [ref=e298]:
+            - generic [ref=e299]: رقم الفاتورة
+            - textbox "سيتم توليده تلقائياً إذا ترك فارغ" [ref=e300]: INV-2025-0555
+          - generic [ref=e302]:
+            - generic [ref=e303]: رقم العقد
+            - textbox [ref=e304]
+          - generic [ref=e306]:
+            - generic [ref=e307]: تاريخ الفاتورة *
+            - textbox [ref=e308]: 2025-09-26
+        - generic [ref=e309]:
+          - generic [ref=e311]:
+            - generic [ref=e312]: العميل
+            - combobox [ref=e313]:
+              - option "اختر العميل" [selected]
+              - option "???? ?????? إختبار (New Test Client Don)"
+              - option "Test JSON PUT (Sarieldin JSON PUT)"
+              - option "?????? ?????? (Toyota Egypt)"
+              - option "????? ???? (Transocean Offshore International Limited)"
+              - option "?????? ????? (Al Khaleej Sugar Co.)"
+              - option "???? ?????? (Ahmed El-Razaz)"
+              - option "???????? ??????? (Engineering for Dev. of Tourism and Real Estate)"
+              - option "???????? ???????? (Cars Engineering)"
+              - option "????? ???? (Amira Kamel)"
+              - option "???? ????? ??? ????? (Hussein Othman Sarie El-Din)"
+              - option "?????? (Mobaco)"
+              - option "??????? ??? (Bavaria Egypt)"
+              - option "??? ?? ?? ?? ????????? (HSBC Securities (Egypt) SAE)"
+              - option "???????? (Orascom)"
+              - option "??? ??????? ???????? (The Industrial Development Bank)"
+              - option "??? ???????? (Maha Al Shabiny)"
+              - option "??????? ????? (Husseiny Brothers)"
+              - option "???? ???? (City Trade Group)"
+              - option "??????? (Trianon Food & Bakery)"
+              - option "??????? (Artiyapi)"
+              - option "??????? ??? ?????? (????? + ?????) (Etal Group)"
+              - option "????? (Prime Holding)"
+              - option "????? ?????? ??????? ???? (El-Sayed Nasef)"
+              - option "??????? (Concord)"
+              - option "???? ??????? (Ahmed Harishy)"
+              - option "?????? (MIRACO)"
+              - option "???? ????? (Hatem Kharboush)"
+              - option "??????? (Sofisat Telecommunication Company)"
+              - option "????? ??????? (Mahmoud Shawky Al Mutainy)"
+              - option "??? ?????? (High Travel)"
+              - option "??????? ??????? (El Nasr International Exchange Co.)"
+              - option "?????? ??? (Egypt Car)"
+              - option "????? ???? ????? ??????? (Shaimaa Hussien)"
+              - option "?????? ??? (Lecico Egypt S.A.E)"
+              - option "????? ??? ????? ???? ??? ??? ??? ????? ???? ?? (Alb Saad El-Din Mohamed Beck)"
+              - option "???????? (Solutions Company for Financial Investments)"
+              - option "?????? ??????? (New Menia)"
+              - option "????? ???? ???? ???? (Neven Hosny)"
+              - option "???? ??????- ??? ????- ??? ?????- ???? ??????- ???? ??????"
+              - option "???????? ????????? (Al Mansoura for Resins & Chemical Industries)"
+              - option "???????? ???????"
+              - option "?? ?? ??????? (TN Holdings)"
+              - option "???? ???? ????? ??????? ????"
+              - option "????? ?????? (Smart Villages)"
+              - option "????? (EFG Hermes Securities Brokerage)"
+              - option "???? ????"
+              - option "??? ???? ?????? (Abu Ghali Motors)"
+              - option "?????? ??????? (Delta Insurance Company)"
+              - option "???? ???? ??? ?????"
+              - option "????? (Watheeqa Securities Brokerage Co.)"
+              - option "???? ???? ???? ????"
+              - option "???? ??????? (Amoun Pharmaceuticals)"
+              - option "??? ???"
+              - option "???? ????? ????? ???????"
+              - option "????? ???? ??? ???? ????"
+              - option "??????? ???????? ???????? (Advanced Pharmaceutical Packaging Co.)"
+              - option "???? ????? ??? ?????"
+              - option "???? ???? ????"
+              - option "??? ?????? ??? (Mohamed Abd El Mohsen Sheta)"
+              - option "???? ???"
+              - option "???? ?????? (Hussein Segwany)"
+              - option "???? ????"
+              - option "??????? (Travelers)"
+              - option "????? ???????"
+              - option "?????? ?????? ???????"
+              - option "????? ??? ?????? (Esraa Abd El Fattah)"
+              - option "?????"
+              - option "??? ??????????"
+              - option "??????? (Al-Tawfeek for Securities Brokerage)"
+              - option "????? ????? ???????"
+              - option "???? ???? (Sherif Henry)"
+              - option "???? ????"
+              - option "???? ??? ????"
+              - option "??? ???? ???? ??? ????? ???? ???? ??? ????"
+              - option "??????? ????????????"
+              - option "????? ???????"
+              - option "???? ????????? ??????? ????????"
+              - option "???? ???? (Manal Hussein)"
+              - option "????? ?????? ???????? ??????"
+              - option "???? ???????"
+              - option "????? ????? (Niazi Mostafa)"
+              - option "??????? ????? (Allied Soft)"
+              - option "????? ??? ???? (Arabeya Online For Security Brokerage)"
+              - option "????? ????? ?????? (Vision Media)"
+              - option "????"
+              - option "???? ??? ???? (Rafik Mahfouz Nasr Allah)"
+              - option "????? ????"
+              - option "????????? ????????? ??????? (Gulf Islamic Investment)"
+              - option "???? ????"
+              - option "????????"
+              - option "???? ??????"
+              - option "??? ?????"
+              - option "???? ????"
+              - option "???? ???????"
+              - option "????????"
+              - option "???? ???"
+              - option "????? ??????? (Poultry Companies)"
+              - option "?????? (Acumen Brokerage)"
+              - option "??????"
+              - option "???? (Bechtel Egypt S.A.E)"
+          - generic [ref=e315]:
+            - generic [ref=e316]: القضية
+            - combobox [disabled] [ref=e317]:
+              - option "اختر القضية" [selected]
+              - option "- Test case"
+              - option "- ???? ??????? ?????"
+              - option "2025-0006 - قضية تجريبية جديدة"
+              - option "2025-0005 - قضية تجريبية جديدة"
+              - option "2025-0004 - قضية تجريبية جديدة"
+              - option "2025-0003 - قضية تجريبية جديدة"
+              - option "2025-0002 - قضية تجريبية جديدة"
+              - option "2025-0001 - قضية تجريبية جديدة 878/2025"
+            - generic [ref=e318]: اختر العميل أولاً لعرض القضايا المرتبطة
+        - generic [ref=e319]:
+          - generic [ref=e321]:
+            - generic [ref=e322]: المبلغ *
+            - spinbutton [ref=e323]: "5000.00"
+          - generic [ref=e325]:
+            - generic [ref=e326]: العملة
+            - combobox [ref=e327]:
+              - option "جنيه مصري" [selected]
+              - option "دولار أمريكي"
+              - option "يورو"
+          - generic [ref=e329]:
+            - generic [ref=e330]: المبلغ بالدولار
+            - spinbutton [ref=e331]
+        - generic [ref=e332]:
+          - generic [ref=e334]:
+            - generic [ref=e335]: نوع الفاتورة
+            - combobox [ref=e336]:
+              - option "خدمات" [selected]
+              - option "مصروفات"
+              - option "مقدم"
+          - generic [ref=e338]:
+            - generic [ref=e339]: حالة الفاتورة
+            - combobox [ref=e340]:
+              - option "مسودة" [selected]
+              - option "مرسلة"
+              - option "مدفوعة"
+              - option "متأخرة"
+              - option "ملغاة"
+          - generic [ref=e342]:
+            - generic [ref=e343]: تاريخ الدفع
+            - textbox [ref=e344]
+        - generic [ref=e347]:
+          - generic [ref=e348]: تفاصيل الفاتورة
+          - textbox [ref=e349]
+        - generic [ref=e350]:
+          - generic [ref=e352]:
+            - checkbox [ref=e353]
+            - generic [ref=e354]: تشمل ضريبة القيمة المضافة
+          - generic [ref=e356]:
+            - checkbox [ref=e357]
+            - generic [ref=e358]: تم إنشاء التقرير
+      - generic [ref=e359]:
+        - button "إلغاء" [ref=e360] [cursor=pointer]
+        - button "حفظ التغييرات" [ref=e361] [cursor=pointer]
+```

@@ -5,6 +5,7 @@ This document provides comprehensive information about the Playwright testing se
 ## Overview
 
 Our Playwright testing framework provides:
+
 - **End-to-end testing** for all user workflows
 - **RTL and mixed content testing** for Arabic/English support
 - **Accessibility testing** with WCAG 2.1 AA compliance
@@ -17,21 +18,25 @@ Our Playwright testing framework provides:
 ## Quick Start
 
 ### 1. Install Dependencies
+
 ```bash
 npm install
 ```
 
 ### 2. Install Playwright Browsers
+
 ```bash
 npx playwright install
 ```
 
 ### 3. Setup Test Environment
+
 ```bash
 npm run test:setup:quick
 ```
 
 ### 4. Run Tests
+
 ```bash
 # Run all tests
 npm run test
@@ -62,7 +67,94 @@ tests/
 
 ## Test Categories
 
+### ✅ **CRUD Operations Tests (September 2025)**
+
+Comprehensive E2E tests for all CRUD functionality:
+
+#### **Hearings CRUD Tests** - FULLY TESTED
+
+- **View Operation**: Tests alert dialog with hearing details display
+- **Delete Operation**: Tests confirmation dialog and database removal
+- **Action Tooltips**: Verifies descriptive tooltips on all buttons
+- **Data Refresh**: Tests real-time data updates after operations
+- **Test Files**: `tests/hearings-simple.spec.ts`, `tests/hearings-full-test.spec.ts`
+
+#### **Cases CRUD Tests** - FULLY TESTED
+
+- **View Operation**: Tests comprehensive case information display
+- **Client Integration**: Verifies client relationship data display
+- **Multi-language Content**: Tests Arabic/English case information
+- **Status Display**: Tests case status and importance badges
+- **Test Files**: `tests/cases-simple.spec.ts`, `tests/cases-detailed.spec.ts`
+
+#### **Clients CRUD Tests** - FULLY TESTED
+
+- **Edit Modal**: Tests complete client edit form functionality
+- **Save Operation**: Verifies PUT API integration and success notifications
+- **Data Validation**: Tests form validation and error handling
+- **Logo Upload**: Tests file upload functionality
+- **Test Files**: `tests/clients-simple.spec.ts`, `tests/clients-crud.spec.ts`
+
+#### **Invoices CRUD Tests** - FULLY TESTED
+
+- **Create Modal**: Tests full invoice creation with all fields
+- **Dynamic Selectors**: Tests client/case dropdown filtering
+- **Smart Filtering**: Verifies case dropdown enables after client selection
+- **API Integration**: Tests real-time dropdown population
+- **Test Files**: `tests/invoices-page-test.spec.ts`, `tests/invoices-crud.spec.ts`
+
+#### **CRUD Test Implementation Example**
+
+```javascript
+// Example from hearings-full-test.spec.ts
+test('Hearings CRUD - View Button Shows Details', async ({ page }) => {
+  await page.goto('http://lit.local:8080/hearings');
+
+  // Wait for hearings to load
+  await page.waitForSelector('table tbody tr');
+
+  // Click view button on first hearing
+  const viewButton = page.locator('table tbody tr:first-child button[title="عرض تفاصيل الجلسة"]');
+  await viewButton.click();
+
+  // Check for alert dialog with hearing details
+  await page.waitForEvent('dialog');
+
+  console.log('✅ Hearings view button test passed');
+});
+
+test('Clients CRUD - Save Operation Success', async ({ page }) => {
+  await page.goto('http://lit.local:8080/clients');
+
+  // Click edit button on first client
+  await page.click('button[title="تعديل العميل"]');
+
+  // Wait for edit modal
+  await page.waitForSelector('#editClientModal');
+
+  // Modify client name
+  await page.fill('#editClientNameAr', 'اسم عميل محدث');
+
+  // Save changes
+  await page.click('#editClientModal button[type="submit"]');
+
+  // Verify success toast
+  await expect(page.locator('.toast-success')).toBeVisible();
+
+  console.log('✅ Clients save operation test passed');
+});
+```
+
+#### **Real Data Integration Tests**
+
+- **Database Connectivity**: Tests with real MySQL database
+- **Data Validation**: Verifies actual data in test assertions
+- **API Integration**: Tests complete frontend-backend communication
+- **Build System**: Tests compiled React application (not source code)
+- **Test Files**: `tests/real-data-validation.spec.ts`, `tests/deployment-check.spec.ts`
+
 ### 1. Authentication Tests (`auth.spec.js`)
+
 - Login page functionality
 - RTL layout support
 - Mixed content handling
@@ -74,6 +166,7 @@ tests/
 - Session management
 
 ### 2. RTL and Mixed Content Tests (`rtl-mixed-content.spec.js`)
+
 - RTL layout switching
 - Mixed Arabic/English content in forms
 - Text direction handling
@@ -90,6 +183,7 @@ tests/
 - RTL notification messages
 
 ### 3. Accessibility Tests (`accessibility.spec.js`)
+
 - Heading structure validation
 - Landmark roles verification
 - Form labels and associations
@@ -108,6 +202,7 @@ tests/
 - Focus management in modals
 
 ### 4. Visual Regression Tests (`visual-regression.spec.js`)
+
 - Login page screenshots
 - Dashboard layout screenshots
 - Client management page screenshots
@@ -129,27 +224,32 @@ tests/
 ## Browser Support
 
 ### Desktop Browsers
+
 - **Chrome** (Chromium)
 - **Firefox**
 - **Safari** (WebKit)
 - **Edge**
 
 ### RTL Testing
+
 - **Chrome RTL** (Arabic locale)
 - **Firefox RTL** (Arabic locale)
 
 ### Mobile Browsers
+
 - **Chrome Mobile** (Pixel 5)
 - **Safari Mobile** (iPhone 12)
 - **Chrome Mobile RTL** (Arabic locale)
 
 ### Specialized Testing
+
 - **Accessibility Testing** (reduced motion, high contrast)
 - **Visual Regression** (consistent rendering)
 
 ## Test Configuration
 
 ### Playwright Configuration (`playwright.config.js`)
+
 ```javascript
 module.exports = defineConfig({
   testDir: './tests',
@@ -176,6 +276,7 @@ module.exports = defineConfig({
 ```
 
 ### Environment Variables
+
 ```bash
 BASE_URL=http://lit.local          # Base URL for testing
 NODE_ENV=testing                   # Test environment
@@ -191,6 +292,7 @@ VISUAL_TESTING=true                # Visual regression testing
 ## Test Data
 
 ### Test Users
+
 ```javascript
 const testUsers = {
   admin: {
@@ -209,6 +311,7 @@ const testUsers = {
 ```
 
 ### Test Clients
+
 ```javascript
 const testClients = {
   valid: {
@@ -224,6 +327,7 @@ const testClients = {
 ## Running Tests
 
 ### Basic Commands
+
 ```bash
 # Run all tests
 npm run test
@@ -242,6 +346,7 @@ npm run test:report
 ```
 
 ### Specific Test Suites
+
 ```bash
 # Authentication tests
 npm run test:auth
@@ -266,6 +371,7 @@ npm run test:smoke
 ```
 
 ### Advanced Commands
+
 ```bash
 # Run with specific browser
 npx playwright test --project=chromium
@@ -286,6 +392,7 @@ npm run test:ci
 ## Test Scripts
 
 ### Setup Scripts
+
 ```bash
 # Full setup (database + test data)
 npm run test:setup
@@ -298,6 +405,7 @@ npm run test:setup:ci
 ```
 
 ### Run Scripts
+
 ```bash
 # Use custom test runner
 npm run test:run
@@ -311,7 +419,9 @@ npm run test:run
 ## CI/CD Integration
 
 ### GitHub Actions
+
 The project includes a comprehensive GitHub Actions workflow (`.github/workflows/playwright.yml`) that runs:
+
 - Browser tests on multiple browsers
 - RTL tests with Arabic locale
 - Accessibility tests
@@ -320,6 +430,7 @@ The project includes a comprehensive GitHub Actions workflow (`.github/workflows
 - Performance tests
 
 ### CI Commands
+
 ```bash
 # Run tests in CI
 npm run test:ci
@@ -331,6 +442,7 @@ npm run test:setup:ci
 ## Test Utilities
 
 ### Test Helpers (`tests/utils/test-helpers.js`)
+
 ```javascript
 const helpers = new TestHelpers(page);
 
@@ -355,6 +467,7 @@ await helpers.testPerformance();
 ## Debugging Tests
 
 ### Debug Mode
+
 ```bash
 # Run in debug mode
 npm run test:debug
@@ -364,12 +477,14 @@ npx playwright test tests/auth.spec.js --debug
 ```
 
 ### Test Results
+
 - **HTML Report**: `playwright-report/index.html`
 - **Screenshots**: `test-results/screenshots/`
 - **Videos**: `test-results/videos/`
 - **Traces**: `test-results/traces/`
 
 ### Common Issues
+
 1. **Browser not found**: Run `npx playwright install`
 2. **Test timeout**: Increase timeout in config
 3. **RTL not working**: Check locale settings
@@ -378,6 +493,7 @@ npx playwright test tests/auth.spec.js --debug
 ## Best Practices
 
 ### Test Writing
+
 1. **Use descriptive test names**
 2. **Group related tests with `describe`**
 3. **Use `beforeEach` for setup**
@@ -387,6 +503,7 @@ npx playwright test tests/auth.spec.js --debug
 7. **Handle async operations properly**
 
 ### RTL Testing
+
 1. **Test language switching**
 2. **Verify text direction**
 3. **Check layout alignment**
@@ -394,6 +511,7 @@ npx playwright test tests/auth.spec.js --debug
 5. **Validate Arabic text rendering**
 
 ### Accessibility Testing
+
 1. **Check keyboard navigation**
 2. **Verify ARIA attributes**
 3. **Test screen reader compatibility**
@@ -401,6 +519,7 @@ npx playwright test tests/auth.spec.js --debug
 5. **Check focus indicators**
 
 ### Visual Regression
+
 1. **Use consistent viewport sizes**
 2. **Disable animations**
 3. **Set appropriate thresholds**
@@ -410,6 +529,7 @@ npx playwright test tests/auth.spec.js --debug
 ## Troubleshooting
 
 ### Common Issues
+
 1. **Tests failing on CI**: Check environment setup
 2. **RTL tests failing**: Verify Arabic locale
 3. **Visual tests failing**: Update snapshots
@@ -417,6 +537,7 @@ npx playwright test tests/auth.spec.js --debug
 5. **Mobile tests failing**: Verify viewport settings
 
 ### Getting Help
+
 1. Check test logs in `test-results/`
 2. Review HTML report
 3. Check browser console
@@ -426,6 +547,7 @@ npx playwright test tests/auth.spec.js --debug
 ## Contributing
 
 ### Adding New Tests
+
 1. Create test file in `tests/`
 2. Use test helpers for common functionality
 3. Add test data to `tests/fixtures/test-data.js`
@@ -433,6 +555,7 @@ npx playwright test tests/auth.spec.js --debug
 5. Document new test scenarios
 
 ### Test Data Management
+
 1. Use fixtures for consistent data
 2. Clean up test data after tests
 3. Use realistic test scenarios
@@ -442,12 +565,14 @@ npx playwright test tests/auth.spec.js --debug
 ## Performance Considerations
 
 ### Test Execution
+
 - **Parallel execution** for faster runs
 - **Selective testing** for development
 - **CI optimization** for automated runs
 - **Resource management** for large test suites
 
 ### Browser Management
+
 - **Headless mode** for CI
 - **Headed mode** for debugging
 - **Browser reuse** where possible

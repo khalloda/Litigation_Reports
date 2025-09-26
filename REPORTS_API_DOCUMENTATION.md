@@ -1,14 +1,17 @@
 # Reports API Documentation
 
 ## Overview
+
 This document describes the Reports API endpoints that power the "عرض" (View) buttons in the Reports dashboard. All endpoints have been tested and verified to work correctly.
 
 ## Base URL
+
 ```
 http://lit.local:8080/api/reports
 ```
 
 ## Authentication
+
 All endpoints require user authentication via session or token.
 
 ---
@@ -20,12 +23,14 @@ All endpoints require user authentication via session or token.
 Returns comprehensive client data with case statistics.
 
 **Query Parameters:**
+
 - `status` (optional): Filter by client status (`active`, `inactive`, `disabled`)
 - `client_type` (optional): Filter by client type (`individual`, `company`, `government`)
 - `date_from` (optional): Filter by creation date from (YYYY-MM-DD)
 - `date_to` (optional): Filter by creation date to (YYYY-MM-DD)
 
 **Response Example:**
+
 ```json
 {
   "success": true,
@@ -73,6 +78,7 @@ Returns comprehensive client data with case statistics.
 Returns case data with client information and hearing counts.
 
 **Query Parameters:**
+
 - `status` (optional): Filter by case status (`active`, `closed`)
 - `matter_category` (optional): Filter by case category (`civil`, `commercial`, etc.)
 - `matter_importance` (optional): Filter by importance (`high`, `medium`, `low`)
@@ -80,6 +86,7 @@ Returns case data with client information and hearing counts.
 - `date_to` (optional): Filter by creation date to (YYYY-MM-DD)
 
 **Response Example:**
+
 ```json
 {
   "success": true,
@@ -128,12 +135,14 @@ Returns case data with client information and hearing counts.
 Returns hearing data with case and client information.
 
 **Query Parameters:**
+
 - `hearing_result` (optional): Filter by hearing result (`pending`, `won`, `lost`, `postponed`)
 - `hearing_type` (optional): Filter by hearing type (`initial`, `expert`, `final`)
 - `date_from` (optional): Filter by hearing date from (YYYY-MM-DD)
 - `date_to` (optional): Filter by hearing date to (YYYY-MM-DD)
 
 **Response Example:**
+
 ```json
 {
   "success": true,
@@ -178,9 +187,11 @@ Returns hearing data with case and client information.
 Returns available entities, columns, and filters for custom report building.
 
 **Query Parameters:**
+
 - `type` (optional): Entity type (`clients`, `cases`, `hearings`, `invoices`, `documents`)
 
 **Response Example:**
+
 ```json
 {
   "success": true,
@@ -219,6 +230,7 @@ Returns available entities, columns, and filters for custom report building.
 Generates a custom report based on specified parameters.
 
 **Request Body:**
+
 ```json
 {
   "entity": "clients",
@@ -241,6 +253,7 @@ Generates a custom report based on specified parameters.
 All endpoints return consistent error responses:
 
 **400 Bad Request:**
+
 ```json
 {
   "success": false,
@@ -249,6 +262,7 @@ All endpoints return consistent error responses:
 ```
 
 **500 Internal Server Error:**
+
 ```json
 {
   "success": false,
@@ -261,17 +275,20 @@ All endpoints return consistent error responses:
 ## Implementation Notes
 
 ### Database Schema Compatibility
+
 - Uses actual database column names (`matter_status` not `status`)
 - Proper JOIN relationships between `clients`, `cases`, and `hearings` tables
 - Handles Arabic and English field variations
 
 ### Performance Optimizations
+
 - Efficient LEFT JOIN queries for related data
 - Conditional WHERE clauses for filtering
 - Summary statistics calculated in single queries
 - Proper indexing on filterable columns
 
 ### Security Features
+
 - Input parameter validation
 - SQL injection protection via prepared statements
 - User authentication requirement
@@ -282,6 +299,7 @@ All endpoints return consistent error responses:
 ## Testing
 
 All endpoints have been verified with:
+
 - ✅ Manual curl testing (200 OK responses)
 - ✅ Frontend integration testing (data display in UI)
 - ✅ E2E Playwright testing (complete user flow)
@@ -293,6 +311,7 @@ All endpoints have been verified with:
 Reports "عرض" (View) buttons were returning 404 errors for `/api/reports/clients`, `/api/reports/cases`, `/api/reports/hearings`, and `/api/reports/custom`.
 
 **Root Causes Fixed:**
+
 1. Missing backend route handlers
 2. Incorrect database column references
 3. SQL query syntax errors

@@ -108,7 +108,7 @@ const ReportsPage: React.FC = () => {
   // Report data states
   const [reportTemplates, setReportTemplates] = useState<ReportTemplate[]>([]);
   const [customReportOptions, setCustomReportOptions] = useState<any>(null);
-  const [currentReportType, setCurrentReportType] = useState<'clients' | 'cases' | 'hearings'>(
+  const [currentReportType, setCurrentReportType] = useState<'clients' | 'cases' | 'hearings' | 'invoices' | 'documents'>(
     'clients'
   );
   const [reportConfig, setReportConfig] = useState<CustomReportConfig>({
@@ -195,6 +195,7 @@ const ReportsPage: React.FC = () => {
       const response = await api.post('/reports/custom', config);
       if (response.success) {
         setReportData(response);
+        setCurrentReportType(config.entity); // 🔧 FIX: Set current report type for custom reports
         setShowDetailedReport(true);
         setShowReportBuilder(false);
       }
@@ -759,7 +760,8 @@ const ReportsPage: React.FC = () => {
                         value={reportConfig.entity}
                         onChange={(e) => {
                           const entity = e.target.value;
-                          setReportConfig({ ...reportConfig, entity });
+                          // 🔧 FIX: Clear selected columns when entity changes to prevent conflicts
+                          setReportConfig({ ...reportConfig, entity, columns: [] });
                           loadCustomReportOptions(entity);
                         }}
                       >
@@ -905,7 +907,13 @@ const ReportsPage: React.FC = () => {
               ? 'العملاء'
               : currentReportType === 'cases'
                 ? 'القضايا'
-                : 'الجلسات'}{' '}
+                : currentReportType === 'hearings'
+                  ? 'الجلسات'
+                  : currentReportType === 'invoices'
+                    ? 'الفواتير'
+                    : currentReportType === 'documents'
+                      ? 'المستندات'
+                      : 'المخصص'}{' '}
             التفصيلي
           </Modal.Title>
         </Modal.Header>
@@ -936,32 +944,41 @@ const ReportsPage: React.FC = () => {
               </Card>
 
               {/* Data Table */}
-              {reportData.data && reportData.data.length > 0 && (
-                <div className='table-responsive'>
-                  <Table striped hover>
-                    <thead>
-                      <tr>
-                        {Object.keys(reportData.data[0]).map((key) => (
-                          <th key={key}>{reportData.available_columns?.[key] || key}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {reportData.data.map((row: any, index: number) => (
-                        <tr key={index}>
-                          {Object.keys(reportData.data[0]).map((key) => (
-                            <td key={key}>
-                              {key.includes('date') && row[key]
-                                ? formatDate(row[key])
-                                : row[key] || '-'}
-                            </td>
+              {reportData.data && reportData.data.length > 0 && (() => {
+                // 🔧 FIX: Respect selected columns from report configuration
+                // If columns were specifically selected in the report config, use only those
+                // Otherwise, fall back to all available columns from the data
+                const selectedColumns = reportData.config?.columns && reportData.config.columns.length > 0
+                  ? reportData.config.columns
+                  : Object.keys(reportData.data[0]);
+
+                return (
+                  <div className='table-responsive'>
+                    <Table striped hover>
+                      <thead>
+                        <tr>
+                          {selectedColumns.map((key) => (
+                            <th key={key}>{reportData.available_columns?.[key] || key}</th>
                           ))}
                         </tr>
-                      ))}
-                    </tbody>
-                  </Table>
-                </div>
-              )}
+                      </thead>
+                      <tbody>
+                        {reportData.data.map((row: any, index: number) => (
+                          <tr key={index}>
+                            {selectedColumns.map((key) => (
+                              <td key={key}>
+                                {key.includes('date') && row[key]
+                                  ? formatDate(row[key])
+                                  : row[key] || '-'}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </Table>
+                  </div>
+                );
+              })()}
               {reportData.data && reportData.data.length === 0 && (
                 <p className='text-center text-muted py-4'>لا توجد بيانات لعرضها</p>
               )}

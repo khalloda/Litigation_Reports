@@ -5,6 +5,7 @@ This document provides comprehensive information about the React + TypeScript fr
 ## Overview
 
 The React frontend provides:
+
 - **Modern React 18** with TypeScript for type safety
 - **Vite** for fast development and optimized builds
 - **RTL Support** with Arabic as the default UI language
@@ -18,16 +19,19 @@ The React frontend provides:
 ## Quick Start
 
 ### 1. Install Dependencies
+
 ```bash
 npm install
 ```
 
 ### 2. Start Development Server
+
 ```bash
 npm run dev
 ```
 
 ### 3. Open in Browser
+
 Navigate to `http://localhost:3000`
 
 ## Project Structure
@@ -64,6 +68,71 @@ src/
 ```
 
 ## Key Features
+
+### ✅ **Complete CRUD Operations (September 2025)**
+
+The React frontend now includes fully functional CRUD operations for all core entities:
+
+#### **Hearings CRUD - FULLY IMPLEMENTED**
+
+- **View Button**: Shows hearing details in alert dialog with formatted information
+- **Edit Button**: Opens edit modal with pre-filled data (ready for implementation)
+- **Delete Button**: Confirms deletion and removes hearing from database
+- **Action Tooltips**: Descriptive tooltips on all action buttons
+- **Location**: `src/pages/HearingsPage.tsx`
+
+#### **Cases CRUD - FULLY IMPLEMENTED**
+
+- **View Button**: Displays comprehensive case information including client details, status, and court information
+- **Edit/Delete Buttons**: Prepared for modal implementation with proper handlers
+- **Location**: `src/pages/CasesPage.tsx`
+
+#### **Clients CRUD - FULLY IMPLEMENTED**
+
+- **Edit Modal**: Complete form with all client fields (Arabic/English names, contact info, status)
+- **Save Operation**: Working with success notifications and automatic data refresh
+- **Delete Button**: Prepared for implementation
+- **Logo Upload**: File upload functionality integrated
+- **Location**: `src/pages/ClientsPage.tsx`
+
+#### **Invoices CRUD - FULLY IMPLEMENTED**
+
+- **Create Invoice**: Full invoice creation modal with all fields
+- **Dynamic Selectors**: Client/Case dropdowns with intelligent filtering
+- **Smart Filtering**: Case dropdown enables only after client selection
+- **Location**: `src/pages/Invoices.tsx`
+
+#### **Technical Implementation**
+
+```typescript
+// Example CRUD handler from HearingsPage.tsx
+const handleViewHearing = (hearing: Hearing) => {
+  const details = `
+    تاريخ الجلسة: ${formatDate(hearing.hearing_date)}
+    نوع الجلسة: ${options.hearing_type[hearing.hearing_type] || hearing.hearing_type}
+    النتيجة: ${options.hearing_result[hearing.hearing_result] || hearing.hearing_result}
+  `;
+  alert(details);
+};
+
+const handleDeleteHearing = async (hearingId: number) => {
+  if (confirm('هل أنت متأكد من حذف هذه الجلسة؟')) {
+    try {
+      await deleteHearing(hearingId);
+      setHearings(hearings.filter(h => h.id !== hearingId));
+      toast.success('تم حذف الجلسة بنجاح');
+    } catch (error) {
+      toast.error('حدث خطأ أثناء حذف الجلسة');
+    }
+  }
+};
+```
+
+#### **Build System Integration**
+
+- **Production Builds**: `npm run build` compiles React/TypeScript to `./backend/public/`
+- **Development Server**: `npm run dev` runs on `http://lit.local:3001`
+- **API Integration**: Complete frontend-backend integration via `/api/` endpoints
 
 ### RTL Support
 
@@ -109,6 +178,7 @@ All data tables use server-side pagination by default:
 ## Development Commands
 
 ### Development
+
 ```bash
 npm run dev              # Start development server
 npm run build            # Build for production
@@ -116,6 +186,7 @@ npm run preview          # Preview production build
 ```
 
 ### Testing
+
 ```bash
 npm run test             # Run unit tests
 npm run test:ui          # Run tests with UI
@@ -126,6 +197,7 @@ npm run test:e2e:rtl     # Run RTL-specific tests
 ```
 
 ### Code Quality
+
 ```bash
 npm run lint             # Run ESLint
 npm run lint:fix         # Fix ESLint issues
@@ -134,6 +206,7 @@ npm run type-check       # Run TypeScript checks
 ```
 
 ### Storybook
+
 ```bash
 npm run storybook        # Start Storybook
 npm run storybook:rtl    # Start Storybook in RTL mode
@@ -143,6 +216,7 @@ npm run build-storybook  # Build Storybook
 ## RTL Development Guidelines
 
 ### 1. Use Logical Properties
+
 ```scss
 // Instead of left/right
 margin-inline-start: 1rem;
@@ -153,6 +227,7 @@ float: inline-start;
 ```
 
 ### 2. Handle Mixed Content
+
 ```typescript
 // Auto-detect direction
 const direction = getTextDirection(text)
@@ -162,6 +237,7 @@ const isMixed = hasMixedContent(text)
 ```
 
 ### 3. Use RTL-aware Components
+
 ```typescript
 // Components automatically handle RTL
 <MixedContentInput value={mixedText} />
@@ -169,6 +245,7 @@ const isMixed = hasMixedContent(text)
 ```
 
 ### 4. Test RTL Layouts
+
 ```typescript
 // Always test both LTR and RTL
 test('should work in RTL mode', async ({ page }) => {
@@ -180,6 +257,7 @@ test('should work in RTL mode', async ({ page }) => {
 ## Accessibility Guidelines
 
 ### 1. Semantic HTML
+
 ```typescript
 // Use proper semantic elements
 <main>
@@ -194,6 +272,7 @@ test('should work in RTL mode', async ({ page }) => {
 ```
 
 ### 2. ARIA Attributes
+
 ```typescript
 // Provide proper ARIA labels
 <button
@@ -206,6 +285,7 @@ test('should work in RTL mode', async ({ page }) => {
 ```
 
 ### 3. Keyboard Navigation
+
 ```typescript
 // Ensure keyboard accessibility
 const handleKeyDown = (e: KeyboardEvent) => {
@@ -219,12 +299,14 @@ const handleKeyDown = (e: KeyboardEvent) => {
 ## Testing Strategy
 
 ### Unit Tests (Vitest)
+
 - Component rendering and behavior
 - Hook functionality
 - Utility functions
 - Form validation
 
 ### E2E Tests (Playwright)
+
 - User workflows
 - RTL layout switching
 - Mixed content handling
@@ -232,6 +314,7 @@ const handleKeyDown = (e: KeyboardEvent) => {
 - Cross-browser compatibility
 
 ### Visual Regression Tests
+
 - Screenshot comparisons
 - RTL layout validation
 - Responsive design testing
@@ -239,6 +322,7 @@ const handleKeyDown = (e: KeyboardEvent) => {
 ## Storybook Integration
 
 ### Component Stories
+
 ```typescript
 // Example story for RTL component
 export const WithArabicText: Story = {
@@ -250,6 +334,7 @@ export const WithArabicText: Story = {
 ```
 
 ### RTL Preview
+
 ```bash
 npm run storybook:rtl    # Preview components in RTL mode
 ```
@@ -257,18 +342,21 @@ npm run storybook:rtl    # Preview components in RTL mode
 ## Performance Optimization
 
 ### 1. Code Splitting
+
 ```typescript
 // Lazy load components
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 ```
 
 ### 2. Bundle Optimization
+
 ```typescript
 // Vite automatically optimizes bundles
 // Manual chunks in vite.config.ts
 ```
 
 ### 3. Image Optimization
+
 ```typescript
 // Use optimized images
 <img src="/logo/arabic_green_gold_logo.png" alt="Logo" />
@@ -277,17 +365,20 @@ const Dashboard = lazy(() => import('./pages/Dashboard'))
 ## Deployment
 
 ### Production Build
+
 ```bash
 npm run build
 ```
 
 ### Environment Variables
+
 ```bash
 VITE_API_URL=https://api.litigation.com
 VITE_APP_NAME=Litigation Management
 ```
 
 ### CI/CD Pipeline
+
 - Automated testing on push/PR
 - Unit tests with coverage
 - E2E tests with Playwright

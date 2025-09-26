@@ -1,4 +1,5 @@
 # GoDaddy Deployment Checklist
+
 ## Litigation Management System
 
 Use this checklist to ensure a successful deployment to GoDaddy hosting.
@@ -8,6 +9,7 @@ Use this checklist to ensure a successful deployment to GoDaddy hosting.
 ## 📋 Pre-Deployment Checklist
 
 ### ✅ Local Development
+
 - [ ] Application tested locally
 - [ ] All features working correctly
 - [ ] Database migration completed
@@ -17,6 +19,7 @@ Use this checklist to ensure a successful deployment to GoDaddy hosting.
 - [ ] Reports generation tested
 
 ### ✅ Build Process
+
 - [ ] Dependencies installed (`npm install`)
 - [ ] TypeScript compilation successful
 - [ ] ESLint checks passed
@@ -25,6 +28,7 @@ Use this checklist to ensure a successful deployment to GoDaddy hosting.
 - [ ] All assets included in build
 
 ### ✅ Configuration
+
 - [ ] Production configuration file created
 - [ ] Database credentials updated
 - [ ] Email settings configured (if needed)
@@ -36,6 +40,7 @@ Use this checklist to ensure a successful deployment to GoDaddy hosting.
 ## 🌐 GoDaddy Account Setup
 
 ### ✅ Hosting Plan Verification
+
 - [ ] Shared hosting plan active
 - [ ] cPanel access available
 - [ ] PHP 8.0+ enabled
@@ -45,6 +50,7 @@ Use this checklist to ensure a successful deployment to GoDaddy hosting.
 - [ ] Adequate bandwidth
 
 ### ✅ Domain Configuration
+
 - [ ] Domain or subdomain ready
 - [ ] DNS settings configured
 - [ ] SSL certificate installed
@@ -55,6 +61,7 @@ Use this checklist to ensure a successful deployment to GoDaddy hosting.
 ## 🖥️ cPanel Configuration
 
 ### ✅ PHP Settings
+
 - [ ] PHP version set to 8.0+
 - [ ] Required extensions enabled:
   - [ ] mysqli
@@ -74,6 +81,7 @@ Use this checklist to ensure a successful deployment to GoDaddy hosting.
   - [ ] upload_max_filesize: 64M
 
 ### ✅ Security Settings
+
 - [ ] Security headers configured
 - [ ] Sensitive files protected
 - [ ] Directory browsing disabled
@@ -84,6 +92,7 @@ Use this checklist to ensure a successful deployment to GoDaddy hosting.
 ## 🗄️ Database Setup
 
 ### ✅ Database Creation
+
 - [ ] MySQL database created
 - [ ] Database user created
 - [ ] User assigned to database
@@ -91,6 +100,7 @@ Use this checklist to ensure a successful deployment to GoDaddy hosting.
 - [ ] Database credentials recorded
 
 ### ✅ Schema Import
+
 - [ ] Database schema imported
 - [ ] Sample data imported (if applicable)
 - [ ] Database connection tested
@@ -99,6 +109,7 @@ Use this checklist to ensure a successful deployment to GoDaddy hosting.
 - [ ] Foreign keys established
 
 ### ✅ Data Verification
+
 - [ ] Default admin user exists
 - [ ] System settings configured
 - [ ] Arabic data displaying correctly
@@ -110,6 +121,7 @@ Use this checklist to ensure a successful deployment to GoDaddy hosting.
 ## 📁 File Upload
 
 ### ✅ Directory Structure
+
 - [ ] Application directory created
 - [ ] Subdirectories created:
   - [ ] api/
@@ -120,6 +132,7 @@ Use this checklist to ensure a successful deployment to GoDaddy hosting.
   - [ ] uploads/
 
 ### ✅ File Upload
+
 - [ ] All PHP files uploaded
 - [ ] Built React files uploaded
 - [ ] Configuration files uploaded
@@ -128,6 +141,7 @@ Use this checklist to ensure a successful deployment to GoDaddy hosting.
 - [ ] Directory structure maintained
 
 ### ✅ File Permissions
+
 - [ ] Directories: 755
 - [ ] PHP files: 644
 - [ ] Configuration files: 600
@@ -139,6 +153,7 @@ Use this checklist to ensure a successful deployment to GoDaddy hosting.
 ## ⚙️ Configuration
 
 ### ✅ Production Config
+
 - [ ] Database credentials updated
 - [ ] Application URL configured
 - [ ] Email settings configured
@@ -147,6 +162,7 @@ Use this checklist to ensure a successful deployment to GoDaddy hosting.
 - [ ] Cache settings configured
 
 ### ✅ .htaccess Configuration
+
 - [ ] URL rewriting enabled
 - [ ] HTTPS redirect configured
 - [ ] Security headers set
@@ -161,6 +177,7 @@ Use this checklist to ensure a successful deployment to GoDaddy hosting.
 ## 🧪 Testing and Verification
 
 ### ✅ Basic Functionality
+
 - [ ] Application loads in browser
 - [ ] No 500 errors
 - [ ] No 404 errors
@@ -168,15 +185,17 @@ Use this checklist to ensure a successful deployment to GoDaddy hosting.
 - [ ] HTTPS redirect working
 
 ### ✅ Authentication
+
 - [ ] Login page loads
 - [ ] Default admin login works:
   - [ ] Username: admin
-  - [ ] Email: admin@litigation.com
+  - [ ] Email: <admin@litigation.com>
   - [ ] Password: password
 - [ ] Logout functionality works
 - [ ] Session management works
 
 ### ✅ Core Features
+
 - [ ] Dashboard loads
 - [ ] Client management works
 - [ ] Case management works
@@ -187,6 +206,7 @@ Use this checklist to ensure a successful deployment to GoDaddy hosting.
 - [ ] Reports generation works
 
 ### ✅ Database Operations
+
 - [ ] Data retrieval works
 - [ ] Data insertion works
 - [ ] Data updates work
@@ -195,6 +215,7 @@ Use this checklist to ensure a successful deployment to GoDaddy hosting.
 - [ ] UTF-8 encoding preserved
 
 ### ✅ Performance
+
 - [ ] Page load times acceptable (< 3 seconds)
 - [ ] Database queries optimized
 - [ ] Static assets cached
@@ -206,6 +227,7 @@ Use this checklist to ensure a successful deployment to GoDaddy hosting.
 ## 🔒 Security Verification
 
 ### ✅ Access Control
+
 - [ ] Unauthorized access blocked
 - [ ] Permission system working
 - [ ] Role-based access enforced
@@ -213,6 +235,7 @@ Use this checklist to ensure a successful deployment to GoDaddy hosting.
 - [ ] API endpoints secured
 
 ### ✅ Security Headers
+
 - [ ] X-Content-Type-Options set
 - [ ] X-Frame-Options set
 - [ ] X-XSS-Protection enabled
@@ -220,6 +243,7 @@ Use this checklist to ensure a successful deployment to GoDaddy hosting.
 - [ ] Referrer-Policy configured
 
 ### ✅ File Security
+
 - [ ] Sensitive files protected
 - [ ] Configuration files secured
 - [ ] Database files protected
@@ -231,6 +255,7 @@ Use this checklist to ensure a successful deployment to GoDaddy hosting.
 ## 📧 Email Configuration (Optional)
 
 ### ✅ SMTP Settings
+
 - [ ] SMTP host configured
 - [ ] SMTP credentials set
 - [ ] Email sending tested
@@ -242,6 +267,7 @@ Use this checklist to ensure a successful deployment to GoDaddy hosting.
 ## 🛠️ Post-Deployment Tasks
 
 ### ✅ Immediate Actions
+
 - [ ] Change default admin password
 - [ ] Test all user roles
 - [ ] Verify all permissions
@@ -249,6 +275,7 @@ Use this checklist to ensure a successful deployment to GoDaddy hosting.
 - [ ] Test backup functionality
 
 ### ✅ Configuration Updates
+
 - [ ] Update application URL
 - [ ] Configure email notifications
 - [ ] Set up automated backups
@@ -256,6 +283,7 @@ Use this checklist to ensure a successful deployment to GoDaddy hosting.
 - [ ] Update security settings
 
 ### ✅ User Training
+
 - [ ] Admin users trained
 - [ ] Documentation provided
 - [ ] Support contacts established
@@ -266,12 +294,14 @@ Use this checklist to ensure a successful deployment to GoDaddy hosting.
 ## 📊 Monitoring Setup
 
 ### ✅ Error Monitoring
+
 - [ ] Error logging enabled
 - [ ] Log rotation configured
 - [ ] Error notifications set up
 - [ ] Performance monitoring active
 
 ### ✅ Backup Strategy
+
 - [ ] Database backups scheduled
 - [ ] File backups scheduled
 - [ ] Backup verification tested
@@ -279,6 +309,7 @@ Use this checklist to ensure a successful deployment to GoDaddy hosting.
 - [ ] Backup retention configured
 
 ### ✅ Performance Monitoring
+
 - [ ] Page load monitoring
 - [ ] Database query monitoring
 - [ ] Server resource monitoring
@@ -289,18 +320,21 @@ Use this checklist to ensure a successful deployment to GoDaddy hosting.
 ## 🔧 Maintenance Schedule
 
 ### ✅ Daily Tasks
+
 - [ ] Check error logs
 - [ ] Monitor disk space
 - [ ] Verify backup completion
 - [ ] Check application health
 
 ### ✅ Weekly Tasks
+
 - [ ] Review security logs
 - [ ] Check for updates
 - [ ] Test application functionality
 - [ ] Review performance metrics
 
 ### ✅ Monthly Tasks
+
 - [ ] Update dependencies
 - [ ] Security audit
 - [ ] Performance optimization
@@ -312,12 +346,14 @@ Use this checklist to ensure a successful deployment to GoDaddy hosting.
 ## 📞 Support Information
 
 ### ✅ Documentation
+
 - [ ] Installation guide available
 - [ ] User manual created
 - [ ] Admin guide prepared
 - [ ] Troubleshooting guide ready
 
 ### ✅ Support Contacts
+
 - [ ] Technical support contact
 - [ ] GoDaddy support information
 - [ ] Emergency contact details
@@ -328,6 +364,7 @@ Use this checklist to ensure a successful deployment to GoDaddy hosting.
 ## ✅ Final Verification
 
 ### ✅ Go-Live Checklist
+
 - [ ] All tests passed
 - [ ] Security verified
 - [ ] Performance acceptable
@@ -337,6 +374,7 @@ Use this checklist to ensure a successful deployment to GoDaddy hosting.
 - [ ] Monitoring configured
 
 ### ✅ Sign-off
+
 - [ ] Technical lead approval
 - [ ] Security review completed
 - [ ] Performance review completed
@@ -345,7 +383,7 @@ Use this checklist to ensure a successful deployment to GoDaddy hosting.
 
 ---
 
-## 🎉 Deployment Complete!
+## 🎉 Deployment Complete
 
 **Deployment Date**: _______________
 **Deployed By**: _______________
@@ -353,6 +391,7 @@ Use this checklist to ensure a successful deployment to GoDaddy hosting.
 **Admin Credentials**: _______________
 
 **Next Steps**:
+
 1. Monitor application for 24-48 hours
 2. Gather user feedback
 3. Address any issues promptly

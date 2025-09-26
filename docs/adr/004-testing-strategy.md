@@ -8,6 +8,7 @@
 ## Context and Problem Statement
 
 The repository currently has 40+ test files scattered at the root level with no clear organization:
+
 - 15+ API test files (`test-api-*.php`, `test-*-api.php`)
 - 10+ database test files (`check-*.php`, `test-db.php`)
 - 5+ authentication test files (`test-auth-*.php`)
@@ -107,6 +108,7 @@ tests/
 ## Migration Plan
 
 ### Phase 1: Categorize Existing Tests
+
 1. **Audit all test files** to understand their purpose
 2. **Group by functionality**:
    - Authentication: `test-auth-*.php`, `test-admin-user.php`
@@ -115,11 +117,13 @@ tests/
    - Debug (DELETE): `debug-*.php`, `test-*-debug.php`
 
 ### Phase 2: Create New Structure
+
 ```bash
 mkdir -p tests/{api/{auth,endpoints,database,helpers},integration/{api-web,database,deployment},fixtures/database,config}
 ```
 
 ### Phase 3: Migrate Test Files
+
 ```bash
 # API Authentication tests
 mv test-auth-*.php tests/api/auth/
@@ -139,6 +143,7 @@ rm test-*-debug.php
 ```
 
 ### Phase 4: Standardize Test Format
+
 1. **Rename files** to follow `.spec.php` convention
 2. **Add test documentation** headers
 3. **Standardize assertion patterns**
@@ -147,6 +152,7 @@ rm test-*-debug.php
 ## Testing Strategy by Service
 
 ### API Service Tests (`tests/api/`)
+
 - **Unit Tests**: Individual function/method testing
 - **Integration Tests**: Database + API layer testing
 - **Contract Tests**: API endpoint validation
@@ -155,6 +161,7 @@ rm test-*-debug.php
 **Tools**: PHPUnit, custom HTTP client
 
 ### Web Service Tests (`tests/web/`)
+
 - **Component Tests**: React component isolation testing
 - **Page Tests**: Full page functionality
 - **E2E Tests**: User workflow testing
@@ -163,6 +170,7 @@ rm test-*-debug.php
 **Tools**: Playwright (existing), Jest, React Testing Library
 
 ### Integration Tests (`tests/integration/`)
+
 - **API-Web Integration**: Frontend + Backend workflows
 - **Database Integration**: Full data flow testing
 - **Performance Tests**: Load and stress testing
@@ -173,6 +181,7 @@ rm test-*-debug.php
 ## Test Execution Strategy
 
 ### Development Workflow
+
 ```bash
 # Run tests for specific service during development
 npm run test:api           # Run all API tests
@@ -185,12 +194,14 @@ npm run test:web:components # Run component tests
 ```
 
 ### CI/CD Pipeline
+
 1. **Parallel Execution**: Run API and Web tests in parallel
 2. **Conditional Execution**: Run tests only for changed services
 3. **Integration Gates**: Integration tests after service tests pass
 4. **Deployment Verification**: Smoke tests after deployment
 
 ### Test Quality Standards
+
 - **Coverage Targets**: 80% for API, 70% for Web, 90% for critical paths
 - **Performance**: Tests should complete in <5 minutes per service
 - **Reliability**: <1% flaky test rate
@@ -201,6 +212,7 @@ npm run test:web:components # Run component tests
 ### Service-based organization
 
 **Pros**:
+
 - Aligns with repository structure
 - Clear ownership boundaries
 - Supports parallel development
@@ -208,6 +220,7 @@ npm run test:web:components # Run component tests
 - Scales with service growth
 
 **Cons**:
+
 - Some test utilities may be duplicated
 - Cross-service testing requires special structure
 - Migration effort is significant
@@ -215,11 +228,13 @@ npm run test:web:components # Run component tests
 ### Type-based organization
 
 **Pros**:
+
 - Clear by testing methodology
 - Easy to run all unit tests, all integration tests
 - Familiar to testing frameworks
 
 **Cons**:
+
 - Doesn't align with service boundaries
 - Harder to determine service-specific coverage
 - Cross-cutting concerns in multiple places
@@ -227,11 +242,13 @@ npm run test:web:components # Run component tests
 ### Feature-based organization
 
 **Pros**:
+
 - Aligns with business requirements
 - Easy to test complete features
 - Good for product team understanding
 
 **Cons**:
+
 - Features cross service boundaries
 - Technical tests don't fit well
 - Harder to maintain technical test categories

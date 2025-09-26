@@ -1,0 +1,24 @@
+ID,Title,Category,Severity,Priority,Impact,Likelihood,Owner,Status,Dependencies,Evidence,NextStep
+SEC-001,Hardcoded Database Credentials,Security,Critical,P0,High,High,Dev Team,Open,None,backend/config/config.php:L20,Replace with environment variables
+SEC-002,Authentication Bypass,Security,Critical,P0,High,High,Dev Team,Open,None,backend/src/Controllers/AuthController.php:L57-L65,Implement real JWT authentication
+SEC-003,SQL Injection Vulnerability,Security,Critical,P0,High,High,Dev Team,Open,None,backend/src/Core/Validator.php:L261-L275,Use prepared statements
+SEC-004,Information Disclosure,Security,Critical,P0,High,Medium,Dev Team,Open,None,database/config/database.php:L187-L192,Remove echo statements
+SEC-005,Missing CSRF Protection,Security,High,P1,High,Medium,Dev Team,Open,None,backend/src/Controllers/AuthController.php:L10-L41,Add CSRF middleware
+SEC-006,Incomplete Rate Limiting,Security,High,P1,Medium,Medium,Dev Team,Open,None,backend/config/config.php:L69-L70,Implement rate limiting middleware
+SEC-007,File Upload Vulnerabilities,Security,High,P1,High,Medium,Dev Team,Open,None,backend/config/config.php:L35-L37,Add MIME type validation
+SEC-008,Improper Error Logging,Security,High,P1,Medium,High,Dev Team,Open,None,backend/src/Controllers/AuthController.php:L33,Use structured logging
+SEC-009,Insecure Session Configuration,Security,High,P1,Medium,Medium,Dev Team,Open,None,backend/config/config.php:L30-L32,Add secure session flags
+SEC-010,Missing Input Validation,Security,High,P1,Medium,High,Dev Team,Open,None,backend/src/Controllers/AuthController.php:L10-L41,Add comprehensive validation
+SEC-011,Missing Security Headers,Security,Medium,P2,Medium,Low,Dev Team,Open,None,backend/router.php:L8-L11,Add security headers
+SEC-012,Insecure Password Reset,Security,Medium,P2,Medium,Low,Dev Team,Open,None,backend/src/Controllers/AuthController.php:L126-L128,Remove token logging
+SEC-013,Missing Access Control,Security,Medium,P2,Medium,Medium,Dev Team,Open,None,backend/src/Controllers/AuthController.php:L10-L41,Implement RBAC
+SEC-014,Insecure Direct Object References,Security,Medium,P2,Medium,Medium,Dev Team,Open,None,backend/src/Controllers/AuthController.php:L10-L41,Add object access control
+SEC-015,Missing Security Documentation,Security,Low,P3,Low,High,Dev Team,Open,None,README.md,Add security documentation
+SEC-016,Insecure Random Number Generation,Security,Low,P3,Low,Low,Dev Team,Open,None,backend/src/Controllers/AuthController.php:L121,Use secure random generation
+PERF-001,Missing Database Indexes,Performance,High,P1,Medium,High,Dev Team,Open,None,database/litigation_database.sql,Add indexes on foreign keys
+PERF-002,API Response Optimization,Performance,Medium,P2,Medium,Medium,Dev Team,Open,None,backend/router.php:L8-L11,Add caching headers
+PERF-003,Rate Limiting Implementation,Performance,Medium,P2,Medium,Medium,Dev Team,Open,None,backend/config/config.php:L69-L70,Implement rate limiting
+REL-001,Input Validation Rules,Reliability,Medium,P2,Medium,High,Dev Team,Open,None,backend/src/Controllers/AuthController.php:L10-L41,Add validation rules
+REL-002,Error Handling,Reliability,Medium,P2,Medium,Medium,Dev Team,Open,None,backend/src/Controllers/AuthController.php:L37-L40,Improve error handling
+CQ-001,Code Style Issues,Code Quality,Low,P3,Low,High,Dev Team,Open,None,backend/src/Controllers/AuthController.php,Add code style rules
+CQ-002,Missing Documentation,Code Quality,Low,P3,Low,High,Dev Team,Open,None,backend/src/Controllers/AuthController.php,Add code documentation

@@ -12,6 +12,7 @@ import {
   Alert,
   Modal,
 } from 'react-bootstrap';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import {
   Plus,
@@ -35,6 +36,8 @@ interface Invoice {
   id: number;
   invoice_number: string;
   contract_id: string;
+  client_id?: number;
+  case_id?: number;
   invoice_date: string;
   amount: number;
   currency: string;
@@ -64,6 +67,23 @@ interface InvoiceOptions {
   currency: Record<string, string>;
 }
 
+interface Client {
+  id: number;
+  client_name_ar: string;
+  client_name_en: string;
+  client_type: string;
+  status: string;
+}
+
+interface Case {
+  id: number;
+  matter_id: string;
+  matter_ar: string;
+  matter_en: string;
+  client_name_ar: string;
+  client_name_en: string;
+}
+
 export function Invoices() {
   const { t } = useTranslation();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
@@ -71,6 +91,7 @@ export function Invoices() {
   const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [editingInvoice, setEditingInvoice] = useState<Invoice | null>(null);
+  const [modalMode, setModalMode] = useState<'create' | 'edit' | 'view'>('create');
   const [filters, setFilters] = useState<InvoiceFilters>({
     search: '',
     invoice_status: '',
@@ -84,9 +105,14 @@ export function Invoices() {
     type: {},
     currency: {},
   });
+  const [clients, setClients] = useState<Client[]>([]);
+  const [cases, setCases] = useState<Case[]>([]);
+  const [filteredCases, setFilteredCases] = useState<Case[]>([]);
   const [formData, setFormData] = useState({
     invoice_number: '',
     contract_id: '',
+    client_id: '',
+    case_id: '',
     invoice_date: '',
     amount: '',
     currency: 'EGP',
@@ -112,6 +138,12 @@ export function Invoices() {
     loadInvoices();
     loadOptions();
   }, [filters, pagination.current_page]);
+
+  // Load clients and cases once on component mount
+  useEffect(() => {
+    loadClients();
+    loadCases();
+  }, []);
 
   const loadInvoices = async () => {
     try {
@@ -151,6 +183,44 @@ export function Invoices() {
     }
   };
 
+  const loadClients = async () => {
+    try {
+      const response = await api.get('/clients?limit=100');
+      if (response.success && response.data?.data) {
+        setClients(response.data.data);
+      }
+    } catch (err) {
+      console.error('Error loading clients:', err);
+      toast.error('خطأ في تحميل العملاء');
+    }
+  };
+
+  const loadCases = async () => {
+    try {
+      const response = await api.get('/cases?limit=100');
+      if (response.success && response.data?.data) {
+        setCases(response.data.data);
+        setFilteredCases(response.data.data); // Initially show all cases
+      }
+    } catch (err) {
+      console.error('Error loading cases:', err);
+      toast.error('خطأ في تحميل القضايا');
+    }
+  };
+
+  const handleClientChange = (clientId: string) => {
+    setFormData({ ...formData, client_id: clientId, case_id: '' }); // Reset case selection
+
+    if (clientId) {
+      // Filter cases by selected client
+      const clientCases = cases.filter(case_item => case_item.client_name_ar === clients.find(c => c.id.toString() === clientId)?.client_name_ar);
+      setFilteredCases(clientCases);
+    } else {
+      // Show all cases if no client selected
+      setFilteredCases(cases);
+    }
+  };
+
   const handleFilterChange = (key: keyof InvoiceFilters, value: string) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
     setPagination((prev) => ({ ...prev, current_page: 1 }));
@@ -160,11 +230,55 @@ export function Invoices() {
     setPagination((prev) => ({ ...prev, current_page: page }));
   };
 
-  const handleCreateInvoice = () => {
+  const handleCreateInvoice = async () => {
+    console.log('➕ handleCreateInvoice called');
     setEditingInvoice(null);
+    setModalMode('create');
+
+    // Load clients and cases data directly
+    try {
+      console.log('📡 Making API calls for clients and cases...');
+
+      const [clientsResponse, casesResponse] = await Promise.all([
+        api.get('/clients?limit=100'),
+        api.get('/cases?limit=100')
+      ]);
+
+      console.log('📡 Clients API response:', clientsResponse);
+      console.log('📡 Cases API response:', casesResponse);
+
+      if (clientsResponse.success && clientsResponse.data?.data) {
+        console.log(`👥 Setting ${clientsResponse.data.data.length} clients`);
+        setClients(clientsResponse.data.data);
+      } else {
+        console.error('❌ Clients API failed:', clientsResponse);
+      }
+
+      if (casesResponse.success && casesResponse.data?.data) {
+        console.log(`📁 Setting ${casesResponse.data.data.length} cases`);
+        setCases(casesResponse.data.data);
+        setFilteredCases(casesResponse.data.data);
+      } else {
+        console.error('❌ Cases API failed:', casesResponse);
+      }
+
+      // Wait for state to update before showing modal
+      setTimeout(() => {
+        console.log('⏰ Showing modal after timeout');
+        setShowModal(true);
+      }, 500);
+
+    } catch (error) {
+      console.error('❌ Error loading clients/cases:', error);
+      // Still show modal even if API calls fail
+      setShowModal(true);
+    }
+
     setFormData({
       invoice_number: '',
       contract_id: '',
+      client_id: '',
+      case_id: '',
       invoice_date: '',
       amount: '',
       currency: 'EGP',
@@ -177,14 +291,57 @@ export function Invoices() {
       report_generated: false,
     });
     setFormErrors([]);
-    setShowModal(true);
   };
 
-  const handleEditInvoice = (invoice: Invoice) => {
+  const handleEditInvoice = async (invoice: Invoice) => {
+    console.log('✏️ handleEditInvoice called for invoice:', invoice.id);
     setEditingInvoice(invoice);
+    setModalMode('edit');
+
+    // Load clients and cases data directly with proper error logging
+    try {
+      console.log('📡 Making API calls for clients and cases...');
+
+      const [clientsResponse, casesResponse] = await Promise.all([
+        api.get('/clients?limit=100'),
+        api.get('/cases?limit=100')
+      ]);
+
+      console.log('📡 Clients API response:', clientsResponse);
+      console.log('📡 Cases API response:', casesResponse);
+
+      if (clientsResponse.success && clientsResponse.data?.data) {
+        console.log(`👥 Setting ${clientsResponse.data.data.length} clients`);
+        setClients(clientsResponse.data.data);
+      } else {
+        console.error('❌ Clients API failed:', clientsResponse);
+      }
+
+      if (casesResponse.success && casesResponse.data?.data) {
+        console.log(`📁 Setting ${casesResponse.data.data.length} cases`);
+        setCases(casesResponse.data.data);
+        setFilteredCases(casesResponse.data.data);
+      } else {
+        console.error('❌ Cases API failed:', casesResponse);
+      }
+
+      // Wait for state to update before showing modal
+      setTimeout(() => {
+        console.log('⏰ Showing modal after timeout');
+        setShowModal(true);
+      }, 500);
+
+    } catch (error) {
+      console.error('❌ Error loading clients/cases:', error);
+      // Still show modal even if API calls fail
+      setShowModal(true);
+    }
+
     setFormData({
       invoice_number: invoice.invoice_number || '',
       contract_id: invoice.contract_id || '',
+      client_id: invoice.client_id?.toString() || '',
+      case_id: invoice.case_id?.toString() || '',
       invoice_date: invoice.invoice_date || '',
       amount: invoice.amount?.toString() || '',
       currency: invoice.currency || 'EGP',
@@ -197,7 +354,69 @@ export function Invoices() {
       report_generated: invoice.report_generated || false,
     });
     setFormErrors([]);
-    setShowModal(true);
+  };
+
+  const handleViewInvoice = async (invoice: Invoice) => {
+    console.log('🔍 handleViewInvoice called for invoice:', invoice.id);
+    setEditingInvoice(invoice);
+    setModalMode('view');
+
+    // Load clients and cases data directly with proper error logging
+    try {
+      console.log('📡 Making API calls for clients and cases...');
+
+      const [clientsResponse, casesResponse] = await Promise.all([
+        api.get('/clients?limit=100'),
+        api.get('/cases?limit=100')
+      ]);
+
+      console.log('📡 Clients API response:', clientsResponse);
+      console.log('📡 Cases API response:', casesResponse);
+
+      if (clientsResponse.success && clientsResponse.data?.data) {
+        console.log(`👥 Setting ${clientsResponse.data.data.length} clients`);
+        setClients(clientsResponse.data.data);
+      } else {
+        console.error('❌ Clients API failed:', clientsResponse);
+      }
+
+      if (casesResponse.success && casesResponse.data?.data) {
+        console.log(`📁 Setting ${casesResponse.data.data.length} cases`);
+        setCases(casesResponse.data.data);
+        setFilteredCases(casesResponse.data.data);
+      } else {
+        console.error('❌ Cases API failed:', casesResponse);
+      }
+
+      // Wait for state to update before showing modal
+      setTimeout(() => {
+        console.log('⏰ Showing modal after timeout');
+        setShowModal(true);
+      }, 500);
+
+    } catch (error) {
+      console.error('❌ Error loading clients/cases:', error);
+      // Still show modal even if API calls fail
+      setShowModal(true);
+    }
+
+    setFormData({
+      invoice_number: invoice.invoice_number || '',
+      contract_id: invoice.contract_id || '',
+      client_id: invoice.client_id?.toString() || '',
+      case_id: invoice.case_id?.toString() || '',
+      invoice_date: invoice.invoice_date || '',
+      amount: invoice.amount?.toString() || '',
+      currency: invoice.currency || 'EGP',
+      usd_amount: invoice.usd_amount?.toString() || '',
+      invoice_details: invoice.invoice_details || '',
+      invoice_status: invoice.invoice_status || 'draft',
+      invoice_type: invoice.invoice_type || 'service',
+      has_vat: invoice.has_vat || false,
+      payment_date: invoice.payment_date || '',
+      report_generated: invoice.report_generated || false,
+    });
+    setFormErrors([]);
   };
 
   const handleDeleteInvoice = async (invoice: Invoice) => {
@@ -499,7 +718,12 @@ export function Invoices() {
                       </td>
                       <td>
                         <div className='btn-group btn-group-sm'>
-                          <Button variant='outline-primary' size='sm' title='View'>
+                          <Button
+                            variant='outline-primary'
+                            size='sm'
+                            title='View'
+                            onClick={() => handleViewInvoice(invoice)}
+                          >
                             <Eye size={14} />
                           </Button>
                           <Button
@@ -573,7 +797,11 @@ export function Invoices() {
       {/* Invoice Modal */}
       <Modal show={showModal} onHide={() => setShowModal(false)} size='xl'>
         <Modal.Header closeButton>
-          <Modal.Title>{editingInvoice ? 'تعديل الفاتورة' : 'إضافة فاتورة جديدة'}</Modal.Title>
+          <Modal.Title>
+            {modalMode === 'create' ? 'إضافة فاتورة جديدة' :
+             modalMode === 'edit' ? 'تعديل الفاتورة' :
+             'تفاصيل الفاتورة'}
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {formErrors.length > 0 && (
@@ -596,6 +824,7 @@ export function Invoices() {
                     value={formData.invoice_number}
                     onChange={(e) => setFormData({ ...formData, invoice_number: e.target.value })}
                     placeholder='سيتم توليده تلقائياً إذا ترك فارغ'
+                    disabled={modalMode === 'view'}
                   />
                 </Form.Group>
               </Col>
@@ -606,6 +835,7 @@ export function Invoices() {
                     type='text'
                     value={formData.contract_id}
                     onChange={(e) => setFormData({ ...formData, contract_id: e.target.value })}
+                    disabled={modalMode === 'view'}
                   />
                 </Form.Group>
               </Col>
@@ -616,8 +846,51 @@ export function Invoices() {
                     type='date'
                     value={formData.invoice_date}
                     onChange={(e) => setFormData({ ...formData, invoice_date: e.target.value })}
-                    required
+                    required={modalMode !== 'view'}
+                    disabled={modalMode === 'view'}
                   />
+                </Form.Group>
+              </Col>
+            </Row>
+
+            <Row>
+              <Col md={6}>
+                <Form.Group className='mb-3'>
+                  <Form.Label>العميل</Form.Label>
+                  <Form.Select
+                    value={formData.client_id}
+                    onChange={(e) => handleClientChange(e.target.value)}
+                    disabled={modalMode === 'view'}
+                  >
+                    <option value=''>اختر العميل</option>
+                    {clients.map((client) => (
+                      <option key={client.id} value={client.id}>
+                        {client.client_name_ar} {client.client_name_en && `(${client.client_name_en})`}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group className='mb-3'>
+                  <Form.Label>القضية</Form.Label>
+                  <Form.Select
+                    value={formData.case_id}
+                    onChange={(e) => setFormData({ ...formData, case_id: e.target.value })}
+                    disabled={modalMode === 'view' || !formData.client_id}
+                  >
+                    <option value=''>اختر القضية</option>
+                    {filteredCases.map((case_item) => (
+                      <option key={case_item.id} value={case_item.id}>
+                        {case_item.matter_id} - {case_item.matter_ar}
+                      </option>
+                    ))}
+                  </Form.Select>
+                  {!formData.client_id && (
+                    <Form.Text className='text-muted'>
+                      اختر العميل أولاً لعرض القضايا المرتبطة
+                    </Form.Text>
+                  )}
                 </Form.Group>
               </Col>
             </Row>
@@ -632,7 +905,8 @@ export function Invoices() {
                     min='0'
                     value={formData.amount}
                     onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                    required
+                    required={modalMode !== 'view'}
+                    disabled={modalMode === 'view'}
                   />
                 </Form.Group>
               </Col>
@@ -642,6 +916,7 @@ export function Invoices() {
                   <Form.Select
                     value={formData.currency}
                     onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
+                    disabled={modalMode === 'view'}
                   >
                     {options.currency ? Object.entries(options.currency).map(([key, value]) => (
                       <option key={key} value={key}>
@@ -660,6 +935,7 @@ export function Invoices() {
                     min='0'
                     value={formData.usd_amount}
                     onChange={(e) => setFormData({ ...formData, usd_amount: e.target.value })}
+                    disabled={modalMode === 'view'}
                   />
                 </Form.Group>
               </Col>
@@ -672,6 +948,7 @@ export function Invoices() {
                   <Form.Select
                     value={formData.invoice_type}
                     onChange={(e) => setFormData({ ...formData, invoice_type: e.target.value })}
+                    disabled={modalMode === 'view'}
                   >
                     {options.type ? Object.entries(options.type).map(([key, value]) => (
                       <option key={key} value={key}>
@@ -687,6 +964,7 @@ export function Invoices() {
                   <Form.Select
                     value={formData.invoice_status}
                     onChange={(e) => setFormData({ ...formData, invoice_status: e.target.value })}
+                    disabled={modalMode === 'view'}
                   >
                     {options.status ? Object.entries(options.status).map(([key, value]) => (
                       <option key={key} value={key}>
@@ -703,6 +981,7 @@ export function Invoices() {
                     type='date'
                     value={formData.payment_date}
                     onChange={(e) => setFormData({ ...formData, payment_date: e.target.value })}
+                    disabled={modalMode === 'view'}
                   />
                 </Form.Group>
               </Col>
@@ -717,6 +996,7 @@ export function Invoices() {
                     rows={3}
                     value={formData.invoice_details}
                     onChange={(e) => setFormData({ ...formData, invoice_details: e.target.value })}
+                    disabled={modalMode === 'view'}
                   />
                 </Form.Group>
               </Col>
@@ -729,6 +1009,7 @@ export function Invoices() {
                   label='تشمل ضريبة القيمة المضافة'
                   checked={formData.has_vat}
                   onChange={(e) => setFormData({ ...formData, has_vat: e.target.checked })}
+                  disabled={modalMode === 'view'}
                 />
               </Col>
               <Col md={6}>
@@ -737,6 +1018,7 @@ export function Invoices() {
                   label='تم إنشاء التقرير'
                   checked={formData.report_generated}
                   onChange={(e) => setFormData({ ...formData, report_generated: e.target.checked })}
+                  disabled={modalMode === 'view'}
                 />
               </Col>
             </Row>
@@ -744,11 +1026,13 @@ export function Invoices() {
         </Modal.Body>
         <Modal.Footer>
           <Button variant='secondary' onClick={() => setShowModal(false)}>
-            إلغاء
+            {modalMode === 'view' ? 'إغلاق' : 'إلغاء'}
           </Button>
-          <Button variant='primary' onClick={handleSubmit}>
-            {editingInvoice ? 'حفظ التغييرات' : 'إضافة الفاتورة'}
-          </Button>
+          {modalMode !== 'view' && (
+            <Button variant='primary' onClick={handleSubmit}>
+              {modalMode === 'edit' ? 'حفظ التغييرات' : 'إضافة الفاتورة'}
+            </Button>
+          )}
         </Modal.Footer>
       </Modal>
     </Container>

@@ -1,5 +1,5 @@
-I uploaded a sample report "\reports_samples\Specific_Client_Cases_with_Status_Report.jpg, and \reports_samples\Specific_Client_Cases_with_Status_Report.pdf" for a Client "Franke" in 2 extensions (PDF, and JPG)   
-  for your review to replicate. The report is for a client to get cases and status.       
+I uploaded a sample report "\reports_samples\Specific_Client_Cases_with_Status_Report.jpg, and \reports_samples\Specific_Client_Cases_with_Status_Report.pdf" for a Client "Franke" in 2 extensions (PDF, and JPG)
+  for your review to replicate. The report is for a client to get cases and status.
   Report Description :Here’s a description of what’s in the image/template you shared:
 
 The document is in Arabic and titled “بيان بموقف فرانكي” (Statement of Franke’s Position / Statement of Status of Franke).

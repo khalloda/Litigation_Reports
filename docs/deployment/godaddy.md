@@ -1,4 +1,5 @@
 # GoDaddy Installation Guide
+
 ## Litigation Management System
 
 This guide provides step-by-step instructions for deploying the Litigation Management System to GoDaddy shared hosting with cPanel.
@@ -25,6 +26,7 @@ This guide provides step-by-step instructions for deploying the Litigation Manag
 ## 🔧 Prerequisites
 
 ### Required GoDaddy Plan
+
 - **Shared Hosting Plan** with cPanel access
 - **PHP 8.0+** support (recommended: PHP 8.4)
 - **MySQL 8.0+** database
@@ -32,12 +34,14 @@ This guide provides step-by-step instructions for deploying the Litigation Manag
 - **Subdomain or Domain** for the application
 
 ### Local Development Requirements
+
 - **Node.js 18+** installed locally
 - **Git** for version control
 - **FTP Client** (FileZilla, WinSCP, or cPanel File Manager)
 - **Text Editor** (VS Code recommended)
 
 ### GoDaddy Account Requirements
+
 - Active GoDaddy hosting account
 - cPanel access credentials
 - Domain or subdomain ready for deployment
@@ -47,12 +51,15 @@ This guide provides step-by-step instructions for deploying the Litigation Manag
 ## 🌐 GoDaddy Account Setup
 
 ### Step 1: Access Your GoDaddy Account
+
 1. Log in to your GoDaddy account at [godaddy.com](https://godaddy.com)
 2. Navigate to **My Products** → **Web Hosting**
 3. Click **Manage** next to your hosting plan
 
 ### Step 2: Verify Hosting Specifications
+
 Ensure your plan includes:
+
 - **PHP Version**: 8.0 or higher
 - **MySQL**: 8.0 or higher
 - **Storage**: At least 1GB available
@@ -60,7 +67,9 @@ Ensure your plan includes:
 - **SSL Certificate**: Free Let's Encrypt or premium SSL
 
 ### Step 3: Note Your Hosting Details
+
 Record the following information:
+
 - **cPanel URL**: Usually `https://yourdomain.com:2083`
 - **cPanel Username**: Your hosting username
 - **cPanel Password**: Your hosting password
@@ -73,18 +82,22 @@ Record the following information:
 ## 🖥️ cPanel Configuration
 
 ### Step 1: Access cPanel
+
 1. Go to your cPanel URL: `https://yourdomain.com:2083`
 2. Log in with your credentials
 3. Verify you can see the cPanel dashboard
 
 ### Step 2: Check PHP Version
+
 1. Find **Software** section in cPanel
 2. Click **Select PHP Version**
 3. Ensure PHP 8.0+ is selected
 4. Click **Set as Current** if needed
 
 ### Step 3: Enable Required PHP Extensions
+
 In the **Select PHP Version** page, enable these extensions:
+
 - ✅ **mysqli** (MySQL database connection)
 - ✅ **pdo_mysql** (PDO MySQL support)
 - ✅ **curl** (HTTP requests)
@@ -96,7 +109,9 @@ In the **Select PHP Version** page, enable these extensions:
 - ✅ **fileinfo** (File type detection)
 
 ### Step 4: Configure PHP Settings
+
 In the **Options** tab, set these values:
+
 - **memory_limit**: `256M` or higher
 - **max_execution_time**: `300`
 - **max_input_vars**: `3000`
@@ -111,18 +126,22 @@ In the **Options** tab, set these values:
 ### Method 1: Using cPanel File Manager (Recommended)
 
 #### Step 1: Access File Manager
+
 1. In cPanel, find **Files** section
 2. Click **File Manager**
 3. Navigate to **public_html** folder
 
 #### Step 2: Create Application Directory
+
 1. Right-click in **public_html**
 2. Select **Create Folder**
 3. Name it `litigation` (or your preferred name)
 4. Double-click to enter the folder
 
 #### Step 3: Upload Application Files
+
 1. **Create folder structure**:
+
    ```
    public_html/litigation/
    ├── api/                    # PHP API files
@@ -142,7 +161,9 @@ In the **Options** tab, set these values:
 ### Method 2: Using FTP Client
 
 #### Step 1: Configure FTP Client
+
 **FileZilla Configuration:**
+
 - **Host**: `ftp.yourdomain.com`
 - **Username**: Your cPanel username
 - **Password**: Your cPanel password
@@ -150,6 +171,7 @@ In the **Options** tab, set these values:
 - **Protocol**: FTP
 
 #### Step 2: Connect and Upload
+
 1. Connect to your FTP server
 2. Navigate to `/public_html/litigation/`
 3. Upload all application files maintaining directory structure
@@ -157,11 +179,13 @@ In the **Options** tab, set these values:
 ### Method 3: Using Git (Advanced)
 
 #### Step 1: Enable SSH Access (if available)
+
 1. In cPanel, find **Advanced** section
 2. Click **Terminal** or **SSH Access**
 3. Enable SSH if not already enabled
 
 #### Step 2: Clone Repository
+
 ```bash
 cd /home/username/public_html/
 git clone https://github.com/yourusername/litigation-reports.git litigation
@@ -173,6 +197,7 @@ cd litigation
 ## 🗄️ Database Setup
 
 ### Step 1: Create MySQL Database
+
 1. In cPanel, find **Databases** section
 2. Click **MySQL Databases**
 3. Create a new database:
@@ -180,12 +205,14 @@ cd litigation
    - Click **Create Database**
 
 ### Step 2: Create Database User
+
 1. In **MySQL Users** section:
    - **Username**: `litigation_user` (or your preferred name)
    - **Password**: Generate a strong password
    - Click **Create User**
 
 ### Step 3: Assign User to Database
+
 1. In **Add User to Database** section:
    - Select your user
    - Select your database
@@ -194,13 +221,16 @@ cd litigation
 3. Click **Make Changes**
 
 ### Step 4: Record Database Credentials
+
 Note down these details:
+
 - **Database Name**: `username_litigation_db`
 - **Username**: `username_litigation_user`
 - **Password**: `your_secure_password`
 - **Host**: `localhost` (usually)
 
 ### Step 5: Import Database Schema
+
 1. In cPanel, find **Databases** section
 2. Click **phpMyAdmin**
 3. Select your database from the left panel
@@ -209,6 +239,7 @@ Note down these details:
 6. Click **Go** to execute the import
 
 ### Step 6: Import Sample Data (Optional)
+
 1. If you have sample data, repeat the import process
 2. Upload `database/sample_data.sql` or CSV files
 3. Use the migration scripts if available
@@ -220,6 +251,7 @@ Note down these details:
 ### Step 1: Create Production Configuration
 
 Create `config/config.production.php`:
+
 ```php
 <?php
 /**
@@ -264,6 +296,7 @@ define('LOG_FILE', __DIR__ . '/../logs/app.log');
 ### Step 2: Create .htaccess File
 
 Create `.htaccess` in your application root:
+
 ```apache
 # Apache Configuration for Litigation Management System
 
@@ -344,8 +377,10 @@ RewriteRule ^(.*)$ build/index.html [QSA,L]
 ```
 
 ### Step 3: Create Log Directory
+
 1. Create `logs` directory in your application root
 2. Create `.htaccess` in logs directory:
+
 ```apache
 Order allow,deny
 Deny from all
@@ -371,11 +406,14 @@ npm run build
 ```
 
 ### Step 2: Upload Build Files
+
 1. Upload the contents of your `build/` directory to `public_html/litigation/build/`
 2. Ensure all static assets (CSS, JS, images) are uploaded correctly
 
 ### Step 3: Set File Permissions
+
 In cPanel File Manager, set these permissions:
+
 - **Directories**: `755`
 - **Files**: `644`
 - **PHP files**: `644`
@@ -387,6 +425,7 @@ In cPanel File Manager, set these permissions:
 ## 🌍 Domain Configuration
 
 ### Option 1: Subdomain Setup
+
 1. In cPanel, find **Domains** section
 2. Click **Subdomains**
 3. Create subdomain:
@@ -396,6 +435,7 @@ In cPanel File Manager, set these permissions:
 4. Click **Create**
 
 ### Option 2: Main Domain Setup
+
 1. In cPanel, find **Domains** section
 2. Click **Addon Domains**
 3. Add your domain:
@@ -405,6 +445,7 @@ In cPanel File Manager, set these permissions:
 4. Click **Add Domain**
 
 ### Option 3: Directory Setup
+
 1. Upload files to `public_html/litigation/`
 2. Access via `https://yourdomain.com/litigation/`
 
@@ -413,6 +454,7 @@ In cPanel File Manager, set these permissions:
 ## 🔒 SSL Certificate
 
 ### Step 1: Enable SSL
+
 1. In cPanel, find **Security** section
 2. Click **SSL/TLS**
 3. Click **Manage SSL sites**
@@ -420,6 +462,7 @@ In cPanel File Manager, set these permissions:
 5. Enable **Force HTTPS Redirect**
 
 ### Step 2: Verify SSL
+
 1. Visit your application URL
 2. Ensure you see the padlock icon in the browser
 3. Check that all resources load over HTTPS
@@ -429,6 +472,7 @@ In cPanel File Manager, set these permissions:
 ## 🧪 Testing and Verification
 
 ### Step 1: Basic Functionality Test
+
 1. **Access Application**: Visit `https://yourdomain.com/litigation/`
 2. **Login Test**: Try logging in with default admin credentials:
    - Username: `admin`
@@ -436,7 +480,9 @@ In cPanel File Manager, set these permissions:
    - Password: `password`
 
 ### Step 2: Database Connection Test
+
 1. Create a test file `test-db.php`:
+
 ```php
 <?php
 require_once 'config/config.production.php';
@@ -459,7 +505,9 @@ try {
 3. Delete the test file after verification
 
 ### Step 3: Feature Testing
+
 Test these core features:
+
 - ✅ User login/logout
 - ✅ Dashboard access
 - ✅ Client management
@@ -470,6 +518,7 @@ Test these core features:
 - ✅ Report generation
 
 ### Step 4: Performance Testing
+
 - **Page Load Speed**: Should be under 3 seconds
 - **Database Queries**: Should execute quickly
 - **File Uploads**: Test with various file types and sizes
@@ -481,66 +530,83 @@ Test these core features:
 ### Common Issues and Solutions
 
 #### Issue 1: 500 Internal Server Error
+
 **Causes:**
+
 - PHP syntax errors
 - Missing PHP extensions
 - Incorrect file permissions
 - Database connection issues
 
 **Solutions:**
+
 1. Check PHP error logs in cPanel
 2. Verify PHP extensions are enabled
 3. Check file permissions
 4. Test database connection
 
 #### Issue 2: Database Connection Failed
+
 **Causes:**
+
 - Incorrect database credentials
 - Database not created
 - User not assigned to database
 - Wrong host name
 
 **Solutions:**
+
 1. Verify database credentials in config file
 2. Check database exists in cPanel
 3. Ensure user has proper permissions
 4. Try `localhost` as host name
 
 #### Issue 3: React App Not Loading
+
 **Causes:**
+
 - Build files not uploaded correctly
 - Incorrect .htaccess configuration
 - Missing static assets
 
 **Solutions:**
+
 1. Rebuild and re-upload React files
 2. Check .htaccess rewrite rules
 3. Verify all CSS/JS files are accessible
 
 #### Issue 4: File Upload Issues
+
 **Causes:**
+
 - PHP upload limits too low
 - Incorrect file permissions
 - Missing upload directory
 
 **Solutions:**
+
 1. Increase PHP upload limits in cPanel
 2. Set correct permissions on upload directory
 3. Create upload directory if missing
 
 #### Issue 5: SSL Certificate Issues
+
 **Causes:**
+
 - SSL not properly configured
 - Mixed content warnings
 - Certificate not activated
 
 **Solutions:**
+
 1. Enable SSL in cPanel
 2. Force HTTPS redirect
 3. Update all URLs to use HTTPS
 
 ### Debug Mode
+
 To enable debug mode for troubleshooting:
+
 1. Edit `config/config.production.php`
 2. Set `APP_DEBUG` to `true`
 3. Check error logs for detailed information
@@ -553,16 +619,19 @@ To enable debug mode for troubleshooting:
 ### Regular Maintenance Tasks
 
 #### Daily
+
 - Check error logs for any issues
 - Monitor disk space usage
 - Verify backup processes
 
 #### Weekly
+
 - Review security logs
 - Check for PHP/MySQL updates
 - Test application functionality
 
 #### Monthly
+
 - Update dependencies (if needed)
 - Review and rotate logs
 - Performance optimization
@@ -571,6 +640,7 @@ To enable debug mode for troubleshooting:
 ### Backup Strategy
 
 #### Database Backup
+
 1. In cPanel, go to **Backups**
 2. Click **Download a MySQL Database Backup**
 3. Select your database
@@ -578,13 +648,16 @@ To enable debug mode for troubleshooting:
 5. Store backups in a secure location
 
 #### File Backup
+
 1. In cPanel File Manager
 2. Compress your application directory
 3. Download the compressed file
 4. Store backups securely
 
 #### Automated Backups
+
 Consider setting up automated backups using:
+
 - cPanel scheduled backups
 - Third-party backup services
 - Custom backup scripts
@@ -592,6 +665,7 @@ Consider setting up automated backups using:
 ### Security Maintenance
 
 #### Regular Security Checks
+
 1. **Update PHP version** when available
 2. **Monitor access logs** for suspicious activity
 3. **Review user permissions** regularly
@@ -599,6 +673,7 @@ Consider setting up automated backups using:
 5. **Check for security vulnerabilities**
 
 #### Security Best Practices
+
 - Use strong passwords for all accounts
 - Enable two-factor authentication where possible
 - Keep software updated
@@ -610,17 +685,20 @@ Consider setting up automated backups using:
 ## 📞 Support and Resources
 
 ### GoDaddy Support
+
 - **GoDaddy Help Center**: [help.godaddy.com](https://help.godaddy.com)
 - **Phone Support**: Available 24/7
 - **Live Chat**: Available in your GoDaddy account
 - **Community Forum**: [community.godaddy.com](https://community.godaddy.com)
 
 ### Application Support
+
 - **Documentation**: Check project README files
 - **Issue Tracking**: GitHub issues (if applicable)
 - **Development Team**: Contact your development team
 
 ### Useful Resources
+
 - **PHP Documentation**: [php.net](https://php.net)
 - **MySQL Documentation**: [dev.mysql.com](https://dev.mysql.com)
 - **React Documentation**: [reactjs.org](https://reactjs.org)
@@ -631,6 +709,7 @@ Consider setting up automated backups using:
 ## 📋 Post-Installation Checklist
 
 ### ✅ Installation Complete
+
 - [ ] Application accessible via web browser
 - [ ] Database connection working
 - [ ] User authentication functional
@@ -643,6 +722,7 @@ Consider setting up automated backups using:
 - [ ] Security measures implemented
 
 ### ✅ Performance Optimized
+
 - [ ] Page load times under 3 seconds
 - [ ] Database queries optimized
 - [ ] Static assets cached
@@ -650,6 +730,7 @@ Consider setting up automated backups using:
 - [ ] CDN configured (if applicable)
 
 ### ✅ Security Verified
+
 - [ ] HTTPS enforced
 - [ ] Security headers configured
 - [ ] Sensitive files protected
@@ -658,23 +739,26 @@ Consider setting up automated backups using:
 
 ---
 
-## 🎉 Congratulations!
+## 🎉 Congratulations
 
-Your Litigation Management System is now successfully deployed on GoDaddy hosting! 
+Your Litigation Management System is now successfully deployed on GoDaddy hosting!
 
-### Next Steps:
+### Next Steps
+
 1. **Change default admin password** immediately
 2. **Configure email settings** for notifications
 3. **Set up regular backups**
 4. **Train users** on the new system
 5. **Monitor performance** and user feedback
 
-### System Access:
+### System Access
+
 - **URL**: `https://yourdomain.com/litigation/`
 - **Admin Login**: `admin@litigation.com` / `password` (change immediately)
 - **Database**: Accessible via phpMyAdmin in cPanel
 
-### Support:
+### Support
+
 For any issues or questions, refer to the troubleshooting section or contact your development team.
 
 ---

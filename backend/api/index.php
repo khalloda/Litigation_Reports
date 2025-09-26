@@ -214,6 +214,33 @@ switch ($path) {
         }
         break;
 
+    case '/hearings/options':
+        if ($method === 'GET') {
+            handleGetHearingOptions();
+        } else {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method not allowed']);
+        }
+        break;
+
+    case '/cases/options':
+        if ($method === 'GET') {
+            handleGetCaseOptions();
+        } else {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method not allowed']);
+        }
+        break;
+
+    case '/clients/options':
+        if ($method === 'GET') {
+            handleGetClientOptions();
+        } else {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method not allowed']);
+        }
+        break;
+
     default:
         // Handle dynamic routes (e.g., /cases/123)
         if (preg_match('/^\/cases\/(\d+)$/', $path, $matches)) {
@@ -248,6 +275,18 @@ switch ($path) {
                 handleUpdateHearing($id);
             } elseif ($method === 'DELETE') {
                 handleDeleteHearing($id);
+            } else {
+                http_response_code(405);
+                echo json_encode(['error' => 'Method not allowed']);
+            }
+        } elseif (preg_match('/^\/invoices\/(\d+)$/', $path, $matches)) {
+            $id = $matches[1];
+            if ($method === 'GET') {
+                handleGetInvoice($id);
+            } elseif ($method === 'PUT' || $method === 'PATCH') {
+                handleUpdateInvoice($id);
+            } elseif ($method === 'DELETE') {
+                handleDeleteInvoice($id);
             } else {
                 http_response_code(405);
                 echo json_encode(['error' => 'Method not allowed']);
@@ -634,48 +673,550 @@ function handleGetHearing($id) {
 
 // Placeholder functions for other operations
 function handleCreateCase() {
-    http_response_code(501);
-    echo json_encode(['error' => 'Create case not implemented yet']);
+    $db = Database::getInstance();
+    $input = json_decode(file_get_contents('php://input'), true);
+
+    if (!$input) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid JSON input']);
+        return;
+    }
+
+    // Validate required fields
+    $errors = [];
+    if (empty($input['client_id'])) {
+        $errors['client_id'] = 'Client ID is required';
+    }
+    if (empty($input['matter_ar']) && empty($input['matter_en'])) {
+        $errors['matter'] = 'Case matter (Arabic or English) is required';
+    }
+
+    if (!empty($errors)) {
+        http_response_code(422);
+        echo json_encode(['error' => 'Validation failed', 'errors' => $errors]);
+        return;
+    }
+
+    try {
+        $result = $db->execute(
+            "INSERT INTO cases (client_id, matter_id, matter_ar, matter_en, client_capacity, opponent_capacity, matter_subject, matter_status, matter_category, matter_degree, matter_importance, matter_start_date, matter_end_date, circuit_secretary, matter_asked_amount, matter_judged_amount, client_branch, matter_shelf, court_floor, court_hall, secretary_room, matter_court, matter_circuit, matter_destination, matter_select, matter_partner, matter_notes1, matter_notes2, lawyer_a, lawyer_b, matter_evaluation, financial_allocation, work_team_id, contract_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            [
+                $input['client_id'],
+                $input['matter_id'] ?? null,
+                $input['matter_ar'] ?? '',
+                $input['matter_en'] ?? '',
+                $input['client_capacity'] ?? '',
+                $input['opponent_capacity'] ?? '',
+                $input['matter_subject'] ?? '',
+                $input['matter_status'] ?? 'active',
+                $input['matter_category'] ?? '',
+                $input['matter_degree'] ?? '',
+                $input['matter_importance'] ?? 'medium',
+                !empty($input['matter_start_date']) ? $input['matter_start_date'] : null,
+                !empty($input['matter_end_date']) ? $input['matter_end_date'] : null,
+                $input['circuit_secretary'] ?? '',
+                !empty($input['matter_asked_amount']) ? (float)$input['matter_asked_amount'] : null,
+                !empty($input['matter_judged_amount']) ? (float)$input['matter_judged_amount'] : null,
+                $input['client_branch'] ?? '',
+                $input['matter_shelf'] ?? '',
+                $input['court_floor'] ?? '',
+                $input['court_hall'] ?? '',
+                $input['secretary_room'] ?? '',
+                $input['matter_court'] ?? '',
+                $input['matter_circuit'] ?? '',
+                $input['matter_destination'] ?? '',
+                $input['matter_select'] ?? '',
+                $input['matter_partner'] ?? '',
+                $input['matter_notes1'] ?? '',
+                $input['matter_notes2'] ?? '',
+                $input['lawyer_a'] ?? '',
+                $input['lawyer_b'] ?? '',
+                $input['matter_evaluation'] ?? '',
+                $input['financial_allocation'] ?? '',
+                !empty($input['work_team_id']) ? (int)$input['work_team_id'] : null,
+                $input['contract_id'] ?? null
+            ]
+        );
+
+        if ($result) {
+            $newId = $db->lastInsertId();
+            $newCase = $db->fetch(
+                "SELECT c.*, cl.client_name_ar, cl.client_name_en FROM cases c LEFT JOIN clients cl ON c.client_id = cl.id WHERE c.id = ?",
+                [$newId]
+            );
+
+            http_response_code(201);
+            echo json_encode([
+                'success' => true,
+                'data' => $newCase,
+                'message' => 'Case created successfully'
+            ]);
+        } else {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to create case']);
+        }
+    } catch (Exception $e) {
+        error_log("Create case error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to create case']);
+    }
 }
 
 function handleUpdateCase($id) {
-    http_response_code(501);
-    echo json_encode(['error' => 'Update case not implemented yet']);
+    $db = Database::getInstance();
+    $input = json_decode(file_get_contents('php://input'), true);
+
+    if (!$input) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid JSON input']);
+        return;
+    }
+
+    try {
+        // Check if case exists
+        $existing = $db->fetch("SELECT id FROM cases WHERE id = ?", [$id]);
+        if (!$existing) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Case not found']);
+            return;
+        }
+
+        $result = $db->execute(
+            "UPDATE cases SET client_id = ?, matter_id = ?, matter_ar = ?, matter_en = ?, client_capacity = ?, opponent_capacity = ?, matter_subject = ?, matter_status = ?, matter_category = ?, matter_degree = ?, matter_importance = ?, matter_start_date = ?, matter_end_date = ?, circuit_secretary = ?, matter_asked_amount = ?, matter_judged_amount = ?, client_branch = ?, matter_shelf = ?, court_floor = ?, court_hall = ?, secretary_room = ?, matter_court = ?, matter_circuit = ?, matter_destination = ?, matter_select = ?, matter_partner = ?, matter_notes1 = ?, matter_notes2 = ?, lawyer_a = ?, lawyer_b = ?, matter_evaluation = ?, financial_allocation = ?, work_team_id = ?, contract_id = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+            [
+                $input['client_id'] ?? null,
+                $input['matter_id'] ?? null,
+                $input['matter_ar'] ?? '',
+                $input['matter_en'] ?? '',
+                $input['client_capacity'] ?? '',
+                $input['opponent_capacity'] ?? '',
+                $input['matter_subject'] ?? '',
+                $input['matter_status'] ?? 'active',
+                $input['matter_category'] ?? '',
+                $input['matter_degree'] ?? '',
+                $input['matter_importance'] ?? 'medium',
+                !empty($input['matter_start_date']) ? $input['matter_start_date'] : null,
+                !empty($input['matter_end_date']) ? $input['matter_end_date'] : null,
+                $input['circuit_secretary'] ?? '',
+                !empty($input['matter_asked_amount']) ? (float)$input['matter_asked_amount'] : null,
+                !empty($input['matter_judged_amount']) ? (float)$input['matter_judged_amount'] : null,
+                $input['client_branch'] ?? '',
+                $input['matter_shelf'] ?? '',
+                $input['court_floor'] ?? '',
+                $input['court_hall'] ?? '',
+                $input['secretary_room'] ?? '',
+                $input['matter_court'] ?? '',
+                $input['matter_circuit'] ?? '',
+                $input['matter_destination'] ?? '',
+                $input['matter_select'] ?? '',
+                $input['matter_partner'] ?? '',
+                $input['matter_notes1'] ?? '',
+                $input['matter_notes2'] ?? '',
+                $input['lawyer_a'] ?? '',
+                $input['lawyer_b'] ?? '',
+                $input['matter_evaluation'] ?? '',
+                $input['financial_allocation'] ?? '',
+                !empty($input['work_team_id']) ? (int)$input['work_team_id'] : null,
+                $input['contract_id'] ?? null,
+                $id
+            ]
+        );
+
+        if ($result) {
+            $updatedCase = $db->fetch(
+                "SELECT c.*, cl.client_name_ar, cl.client_name_en FROM cases c LEFT JOIN clients cl ON c.client_id = cl.id WHERE c.id = ?",
+                [$id]
+            );
+
+            echo json_encode([
+                'success' => true,
+                'data' => $updatedCase,
+                'message' => 'Case updated successfully'
+            ]);
+        } else {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to update case']);
+        }
+    } catch (Exception $e) {
+        error_log("Update case error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to update case']);
+    }
 }
 
 function handleDeleteCase($id) {
-    http_response_code(501);
-    echo json_encode(['error' => 'Delete case not implemented yet']);
+    $db = Database::getInstance();
+
+    try {
+        // Check if case exists
+        $existing = $db->fetch("SELECT id FROM cases WHERE id = ?", [$id]);
+        if (!$existing) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Case not found']);
+            return;
+        }
+
+        // Check if case has related hearings
+        $relatedHearings = $db->fetch("SELECT COUNT(*) as count FROM hearings WHERE case_id = ?", [$id]);
+        if ($relatedHearings['count'] > 0) {
+            http_response_code(422);
+            echo json_encode([
+                'error' => 'Cannot delete case with existing hearings',
+                'message' => 'Please delete all hearings for this case first'
+            ]);
+            return;
+        }
+
+        $result = $db->execute("DELETE FROM cases WHERE id = ?", [$id]);
+
+        if ($result) {
+            http_response_code(204);
+            echo json_encode([
+                'success' => true,
+                'message' => 'Case deleted successfully'
+            ]);
+        } else {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to delete case']);
+        }
+    } catch (Exception $e) {
+        error_log("Delete case error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to delete case']);
+    }
 }
 
 function handleCreateClient() {
-    http_response_code(501);
-    echo json_encode(['error' => 'Create client not implemented yet']);
+    $db = Database::getInstance();
+    $input = json_decode(file_get_contents('php://input'), true);
+
+    if (!$input) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid JSON input']);
+        return;
+    }
+
+    // Validate required fields
+    $errors = [];
+    if (empty($input['client_name_ar'])) {
+        $errors['client_name_ar'] = 'Arabic client name is required';
+    }
+
+    if (!empty($errors)) {
+        http_response_code(422);
+        echo json_encode(['error' => 'Validation failed', 'errors' => $errors]);
+        return;
+    }
+
+    try {
+        $result = $db->execute(
+            "INSERT INTO clients (client_name_ar, client_name_en, client_type, cash_pro_bono, status, logo, contact_lawyer, email, phone, address_ar, address_en, notes_ar, notes_en, client_start_date, client_end_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            [
+                $input['client_name_ar'],
+                $input['client_name_en'] ?? '',
+                $input['client_type'] ?? 'company',
+                $input['cash_pro_bono'] ?? 'cash',
+                $input['status'] ?? 'active',
+                $input['logo'] ?? null,
+                $input['contact_lawyer'] ?? '',
+                $input['email'] ?? '',
+                $input['phone'] ?? '',
+                $input['address_ar'] ?? '',
+                $input['address_en'] ?? '',
+                $input['notes_ar'] ?? '',
+                $input['notes_en'] ?? '',
+                !empty($input['client_start_date']) ? $input['client_start_date'] : null,
+                !empty($input['client_end_date']) ? $input['client_end_date'] : null
+            ]
+        );
+
+        if ($result) {
+            $newId = $db->lastInsertId();
+            $newClient = $db->fetch("SELECT * FROM clients WHERE id = ?", [$newId]);
+
+            http_response_code(201);
+            echo json_encode([
+                'success' => true,
+                'data' => $newClient,
+                'message' => 'Client created successfully'
+            ]);
+        } else {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to create client']);
+        }
+    } catch (Exception $e) {
+        error_log("Create client error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to create client']);
+    }
 }
 
 function handleUpdateClient($id) {
-    http_response_code(501);
-    echo json_encode(['error' => 'Update client not implemented yet']);
+    $db = Database::getInstance();
+    $input = json_decode(file_get_contents('php://input'), true);
+
+    if (!$input) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid JSON input']);
+        return;
+    }
+
+    try {
+        // Check if client exists
+        $existing = $db->fetch("SELECT id FROM clients WHERE id = ?", [$id]);
+        if (!$existing) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Client not found']);
+            return;
+        }
+
+        $result = $db->execute(
+            "UPDATE clients SET client_name_ar = ?, client_name_en = ?, client_type = ?, cash_pro_bono = ?, status = ?, logo = ?, contact_lawyer = ?, email = ?, phone = ?, address_ar = ?, address_en = ?, notes_ar = ?, notes_en = ?, client_start_date = ?, client_end_date = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+            [
+                $input['client_name_ar'] ?? '',
+                $input['client_name_en'] ?? '',
+                $input['client_type'] ?? 'company',
+                $input['cash_pro_bono'] ?? 'cash',
+                $input['status'] ?? 'active',
+                $input['logo'] ?? null,
+                $input['contact_lawyer'] ?? '',
+                $input['email'] ?? '',
+                $input['phone'] ?? '',
+                $input['address_ar'] ?? '',
+                $input['address_en'] ?? '',
+                $input['notes_ar'] ?? '',
+                $input['notes_en'] ?? '',
+                !empty($input['client_start_date']) ? $input['client_start_date'] : null,
+                !empty($input['client_end_date']) ? $input['client_end_date'] : null,
+                $id
+            ]
+        );
+
+        if ($result) {
+            $updatedClient = $db->fetch("SELECT * FROM clients WHERE id = ?", [$id]);
+
+            echo json_encode([
+                'success' => true,
+                'data' => $updatedClient,
+                'message' => 'Client updated successfully'
+            ]);
+        } else {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to update client']);
+        }
+    } catch (Exception $e) {
+        error_log("Update client error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to update client']);
+    }
 }
 
 function handleDeleteClient($id) {
-    http_response_code(501);
-    echo json_encode(['error' => 'Delete client not implemented yet']);
+    $db = Database::getInstance();
+
+    try {
+        // Check if client exists
+        $existing = $db->fetch("SELECT id FROM clients WHERE id = ?", [$id]);
+        if (!$existing) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Client not found']);
+            return;
+        }
+
+        // Check if client has related cases
+        $relatedCases = $db->fetch("SELECT COUNT(*) as count FROM cases WHERE client_id = ?", [$id]);
+        if ($relatedCases['count'] > 0) {
+            http_response_code(422);
+            echo json_encode([
+                'error' => 'Cannot delete client with existing cases',
+                'message' => 'Please delete all cases for this client first'
+            ]);
+            return;
+        }
+
+        $result = $db->execute("DELETE FROM clients WHERE id = ?", [$id]);
+
+        if ($result) {
+            http_response_code(204);
+            echo json_encode([
+                'success' => true,
+                'message' => 'Client deleted successfully'
+            ]);
+        } else {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to delete client']);
+        }
+    } catch (Exception $e) {
+        error_log("Delete client error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to delete client']);
+    }
 }
 
 function handleCreateHearing() {
-    http_response_code(501);
-    echo json_encode(['error' => 'Create hearing not implemented yet']);
+    $db = Database::getInstance();
+    $input = json_decode(file_get_contents('php://input'), true);
+
+    if (!$input) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid JSON input']);
+        return;
+    }
+
+    // Validate required fields
+    $errors = [];
+    if (empty($input['case_id'])) {
+        $errors['case_id'] = 'Case ID is required';
+    }
+    if (empty($input['hearing_date'])) {
+        $errors['hearing_date'] = 'Hearing date is required';
+    }
+    if (empty($input['hearing_type'])) {
+        $errors['hearing_type'] = 'Hearing type is required';
+    }
+    if (empty($input['hearing_result'])) {
+        $errors['hearing_result'] = 'Hearing result is required';
+    }
+    if (empty($input['hearing_duration'])) {
+        $errors['hearing_duration'] = 'Hearing duration is required';
+    }
+
+    if (!empty($errors)) {
+        http_response_code(422);
+        echo json_encode(['error' => 'Validation failed', 'errors' => $errors]);
+        return;
+    }
+
+    try {
+        $result = $db->execute(
+            "INSERT INTO hearings (case_id, hearing_date, hearing_type, hearing_result, hearing_duration, hearing_decision, court_notes, lawyer_notes, expert_notes, next_hearing, short_decision) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            [
+                $input['case_id'],
+                $input['hearing_date'],
+                $input['hearing_type'],
+                $input['hearing_result'],
+                $input['hearing_duration'],
+                $input['hearing_decision'] ?? '',
+                $input['court_notes'] ?? '',
+                $input['lawyer_notes'] ?? '',
+                $input['expert_notes'] ?? '',
+                !empty($input['next_hearing']) ? $input['next_hearing'] : null,
+                $input['short_decision'] ?? ''
+            ]
+        );
+
+        if ($result) {
+            $newId = $db->lastInsertId();
+            $newHearing = $db->fetch(
+                "SELECT h.*, c.matter_ar, c.matter_en FROM hearings h LEFT JOIN cases c ON h.case_id = c.id WHERE h.id = ?",
+                [$newId]
+            );
+
+            http_response_code(201);
+            echo json_encode([
+                'success' => true,
+                'data' => $newHearing,
+                'message' => 'Hearing created successfully'
+            ]);
+        } else {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to create hearing']);
+        }
+    } catch (Exception $e) {
+        error_log("Create hearing error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to create hearing']);
+    }
 }
 
 function handleUpdateHearing($id) {
-    http_response_code(501);
-    echo json_encode(['error' => 'Update hearing not implemented yet']);
+    $db = Database::getInstance();
+    $input = json_decode(file_get_contents('php://input'), true);
+
+    if (!$input) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid JSON input']);
+        return;
+    }
+
+    try {
+        // Check if hearing exists
+        $existing = $db->fetch("SELECT id FROM hearings WHERE id = ?", [$id]);
+        if (!$existing) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Hearing not found']);
+            return;
+        }
+
+        $result = $db->execute(
+            "UPDATE hearings SET case_id = ?, hearing_date = ?, hearing_type = ?, hearing_result = ?, hearing_duration = ?, hearing_decision = ?, court_notes = ?, lawyer_notes = ?, expert_notes = ?, next_hearing = ?, short_decision = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+            [
+                $input['case_id'] ?? null,
+                $input['hearing_date'] ?? null,
+                $input['hearing_type'] ?? '',
+                $input['hearing_result'] ?? '',
+                $input['hearing_duration'] ?? '',
+                $input['hearing_decision'] ?? '',
+                $input['court_notes'] ?? '',
+                $input['lawyer_notes'] ?? '',
+                $input['expert_notes'] ?? '',
+                !empty($input['next_hearing']) ? $input['next_hearing'] : null,
+                $input['short_decision'] ?? '',
+                $id
+            ]
+        );
+
+        if ($result) {
+            $updatedHearing = $db->fetch(
+                "SELECT h.*, c.matter_ar, c.matter_en FROM hearings h LEFT JOIN cases c ON h.case_id = c.id WHERE h.id = ?",
+                [$id]
+            );
+
+            echo json_encode([
+                'success' => true,
+                'data' => $updatedHearing,
+                'message' => 'Hearing updated successfully'
+            ]);
+        } else {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to update hearing']);
+        }
+    } catch (Exception $e) {
+        error_log("Update hearing error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to update hearing']);
+    }
 }
 
 function handleDeleteHearing($id) {
-    http_response_code(501);
-    echo json_encode(['error' => 'Delete hearing not implemented yet']);
+    $db = Database::getInstance();
+
+    try {
+        // Check if hearing exists
+        $existing = $db->fetch("SELECT id FROM hearings WHERE id = ?", [$id]);
+        if (!$existing) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Hearing not found']);
+            return;
+        }
+
+        $result = $db->execute("DELETE FROM hearings WHERE id = ?", [$id]);
+
+        if ($result) {
+            http_response_code(204);
+            echo json_encode([
+                'success' => true,
+                'message' => 'Hearing deleted successfully'
+            ]);
+        } else {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to delete hearing']);
+        }
+    } catch (Exception $e) {
+        error_log("Delete hearing error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to delete hearing']);
+    }
 }
 
 // Invoice handler functions
@@ -776,8 +1317,302 @@ function handleGetInvoiceOptions() {
 }
 
 function handleCreateInvoice() {
-    http_response_code(501);
-    echo json_encode(['error' => 'Create invoice not implemented yet']);
+    $db = Database::getInstance();
+    $input = json_decode(file_get_contents('php://input'), true);
+
+    if (!$input) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid JSON input']);
+        return;
+    }
+
+    // Validate required fields
+    $errors = [];
+    if (empty($input['invoice_date'])) {
+        $errors['invoice_date'] = 'Invoice date is required';
+    }
+    if (empty($input['amount']) || !is_numeric($input['amount'])) {
+        $errors['amount'] = 'Valid amount is required';
+    }
+
+    if (!empty($errors)) {
+        http_response_code(422);
+        echo json_encode(['error' => 'Validation failed', 'errors' => $errors]);
+        return;
+    }
+
+    try {
+        // Generate invoice number if not provided or empty
+        $invoiceNumber = (!empty($input['invoice_number'])) ? $input['invoice_number'] : 'INV-' . date('Y') . '-' . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
+
+        $result = $db->execute(
+            "INSERT INTO invoices (invoice_number, contract_id, client_id, case_id, invoice_date, amount, currency, usd_amount, invoice_details, invoice_status, invoice_type, has_vat, payment_date, report_generated) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            [
+                $invoiceNumber,
+                $input['contract_id'] ?? null,
+                !empty($input['client_id']) ? (int)$input['client_id'] : null,
+                !empty($input['case_id']) ? (int)$input['case_id'] : null,
+                $input['invoice_date'],
+                (float)$input['amount'],
+                $input['currency'] ?? 'EGP',
+                !empty($input['usd_amount']) ? (float)$input['usd_amount'] : null,
+                $input['invoice_details'] ?? '',
+                $input['invoice_status'] ?? 'draft',
+                $input['invoice_type'] ?? 'service',
+                isset($input['has_vat']) ? (int)$input['has_vat'] : 0,
+                !empty($input['payment_date']) ? $input['payment_date'] : null,
+                isset($input['report_generated']) ? (int)$input['report_generated'] : 0
+            ]
+        );
+
+        if ($result) {
+            $newId = $db->lastInsertId();
+            $newInvoice = $db->fetch("SELECT * FROM invoices WHERE id = ?", [$newId]);
+
+            http_response_code(201);
+            echo json_encode([
+                'success' => true,
+                'data' => $newInvoice,
+                'message' => 'Invoice created successfully'
+            ]);
+        } else {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to create invoice']);
+        }
+    } catch (Exception $e) {
+        error_log("Create invoice error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to create invoice']);
+    }
+}
+
+function handleGetInvoice($id) {
+    $db = Database::getInstance();
+
+    try {
+        $invoice = $db->fetch(
+            "SELECT * FROM invoices WHERE id = ?",
+            [$id]
+        );
+
+        if ($invoice) {
+            echo json_encode([
+                'success' => true,
+                'data' => $invoice
+            ]);
+        } else {
+            http_response_code(404);
+            echo json_encode(['error' => 'Invoice not found']);
+        }
+    } catch (Exception $e) {
+        error_log("Get invoice error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Internal server error']);
+    }
+}
+
+function handleUpdateInvoice($id) {
+    $db = Database::getInstance();
+    $input = json_decode(file_get_contents('php://input'), true);
+
+    if (!$input) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Invalid JSON input']);
+        return;
+    }
+
+    try {
+        // Check if invoice exists
+        $existing = $db->fetch("SELECT id FROM invoices WHERE id = ?", [$id]);
+        if (!$existing) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Invoice not found']);
+            return;
+        }
+
+        // Generate invoice number if not provided or empty during update
+        $invoiceNumber = (!empty($input['invoice_number'])) ? $input['invoice_number'] : 'INV-' . date('Y') . '-' . str_pad(rand(1, 9999), 4, '0', STR_PAD_LEFT);
+
+        $result = $db->execute(
+            "UPDATE invoices SET invoice_number = ?, contract_id = ?, client_id = ?, case_id = ?, invoice_date = ?, amount = ?, currency = ?, usd_amount = ?, invoice_details = ?, invoice_status = ?, invoice_type = ?, has_vat = ?, payment_date = ?, report_generated = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+            [
+                $invoiceNumber,
+                $input['contract_id'] ?? '',
+                !empty($input['client_id']) ? (int)$input['client_id'] : null,
+                !empty($input['case_id']) ? (int)$input['case_id'] : null,
+                $input['invoice_date'] ?? null,
+                $input['amount'] ?? 0,
+                $input['currency'] ?? 'EGP',
+                $input['usd_amount'] ?? null,
+                $input['invoice_details'] ?? '',
+                $input['invoice_status'] ?? 'draft',
+                $input['invoice_type'] ?? 'service',
+                isset($input['has_vat']) ? (int)$input['has_vat'] : 0,
+                !empty($input['payment_date']) ? $input['payment_date'] : null,
+                isset($input['report_generated']) ? (int)$input['report_generated'] : 0,
+                $id
+            ]
+        );
+
+        if ($result) {
+            $updatedInvoice = $db->fetch(
+                "SELECT * FROM invoices WHERE id = ?",
+                [$id]
+            );
+
+            echo json_encode([
+                'success' => true,
+                'data' => $updatedInvoice,
+                'message' => 'Invoice updated successfully'
+            ]);
+        } else {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to update invoice']);
+        }
+    } catch (Exception $e) {
+        error_log("Update invoice error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to update invoice']);
+    }
+}
+
+function handleDeleteInvoice($id) {
+    $db = Database::getInstance();
+
+    try {
+        // Check if invoice exists
+        $existing = $db->fetch("SELECT id FROM invoices WHERE id = ?", [$id]);
+        if (!$existing) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Invoice not found']);
+            return;
+        }
+
+        $result = $db->execute("DELETE FROM invoices WHERE id = ?", [$id]);
+
+        if ($result) {
+            http_response_code(204);
+            echo json_encode([
+                'success' => true,
+                'message' => 'Invoice deleted successfully'
+            ]);
+        } else {
+            http_response_code(500);
+            echo json_encode(['error' => 'Failed to delete invoice']);
+        }
+    } catch (Exception $e) {
+        error_log("Delete invoice error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to delete invoice']);
+    }
+}
+
+// Options handler functions
+function handleGetHearingOptions() {
+    try {
+        echo json_encode([
+            'success' => true,
+            'data' => [
+                'type' => [
+                    'initial' => 'أولى',
+                    'procedural' => 'إجرائية',
+                    'evidence' => 'بينات',
+                    'witness' => 'شهود',
+                    'expert' => 'خبراء',
+                    'final' => 'نهائية',
+                    'appeal' => 'استئناف',
+                    'execution' => 'تنفيذ'
+                ],
+                'result' => [
+                    'won' => 'لصالح',
+                    'lost' => 'ضد',
+                    'postponed' => 'مؤجلة',
+                    'pending' => 'معلقة',
+                    'settled' => 'تسوية'
+                ],
+                'duration' => [
+                    '30m' => '30 دقيقة',
+                    '1h' => 'ساعة',
+                    '1h30m' => 'ساعة ونصف',
+                    '2h' => 'ساعتان',
+                    '3h' => 'ثلاث ساعات',
+                    'full_day' => 'يوم كامل'
+                ]
+            ]
+        ]);
+    } catch (Exception $e) {
+        error_log("Get hearing options error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to fetch hearing options']);
+    }
+}
+
+function handleGetCaseOptions() {
+    try {
+        echo json_encode([
+            'success' => true,
+            'data' => [
+                'status' => [
+                    'active' => 'نشطة',
+                    'closed' => 'مغلقة',
+                    'suspended' => 'معلقة',
+                    'appealed' => 'مستأنفة',
+                    'settled' => 'محسومة'
+                ],
+                'category' => [
+                    'civil' => 'مدنية',
+                    'criminal' => 'جنائية',
+                    'commercial' => 'تجارية',
+                    'administrative' => 'إدارية',
+                    'family' => 'أحوال شخصية',
+                    'labor' => 'عمالية',
+                    'tax' => 'ضريبية'
+                ],
+                'importance' => [
+                    'high' => 'عالية',
+                    'medium' => 'متوسطة',
+                    'low' => 'منخفضة'
+                ],
+                'degree' => [
+                    'first' => 'أولى',
+                    'appeal' => 'استئناف',
+                    'cassation' => 'نقض',
+                    'execution' => 'تنفيذ'
+                ]
+            ]
+        ]);
+    } catch (Exception $e) {
+        error_log("Get case options error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to fetch case options']);
+    }
+}
+
+function handleGetClientOptions() {
+    try {
+        echo json_encode([
+            'success' => true,
+            'data' => [
+                'type' => [
+                    'individual' => 'فرد',
+                    'company' => 'شركة'
+                ],
+                'status' => [
+                    'active' => 'نشط',
+                    'disabled' => 'معطل',
+                    'inactive' => 'غير نشط'
+                ],
+                'cash_pro_bono' => [
+                    'cash' => 'نقدي',
+                    'probono' => 'مجاني'
+                ]
+            ]
+        ]);
+    } catch (Exception $e) {
+        error_log("Get client options error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to fetch client options']);
+    }
 }
 
 // Reports handler functions
@@ -2147,19 +2982,20 @@ function handleCustomReportOptions() {
 
             case 'cases':
                 $options['available_columns'] = [
-                    'matter_ar' => 'موضوع القضية (عربي)',
-                    'matter_en' => 'موضوع القضية (إنجليزي)',
-                    'matter_court' => 'المحكمة',
-                    'status' => 'الحالة',
-                    'case_type' => 'نوع القضية',
-                    'priority' => 'الأولوية',
-                    'client_name_ar' => 'اسم العميل',
+                    'id' => 'معرف القضية',
+                    'matter_id' => 'رقم القضية',
+                    'matter_ar' => 'عنوان القضية (عربي)',
+                    'matter_en' => 'عنوان القضية (إنجليزي)',
+                    'matter_category' => 'نوع القضية',
+                    'matter_status' => 'حالة القضية',
+                    'matter_court' => 'اسم المحكمة',
+                    'matter_subject' => 'موضوع القضية',
                     'created_at' => 'تاريخ الإنشاء'
                 ];
                 $options['available_filters'] = [
-                    'status' => ['active' => 'نشطة', 'closed' => 'مغلقة', 'suspended' => 'معلقة'],
-                    'case_type' => ['civil' => 'مدنية', 'criminal' => 'جنائية', 'commercial' => 'تجارية'],
-                    'priority' => ['high' => 'عالية', 'medium' => 'متوسطة', 'low' => 'منخفضة']
+                    'matter_status' => ['active' => 'نشطة', 'closed' => 'مغلقة', 'suspended' => 'معلقة'],
+                    'matter_category' => ['civil' => 'مدنية', 'criminal' => 'جنائية', 'commercial' => 'تجارية'],
+                    'matter_importance' => ['high' => 'عالية', 'medium' => 'متوسطة', 'low' => 'منخفضة']
                 ];
                 break;
 
@@ -2178,6 +3014,53 @@ function handleCustomReportOptions() {
                     'status' => ['scheduled' => 'مجدولة', 'completed' => 'مكتملة', 'postponed' => 'مؤجلة'],
                     'hearing_type' => ['initial' => 'أولى', 'follow_up' => 'متابعة', 'final' => 'نهائية'],
                     'outcome' => ['for' => 'لصالح', 'against' => 'ضد', 'pending' => 'معلقة']
+                ];
+                break;
+
+            case 'invoices':
+                $options['available_columns'] = [
+                    'id' => 'معرف الفاتورة',
+                    'invoice_number' => 'رقم الفاتورة',
+                    'invoice_date' => 'تاريخ الفاتورة',
+                    'amount' => 'المبلغ',
+                    'currency' => 'العملة',
+                    'usd_amount' => 'المبلغ بالدولار',
+                    'invoice_details' => 'تفاصيل الفاتورة',
+                    'invoice_status' => 'حالة الفاتورة',
+                    'invoice_type' => 'نوع الفاتورة',
+                    'has_vat' => 'يتضمن ضريبة',
+                    'payment_date' => 'تاريخ الدفع',
+                    'contract_id' => 'رقم العقد',
+                    'created_at' => 'تاريخ الإنشاء'
+                ];
+                $options['available_filters'] = [
+                    'invoice_status' => ['paid' => 'مدفوعة', 'unpaid' => 'غير مدفوعة', 'partial' => 'مدفوعة جزئياً', 'cancelled' => 'ملغاة'],
+                    'invoice_type' => ['service' => 'خدمة', 'consultation' => 'استشارة', 'retainer' => 'أتعاب مسبقة'],
+                    'currency' => ['EGP' => 'جنيه مصري', 'USD' => 'دولار أمريكي', 'SAR' => 'ريال سعودي'],
+                    'has_vat' => ['1' => 'نعم', '0' => 'لا']
+                ];
+                break;
+
+            case 'documents':
+                $options['available_columns'] = [
+                    'id' => 'معرف الوثيقة',
+                    'title' => 'عنوان الوثيقة',
+                    'description' => 'الوصف',
+                    'document_type' => 'نوع الوثيقة',
+                    'entity_type' => 'نوع الكيان',
+                    'entity_id' => 'معرف الكيان',
+                    'original_filename' => 'اسم الملف الأصلي',
+                    'file_size' => 'حجم الملف',
+                    'mime_type' => 'نوع الملف',
+                    'is_public' => 'عام',
+                    'tags' => 'العلامات',
+                    'created_at' => 'تاريخ الرفع'
+                ];
+                $options['available_filters'] = [
+                    'document_type' => ['contract' => 'عقد', 'judgment' => 'حكم', 'pleading' => 'مرافعة', 'evidence' => 'دليل'],
+                    'entity_type' => ['client' => 'عميل', 'case' => 'قضية', 'hearing' => 'جلسة'],
+                    'is_public' => ['1' => 'عام', '0' => 'خاص'],
+                    'mime_type' => ['application/pdf' => 'PDF', 'image/jpeg' => 'صورة', 'application/msword' => 'وورد']
                 ];
                 break;
 
@@ -2221,11 +3104,105 @@ function handleGenerateCustomReport() {
         $whereConditions = [];
         $params = [];
 
-        // Build dynamic query based on entity type
+        // 🔧 FIX: Define available columns for each entity type
+        $availableColumnsByEntity = [
+            'clients' => [
+                'id' => 'معرف العميل',
+                'client_name_ar' => 'اسم العميل (عربي)',
+                'client_name_en' => 'اسم العميل (إنجليزي)',
+                'client_type' => 'نوع العميل',
+                'phone' => 'رقم الهاتف',
+                'email' => 'البريد الإلكتروني',
+                'status' => 'الحالة',
+                'created_at' => 'تاريخ التسجيل'
+            ],
+            'cases' => [
+                'id' => 'معرف القضية',
+                'matter_id' => 'رقم القضية',
+                'matter_ar' => 'عنوان القضية (عربي)',
+                'matter_en' => 'عنوان القضية (إنجليزي)',
+                'matter_category' => 'نوع القضية',
+                'matter_status' => 'حالة القضية',
+                'matter_court' => 'اسم المحكمة',
+                'matter_degree' => 'درجة القضية',
+                'matter_importance' => 'أهمية القضية',
+                'client_capacity' => 'صفة الموكل',
+                'opponent_capacity' => 'صفة المخصم',
+                'matter_subject' => 'موضوع القضية',
+                'matter_start_date' => 'تاريخ بدء القضية',
+                'matter_end_date' => 'تاريخ انتهاء القضية',
+                'matter_asked_amount' => 'المبلغ المطلوب',
+                'matter_judged_amount' => 'المبلغ المحكوم به',
+                'created_at' => 'تاريخ الإنشاء'
+            ],
+            'hearings' => [
+                'id' => 'معرف الجلسة',
+                'hearing_date' => 'تاريخ الجلسة',
+                'hearing_type' => 'نوع الجلسة',
+                'hearing_result' => 'نتيجة الجلسة',
+                'case_id' => 'معرف القضية',
+                'hearing_decision' => 'قرار الجلسة',
+                'last_decision' => 'آخر قرار',
+                'hearing_duration' => 'مدة الجلسة',
+                'next_hearing' => 'الجلسة القادمة',
+                'court_notes' => 'ملاحظات المحكمة',
+                'lawyer_notes' => 'ملاحظات المحامي',
+                'created_at' => 'تاريخ الإنشاء'
+            ],
+            'invoices' => [
+                'id' => 'معرف الفاتورة',
+                'invoice_number' => 'رقم الفاتورة',
+                'invoice_date' => 'تاريخ الفاتورة',
+                'amount' => 'المبلغ',
+                'currency' => 'العملة',
+                'usd_amount' => 'المبلغ بالدولار',
+                'invoice_details' => 'تفاصيل الفاتورة',
+                'invoice_status' => 'حالة الفاتورة',
+                'invoice_type' => 'نوع الفاتورة',
+                'has_vat' => 'يتضمن ضريبة',
+                'payment_date' => 'تاريخ الدفع',
+                'contract_id' => 'رقم العقد',
+                'created_at' => 'تاريخ الإنشاء'
+            ],
+            'documents' => [
+                'id' => 'معرف الوثيقة',
+                'title' => 'عنوان الوثيقة',
+                'description' => 'الوصف',
+                'document_type' => 'نوع الوثيقة',
+                'entity_type' => 'نوع الكيان',
+                'entity_id' => 'معرف الكيان',
+                'original_filename' => 'اسم الملف الأصلي',
+                'file_size' => 'حجم الملف',
+                'mime_type' => 'نوع الملف',
+                'is_public' => 'عام',
+                'tags' => 'العلامات',
+                'created_at' => 'تاريخ الرفع'
+            ]
+        ];
+
+        $availableColumns = $availableColumnsByEntity[$entity] ?? [];
+
+        // 🔧 FIX: Filter and validate selected columns
+        $selectedColumns = [];
+        if (!empty($columns) && is_array($columns)) {
+            // Only include columns that exist in the available columns list (security)
+            $selectedColumns = array_intersect($columns, array_keys($availableColumns));
+        }
+
+        // If no columns selected or invalid columns, use default columns
+        if (empty($selectedColumns)) {
+            $selectedColumns = array_slice(array_keys($availableColumns), 0, 4); // Use first 4 columns as default
+        }
+
+        // Build dynamic query based on entity type with column filtering
         switch ($entity) {
             case 'clients':
                 $tableName = 'clients';
-                $baseSQL = "SELECT c.* FROM clients c";
+                // 🔧 FIX: Use selected columns instead of SELECT *
+                $selectClause = implode(', ', array_map(function($col) {
+                    return "c.$col";
+                }, $selectedColumns));
+                $baseSQL = "SELECT $selectClause FROM clients c";
 
                 if (!empty($filters['status'])) {
                     $whereConditions[] = "c.status = ?";
@@ -2247,14 +3224,18 @@ function handleGenerateCustomReport() {
 
             case 'cases':
                 $tableName = 'cases';
-                $baseSQL = "SELECT cases.*, c.client_name_ar, c.client_name_en FROM cases LEFT JOIN clients c ON cases.client_id = c.id";
+                // 🔧 FIX: Use selected columns for cases
+                $selectClause = implode(', ', array_map(function($col) {
+                    return "cases.$col";
+                }, $selectedColumns));
+                $baseSQL = "SELECT $selectClause FROM cases LEFT JOIN clients c ON cases.client_id = c.id";
 
                 if (!empty($filters['status'])) {
                     $whereConditions[] = "cases.matter_status = ?";
                     $params[] = $filters['status'];
                 }
                 if (!empty($filters['case_type'])) {
-                    $whereConditions[] = "cases.case_type = ?";
+                    $whereConditions[] = "cases.matter_category = ?";
                     $params[] = $filters['case_type'];
                 }
                 if (!empty($filters['priority'])) {
@@ -2273,19 +3254,19 @@ function handleGenerateCustomReport() {
 
             case 'hearings':
                 $tableName = 'hearings';
-                $baseSQL = "SELECT h.*, cases.matter_ar, c.client_name_ar FROM hearings h LEFT JOIN cases ON h.case_id = cases.id LEFT JOIN clients c ON cases.client_id = c.id";
+                // 🔧 FIX: Use selected columns for hearings
+                $selectClause = implode(', ', array_map(function($col) {
+                    return "h.$col";
+                }, $selectedColumns));
+                $baseSQL = "SELECT $selectClause FROM hearings h LEFT JOIN cases ON h.case_id = cases.id LEFT JOIN clients c ON cases.client_id = c.id";
 
-                if (!empty($filters['status'])) {
-                    $whereConditions[] = "h.status = ?";
-                    $params[] = $filters['status'];
-                }
                 if (!empty($filters['hearing_type'])) {
                     $whereConditions[] = "h.hearing_type = ?";
                     $params[] = $filters['hearing_type'];
                 }
-                if (!empty($filters['outcome'])) {
-                    $whereConditions[] = "h.outcome = ?";
-                    $params[] = $filters['outcome'];
+                if (!empty($filters['hearing_result'])) {
+                    $whereConditions[] = "h.hearing_result = ?";
+                    $params[] = $filters['hearing_result'];
                 }
                 if (!empty($filters['date_from'])) {
                     $whereConditions[] = "h.hearing_date >= ?";
@@ -2297,9 +3278,81 @@ function handleGenerateCustomReport() {
                 }
                 break;
 
+            case 'invoices':
+                $tableName = 'invoices';
+                // 🔧 FIX: Use selected columns for invoices
+                $selectClause = implode(', ', array_map(function($col) {
+                    return "i.$col";
+                }, $selectedColumns));
+                $baseSQL = "SELECT $selectClause FROM invoices i";
+
+                if (!empty($filters['invoice_status'])) {
+                    $whereConditions[] = "i.invoice_status = ?";
+                    $params[] = $filters['invoice_status'];
+                }
+                if (!empty($filters['invoice_type'])) {
+                    $whereConditions[] = "i.invoice_type = ?";
+                    $params[] = $filters['invoice_type'];
+                }
+                if (!empty($filters['currency'])) {
+                    $whereConditions[] = "i.currency = ?";
+                    $params[] = $filters['currency'];
+                }
+                if (!empty($filters['has_vat'])) {
+                    $whereConditions[] = "i.has_vat = ?";
+                    $params[] = $filters['has_vat'];
+                }
+                if (!empty($filters['date_from'])) {
+                    $whereConditions[] = "i.invoice_date >= ?";
+                    $params[] = $filters['date_from'];
+                }
+                if (!empty($filters['date_to'])) {
+                    $whereConditions[] = "i.invoice_date <= ?";
+                    $params[] = $filters['date_to'] . ' 23:59:59';
+                }
+                break;
+
+            case 'documents':
+                $tableName = 'documents';
+                // 🔧 FIX: Use selected columns for documents
+                $selectClause = implode(', ', array_map(function($col) {
+                    return "d.$col";
+                }, $selectedColumns));
+                $baseSQL = "SELECT $selectClause FROM documents d";
+
+                if (!empty($filters['document_type'])) {
+                    $whereConditions[] = "d.document_type = ?";
+                    $params[] = $filters['document_type'];
+                }
+                if (!empty($filters['entity_type'])) {
+                    $whereConditions[] = "d.entity_type = ?";
+                    $params[] = $filters['entity_type'];
+                }
+                if (!empty($filters['entity_id'])) {
+                    $whereConditions[] = "d.entity_id = ?";
+                    $params[] = $filters['entity_id'];
+                }
+                if (!empty($filters['is_public'])) {
+                    $whereConditions[] = "d.is_public = ?";
+                    $params[] = $filters['is_public'];
+                }
+                if (!empty($filters['mime_type'])) {
+                    $whereConditions[] = "d.mime_type LIKE ?";
+                    $params[] = '%' . $filters['mime_type'] . '%';
+                }
+                if (!empty($filters['date_from'])) {
+                    $whereConditions[] = "d.created_at >= ?";
+                    $params[] = $filters['date_from'];
+                }
+                if (!empty($filters['date_to'])) {
+                    $whereConditions[] = "d.created_at <= ?";
+                    $params[] = $filters['date_to'] . ' 23:59:59';
+                }
+                break;
+
             default:
                 http_response_code(400);
-                echo json_encode(['error' => 'Invalid entity type']);
+                echo json_encode(['error' => 'Invalid entity type: ' . $entity]);
                 return;
         }
 
@@ -2308,7 +3361,27 @@ function handleGenerateCustomReport() {
             $whereClause = 'WHERE ' . implode(' AND ', $whereConditions);
         }
 
-        $sql = $baseSQL . ' ' . $whereClause . ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
+        // 🔧 FIX: Use appropriate table alias for ORDER BY to avoid ambiguity in JOINs
+        $orderByColumn = 'created_at';
+        switch ($entity) {
+            case 'clients':
+                $orderByColumn = 'c.created_at';
+                break;
+            case 'cases':
+                $orderByColumn = 'cases.created_at';
+                break;
+            case 'hearings':
+                $orderByColumn = 'h.created_at';
+                break;
+            case 'invoices':
+                $orderByColumn = 'i.created_at';
+                break;
+            case 'documents':
+                $orderByColumn = 'd.created_at';
+                break;
+        }
+
+        $sql = $baseSQL . ' ' . $whereClause . " ORDER BY $orderByColumn DESC LIMIT ? OFFSET ?";
         $params[] = $limit;
         $params[] = $offset;
 
@@ -2320,6 +3393,7 @@ function handleGenerateCustomReport() {
         $totalResult = $db->fetch($countSQL, $countParams);
         $total = $totalResult['total'];
 
+        // 🔧 FIX: Include config and available columns in response for frontend
         echo json_encode([
             'success' => true,
             'data' => $data,
@@ -2329,8 +3403,18 @@ function handleGenerateCustomReport() {
                 'total' => $total,
                 'total_pages' => ceil($total / $limit)
             ],
-            'filters' => $filters,
-            'columns' => $columns
+            // 🔧 FIX: Include the report configuration so frontend knows which columns were selected
+            'config' => [
+                'entity' => $entity,
+                'columns' => $selectedColumns, // Use the filtered selected columns
+                'filters' => $filters,
+                'limit' => $limit,
+                'page' => $page
+            ],
+            // 🔧 FIX: Include available columns mapping for display labels
+            'available_columns' => $availableColumns,
+            'generated_at' => date('Y-m-d H:i:s'),
+            'generated_by' => 'API'
         ]);
 
     } catch (Exception $e) {

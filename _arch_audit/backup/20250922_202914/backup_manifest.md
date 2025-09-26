@@ -7,20 +7,24 @@
 ## Files Backed Up
 
 ### API Files (to be removed/consolidated)
+
 - `api-server.php` - Development router (51 lines)
 - `router.php` - Alternative router (50 lines)
 - `api-test.php` - Referenced by api-server.php
 
 ### Configuration Files (duplicates to be removed)
+
 - `config/` directory - Root-level config duplicates
 - Configuration files that will be consolidated to `backend/config/`
 
 ### Test Files (to be reorganized)
+
 - All `test-*.php` files at repository root
 - All `check-*.php` files at repository root
 - All `debug-*.php` files at repository root (to be deleted)
 
 ### Emergency Procedures
+
 - `rollback_emergency.sh` - Emergency rollback script
 - `backup_manifest.md` - This manifest file
 
@@ -47,6 +51,7 @@ If migration fails at any point:
 ## Validation Checklist
 
 Before declaring backup successful:
+
 - [x] All API files backed up
 - [x] All config files backed up
 - [x] All test files backed up

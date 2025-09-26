@@ -12,6 +12,7 @@ import {
   Alert,
   Modal,
 } from 'react-bootstrap';
+import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import {
   Plus,
@@ -239,13 +240,24 @@ const ClientsPage: React.FC = () => {
       }
 
       if (response.success) {
+        const successMsg = modalMode === 'create'
+          ? (currentLanguage === 'ar' ? 'تم إضافة العميل بنجاح' : 'Client created successfully')
+          : (currentLanguage === 'ar' ? 'تم تحديث العميل بنجاح' : 'Client updated successfully');
+
+        toast.success(successMsg);
         await loadClients(); // Refresh the list
         setShowModal(false);
+        setSelectedClient(null);
+        setError(null); // Clear any previous errors
       } else {
-        throw new Error(response.message || 'Failed to save client');
+        const errorMsg = response.error || response.message || (currentLanguage === 'ar' ? 'فشل في حفظ العميل' : 'Failed to save client');
+        toast.error(errorMsg);
+        throw new Error(errorMsg);
       }
     } catch (err) {
       console.error('Error saving client:', err);
+      const errorMsg = err instanceof Error ? err.message : (currentLanguage === 'ar' ? 'خطأ في حفظ العميل' : 'Error saving client');
+      toast.error(errorMsg);
       throw err; // Re-throw to show error in modal
     }
   };
@@ -263,14 +275,20 @@ const ClientsPage: React.FC = () => {
       const response = await api.delete(`/clients/${clientToDelete.id}`);
 
       if (response.success) {
+        toast.success(currentLanguage === 'ar' ? 'تم حذف العميل بنجاح' : 'Client deleted successfully');
         await loadClients(); // Refresh the list
         setShowDeleteModal(false);
         setClientToDelete(null);
+        setError(null); // Clear any previous errors
       } else {
-        setError('Failed to delete client');
+        const errorMsg = response.error || (currentLanguage === 'ar' ? 'فشل في حذف العميل' : 'Failed to delete client');
+        toast.error(errorMsg);
+        setError(errorMsg);
       }
     } catch (err) {
-      setError('Error deleting client');
+      const errorMsg = currentLanguage === 'ar' ? 'خطأ في حذف العميل' : 'Error deleting client';
+      toast.error(errorMsg);
+      setError(errorMsg);
       console.error('Error deleting client:', err);
     } finally {
       setDeleting(false);

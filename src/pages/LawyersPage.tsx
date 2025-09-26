@@ -134,6 +134,19 @@ const LawyersPage: React.FC = () => {
     setShowModal(true);
   };
 
+  const handleViewLawyer = (lawyer: Lawyer) => {
+    // For now, just show an alert with lawyer details
+    // In the future, this could open a view modal
+    const details = `
+      الاسم بالعربي: ${lawyer.lawyer_name_ar}
+      الاسم بالإنجليزي: ${lawyer.lawyer_name_en || '-'}
+      البريد الإلكتروني: ${lawyer.lawyer_email || '-'}
+      الحالة: ${lawyer.is_active ? 'نشط' : 'غير نشط'}
+      تاريخ الإنشاء: ${new Date(lawyer.created_at).toLocaleDateString('ar-EG')}
+    `;
+    alert(details);
+  };
+
   const handleDeleteLawyer = async (lawyer: Lawyer) => {
     if (!confirm(`هل أنت متأكد من حذف المحامي "${lawyer.lawyer_name_ar}"؟`)) {
       return;
@@ -336,7 +349,12 @@ const LawyersPage: React.FC = () => {
                       <td>{formatDate(lawyer.created_at)}</td>
                       <td>
                         <div className='btn-group btn-group-sm'>
-                          <Button variant='outline-primary' size='sm' title='View'>
+                          <Button
+                            variant='outline-primary'
+                            size='sm'
+                            onClick={() => handleViewLawyer(lawyer)}
+                            title='عرض تفاصيل المحامي'
+                          >
                             <Eye size={14} />
                           </Button>
                           <Button
