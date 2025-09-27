@@ -222,7 +222,7 @@ export const exportToPDF = async (data: any[], options: ExportOptions = {}) => {
     console.log('Generating PDF with Chrome Headless for perfect Arabic support...');
 
     // Call backend API for PDF generation (Chrome-based)
-    const response = await fetch('/backend/api/export/pdf-chrome.php', {
+    const response = await fetch('/api/export/pdf-chrome', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

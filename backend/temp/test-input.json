@@ -1,0 +1,4 @@
+{
+  "html": "<!DOCTYPE html><html dir=\"rtl\" lang=\"ar\"><head><meta charset=\"UTF-8\"><title>اختبار</title><style>body{font-family:Arial;direction:rtl;padding:20px;}</style></head><body><h1>اختبار PDF</h1><p>هذا اختبار للغة العربية</p></body></html>",
+  "filename": "temp/test-puppeteer.pdf"
+}

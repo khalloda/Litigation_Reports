@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار PDF باللغة العربية</title>
+    <style>
+        body {
+            font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+            direction: rtl;
+            text-align: right;
+            font-size: 14px;
+            margin: 20px;
+            line-height: 1.6;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #428bca;
+            padding-bottom: 15px;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+
+        th {
+            background: #428bca;
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .english {
+            direction: ltr;
+            text-align: left;
+            font-family: "Courier New", monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1 class="title">تقرير اختبار PDF باللغة العربية</h1>
+        <p>تم إنشاء هذا التقرير بواسطة Puppeteer</p>
+    </div>
+
+    <h2>بيانات العملاء</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>الرقم</th>
+                <th>اسم العميل</th>
+                <th>البريد الإلكتروني</th>
+                <th>الهاتف</th>
+                <th>الحالة</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>أحمد محمد علي</td>
+                <td class="english">ahmed@example.com</td>
+                <td class="english">01234567890</td>
+                <td>نشط</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>فاطمة السيد محمود</td>
+                <td class="english">fatma@example.com</td>
+                <td class="english">01098765432</td>
+                <td>نشط</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>محمد عبد الله</td>
+                <td class="english">mohamed@example.com</td>
+                <td class="english">01555123456</td>
+                <td>غير نشط</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p>هذا نص تجريبي باللغة العربية لاختبار عرض الخط والتخطيط في ملف PDF المُنشأ بواسطة Puppeteer.</p>
+    <p>النص يجب أن يظهر بشكل صحيح من اليمين إلى اليسار ويحتوي على تنسيق جميل.</p>
+</body>
+</html>

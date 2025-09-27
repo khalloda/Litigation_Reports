@@ -241,6 +241,35 @@ switch ($path) {
         }
         break;
 
+    case '/export/pdf':
+    case '/export/pdf-chrome':
+        if ($method === 'POST') {
+            handlePDFExport();
+        } else {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method not allowed. Use POST.']);
+        }
+        break;
+
+    case '/export/csv':
+        if ($method === 'POST') {
+            handleCSVExport();
+        } else {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method not allowed. Use POST.']);
+        }
+        break;
+
+    case '/export/excel':
+    case '/export/xls':
+        if ($method === 'POST') {
+            handleExcelExport();
+        } else {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method not allowed. Use POST.']);
+        }
+        break;
+
     default:
         // Handle dynamic routes (e.g., /cases/123)
         if (preg_match('/^\/cases\/(\d+)$/', $path, $matches)) {
@@ -3421,6 +3450,72 @@ function handleGenerateCustomReport() {
         error_log("Generate custom report error: " . $e->getMessage());
         http_response_code(500);
         echo json_encode(['error' => 'Failed to generate custom report']);
+    }
+}
+
+function handlePDFExport() {
+    try {
+        // Include the existing PDF export script
+        include_once __DIR__ . '/export/pdf-chrome.php';
+    } catch (Exception $e) {
+        error_log("PDF export error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'PDF export failed: ' . $e->getMessage()]);
+    }
+}
+
+function handleCSVExport() {
+    try {
+        $input = json_decode(file_get_contents('php://input'), true);
+
+        if (!isset($input['data']) || !is_array($input['data'])) {
+            throw new Exception('No data provided for export');
+        }
+
+        $data = $input['data'];
+        $filename = 'litigation_report_' . date('Y-m-d_H-i-s') . '.csv';
+
+        header('Content-Type: text/csv');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Cache-Control: no-cache, must-revalidate');
+
+        $output = fopen('php://output', 'w');
+
+        // Write CSV headers
+        if (!empty($data)) {
+            $headers = array_keys($data[0]);
+            fputcsv($output, $headers);
+
+            // Write data rows
+            foreach ($data as $row) {
+                fputcsv($output, $row);
+            }
+        }
+
+        fclose($output);
+
+    } catch (Exception $e) {
+        error_log("CSV export error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'CSV export failed: ' . $e->getMessage()]);
+    }
+}
+
+function handleExcelExport() {
+    try {
+        $input = json_decode(file_get_contents('php://input'), true);
+
+        if (!isset($input['data']) || !is_array($input['data'])) {
+            throw new Exception('No data provided for export');
+        }
+
+        // For now, redirect to CSV export as fallback
+        handleCSVExport();
+
+    } catch (Exception $e) {
+        error_log("Excel export error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Excel export failed: ' . $e->getMessage()]);
     }
 }
 ?>

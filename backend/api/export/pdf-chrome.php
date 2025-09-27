@@ -1,8 +1,8 @@
 <?php
 /**
- * PDF Export API using Chrome Headless for perfect Arabic support
+ * PDF Export API using Puppeteer for perfect Arabic support
  *
- * This endpoint generates PDF files using Chrome headless for superior
+ * This endpoint generates PDF files using Puppeteer with superior
  * Arabic text rendering and modern CSS support
  */
 
@@ -40,14 +40,14 @@ try {
         throw new Exception('No data provided for export');
     }
 
-    // Chrome executable path for Windows
-    $chromePath = '"C:\Program Files\Google\Chrome\Application\chrome.exe"';
-
     // Create temp directory if it doesn't exist
     $tempDir = __DIR__ . '/../../temp';
     if (!file_exists($tempDir)) {
         mkdir($tempDir, 0755, true);
     }
+
+    // Path to Node.js PDF generator script
+    $pdfGeneratorPath = __DIR__ . '/../../pdf-generator.js';
 
     // Generate HTML content with excellent Arabic styling for Chrome
     $html = '<!DOCTYPE html>
@@ -79,24 +79,44 @@ try {
             }
 
             .header {
-                text-align: center;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
                 margin-bottom: 30px;
-                border-bottom: 3px solid #428bca;
+                border-bottom: 3px solid #2c5f2d;
                 padding-bottom: 15px;
+                min-height: 80px;
+            }
+
+            .logo-section {
+                flex: 0 0 auto;
+                margin-left: 20px;
+            }
+
+            .logo {
+                max-height: 60px;
+                max-width: 120px;
+                object-fit: contain;
+            }
+
+            .title-section {
+                flex: 1;
+                text-align: center;
             }
 
             .title {
                 font-size: 22px;
                 font-weight: bold;
-                color: #2c3e50;
+                color: #000000;
                 margin: 0;
                 padding: 10px 0;
             }
 
             .subtitle {
                 font-size: 14px;
-                color: #7f8c8d;
+                color: #2c5f2d;
                 margin: 5px 0 0 0;
+                font-weight: 500;
             }
 
             .table-container {
@@ -108,29 +128,36 @@ try {
                 width: 100%;
                 border-collapse: collapse;
                 margin: 0;
-                font-size: 11px;
+                font-size: 10px;
                 background: white;
                 border: 1px solid #ddd;
+                table-layout: fixed;
             }
 
             th {
-                background: linear-gradient(135deg, #428bca 0%, #357abd 100%);
-                color: white;
-                padding: 12px 8px;
+                background: linear-gradient(135deg, #2c5f2d 0%, #1e4220 100%);
+                color: #d4af37;
+                padding: 8px 4px;
                 text-align: center;
-                border: 1px solid #357abd;
+                border: 1px solid #1e4220;
                 font-weight: bold;
-                font-size: 12px;
-                white-space: nowrap;
+                font-size: 10px;
+                white-space: normal;
+                word-wrap: break-word;
+                overflow: hidden;
+                text-shadow: 1px 1px 1px rgba(0,0,0,0.3);
             }
 
             td {
-                padding: 10px 8px;
+                padding: 6px 4px;
                 border: 1px solid #ddd;
                 text-align: center;
                 vertical-align: middle;
                 word-wrap: break-word;
-                max-width: 200px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                font-size: 9px;
+                color: #000000;
             }
 
             tr:nth-child(even) {
@@ -155,28 +182,31 @@ try {
             }
 
             .status-active {
-                color: #28a745;
+                color: #2c5f2d;
                 font-weight: bold;
             }
 
             .status-inactive {
-                color: #dc3545;
+                color: #8b4513;
                 font-weight: bold;
             }
 
             .footer {
                 margin-top: 30px;
                 padding-top: 15px;
-                border-top: 1px solid #ddd;
+                border-top: 2px solid #2c5f2d;
                 text-align: center;
                 font-size: 10px;
-                color: #6c757d;
+                color: #000000;
+                background: linear-gradient(90deg, rgba(44,95,45,0.1) 0%, rgba(212,175,55,0.1) 100%);
+                padding: 15px;
             }
 
             .export-info {
                 margin-bottom: 10px;
                 font-size: 10px;
-                color: #6c757d;
+                color: #2c5f2d;
+                font-weight: 500;
             }
 
             /* Print specific styles */
@@ -202,10 +232,29 @@ try {
     </head>
     <body>';
 
-    // Add header
+    // Add header with logo
+    $logoPath = __DIR__ . '/../../public/arabic_green_gold_logo.png';
+    $logoBase64 = '';
+
+    // Convert logo to base64 for embedding in PDF
+    if (file_exists($logoPath)) {
+        $logoData = file_get_contents($logoPath);
+        $logoBase64 = 'data:image/png;base64,' . base64_encode($logoData);
+    }
+
     $html .= '<div class="header">';
+    $html .= '<div class="logo-section">';
+    if ($logoBase64) {
+        $html .= '<img src="' . $logoBase64 . '" alt="شعار الشركة" class="logo" />';
+    } else {
+        $html .= '<div class="logo-placeholder" style="width: 120px; height: 60px; border: 2px solid #2c5f2d; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #2c5f2d;">شعار الشركة</div>';
+    }
+    $html .= '</div>';
+    $html .= '<div class="title-section">';
     $html .= '<h1 class="title">' . htmlspecialchars($title) . '</h1>';
     $html .= '<p class="subtitle">تم إنشاء هذا التقرير بتاريخ ' . date('Y-m-d H:i:s') . '</p>';
+    $html .= '</div>';
+    $html .= '<div style="flex: 0 0 auto; width: 120px;"></div>'; // Balance the layout
     $html .= '</div>';
 
     // Add export info
@@ -213,6 +262,32 @@ try {
     $html .= 'عدد السجلات: ' . count($data) . ' | ';
     $html .= 'عدد الأعمدة: ' . count($columns);
     $html .= '</div>';
+
+    // Calculate dynamic column width and font adjustments based on column count
+    $columnCount = count($columns);
+    $dynamicStyles = '';
+
+    if ($columnCount > 8) {
+        // Many columns: smaller font and padding
+        $dynamicStyles = '
+            <style>
+                th, td { font-size: 8px !important; padding: 4px 2px !important; }
+                th { color: #d4af37 !important; background: linear-gradient(135deg, #2c5f2d 0%, #1e4220 100%) !important; }
+                td { color: #000000 !important; }
+                .title { font-size: 18px !important; }
+            </style>';
+    } elseif ($columnCount > 5) {
+        // Medium columns: slightly smaller
+        $dynamicStyles = '
+            <style>
+                th, td { font-size: 9px !important; padding: 5px 3px !important; }
+                th { color: #d4af37 !important; background: linear-gradient(135deg, #2c5f2d 0%, #1e4220 100%) !important; }
+                td { color: #000000 !important; }
+                .title { font-size: 20px !important; }
+            </style>';
+    }
+
+    $html .= $dynamicStyles;
 
     // Build table
     $html .= '<div class="table-container">';
@@ -267,43 +342,38 @@ try {
 
     // Add footer
     $html .= '<div class="footer">';
-    $html .= '<p>نظام إدارة القضايا القانونية - ' . date('Y') . '</p>';
-    $html .= '<p>هذا التقرير تم إنشاؤه تلقائياً بواسطة النظام</p>';
+    $html .= '<p><strong>مكتب سري الدين وشركاه مستشارون قانونيون</strong></p>';
+    $html .= '<p>نظام إدارة القضايا القانونية - ' . date('Y') . ' | هذا التقرير تم إنشاؤه تلقائياً بواسطة النظام</p>';
     $html .= '</div>';
 
     $html .= '</body></html>';
 
-    // Create temporary HTML file
-    $tempHtml = $tempDir . '/' . uniqid('pdf_export_') . '.html';
+    // Create temporary PDF file path
     $tempPdf = $tempDir . '/' . uniqid('pdf_export_') . '.pdf';
 
-    // Write HTML to temp file
-    if (!file_put_contents($tempHtml, $html)) {
-        throw new Exception('Failed to create temporary HTML file');
+    // Prepare data for Puppeteer script
+    $puppeteerData = [
+        'html' => $html,
+        'filename' => $tempPdf
+    ];
+
+    // Write Puppeteer input to temporary JSON file to avoid command line escaping issues
+    $tempJson = $tempDir . '/' . uniqid('pdf_input_') . '.json';
+    if (!file_put_contents($tempJson, json_encode($puppeteerData, JSON_UNESCAPED_UNICODE))) {
+        throw new Exception('Failed to create temporary JSON input file');
     }
 
-    // Build Chrome command for PDF generation
-    $htmlPath = str_replace('/', '\\', realpath($tempHtml));
-    $pdfPath = str_replace('/', '\\', realpath(dirname($tempPdf)) . '/' . basename($tempPdf));
+    // Build Node.js command for PDF generation using stdin
+    $command = 'cat "' . $tempJson . '" | node "' . $pdfGeneratorPath . '" 2>&1';
 
-    // Use file:// protocol for local file access
-    $htmlUrl = 'file:///' . str_replace('\\', '/', $htmlPath);
-
-    $command = $chromePath . ' --headless --disable-gpu --disable-software-rasterizer --disable-dev-shm-usage --no-sandbox --print-to-pdf="' . $pdfPath . '" "' . $htmlUrl . '" 2>&1';
-
-    // Execute Chrome command
+    // Execute Puppeteer command
     $output = [];
     $returnCode = 0;
     exec($command, $output, $returnCode);
 
-    // Clean up HTML file immediately
-    if (file_exists($tempHtml)) {
-        unlink($tempHtml);
-    }
-
     // Check if PDF was generated successfully
     if ($returnCode !== 0 || !file_exists($tempPdf)) {
-        $errorMsg = 'PDF generation failed. Chrome output: ' . implode(' ', $output);
+        $errorMsg = 'PDF generation failed. Puppeteer output: ' . implode(' ', $output);
         error_log($errorMsg);
         throw new Exception($errorMsg);
     }
@@ -318,6 +388,26 @@ try {
         throw new Exception('Generated PDF appears to be corrupted or empty');
     }
 
+    // Validate PDF structure and attachment block format
+    $validatorPath = __DIR__ . '/../../pdf-validator.js';
+    $validationCommand = 'node "' . $validatorPath . '" "' . $tempPdf . '" 2>&1';
+    $validationOutput = [];
+    $validationReturnCode = 0;
+    exec($validationCommand, $validationOutput, $validationReturnCode);
+
+    if ($validationReturnCode !== 0) {
+        $errorMsg = 'PDF validation failed: ' . implode(' ', $validationOutput);
+        error_log($errorMsg);
+        if (file_exists($tempPdf)) {
+            unlink($tempPdf);
+        }
+        throw new Exception($errorMsg);
+    }
+
+    // Log successful validation
+    $validationResult = implode(' ', $validationOutput);
+    error_log('PDF validation passed: ' . $validationResult);
+
     // Set headers for PDF download
     header('Content-Type: application/pdf');
     header('Content-Disposition: attachment; filename="' . $filename . '.pdf"');
@@ -328,21 +418,24 @@ try {
     // Output PDF content
     readfile($tempPdf);
 
-    // Clean up PDF file
+    // Clean up temporary files
     unlink($tempPdf);
+    if (file_exists($tempJson)) {
+        unlink($tempJson);
+    }
 
     // Log success
     error_log('PDF export completed successfully: ' . $filename . '.pdf (' . $pdfSize . ' bytes)');
 
 } catch (Exception $e) {
-    error_log('Chrome PDF Export Error: ' . $e->getMessage());
+    error_log('Puppeteer PDF Export Error: ' . $e->getMessage());
 
     // Clean up any remaining temp files
-    if (isset($tempHtml) && file_exists($tempHtml)) {
-        unlink($tempHtml);
-    }
     if (isset($tempPdf) && file_exists($tempPdf)) {
         unlink($tempPdf);
+    }
+    if (isset($tempJson) && file_exists($tempJson)) {
+        unlink($tempJson);
     }
 
     http_response_code(500);

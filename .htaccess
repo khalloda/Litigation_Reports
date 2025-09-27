@@ -1,8 +1,12 @@
 RewriteEngine On
 
-# Handle API routes
+# Handle API routes through backend API
 RewriteCond %{REQUEST_URI} ^/api/
-RewriteRule ^api/(.*)$ api-test.php [QSA,L]
+RewriteRule ^api/(.*)$ backend/api/index.php [QSA,L]
+
+# Handle backend API routes directly
+RewriteCond %{REQUEST_URI} ^/backend/api/
+RewriteRule ^backend/api/(.*)$ backend/api/index.php [QSA,L]
 
 # Handle all other requests to index.html for SPA
 RewriteCond %{REQUEST_FILENAME} !-f
