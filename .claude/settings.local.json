@@ -49,7 +49,8 @@
       "Bash(BASE_URL=http://lit.local:8080 timeout 180 npx playwright test tests/pdf-branding-test.spec.ts --reporter=line --config=playwright.config.simple.mjs)",
       "Bash(BASE_URL=http://lit.local:8080 timeout 120 npx playwright test tests/pdf-branding-simple.spec.ts --reporter=line --config=playwright.config.simple.mjs)",
       "Bash(BASE_URL=http://lit.local:8080 timeout 120 npx playwright test tests/logo-fix-test.spec.ts --reporter=line --config=playwright.config.simple.mjs)",
-      "Bash(BASE_URL=http://lit.local:8080 timeout 60 npx playwright test tests/final-logo-verification.spec.ts --reporter=line --config=playwright.config.simple.mjs)"
+      "Bash(BASE_URL=http://lit.local:8080 timeout 60 npx playwright test tests/final-logo-verification.spec.ts --reporter=line --config=playwright.config.simple.mjs)",
+      "mcp__context7__resolve-library-id"
     ],
     "deny": [],
     "ask": []

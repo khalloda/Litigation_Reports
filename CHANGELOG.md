@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### PDF Export System with Professional Branding (2025-09-27)
+
+- **MAJOR FEATURE**: Complete PDF export system with company branding
+- **Company Logo Integration**: arabic_green_gold_logo.png embedded in all PDF exports
+- **Green/Gold Theme**: Professional color scheme (#2c5f2d/#d4af37) implemented
+- **Responsive Design**: Dynamic table formatting based on column count
+- **Multi-page Support**: PDF export working on Clients, Cases, Hearings, Reports
+- **Base64 Embedding**: Logo reliably embedded using base64 encoding
+- **File Size Optimization**: 260KB PDFs with branding vs 90KB plain text
+- **Company Branding**: "مكتب سري الدين وشركاه مستشارون قانونيون" footer
+- **Puppeteer Integration**: Node.js PDF generation with Arabic RTL support
+- **API Standardization**: Fixed Reports page to use unified export API
+
 ### CRUD Operations Complete (2025-09-24)
 
 - **BREAKING**: All CRUD operations fully implemented and tested
