@@ -102,6 +102,7 @@ const HearingModal: React.FC<HearingModalProps> = ({
         setFormData({
           ...defaultFormData,
           ...hearingData,
+          case_id: String(hearingData.case_id || ''),
           hearing_date: formatDateForInput(hearingData.hearing_date || ''),
           next_hearing: formatDateForInput(hearingData.next_hearing || ''),
         });
@@ -166,7 +167,7 @@ const HearingModal: React.FC<HearingModalProps> = ({
   };
 
   const validateForm = (): boolean => {
-    if (!formData.case_id.trim()) {
+    if (!String(formData.case_id).trim()) {
       setError('يرجى اختيار القضية');
       return false;
     }

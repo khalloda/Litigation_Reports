@@ -174,6 +174,17 @@ switch ($path) {
         }
         break;
 
+    case '/reports/client-specific':
+        if ($method === 'GET') {
+            handleClientSpecificReportOptions();
+        } elseif ($method === 'POST') {
+            handleGenerateClientSpecificReport();
+        } else {
+            http_response_code(405);
+            echo json_encode(['error' => 'Method not allowed']);
+        }
+        break;
+
     case '/lawyers':
         if ($method === 'GET') {
             handleGetLawyers();
@@ -3516,6 +3527,107 @@ function handleExcelExport() {
         error_log("Excel export error: " . $e->getMessage());
         http_response_code(500);
         echo json_encode(['error' => 'Excel export failed: ' . $e->getMessage()]);
+    }
+}
+
+function handleClientSpecificReportOptions() {
+    try {
+        $db = Database::getInstance();
+
+        // Get all clients for dropdown
+        $clients = $db->fetchAll("SELECT id, client_name_ar, client_name_en FROM clients ORDER BY client_name_ar");
+
+        // Define available columns for each report type (synchronized with POST handler)
+        $availableColumns = [
+            'cases' => [
+                ['key' => 'c.id', 'label' => 'معرف القضية', 'label_en' => 'Case ID'],
+                ['key' => 'c.matter_id', 'label' => 'رقم القضية', 'label_en' => 'Case Number'],
+                ['key' => 'c.matter_ar', 'label' => 'عنوان القضية (عربي)', 'label_en' => 'Case Title (Arabic)'],
+                ['key' => 'c.matter_en', 'label' => 'عنوان القضية (إنجليزي)', 'label_en' => 'Case Title (English)'],
+                ['key' => 'c.matter_category', 'label' => 'نوع القضية', 'label_en' => 'Case Category'],
+                ['key' => 'c.matter_status', 'label' => 'حالة القضية', 'label_en' => 'Case Status'],
+                ['key' => 'c.matter_court', 'label' => 'اسم المحكمة', 'label_en' => 'Court Name'],
+                ['key' => 'c.matter_importance', 'label' => 'أهمية القضية', 'label_en' => 'Case Importance'],
+                ['key' => 'c.created_at', 'label' => 'تاريخ الإنشاء', 'label_en' => 'Created Date'],
+                ['key' => 'c.updated_at', 'label' => 'آخر تحديث', 'label_en' => 'Last Updated']
+            ],
+            'hearings' => [
+                ['key' => 'h.id', 'label' => 'معرف الجلسة', 'label_en' => 'Hearing ID'],
+                ['key' => 'h.hearing_date', 'label' => 'تاريخ الجلسة', 'label_en' => 'Hearing Date'],
+                ['key' => 'h.hearing_type', 'label' => 'نوع الجلسة', 'label_en' => 'Hearing Type'],
+                ['key' => 'h.hearing_result', 'label' => 'نتيجة الجلسة', 'label_en' => 'Hearing Result'],
+                ['key' => 'h.hearing_duration', 'label' => 'مدة الجلسة', 'label_en' => 'Hearing Duration'],
+                ['key' => 'c.matter_id', 'label' => 'رقم القضية', 'label_en' => 'Case Number'],
+                ['key' => 'c.matter_ar', 'label' => 'عنوان القضية', 'label_en' => 'Case Title'],
+                ['key' => 'c.matter_court', 'label' => 'اسم المحكمة', 'label_en' => 'Court Name'],
+                ['key' => 'h.court_notes', 'label' => 'ملاحظات المحكمة', 'label_en' => 'Court Notes'],
+                ['key' => 'h.lawyer_notes', 'label' => 'ملاحظات المحامي', 'label_en' => 'Lawyer Notes'],
+                ['key' => 'h.next_hearing', 'label' => 'الجلسة القادمة', 'label_en' => 'Next Hearing'],
+                ['key' => 'h.created_at', 'label' => 'تاريخ الإنشاء', 'label_en' => 'Created Date']
+            ]
+        ];
+
+        echo json_encode([
+            'success' => true,
+            'data' => [
+                'clients' => $clients,
+                'availableColumns' => $availableColumns,
+                'reportTypes' => [
+                    ['key' => 'cases', 'label' => 'القضايا القديمة', 'label_en' => 'Old Cases'],
+                    ['key' => 'hearings', 'label' => 'الجلسات', 'label_en' => 'Hearings']
+                ]
+            ]
+        ]);
+
+    } catch (Exception $e) {
+        error_log("Client specific report options error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to get client specific report options']);
+    }
+}
+
+function handleGenerateClientSpecificReport() {
+    try {
+        require_once __DIR__ . '/../src/Core/Request.php';
+        require_once __DIR__ . '/../src/Core/Auth.php';
+        require_once __DIR__ . '/../src/Core/Response.php';
+        require_once __DIR__ . '/../src/Controllers/ReportController.php';
+
+        // Create a proper Request object
+        $request = new Request();
+
+        // Get JSON input and validate
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!$input) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Invalid JSON input']);
+            return;
+        }
+
+        // Manually populate the request body with the input data
+        $reflection = new ReflectionClass($request);
+        $bodyProperty = $reflection->getProperty('body');
+        $bodyProperty->setAccessible(true);
+        $bodyProperty->setValue($request, $input);
+
+        // Use the ReportController's clientSpecific method
+        $controller = new ReportController();
+        $result = $controller->clientSpecific($request);
+
+        // The controller returns a Response object, so call send() to output it
+        if ($result && method_exists($result, 'send')) {
+            $result->send();
+        } else {
+            // Fallback for non-Response objects
+            if ($result && !headers_sent()) {
+                echo json_encode($result);
+            }
+        }
+
+    } catch (Exception $e) {
+        error_log("Generate client specific report error: " . $e->getMessage());
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to generate client specific report: ' . $e->getMessage()]);
     }
 }
 ?>

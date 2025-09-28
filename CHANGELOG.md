@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Client-Specific Report Builder (2025-09-27)
+
+- **MAJOR FEATURE**: Advanced client-specific report generation system
+- **Client Selection**: Dynamic dropdown with 308+ real clients from production database
+- **Report Type Toggle**: Switch between Cases and Hearings reports with different column sets
+- **Custom Column Selection**: Professional checkbox interface for field customization
+- **Date Range Filtering**: Intelligent date filtering for hearings within specific periods
+- **Dynamic Column Options**:
+  - Cases: matter_id, matter_ar, matter_en, matter_category, matter_status, court_name, created_at, closed_at
+  - Hearings: hearing_date, hearing_type, hearing_result, court_name, case_matter_ar, notes, next_hearing_date
+- **Professional Validation**: Real-time form validation with Arabic error messages
+- **Step-by-Step Interface**: Guided 3-step process (Client → Type → Columns)
+- **Backend API**: New `/reports/client-specific` endpoint with GET/POST methods
+- **React Component**: `ClientSpecificReportModal.tsx` with TypeScript integration
+- **Database Integration**: Real-time data queries from MySQL 9.1
+- **PDF Integration**: Seamless integration with existing professional branding system
+- **Arabic RTL Support**: Complete right-to-left interface support
+- **One-Click Access**: Available from Reports page via "تقرير عميل محدد" button
+- **Professional Testing**: Complete end-to-end Playwright test coverage
+- **Production Ready**: Fully tested and deployed with company branding
+
 ### PDF Export System with Professional Branding (2025-09-27)
 
 - **MAJOR FEATURE**: Complete PDF export system with company branding

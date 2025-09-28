@@ -1600,4 +1600,201 @@ class ReportController {
                 return $common_groupings;
         }
     }
+
+    public function clientSpecific(Request $request) {
+        try {
+            // Check authentication
+            if (!Auth::check()) {
+                return Response::unauthorized('Authentication required');
+            }
+
+            // Get parameters from POST body
+            $clientId = $request->post('client_id');
+            $reportType = $request->post('report_type', 'cases'); // 'cases' or 'hearings'
+            $columns = $request->post('columns', []);
+            $dateFrom = $request->post('date_from');
+            $dateTo = $request->post('date_to');
+
+            // Validate required parameters
+            if (!$clientId) {
+                return Response::badRequest('Client ID is required');
+            }
+
+            if (!in_array($reportType, ['cases', 'hearings'])) {
+                return Response::badRequest('Report type must be "cases" or "hearings"');
+            }
+
+            $db = Database::getInstance();
+
+            // First, get client information
+            $clientQuery = "SELECT id, client_name_ar, client_name_en FROM clients WHERE id = ?";
+            $client = $db->fetch($clientQuery, [$clientId]);
+
+            if (!$client) {
+                return Response::notFound('Client not found');
+            }
+
+            $data = [];
+            $availableColumns = [];
+
+            if ($reportType === 'cases') {
+                // Get client cases
+                $defaultColumns = [
+                    'c.id' => 'معرف القضية',
+                    'c.matter_id' => 'رقم القضية',
+                    'c.matter_ar' => 'عنوان القضية (عربي)',
+                    'c.matter_en' => 'عنوان القضية (إنجليزي)',
+                    'c.matter_category' => 'نوع القضية',
+                    'c.matter_status' => 'حالة القضية',
+                    'c.matter_court' => 'اسم المحكمة',
+                    'c.matter_importance' => 'أهمية القضية',
+                    'c.created_at' => 'تاريخ الإنشاء',
+                    'c.updated_at' => 'آخر تحديث'
+                ];
+
+                $availableColumns = $defaultColumns;
+
+                // Build SELECT clause with AS aliases for clean keys
+                $selectedColumns = empty($columns) ? array_keys($defaultColumns) : array_intersect($columns, array_keys($defaultColumns));
+                if (empty($selectedColumns)) {
+                    $selectedColumns = ['c.id', 'c.matter_id', 'c.matter_ar', 'c.matter_status', 'c.created_at'];
+                }
+
+                // Add AS aliases to ensure clean keys in results
+                $selectWithAliases = array_map(function($col) {
+                    // Extract clean column name (remove table prefix)
+                    $cleanName = preg_replace('/^[a-z]+\./', '', $col);
+                    return "$col AS $cleanName";
+                }, $selectedColumns);
+
+                $selectClause = implode(', ', $selectWithAliases);
+
+                $query = "
+                    SELECT {$selectClause}
+                    FROM cases c
+                    WHERE c.client_id = ?
+                    ORDER BY c.created_at DESC
+                ";
+
+                $params = [$clientId];
+                $results = $db->fetchAll($query, $params);
+                $data = $results ?: [];
+
+                // Get summary
+                $summaryQuery = "
+                    SELECT
+                        COUNT(*) as total_cases,
+                        SUM(CASE WHEN matter_status = 'active' THEN 1 ELSE 0 END) as active_cases,
+                        SUM(CASE WHEN matter_status = 'closed' THEN 1 ELSE 0 END) as closed_cases,
+                        SUM(CASE WHEN matter_status = 'pending' THEN 1 ELSE 0 END) as pending_cases
+                    FROM cases
+                    WHERE client_id = ?
+                ";
+
+                $summary = $db->fetch($summaryQuery, [$clientId]);
+
+            } elseif ($reportType === 'hearings') {
+                // Get client hearings
+                $defaultColumns = [
+                    'h.id' => 'معرف الجلسة',
+                    'h.hearing_date' => 'تاريخ الجلسة',
+                    'h.hearing_type' => 'نوع الجلسة',
+                    'h.hearing_result' => 'نتيجة الجلسة',
+                    'h.hearing_duration' => 'مدة الجلسة',
+                    'c.matter_id' => 'رقم القضية',
+                    'c.matter_ar' => 'عنوان القضية',
+                    'c.matter_court' => 'اسم المحكمة',
+                    'h.court_notes' => 'ملاحظات المحكمة',
+                    'h.lawyer_notes' => 'ملاحظات المحامي',
+                    'h.next_hearing' => 'الجلسة القادمة',
+                    'h.created_at' => 'تاريخ الإنشاء'
+                ];
+
+                $availableColumns = $defaultColumns;
+
+                // Build SELECT clause with AS aliases for clean keys
+                $selectedColumns = empty($columns) ? array_keys($defaultColumns) : array_intersect($columns, array_keys($defaultColumns));
+                if (empty($selectedColumns)) {
+                    $selectedColumns = ['h.id', 'h.hearing_date', 'h.hearing_type', 'h.hearing_result', 'c.matter_ar'];
+                }
+
+                // Add AS aliases to ensure clean keys in results
+                $selectWithAliases = array_map(function($col) {
+                    // Extract clean column name (remove table prefix)
+                    $cleanName = preg_replace('/^[a-z]+\./', '', $col);
+                    return "$col AS $cleanName";
+                }, $selectedColumns);
+
+                $selectClause = implode(', ', $selectWithAliases);
+
+                // Build WHERE clause for date filtering
+                $whereConditions = ['c.client_id = ?'];
+                $params = [$clientId];
+
+                if ($dateFrom) {
+                    $whereConditions[] = 'h.hearing_date >= ?';
+                    $params[] = $dateFrom;
+                }
+
+                if ($dateTo) {
+                    $whereConditions[] = 'h.hearing_date <= ?';
+                    $params[] = $dateTo;
+                }
+
+                $whereClause = implode(' AND ', $whereConditions);
+
+                $query = "
+                    SELECT {$selectClause}
+                    FROM hearings h
+                    LEFT JOIN cases c ON h.case_id = c.id
+                    WHERE {$whereClause}
+                    ORDER BY h.hearing_date DESC
+                ";
+
+                $results = $db->fetchAll($query, $params);
+                $data = $results ?: [];
+
+                // Get summary
+                $summaryQuery = "
+                    SELECT
+                        COUNT(*) as total_hearings,
+                        SUM(CASE WHEN h.hearing_result = 'won' THEN 1 ELSE 0 END) as won_hearings,
+                        SUM(CASE WHEN h.hearing_result = 'lost' THEN 1 ELSE 0 END) as lost_hearings,
+                        SUM(CASE WHEN h.hearing_result = 'pending' THEN 1 ELSE 0 END) as pending_hearings,
+                        SUM(CASE WHEN h.hearing_result = 'postponed' THEN 1 ELSE 0 END) as postponed_hearings
+                    FROM hearings h
+                    LEFT JOIN cases c ON h.case_id = c.id
+                    WHERE {$whereClause}
+                ";
+
+                $summary = $db->fetch($summaryQuery, $params);
+            }
+
+            // Build response
+            $response = [
+                'success' => true,
+                'data' => $data,
+                'client' => $client,
+                'report_type' => $reportType,
+                'filters' => [
+                    'client_id' => $clientId,
+                    'report_type' => $reportType,
+                    'date_from' => $dateFrom,
+                    'date_to' => $dateTo,
+                    'columns' => $columns
+                ],
+                'available_columns' => $availableColumns,
+                'summary' => $summary ?? [],
+                'config' => [
+                    'columns' => $selectedColumns
+                ]
+            ];
+
+            return Response::success($response);
+
+        } catch (Exception $e) {
+            error_log("Client-specific report error: " . $e->getMessage());
+            return Response::serverError('Error generating client-specific report: ' . $e->getMessage());
+        }
+    }
 }

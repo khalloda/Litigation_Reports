@@ -105,6 +105,10 @@ class Response {
         return self::error($message, 422, $errors);
     }
     
+    public static function badRequest($message = 'Bad Request') {
+        return self::error($message, 400);
+    }
+
     public static function unauthorized($message = 'Unauthorized') {
         return self::error($message, 401);
     }

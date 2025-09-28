@@ -91,42 +91,142 @@ echo ".env" >> .gitignore
 
 ### Code Security Guidelines
 
-#### PHP Backend
+#### PHP Backend (PHP 8.4+ with Modern Security)
 
 ```php
-// Good: Parameterized queries
-$stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
-$stmt->execute([$email]);
+<?php
+declare(strict_types=1);
 
-// Bad: String concatenation
-$query = "SELECT * FROM users WHERE email = '" . $email . "'";
+// Good: Modern PHP 8.4+ with strict typing and prepared statements
+final readonly class UserRepository
+{
+    public function __construct(
+        private PDO $pdo,
+        private EmailValidator $validator,
+    ) {}
 
-// Good: Input validation
-$validator = new EmailValidator();
-if (!$validator->isValid($email)) {
-    throw new InvalidInputException();
+    public function findByEmail(string $email): ?User
+    {
+        // Input validation with strict typing
+        if (!$this->validator->isValid($email)) {
+            throw new InvalidArgumentException('Invalid email format');
+        }
+
+        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE email = :email");
+        $stmt->execute(['email' => $email]);
+
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $data ? User::fromArray($data) : null;
+    }
+
+    public function hashPassword(string $password): string
+    {
+        // Modern password hashing with PHP 8.4+
+        return password_hash($password, PASSWORD_ARGON2ID, [
+            'memory_cost' => 65536,
+            'time_cost' => 4,
+            'threads' => 3
+        ]);
+    }
 }
 
-// Good: Password hashing
-$hashedPassword = password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);
+// Bad: Old style without types and security
+function getUser($email) {
+    $query = "SELECT * FROM users WHERE email = '" . $email . "'"; // SQL injection risk
+    return mysql_query($query); // Deprecated function
+}
+
+// Good: Exception handling with TypeError/ValueError
+try {
+    $user = $userRepository->findByEmail($email);
+} catch (InvalidArgumentException | TypeError $e) {
+    $logger->error('Invalid email validation', ['email' => $email, 'error' => $e->getMessage()]);
+    throw new ValidationException('Invalid input provided');
+}
 ```
 
-#### React Frontend
+#### React Frontend (TypeScript 5.9+ with Modern Security)
 
 ```typescript
-// Good: Sanitize user input
+// Good: Modern React 18.3.1 + TypeScript 5.9+ security patterns
+import { useCallback, useMemo } from 'react';
 import DOMPurify from 'dompurify';
-const sanitizedContent = DOMPurify.sanitize(userInput);
+import { z } from 'zod';
 
-// Good: Validate API responses
-const response = await api.getUser(id);
-if (!isValidUserResponse(response)) {
-    throw new Error('Invalid API response');
+// Strict API response validation with Zod
+const UserResponseSchema = z.object({
+  id: z.number().positive(),
+  email: z.string().email(),
+  name: z.string().min(1).max(255),
+  role: z.enum(['admin', 'lawyer', 'staff']),
+  createdAt: z.string().datetime(),
+});
+
+type UserResponse = z.infer<typeof UserResponseSchema>;
+
+// Good: Type-safe API calls with validation
+const useSecureApi = () => {
+  const fetchUser = useCallback(async (id: number): Promise<UserResponse> => {
+    try {
+      const response = await api.get(`/users/${id}`);
+
+      // Validate response structure with runtime type checking
+      const validatedData = UserResponseSchema.parse(response.data);
+      return validatedData;
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        console.error('API response validation failed:', error.errors);
+        throw new Error('Invalid server response format');
+      }
+      throw error;
+    }
+  }, []);
+
+  return { fetchUser };
+};
+
+// Good: Sanitize user input with memoization
+const useSanitizedContent = (userInput: string) => {
+  return useMemo(() => {
+    const config = {
+      ALLOWED_TAGS: ['p', 'br', 'strong', 'em'],
+      ALLOWED_ATTR: [],
+      KEEP_CONTENT: false,
+    };
+    return DOMPurify.sanitize(userInput, config);
+  }, [userInput]);
+};
+
+// Good: Secure token management
+interface AuthTokens {
+  accessToken: string;
+  refreshToken: string;
 }
 
-// Good: Secure token storage
-localStorage.setItem('token', token); // For non-sensitive data only
-// Use httpOnly cookies for sensitive tokens
+const useSecureAuth = () => {
+  // Store sensitive tokens in httpOnly cookies (server-side)
+  // Only store non-sensitive data in localStorage
+  const storeTokens = useCallback((tokens: AuthTokens) => {
+    // Send tokens to server for httpOnly cookie storage
+    fetch('/auth/store-tokens', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(tokens),
+      credentials: 'include', // Include httpOnly cookies
+    });
+
+    // Store only non-sensitive session info
+    localStorage.setItem('sessionId', crypto.randomUUID());
+  }, []);
+
+  return { storeTokens };
+};
+
+// Bad: Unsafe practices
+const unsafeComponent = (props: any) => {
+  localStorage.setItem('token', props.sensitiveToken); // Security risk
+  return <div dangerouslySetInnerHTML={{ __html: props.userInput }} />; // XSS risk
+};
 ```
 
 ### File Upload Security

@@ -59,6 +59,33 @@ The Litigation Management System has reached **production-ready status** with al
 - **API Integration**: Unified `/api/export/pdf-chrome` endpoint
 - **Quality Assurance**: Comprehensive Playwright test coverage
 
+### 🎯 **Client-Specific Report Builder (NEW)**
+
+#### **Advanced Report Generation**
+- **Client Selection**: Dropdown interface with 308+ real clients from production database
+- **Report Type Toggle**: Dynamic switching between Cases and Hearings reports
+- **Custom Column Selection**: Professional checkbox interface for field customization
+- **Date Range Filtering**: Intelligent date filtering for hearings within specific periods
+
+#### **Dynamic Column Options**
+- **Cases Reports**: matter_id, matter_ar, matter_en, matter_category, matter_status, court_name, created_at, closed_at
+- **Hearings Reports**: hearing_date, hearing_type, hearing_result, court_name, case_matter_ar, notes, next_hearing_date
+- **Real-time Validation**: Form validation with Arabic error messages
+- **Professional Interface**: Step-by-step guided process (Client → Type → Columns)
+
+#### **Technical Implementation**
+- **Backend API**: `/reports/client-specific` endpoint with GET/POST methods
+- **React Component**: `ClientSpecificReportModal.tsx` with TypeScript integration
+- **Database Integration**: Real-time data from MySQL 9.1 with 308+ clients
+- **PDF Integration**: Seamless integration with existing branding system
+- **Professional Testing**: Complete end-to-end Playwright test coverage
+
+#### **User Experience**
+- **Arabic RTL Support**: Complete right-to-left interface
+- **Professional Validation**: Real-time error handling and user feedback
+- **One-Click Access**: Available from Reports page via "تقرير عميل محدد" button
+- **Production Ready**: Fully tested and deployed with company branding
+
 ---
 
 ## 📊 **System Features Status**
@@ -75,6 +102,7 @@ The Litigation Management System has reached **production-ready status** with al
 | **Invoices Management** | ✅ Complete | Dynamic client/case selectors, filtering |
 | **Dashboard Analytics** | ✅ Complete | Real-time data with charts |
 | **Reports Generation** | ✅ Complete | Custom and predefined reports |
+| **Client-Specific Reports** | ✅ Complete | Advanced client filtering, custom columns, date ranges |
 | **PDF Exports** | ✅ Complete | Professional branding, all pages |
 | **Multi-language** | ✅ Complete | Arabic RTL primary, English fallback |
 | **Database Integration** | ✅ Complete | Real data from Access migration |

@@ -207,8 +207,13 @@ export const exportToPDF = async (data: any[], options: ExportOptions = {}) => {
 
   const { filename = `export_${new Date().toISOString().split('T')[0]}`, columns, title } = options;
 
-  // Determine columns to export
-  const exportColumns = columns || Object.keys(data[0]).map(key => ({ key, label: key }));
+  // CRITICAL: Only use provided columns, never auto-generate
+  if (!columns || columns.length === 0) {
+    alert('لا توجد أعمدة محددة للتصدير');
+    return;
+  }
+
+  const exportColumns = columns;
 
   try {
     // Prepare data for server-side PDF generation

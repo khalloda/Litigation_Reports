@@ -35,6 +35,7 @@ import {
 import { apiService as api } from '../services/api';
 import { useLanguage } from '../hooks/useLanguage';
 import { exportToCSV, exportToExcel, exportToPDF, EXPORT_COLUMNS } from '../utils/exportUtils';
+import ClientSpecificReportModal from '../components/ClientSpecificReportModal';
 
 interface DashboardData {
   total_clients: number;
@@ -105,6 +106,7 @@ const ReportsPage: React.FC = () => {
   const [showExportOptions, setShowExportOptions] = useState(false);
   const [showDetailedReport, setShowDetailedReport] = useState(false);
   const [showClientReportModal, setShowClientReportModal] = useState(false);
+  const [showClientSpecificReportModal, setShowClientSpecificReportModal] = useState(false);
 
   // Report data states
   const [reportTemplates, setReportTemplates] = useState<ReportTemplate[]>([]);
@@ -392,6 +394,10 @@ const ReportsPage: React.FC = () => {
               <Button variant='warning' onClick={() => setShowClientReportModal(true)}>
                 <FileText className='me-2' size={16} />
                 تقرير عميل (فرانكي)
+              </Button>
+              <Button variant='info' onClick={() => setShowClientSpecificReportModal(true)}>
+                <Users className='me-2' size={16} />
+                تقرير عميل محدد
               </Button>
               <Button variant='success' onClick={() => setShowExportOptions(true)}>
                 <Download className='me-2' size={16} />
@@ -1183,6 +1189,12 @@ const ReportsPage: React.FC = () => {
           </Button>
         </Modal.Footer>
       </Modal>
+
+      {/* Client Specific Report Modal */}
+      <ClientSpecificReportModal
+        show={showClientSpecificReportModal}
+        onHide={() => setShowClientSpecificReportModal(false)}
+      />
     </Container>
   );
 };

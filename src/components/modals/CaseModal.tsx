@@ -128,7 +128,11 @@ const CaseModal: React.FC<CaseModalProps> = ({
       loadClients();
       loadOptions();
       if (caseData) {
-        setFormData({ ...defaultFormData, ...caseData });
+        setFormData({
+          ...defaultFormData,
+          ...caseData,
+          client_id: String(caseData.client_id || '')
+        });
       } else {
         setFormData(defaultFormData);
       }
@@ -165,7 +169,7 @@ const CaseModal: React.FC<CaseModalProps> = ({
   };
 
   const validateForm = (): boolean => {
-    if (!formData.client_id.trim()) {
+    if (!String(formData.client_id).trim()) {
       setError('يرجى اختيار العميل');
       return false;
     }

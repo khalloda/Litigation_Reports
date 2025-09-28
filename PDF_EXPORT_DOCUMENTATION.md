@@ -144,6 +144,7 @@ td {
 | **Cases** | ✅ Working | تصدير dropdown → تصدير PDF | Dynamic column sizing |
 | **Hearings** | ✅ Working | تصدير dropdown → تصدير PDF | Court information formatting |
 | **Reports** | ✅ Working | Export modal → PDF button | Custom report data |
+| **Client-Specific Reports** | ✅ Working | Reports page → تقرير عميل محدد button | Dynamic client selection, custom columns, professional branding |
 
 ### **PDF Quality Metrics**
 | Metric | Standard Files | With Branding |

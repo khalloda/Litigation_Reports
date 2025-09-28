@@ -15,10 +15,12 @@ Thank you for your interest in contributing to our litigation management system!
 
 ### Prerequisites
 
-- Node.js >= 18.0.0
-- PHP >= 8.0
-- MySQL >= 8.0 or MariaDB >= 10.6
-- Git
+- Node.js >= 18.0.0 (with npm or pnpm package manager)
+- PHP >= 8.4 (with modern OOP features and strict typing)
+- MySQL >= 9.1.0 with UTF-8mb4 charset support
+- Git with conventional commit hooks
+- TypeScript >= 5.9+ for frontend development
+- Vite >= 7.1.7 for build tooling and HMR
 
 ### Local Development Setup
 
@@ -52,8 +54,10 @@ Thank you for your interest in contributing to our litigation management system!
 5. Start development servers:
 
    ```bash
-   npm run dev          # Frontend (React + Vite)
-   npm run start:backend # Backend (PHP)
+   npm run dev          # Frontend (React 18.3.1 + Vite 7.1.7 with HMR)
+   npm run start:backend # Backend (PHP 8.4 with strict typing)
+   npm run type-check   # TypeScript type checking
+   npm run lint        # ESLint code quality checks
    ```
 
 ## Development Workflow
@@ -109,23 +113,42 @@ We follow [SemVer](https://semver.org/):
 
 ### PHP (Backend)
 
-- Follow [PSR-12](https://www.php-fig.org/psr/psr-12/) coding standard
-- Use meaningful variable and function names
-- Add type hints for function parameters and return types
-- Document complex logic with comments
+- Follow [PSR-12](https://www.php-fig.org/psr/psr-12/) coding standard with PHP 8.4+ features
+- Use strict typing with `declare(strict_types=1)`
+- Implement modern OOP patterns with interfaces and dependency injection
+- Use typed properties and constructor property promotion
+- Handle exceptions with TypeError and ValueError for robust error handling
+- Add comprehensive type hints for function parameters and return types
 
 ```php
 <?php
-// Good
-public function createCase(array $caseData): Case
-{
-    $validator = new CaseValidator();
-    $validator->validate($caseData);
+declare(strict_types=1);
 
-    return $this->caseRepository->create($caseData);
+// Good - Modern PHP 8.4+ with strict typing
+interface CaseRepositoryInterface
+{
+    public function create(array $caseData): Case;
 }
 
-// Bad
+final readonly class CaseService
+{
+    public function __construct(
+        private CaseRepositoryInterface $caseRepository,
+        private CaseValidator $validator,
+    ) {}
+
+    public function createCase(array $caseData): Case
+    {
+        try {
+            $this->validator->validate($caseData);
+            return $this->caseRepository->create($caseData);
+        } catch (ValueError $e) {
+            throw new InvalidCaseDataException($e->getMessage(), previous: $e);
+        }
+    }
+}
+
+// Bad - Old PHP style without types
 function create($data)
 {
     return $this->repo->create($data);
@@ -134,25 +157,49 @@ function create($data)
 
 ### TypeScript/React (Frontend)
 
-- Use TypeScript for all new code
-- Follow React best practices and hooks patterns
-- Use functional components over class components
-- Implement proper prop typing
+- Use TypeScript 5.9+ with strict type checking for all new code
+- Follow React 18.3.1 best practices with modern hooks patterns
+- Use functional components with TypeScript interfaces for props
+- Implement proper prop typing with optional and required properties
+- Use React.memo for performance optimization when appropriate
+- Leverage React's built-in hooks (useState, useEffect, useCallback, useMemo)
 
 ```typescript
-// Good
+// Good - Modern React 18.3.1 + TypeScript 5.9+
 interface ClientFormProps {
-  onSubmit: (client: Client) => void;
+  onSubmit: (client: Client) => Promise<void>;
   initialData?: Partial<Client>;
+  isLoading?: boolean;
+  className?: string;
 }
 
-const ClientForm: React.FC<ClientFormProps> = ({ onSubmit, initialData }) => {
-  // Component implementation
-};
+const ClientForm: React.FC<ClientFormProps> = React.memo(({
+  onSubmit,
+  initialData,
+  isLoading = false,
+  className
+}) => {
+  const [formData, setFormData] = useState<Partial<Client>>(initialData ?? {});
 
-// Bad
+  const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!isLoading && formData.name) {
+      await onSubmit(formData as Client);
+    }
+  }, [onSubmit, formData, isLoading]);
+
+  return (
+    <form onSubmit={handleSubmit} className={className}>
+      {/* Form implementation */}
+    </form>
+  );
+});
+
+ClientForm.displayName = 'ClientForm';
+
+// Bad - Untyped props without modern patterns
 const ClientForm = (props: any) => {
-  // Component implementation
+  // Component implementation without types
 };
 ```
 
