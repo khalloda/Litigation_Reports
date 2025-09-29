@@ -91,8 +91,11 @@ class HearingController {
                 'last_decision', 'court_notes', 'lawyer_notes', 'expert_notes',
                 'hearing_duration', 'hearing_type', 'next_hearing', 'short_decision'
             ]);
-            
-            $hearingId = Hearing::create($data);
+
+            // Get lawyer IDs
+            $lawyerIds = $request->get('lawyer_ids', []);
+
+            $hearingId = Hearing::create($data, $lawyerIds);
             
             // Get the created hearing
             $hearing = Hearing::findById($hearingId);
@@ -161,15 +164,24 @@ class HearingController {
                 return $value !== null && $value !== '';
             });
             
-            if (empty($data)) {
+            if (empty($data) && !$request->has('lawyer_ids')) {
                 return Response::error('No data provided for update', 400);
             }
-            
-            Hearing::update($id, $data);
-            
+
+            // Update hearing data if provided
+            if (!empty($data)) {
+                Hearing::update($id, $data);
+            }
+
+            // Update lawyer relationships if provided
+            if ($request->has('lawyer_ids')) {
+                $lawyerIds = $request->get('lawyer_ids', []);
+                Hearing::saveLawyers($id, $lawyerIds);
+            }
+
             // Get the updated hearing
             $hearing = Hearing::findById($id);
-            
+
             return Response::success($hearing, 'Hearing updated successfully');
             
         } catch (Exception $e) {

@@ -51,6 +51,13 @@ interface Hearing {
   client_name_ar: string;
   client_name_en: string;
   created_at: string;
+  lawyers?: Array<{
+    id: number;
+    name_ar: string;
+    name_en: string;
+    email: string;
+    display_name: string;
+  }>;
 }
 
 interface HearingFilters {
@@ -621,6 +628,7 @@ const HearingsPage: React.FC = () => {
                     <th>تاريخ الجلسة</th>
                     <th>القضية</th>
                     <th>العميل</th>
+                    <th>المحامون</th>
                     <th>نوع الجلسة</th>
                     <th>النتيجة</th>
                     <th>المدة</th>
@@ -649,6 +657,27 @@ const HearingsPage: React.FC = () => {
                           <div>{hearing.client_name_ar || '-'}</div>
                           {hearing.client_name_en && (
                             <small className='text-muted'>{hearing.client_name_en}</small>
+                          )}
+                        </div>
+                      </td>
+                      <td>
+                        <div className='d-flex align-items-center'>
+                          <Users className='me-1' size={14} />
+                          {hearing.lawyers && hearing.lawyers.length > 0 ? (
+                            <div>
+                              {hearing.lawyers.slice(0, 2).map((lawyer, index) => (
+                                <div key={lawyer.id} className={index > 0 ? 'text-muted small' : ''}>
+                                  {lawyer.display_name}
+                                </div>
+                              ))}
+                              {hearing.lawyers.length > 2 && (
+                                <small className='text-muted'>
+                                  +{hearing.lawyers.length - 2} أخرى
+                                </small>
+                              )}
+                            </div>
+                          ) : (
+                            <span className='text-muted'>-</span>
                           )}
                         </div>
                       </td>

@@ -12,6 +12,7 @@ import {
   Building,
 } from 'lucide-react';
 import { apiService as api } from '../../services/api';
+import LawyerMultiSelect, { LawyerOption } from '../forms/LawyerMultiSelect';
 
 interface HearingFormData {
   id?: number;
@@ -26,6 +27,8 @@ interface HearingFormData {
   expert_notes: string;
   next_hearing: string;
   short_decision: string;
+  lawyer_ids?: number[];
+  lawyers?: LawyerOption[];
 }
 
 interface HearingModalProps {
@@ -89,6 +92,7 @@ const HearingModal: React.FC<HearingModalProps> = ({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [cases, setCases] = useState<any[]>([]);
+  const [selectedLawyers, setSelectedLawyers] = useState<LawyerOption[]>([]);
   const [options, setOptions] = useState<HearingOptions>({
     hearing_type: {},
     hearing_result: {},
@@ -106,8 +110,23 @@ const HearingModal: React.FC<HearingModalProps> = ({
           hearing_date: formatDateForInput(hearingData.hearing_date || ''),
           next_hearing: formatDateForInput(hearingData.next_hearing || ''),
         });
+
+        // Handle lawyer data if available - transform from backend format to LawyerOption format
+        if (hearingData.lawyers && Array.isArray(hearingData.lawyers)) {
+          const transformedLawyers = hearingData.lawyers.map((lawyer: any) => ({
+            value: lawyer.id,
+            label: lawyer.lawyer_name_ar
+              ? `${lawyer.lawyer_name_ar}${lawyer.lawyer_name_en ? ` - ${lawyer.lawyer_name_en}` : ''}`
+              : lawyer.lawyer_name_en || `Lawyer ${lawyer.id}`,
+            data: lawyer
+          }));
+          setSelectedLawyers(transformedLawyers);
+        } else {
+          setSelectedLawyers([]);
+        }
       } else {
         setFormData(defaultFormData);
+        setSelectedLawyers([]);
       }
     }
   }, [show, hearingData]);
@@ -193,13 +212,19 @@ const HearingModal: React.FC<HearingModalProps> = ({
     setSaving(true);
 
     try {
+      // Prepare form data with lawyer IDs
+      const submitData = {
+        ...formData,
+        lawyer_ids: selectedLawyers.map(lawyer => lawyer.value)
+      };
+
       let response;
       if (mode === 'edit' && formData.id) {
         // Update existing hearing
-        response = await api.put(`/hearings/${formData.id}`, formData);
+        response = await api.put(`/hearings/${formData.id}`, submitData);
       } else {
         // Create new hearing
-        response = await api.post('/hearings', formData);
+        response = await api.post('/hearings', submitData);
       }
 
       if (response.success) {
@@ -311,6 +336,22 @@ const HearingModal: React.FC<HearingModalProps> = ({
                   <option value="against">ضد</option>
                   <option value="settlement">صلح</option>
                 </Form.Select>
+              </Form.Group>
+            </Col>
+
+            <Col md={12} className="mb-3">
+              <Form.Group>
+                <Form.Label>
+                  <Users className="me-2" size={16} />
+                  المحامون الحاضرون
+                </Form.Label>
+                <LawyerMultiSelect
+                  value={selectedLawyers}
+                  onChange={setSelectedLawyers}
+                  placeholder="اختر المحامين الحاضرين في الجلسة..."
+                  isDisabled={mode === 'view'}
+                  className="mt-2"
+                />
               </Form.Group>
             </Col>
 

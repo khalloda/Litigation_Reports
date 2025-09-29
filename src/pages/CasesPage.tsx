@@ -14,7 +14,7 @@ import {
 } from 'react-bootstrap';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Plus, Search, Filter, Eye, Edit, Trash, Calendar, User, Gavel, Download } from 'lucide-react';
+import { Plus, Search, Filter, Eye, Edit, Trash, Calendar, User, Gavel, Download, Users } from 'lucide-react';
 import { apiService as api } from '../services/api';
 import CaseModal from '../components/modals/CaseModal';
 import { exportToCSV, exportToExcel, exportToPDF, EXPORT_COLUMNS } from '../utils/exportUtils';
@@ -32,6 +32,14 @@ interface Case {
   client_name_ar: string;
   client_name_en: string;
   created_at: string;
+  lawyers?: Array<{
+    id: number;
+    name_ar: string;
+    name_en: string;
+    email: string;
+    display_name: string;
+    role?: string;
+  }>;
 }
 
 interface CaseFilters {
@@ -412,6 +420,7 @@ const CasesPage: React.FC = () => {
                     <th>رقم القضية</th>
                     <th>الموضوع</th>
                     <th>العميل</th>
+                    <th>المحامون</th>
                     <th>الحالة</th>
                     <th>الأهمية</th>
                     <th>المحكمة</th>
@@ -438,6 +447,30 @@ const CasesPage: React.FC = () => {
                           <div>{caseItem.client_name_ar}</div>
                           {caseItem.client_name_en && (
                             <small className='text-muted'>{caseItem.client_name_en}</small>
+                          )}
+                        </div>
+                      </td>
+                      <td>
+                        <div className='d-flex align-items-center'>
+                          <Users className='me-1' size={14} />
+                          {caseItem.lawyers && caseItem.lawyers.length > 0 ? (
+                            <div>
+                              {caseItem.lawyers.slice(0, 2).map((lawyer, index) => (
+                                <div key={lawyer.id} className={index > 0 ? 'text-muted small' : ''}>
+                                  {lawyer.display_name}
+                                  {lawyer.role && (
+                                    <small className='text-info ms-1'>({lawyer.role})</small>
+                                  )}
+                                </div>
+                              ))}
+                              {caseItem.lawyers.length > 2 && (
+                                <small className='text-muted'>
+                                  +{caseItem.lawyers.length - 2} أخرى
+                                </small>
+                              )}
+                            </div>
+                          ) : (
+                            <span className='text-muted'>-</span>
                           )}
                         </div>
                       </td>

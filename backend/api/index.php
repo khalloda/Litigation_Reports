@@ -6,6 +6,7 @@
 
 require_once __DIR__ . '/_bootstrap.php';
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/lawyer_associations.php';
 
 // Get request path and method
 $path = $_SERVER['REQUEST_URI'];
@@ -560,7 +561,7 @@ function handleGetCase($id) {
 // Clients functions
 function handleGetClients() {
     $db = Database::getInstance();
-    
+
     try {
         $page = $_GET['page'] ?? 1;
         $limit = $_GET['limit'] ?? 10;
@@ -569,25 +570,25 @@ function handleGetClients() {
             'type' => $_GET['type'] ?? null,
             'search' => $_GET['search'] ?? null
         ];
-        
+
         // Remove empty filters
         $filters = array_filter($filters, function($value) {
             return $value !== null && $value !== '';
         });
-        
+
         $whereClause = '1=1';
         $params = [];
-        
+
         if (!empty($filters['status'])) {
             $whereClause .= ' AND status = ?';
             $params[] = $filters['status'];
         }
-        
+
         if (!empty($filters['type'])) {
             $whereClause .= ' AND client_type = ?';
             $params[] = $filters['type'];
         }
-        
+
         if (!empty($filters['search'])) {
             $whereClause .= ' AND (client_name_ar LIKE ? OR client_name_en LIKE ? OR email LIKE ?)';
             $searchTerm = '%' . $filters['search'] . '%';
@@ -595,15 +596,16 @@ function handleGetClients() {
             $params[] = $searchTerm;
             $params[] = $searchTerm;
         }
-        
-        $sql = "SELECT * FROM clients WHERE {$whereClause} ORDER BY created_at DESC";
-        $result = $db->paginate($sql, $params, $page, $limit);
-        
+
+        // Use enhanced function that includes lawyer data
+        $result = getClientsWithLawyers($db, $whereClause, $params, $page, $limit);
+
         echo json_encode([
             'success' => true,
             'data' => $result
         ]);
     } catch (Exception $e) {
+        error_log("Get clients error: " . $e->getMessage());
         http_response_code(500);
         echo json_encode(['error' => 'Failed to retrieve clients']);
     }
@@ -633,7 +635,7 @@ function handleGetClient($id) {
 // Hearings functions
 function handleGetHearings() {
     $db = Database::getInstance();
-    
+
     try {
         $page = $_GET['page'] ?? 1;
         $limit = $_GET['limit'] ?? 10;
@@ -642,43 +644,39 @@ function handleGetHearings() {
             'date_from' => $_GET['date_from'] ?? null,
             'date_to' => $_GET['date_to'] ?? null
         ];
-        
+
         // Remove empty filters
         $filters = array_filter($filters, function($value) {
             return $value !== null && $value !== '';
         });
-        
+
         $whereClause = '1=1';
         $params = [];
-        
+
         if (!empty($filters['case_id'])) {
-            $whereClause .= ' AND case_id = ?';
+            $whereClause .= ' AND h.case_id = ?';
             $params[] = $filters['case_id'];
         }
-        
+
         if (!empty($filters['date_from'])) {
-            $whereClause .= ' AND hearing_date >= ?';
+            $whereClause .= ' AND h.hearing_date >= ?';
             $params[] = $filters['date_from'];
         }
-        
+
         if (!empty($filters['date_to'])) {
-            $whereClause .= ' AND hearing_date <= ?';
+            $whereClause .= ' AND h.hearing_date <= ?';
             $params[] = $filters['date_to'];
         }
-        
-        $sql = "SELECT h.*, c.matter_ar, c.matter_en 
-                FROM hearings h 
-                LEFT JOIN cases c ON h.case_id = c.id 
-                WHERE {$whereClause} 
-                ORDER BY h.hearing_date DESC";
-        
-        $result = $db->paginate($sql, $params, $page, $limit);
-        
+
+        // Use enhanced function that includes lawyer data
+        $result = getHearingsWithLawyers($db, $whereClause, $params, $page, $limit);
+
         echo json_encode([
             'success' => true,
             'data' => $result
         ]);
     } catch (Exception $e) {
+        error_log("Get hearings error: " . $e->getMessage());
         http_response_code(500);
         echo json_encode(['error' => 'Failed to retrieve hearings']);
     }
@@ -686,16 +684,10 @@ function handleGetHearings() {
 
 function handleGetHearing($id) {
     $db = Database::getInstance();
-    
+
     try {
-        $hearing = $db->fetch(
-            "SELECT h.*, c.matter_ar, c.matter_en 
-             FROM hearings h 
-             LEFT JOIN cases c ON h.case_id = c.id 
-             WHERE h.id = ?",
-            [$id]
-        );
-        
+        $hearing = getSingleHearingWithLawyers($db, $id);
+
         if ($hearing) {
             echo json_encode([
                 'success' => true,
@@ -706,6 +698,7 @@ function handleGetHearing($id) {
             echo json_encode(['error' => 'Hearing not found']);
         }
     } catch (Exception $e) {
+        error_log("Get hearing error: " . $e->getMessage());
         http_response_code(500);
         echo json_encode(['error' => 'Failed to retrieve hearing']);
     }
@@ -1128,6 +1121,9 @@ function handleCreateHearing() {
     }
 
     try {
+        // Begin transaction
+        $db->getConnection()->beginTransaction();
+
         $result = $db->execute(
             "INSERT INTO hearings (case_id, hearing_date, hearing_type, hearing_result, hearing_duration, hearing_decision, court_notes, lawyer_notes, expert_notes, next_hearing, short_decision) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             [
@@ -1147,10 +1143,24 @@ function handleCreateHearing() {
 
         if ($result) {
             $newId = $db->lastInsertId();
-            $newHearing = $db->fetch(
-                "SELECT h.*, c.matter_ar, c.matter_en FROM hearings h LEFT JOIN cases c ON h.case_id = c.id WHERE h.id = ?",
-                [$newId]
-            );
+
+            // Handle lawyer associations
+            $lawyerIds = $input['lawyer_ids'] ?? [];
+            if (!empty($lawyerIds)) {
+                $lawyerResult = addHearingLawyers($db, $newId, $lawyerIds);
+                if (!$lawyerResult) {
+                    $db->getConnection()->rollback();
+                    http_response_code(500);
+                    echo json_encode(['error' => 'Failed to associate lawyers with hearing']);
+                    return;
+                }
+            }
+
+            // Commit transaction
+            $db->getConnection()->commit();
+
+            // Get hearing with lawyer data
+            $newHearing = getSingleHearingWithLawyers($db, $newId);
 
             http_response_code(201);
             echo json_encode([
@@ -1159,10 +1169,12 @@ function handleCreateHearing() {
                 'message' => 'Hearing created successfully'
             ]);
         } else {
+            $db->getConnection()->rollback();
             http_response_code(500);
             echo json_encode(['error' => 'Failed to create hearing']);
         }
     } catch (Exception $e) {
+        $db->getConnection()->rollback();
         error_log("Create hearing error: " . $e->getMessage());
         http_response_code(500);
         echo json_encode(['error' => 'Failed to create hearing']);

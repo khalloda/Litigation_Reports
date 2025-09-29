@@ -56,6 +56,14 @@ interface Client {
   logo_url?: string;
   logo_file_name?: string;
   logo_file_size?: number;
+  lawyers?: Array<{
+    id: number;
+    name_ar: string;
+    name_en: string;
+    email: string;
+    display_name: string;
+    is_primary?: boolean;
+  }>;
 }
 
 interface ClientFormData {
@@ -563,7 +571,7 @@ const ClientsPage: React.FC = () => {
                     <th>النوع</th>
                     <th>الحالة</th>
                     <th>نوع الدفع</th>
-                    <th>المحامي المسؤول</th>
+                    <th>المحامون</th>
                     <th>عدد القضايا</th>
                     <th>تاريخ البداية</th>
                     <th>آخر قضية</th>
@@ -646,7 +654,30 @@ const ClientsPage: React.FC = () => {
                       </td>
                       <td>{getStatusBadge(client.status)}</td>
                       <td>{getCashProBonoBadge(client.cash_pro_bono)}</td>
-                      <td>{client.contact_lawyer || '-'}</td>
+                      <td>
+                        <div className='d-flex align-items-center'>
+                          <Users className='me-1' size={14} />
+                          {client.lawyers && client.lawyers.length > 0 ? (
+                            <div>
+                              {client.lawyers.slice(0, 2).map((lawyer, index) => (
+                                <div key={lawyer.id} className={index > 0 ? 'text-muted small' : ''}>
+                                  {lawyer.display_name}
+                                  {lawyer.is_primary && (
+                                    <small className='text-success ms-1'>(أساسي)</small>
+                                  )}
+                                </div>
+                              ))}
+                              {client.lawyers.length > 2 && (
+                                <small className='text-muted'>
+                                  +{client.lawyers.length - 2} أخرى
+                                </small>
+                              )}
+                            </div>
+                          ) : (
+                            <span className='text-muted'>-</span>
+                          )}
+                        </div>
+                      </td>
                       <td>
                         <Badge bg='primary'>{client.cases_count}</Badge>
                       </td>

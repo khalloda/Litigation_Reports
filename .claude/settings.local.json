@@ -7,7 +7,21 @@
       "Bash(BASE_URL=http://lit.local:8080 timeout 90 npx playwright test tests/debug-all-logs.spec.ts --reporter=line --config=playwright.config.simple.mjs)",
       "Bash(dir:*)",
       "Bash(npm run clean:*)",
-      "mcp__context7__get-library-docs"
+      "mcp__context7__get-library-docs",
+      "Bash(find:*)",
+      "mcp__context7__resolve-library-id",
+      "Bash(npm install:*)",
+      "Read(//d/**)",
+      "Bash(npm run build:*)",
+      "Bash(curl:*)",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_type",
+      "mcp__playwright__browser_click",
+      "mcp__playwright__browser_wait_for",
+      "mcp__playwright__browser_select_option",
+      "mcp__playwright__browser_take_screenshot",
+      "mcp__playwright__browser_press_key",
+      "mcp__playwright__browser_console_messages"
     ],
     "deny": [],
     "ask": []

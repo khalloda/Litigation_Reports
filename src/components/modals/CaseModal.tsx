@@ -13,6 +13,7 @@ import {
   Users,
 } from 'lucide-react';
 import { apiService as api } from '../../services/api';
+import LawyerMultiSelect, { LawyerOption } from '../forms/LawyerMultiSelect';
 
 interface CaseFormData {
   id?: number;
@@ -50,6 +51,8 @@ interface CaseFormData {
   financial_allocation: string;
   work_team_id: string;
   contract_id: string;
+  lawyer_ids?: number[];
+  lawyers?: LawyerOption[];
 }
 
 interface CaseModalProps {
@@ -116,6 +119,7 @@ const CaseModal: React.FC<CaseModalProps> = ({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [clients, setClients] = useState<any[]>([]);
+  const [selectedLawyers, setSelectedLawyers] = useState<LawyerOption[]>([]);
   const [options, setOptions] = useState<CaseOptions>({
     status: {},
     category: {},
@@ -133,8 +137,16 @@ const CaseModal: React.FC<CaseModalProps> = ({
           ...caseData,
           client_id: String(caseData.client_id || '')
         });
+
+        // Handle lawyer data if available
+        if (caseData.lawyers && Array.isArray(caseData.lawyers)) {
+          setSelectedLawyers(caseData.lawyers);
+        } else {
+          setSelectedLawyers([]);
+        }
       } else {
         setFormData(defaultFormData);
+        setSelectedLawyers([]);
       }
     }
   }, [show, caseData]);
@@ -195,13 +207,19 @@ const CaseModal: React.FC<CaseModalProps> = ({
     setSaving(true);
 
     try {
+      // Prepare form data with lawyer IDs
+      const submitData = {
+        ...formData,
+        lawyer_ids: selectedLawyers.map(lawyer => lawyer.value)
+      };
+
       let response;
       if (mode === 'edit' && formData.id) {
         // Update existing case
-        response = await api.put(`/cases/${formData.id}`, formData);
+        response = await api.put(`/cases/${formData.id}`, submitData);
       } else {
         // Create new case
-        response = await api.post('/cases', formData);
+        response = await api.post('/cases', submitData);
       }
 
       if (response.success) {
@@ -523,6 +541,22 @@ const CaseModal: React.FC<CaseModalProps> = ({
                   value={formData.opponent_capacity}
                   onChange={(e) => handleInputChange('opponent_capacity', e.target.value)}
                   disabled={mode === 'view'}
+                />
+              </Form.Group>
+            </Col>
+
+            <Col md={12} className="mb-3">
+              <Form.Group>
+                <Form.Label>
+                  <Users className="me-2" size={16} />
+                  المحامون المكلفون بالقضية
+                </Form.Label>
+                <LawyerMultiSelect
+                  value={selectedLawyers}
+                  onChange={setSelectedLawyers}
+                  placeholder="اختر المحامين المكلفين بالقضية..."
+                  isDisabled={mode === 'view'}
+                  className="mt-2"
                 />
               </Form.Group>
             </Col>

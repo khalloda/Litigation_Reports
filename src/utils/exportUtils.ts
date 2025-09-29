@@ -197,6 +197,24 @@ export const formatBooleanForExport = (value: boolean): string => {
 };
 
 /**
+ * Format lawyers array for export
+ */
+export const formatLawyersForExport = (lawyers: any[]): string => {
+  if (!lawyers || !Array.isArray(lawyers) || lawyers.length === 0) return '';
+
+  return lawyers.map(lawyer => {
+    let name = lawyer.display_name || lawyer.name_ar || lawyer.lawyer_name_ar || '';
+    if (lawyer.role && lawyer.role !== 'primary') {
+      name += ` (${lawyer.role})`;
+    }
+    if (lawyer.is_primary) {
+      name += ' (أساسي)';
+    }
+    return name;
+  }).join(', ');
+};
+
+/**
  * Export data to PDF format with server-side Arabic text support
  */
 export const exportToPDF = async (data: any[], options: ExportOptions = {}) => {
@@ -367,6 +385,7 @@ export const EXPORT_COLUMNS = {
     { key: 'client_type', label: 'نوع العميل' },
     { key: 'phone', label: 'رقم الهاتف' },
     { key: 'email', label: 'البريد الإلكتروني' },
+    { key: 'lawyers', label: 'المحامون المسؤولون', transform: formatLawyersForExport },
     { key: 'status', label: 'الحالة' },
     { key: 'created_at', label: 'تاريخ التسجيل', transform: formatDateForExport },
   ],
@@ -377,6 +396,7 @@ export const EXPORT_COLUMNS = {
     { key: 'matter_en', label: 'عنوان القضية (إنجليزي)' },
     { key: 'matter_category', label: 'نوع القضية' },
     { key: 'matter_status', label: 'حالة القضية' },
+    { key: 'lawyers', label: 'المحامون المكلفون', transform: formatLawyersForExport },
     { key: 'matter_court', label: 'المحكمة' },
     { key: 'created_at', label: 'تاريخ الإنشاء', transform: formatDateForExport },
   ],
@@ -387,6 +407,7 @@ export const EXPORT_COLUMNS = {
     { key: 'hearing_result', label: 'نتيجة الجلسة' },
     { key: 'case_number', label: 'رقم القضية' },
     { key: 'case_title_ar', label: 'عنوان القضية' },
+    { key: 'lawyers', label: 'المحامون الحاضرون', transform: formatLawyersForExport },
     { key: 'court_name', label: 'المحكمة' },
     { key: 'created_at', label: 'تاريخ الإنشاء', transform: formatDateForExport },
   ],

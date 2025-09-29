@@ -18,6 +18,7 @@ import { useLanguage } from '../../hooks/useLanguage';
 import { useRTL } from '../../hooks/useRTL';
 import { MixedContentInput } from '../forms/MixedContentInput';
 import { MixedContentTextarea } from '../forms/MixedContentTextarea';
+import LawyerMultiSelect, { LawyerOption } from '../forms/LawyerMultiSelect';
 
 interface ClientFormData {
   client_name_ar: string;
@@ -35,6 +36,8 @@ interface ClientFormData {
   client_start_date: string;
   logo_file?: File;
   logo_url?: string;
+  lawyer_ids?: number[];
+  lawyers?: LawyerOption[];
 }
 
 interface ClientModalProps {
@@ -79,6 +82,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
   const [errors, setErrors] = useState<Partial<Record<keyof ClientFormData, string>>>({});
   const [submitting, setSubmitting] = useState(false);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [selectedLawyers, setSelectedLawyers] = useState<LawyerOption[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isViewMode = mode === 'view';
@@ -109,9 +113,17 @@ export const ClientModal: React.FC<ClientModalProps> = ({
       } else {
         setLogoPreview(null);
       }
+
+      // Handle lawyer data if available
+      if (client.lawyers && Array.isArray(client.lawyers)) {
+        setSelectedLawyers(client.lawyers);
+      } else {
+        setSelectedLawyers([]);
+      }
     } else if (isCreateMode) {
       setFormData(defaultFormData);
       setLogoPreview(null);
+      setSelectedLawyers([]);
     }
     setErrors({});
   }, [client, mode, show]);
@@ -145,10 +157,10 @@ export const ClientModal: React.FC<ClientModalProps> = ({
       newErrors.phone = currentLanguage === 'ar' ? 'رقم الهاتف غير صحيح' : 'Invalid phone number';
     }
 
-    // Contact lawyer is required
-    if (!formData.contact_lawyer?.trim()) {
+    // At least one lawyer is required
+    if (!selectedLawyers || selectedLawyers.length === 0) {
       newErrors.contact_lawyer =
-        currentLanguage === 'ar' ? 'المحامي المسؤول مطلوب' : 'Contact lawyer is required';
+        currentLanguage === 'ar' ? 'يجب اختيار محامي واحد على الأقل' : 'At least one lawyer is required';
     }
 
     setErrors(newErrors);
@@ -169,7 +181,12 @@ export const ClientModal: React.FC<ClientModalProps> = ({
 
     try {
       setSubmitting(true);
-      await onSave(formData);
+      // Prepare form data with lawyer IDs
+      const submitData = {
+        ...formData,
+        lawyer_ids: selectedLawyers.map(lawyer => lawyer.value)
+      };
+      await onSave(submitData);
       onHide();
     } catch (error) {
       console.error('Error saving client:', error);
@@ -548,23 +565,18 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                   <Form.Group>
                     <Form.Label className='required'>
                       <Phone size={16} className='me-1' />
-                      {currentLanguage === 'ar' ? 'المحامي المسؤول' : 'Contact Lawyer'}
+                      {currentLanguage === 'ar' ? 'المحامون المسؤولون' : 'Contact Lawyers'}
                     </Form.Label>
-                    <Form.Control
-                      type='text'
-                      value={formData.contact_lawyer}
-                      onChange={(e) => handleInputChange('contact_lawyer', e.target.value)}
+                    <LawyerMultiSelect
+                      value={selectedLawyers}
+                      onChange={setSelectedLawyers}
                       placeholder={
-                        currentLanguage === 'ar' ? 'اسم المحامي المسؤول' : 'Contact lawyer name'
+                        currentLanguage === 'ar' ? 'اختر المحامين المسؤولين...' : 'Select contact lawyers...'
                       }
-                      disabled={isViewMode}
-                      isInvalid={!!errors.contact_lawyer}
+                      isDisabled={isViewMode}
+                      error={errors.contact_lawyer}
+                      required={true}
                     />
-                    {errors.contact_lawyer && (
-                      <Form.Control.Feedback type='invalid'>
-                        {errors.contact_lawyer}
-                      </Form.Control.Feedback>
-                    )}
                   </Form.Group>
                 </Col>
                 <Col md={4}>
