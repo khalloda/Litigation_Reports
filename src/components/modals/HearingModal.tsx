@@ -42,6 +42,7 @@ interface HearingModalProps {
 interface HearingOptions {
   hearing_type: Record<string, string>;
   hearing_result: Record<string, string>;
+  hearing_duration: Record<string, string>;
 }
 
 // Helper function to format date for datetime-local input
@@ -96,6 +97,7 @@ const HearingModal: React.FC<HearingModalProps> = ({
   const [options, setOptions] = useState<HearingOptions>({
     hearing_type: {},
     hearing_result: {},
+    hearing_duration: {},
   });
 
   useEffect(() => {
@@ -112,7 +114,9 @@ const HearingModal: React.FC<HearingModalProps> = ({
         });
 
         // Handle lawyer data if available - transform from backend format to LawyerOption format
+        console.log('HearingModal: Loading hearing data:', hearingData);
         if (hearingData.lawyers && Array.isArray(hearingData.lawyers)) {
+          console.log('HearingModal: Raw lawyers data:', hearingData.lawyers);
           const transformedLawyers = hearingData.lawyers.map((lawyer: any) => ({
             value: lawyer.id,
             label: lawyer.lawyer_name_ar
@@ -120,8 +124,10 @@ const HearingModal: React.FC<HearingModalProps> = ({
               : lawyer.lawyer_name_en || `Lawyer ${lawyer.id}`,
             data: lawyer
           }));
+          console.log('HearingModal: Transformed lawyers:', transformedLawyers);
           setSelectedLawyers(transformedLawyers);
         } else {
+          console.log('HearingModal: No lawyers data found, setting empty array');
           setSelectedLawyers([]);
         }
       } else {
@@ -148,8 +154,16 @@ const HearingModal: React.FC<HearingModalProps> = ({
       if (response.success && response.data) {
         // Ensure the response has the expected structure
         setOptions({
-          hearing_type: response.data.hearing_type || {},
-          hearing_result: response.data.hearing_result || {},
+          hearing_type: response.data.type || {},
+          hearing_result: response.data.result || {},
+          hearing_duration: {
+            '30min': '30 دقيقة',
+            '1hour': 'ساعة واحدة',
+            '2hours': 'ساعتان',
+            '3hours': 'ثلاث ساعات',
+            '4hours': 'أربع ساعات',
+            'fullday': 'يوم كامل'
+          },
         });
       }
     } catch (err) {
@@ -157,22 +171,29 @@ const HearingModal: React.FC<HearingModalProps> = ({
       // Set default options if API fails
       setOptions({
         hearing_type: {
-          'initial': 'جلسة أولى',
-          'follow_up': 'جلسة متابعة',
-          'final': 'جلسة نهائية',
-          'postponed': 'جلسة مؤجلة',
-          'appeal': 'جلسة استئناف',
-          'expert': 'جلسة خبير',
-          'settlement': 'جلسة صلح',
+          'initial': 'أولى',
+          'procedural': 'إجرائية',
+          'evidence': 'بينات',
+          'witness': 'شهود',
+          'expert': 'خبراء',
+          'final': 'نهائية',
+          'appeal': 'استئناف',
+          'execution': 'تنفيذ',
         },
         hearing_result: {
-          'pending': 'معلقة',
+          'won': 'لصالح',
+          'lost': 'ضد',
           'postponed': 'مؤجلة',
-          'completed': 'مكتملة',
-          'cancelled': 'ملغاة',
-          'for': 'لصالح',
-          'against': 'ضد',
-          'settlement': 'صلح',
+          'pending': 'معلقة',
+          'settled': 'تسوية'
+        },
+        hearing_duration: {
+          '30min': '30 دقيقة',
+          '1hour': 'ساعة واحدة',
+          '2hours': 'ساعتان',
+          '3hours': 'ثلاث ساعات',
+          '4hours': 'أربع ساعات',
+          'fullday': 'يوم كامل'
         }
       });
     }
@@ -198,6 +219,10 @@ const HearingModal: React.FC<HearingModalProps> = ({
       setError('يرجى اختيار نوع الجلسة');
       return false;
     }
+    if (!formData.hearing_duration.trim()) {
+      setError('يرجى اختيار مدة الجلسة');
+      return false;
+    }
     return true;
   };
 
@@ -218,14 +243,26 @@ const HearingModal: React.FC<HearingModalProps> = ({
         lawyer_ids: selectedLawyers.map(lawyer => lawyer.value)
       };
 
+      console.log('HearingModal: Submitting data:', {
+        mode,
+        formData,
+        selectedLawyers,
+        submitData,
+        lawyerIds: submitData.lawyer_ids
+      });
+
       let response;
       if (mode === 'edit' && formData.id) {
         // Update existing hearing
+        console.log('HearingModal: Updating hearing ID:', formData.id);
         response = await api.put(`/hearings/${formData.id}`, submitData);
       } else {
         // Create new hearing
+        console.log('HearingModal: Creating new hearing');
         response = await api.post('/hearings', submitData);
       }
+
+      console.log('HearingModal: API response:', response);
 
       if (response.success) {
         toast.success(mode === 'edit' ? 'تم تحديث الجلسة بنجاح' : 'تم إضافة الجلسة بنجاح');
@@ -308,13 +345,9 @@ const HearingModal: React.FC<HearingModalProps> = ({
                   required
                 >
                   <option value="">اختر نوع الجلسة</option>
-                  <option value="initial">جلسة أولى</option>
-                  <option value="follow_up">جلسة متابعة</option>
-                  <option value="final">جلسة نهائية</option>
-                  <option value="postponed">جلسة مؤجلة</option>
-                  <option value="appeal">جلسة استئناف</option>
-                  <option value="expert">جلسة خبير</option>
-                  <option value="settlement">جلسة صلح</option>
+                  {Object.entries(options.hearing_type).map(([value, label]) => (
+                    <option key={value} value={value}>{label}</option>
+                  ))}
                 </Form.Select>
               </Form.Group>
             </Col>
@@ -328,13 +361,9 @@ const HearingModal: React.FC<HearingModalProps> = ({
                   disabled={mode === 'view'}
                 >
                   <option value="">اختر نتيجة الجلسة</option>
-                  <option value="pending">معلقة</option>
-                  <option value="postponed">مؤجلة</option>
-                  <option value="completed">مكتملة</option>
-                  <option value="cancelled">ملغاة</option>
-                  <option value="for">لصالح</option>
-                  <option value="against">ضد</option>
-                  <option value="settlement">صلح</option>
+                  {Object.entries(options.hearing_result).map(([value, label]) => (
+                    <option key={value} value={value}>{label}</option>
+                  ))}
                 </Form.Select>
               </Form.Group>
             </Col>
@@ -357,14 +386,18 @@ const HearingModal: React.FC<HearingModalProps> = ({
 
             <Col md={6} className="mb-3">
               <Form.Group>
-                <Form.Label>مدة الجلسة</Form.Label>
-                <Form.Control
-                  type="text"
-                  placeholder="مثال: ساعة واحدة، 30 دقيقة"
+                <Form.Label>مدة الجلسة *</Form.Label>
+                <Form.Select
                   value={formData.hearing_duration}
                   onChange={(e) => handleInputChange('hearing_duration', e.target.value)}
                   disabled={mode === 'view'}
-                />
+                  required
+                >
+                  <option value="">اختر مدة الجلسة</option>
+                  {Object.entries(options.hearing_duration).map(([value, label]) => (
+                    <option key={value} value={value}>{label}</option>
+                  ))}
+                </Form.Select>
               </Form.Group>
             </Col>
 

@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Select from 'react-select';
-import { StylesConfig } from 'react-select';
 import { Form } from 'react-bootstrap';
 import { useLanguage } from '../../hooks/useLanguage';
 import { apiService as api } from '../../services/api';
@@ -25,128 +23,86 @@ export interface LawyerMultiSelectProps {
   onChange: (selected: LawyerOption[] | null) => void;
   placeholder?: string;
   isDisabled?: boolean;
-  isLoading?: boolean;
-  isSearchable?: boolean;
-  isClearable?: boolean;
-  maxMenuHeight?: number;
-  noOptionsMessage?: (obj: { inputValue: string }) => string;
-  loadingMessage?: () => string;
   error?: string;
   required?: boolean;
   name?: string;
   className?: string;
-  styles?: StylesConfig<LawyerOption, true>;
 }
 
-// Bootstrap Integration Styles
-const bootstrapSelectStyles: StylesConfig<LawyerOption, true> = {
-  control: (provided, state) => ({
-    ...provided,
-    minHeight: '38px',
-    borderColor: state.isFocused ? '#86b7fe' : '#ced4da',
-    boxShadow: state.isFocused ? '0 0 0 0.25rem rgba(13, 110, 253, 0.25)' : 'none',
-    '&:hover': {
-      borderColor: '#ced4da'
-    },
-    fontSize: '1rem',
-    backgroundColor: '#fff'
-  }),
-  menu: (provided) => ({
-    ...provided,
-    zIndex: 1070,
-    borderRadius: '0.375rem',
-    border: '1px solid #ced4da',
-    boxShadow: '0 0.5rem 1rem rgba(0, 0, 0, 0.15)'
-  }),
-  menuPortal: (provided) => ({
-    ...provided,
-    zIndex: 1070
-  }),
-  menuList: (provided) => ({
-    ...provided,
-    maxHeight: '200px',
-    borderRadius: '0.375rem'
-  }),
-  option: (provided, state) => ({
-    ...provided,
-    backgroundColor: state.isSelected
-      ? '#0d6efd'
-      : state.isFocused
-        ? '#f8f9fa'
-        : '#fff',
-    color: state.isSelected ? '#fff' : '#495057',
-    '&:hover': {
-      backgroundColor: state.isSelected ? '#0d6efd' : '#f8f9fa'
-    },
-    fontSize: '0.875rem',
-    padding: '8px 12px'
-  }),
-  multiValue: (provided) => ({
-    ...provided,
-    backgroundColor: '#e9ecef',
-    borderRadius: '0.375rem',
-    margin: '2px'
-  }),
-  multiValueLabel: (provided) => ({
-    ...provided,
-    color: '#495057',
-    fontSize: '0.875rem',
-    fontWeight: '500'
-  }),
-  multiValueRemove: (provided) => ({
-    ...provided,
-    color: '#6c757d',
-    borderRadius: '0 0.375rem 0.375rem 0',
-    '&:hover': {
-      backgroundColor: '#dc3545',
-      color: 'white'
-    }
-  }),
-  placeholder: (provided) => ({
-    ...provided,
-    color: '#6c757d',
-    fontSize: '1rem'
-  }),
-  noOptionsMessage: (provided) => ({
-    ...provided,
-    color: '#6c757d',
-    fontSize: '0.875rem',
-    padding: '8px 12px'
-  }),
-  loadingMessage: (provided) => ({
-    ...provided,
-    color: '#6c757d',
-    fontSize: '0.875rem',
-    padding: '8px 12px'
-  }),
-  input: (provided) => ({
-    ...provided,
-    color: '#495057',
-    fontSize: '1rem'
-  }),
-  singleValue: (provided) => ({
-    ...provided,
-    color: '#495057',
-    fontSize: '1rem'
-  })
-};
+// Native HTML Select Styles
+const selectStyles = `
+  .lawyer-multiselect {
+    min-height: 120px;
+    max-height: 200px;
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+    padding: 8px;
+    font-size: 1rem;
+    background-color: #fff;
+    width: 100%;
+    z-index: 10000 !important;
+    position: relative;
+  }
+
+  .lawyer-multiselect:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    outline: none;
+  }
+
+  .lawyer-multiselect option {
+    padding: 8px 12px;
+    font-size: 0.875rem;
+    background-color: #fff;
+    color: #495057;
+  }
+
+  .lawyer-multiselect option:checked {
+    background-color: #0d6efd;
+    color: #fff;
+  }
+
+  .lawyer-multiselect:disabled {
+    background-color: #e9ecef;
+    opacity: 0.65;
+  }
+
+  .selected-lawyers {
+    margin-top: 8px;
+  }
+
+  .selected-lawyer-tag {
+    display: inline-block;
+    background-color: #e9ecef;
+    color: #495057;
+    padding: 4px 8px;
+    margin: 2px;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .selected-lawyer-remove {
+    margin-left: 4px;
+    cursor: pointer;
+    color: #6c757d;
+    font-weight: bold;
+  }
+
+  .selected-lawyer-remove:hover {
+    color: #dc3545;
+  }
+`;
 
 export const LawyerMultiSelect: React.FC<LawyerMultiSelectProps> = ({
   value,
   onChange,
   placeholder,
   isDisabled = false,
-  isLoading = false,
-  isSearchable = true,
-  isClearable = true,
-  maxMenuHeight = 200,
-  noOptionsMessage,
-  loadingMessage,
   error,
   required = false,
   name,
-  className,
-  styles
+  className
 }) => {
   const { currentLanguage } = useLanguage();
   const [lawyers, setLawyers] = useState<LawyerOption[]>([]);
@@ -181,56 +137,77 @@ export const LawyerMultiSelect: React.FC<LawyerMultiSelectProps> = ({
     }
   };
 
-  const handleChange = (selectedOptions: any) => {
-    onChange(selectedOptions || []);
+  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const selectedIds = Array.from(event.target.selectedOptions, option => parseInt(option.value));
+    const selectedLawyers = lawyers.filter(lawyer => selectedIds.includes(lawyer.value));
+    onChange(selectedLawyers);
   };
 
-  const defaultNoOptionsMessage = ({ inputValue }: { inputValue: string }) => {
-    if (inputValue) {
-      return currentLanguage === 'ar'
-        ? `لا توجد نتائج لـ "${inputValue}"`
-        : `No results for "${inputValue}"`;
-    }
-    return currentLanguage === 'ar'
-      ? 'لا توجد محامين متاحين'
-      : 'No lawyers available';
-  };
-
-  const defaultLoadingMessage = () => {
-    return currentLanguage === 'ar' ? 'جاري التحميل...' : 'Loading...';
+  const removeLawyer = (lawyerId: number) => {
+    const updatedSelection = value.filter(lawyer => lawyer.value !== lawyerId);
+    onChange(updatedSelection);
   };
 
   const defaultPlaceholder = currentLanguage === 'ar'
-    ? 'اختر المحامين...'
-    : 'Select lawyers...';
-
-  // Merge custom styles with bootstrap styles
-  const mergedStyles = styles ? { ...bootstrapSelectStyles, ...styles } : bootstrapSelectStyles;
+    ? 'اختر المحامين الحاضرين في الجلسة...'
+    : 'Select lawyers attending the hearing...';
 
   return (
     <div className={className}>
-      <Select<LawyerOption, true>
-        isMulti
-        value={value}
-        onChange={handleChange}
-        options={lawyers}
-        isLoading={loading || isLoading}
-        isDisabled={isDisabled}
-        isSearchable={isSearchable}
-        isClearable={isClearable}
-        maxMenuHeight={maxMenuHeight}
-        placeholder={placeholder || defaultPlaceholder}
-        noOptionsMessage={noOptionsMessage || defaultNoOptionsMessage}
-        loadingMessage={loadingMessage || defaultLoadingMessage}
-        styles={mergedStyles}
-        name={name}
-        closeMenuOnSelect={false}
-        hideSelectedOptions={false}
-        blurInputOnSelect={false}
-        menuPortalTarget={document.body}
-        menuPosition="fixed"
-        classNamePrefix="react-select"
-      />
+      <style>{selectStyles}</style>
+
+      {loading ? (
+        <div className="text-center p-3">
+          <span>{currentLanguage === 'ar' ? 'جاري تحميل المحامين...' : 'Loading lawyers...'}</span>
+        </div>
+      ) : (
+        <>
+          <select
+            className="lawyer-multiselect form-control"
+            multiple
+            value={value.map(v => v.value.toString())}
+            onChange={handleSelectChange}
+            disabled={isDisabled}
+            name={name}
+            size={6}
+          >
+            {lawyers.length === 0 ? (
+              <option disabled>
+                {currentLanguage === 'ar' ? 'لا توجد محامين متاحين' : 'No lawyers available'}
+              </option>
+            ) : (
+              lawyers.map(lawyer => (
+                <option key={lawyer.value} value={lawyer.value}>
+                  {lawyer.label}
+                </option>
+              ))
+            )}
+          </select>
+
+          {/* Selected Lawyers Display */}
+          {value.length > 0 && (
+            <div className="selected-lawyers">
+              <small className="text-muted">
+                {currentLanguage === 'ar' ? 'المحامون المختارون:' : 'Selected lawyers:'}
+              </small>
+              <div className="mt-2">
+                {value.map(lawyer => (
+                  <span key={lawyer.value} className="selected-lawyer-tag">
+                    {lawyer.label}
+                    <span
+                      className="selected-lawyer-remove"
+                      onClick={() => removeLawyer(lawyer.value)}
+                      title={currentLanguage === 'ar' ? 'إزالة' : 'Remove'}
+                    >
+                      ×
+                    </span>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </>
+      )}
 
       {/* Error Display */}
       {error && (

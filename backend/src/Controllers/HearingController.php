@@ -79,7 +79,9 @@ class HearingController {
                 'hearing_date' => 'required|date',
                 'hearing_result' => 'in:won,lost,postponed,pending',
                 'hearing_type' => 'in:initial,procedural,evidence,witness,expert,final,appeal,execution',
-                'hearing_duration' => 'in:30min,1hour,2hours,3hours,4hours,fullday'
+                'hearing_duration' => 'in:30min,1hour,2hours,3hours,4hours,fullday',
+                'lawyer_ids' => 'array',
+                'lawyer_ids.*' => 'integer|exists:lawyers,id'
             ]);
             
             if (!$validator->validate()) {
@@ -94,8 +96,11 @@ class HearingController {
 
             // Get lawyer IDs
             $lawyerIds = $request->get('lawyer_ids', []);
+            error_log("HearingController::store - Received lawyer_ids: " . json_encode($lawyerIds));
+            error_log("HearingController::store - Full request data: " . json_encode($request->all()));
 
             $hearingId = Hearing::create($data, $lawyerIds);
+            error_log("HearingController::store - Created hearing ID: $hearingId");
             
             // Get the created hearing
             $hearing = Hearing::findById($hearingId);
@@ -146,6 +151,10 @@ class HearingController {
             if (isset($requestData['hearing_duration'])) {
                 $validationRules['hearing_duration'] = 'in:30min,1hour,2hours,3hours,4hours,fullday';
             }
+            if (isset($requestData['lawyer_ids'])) {
+                $validationRules['lawyer_ids'] = 'array';
+                $validationRules['lawyer_ids.*'] = 'integer|exists:lawyers,id';
+            }
 
             $validator = new Validator($requestData, $validationRules);
             
@@ -176,7 +185,17 @@ class HearingController {
             // Update lawyer relationships if provided
             if ($request->has('lawyer_ids')) {
                 $lawyerIds = $request->get('lawyer_ids', []);
-                Hearing::saveLawyers($id, $lawyerIds);
+                error_log("HearingController::update - Received lawyer_ids: " . json_encode($lawyerIds));
+                error_log("HearingController::update - Updating hearing ID: $id");
+
+                try {
+                    Hearing::saveLawyers($id, $lawyerIds);
+                } catch (Exception $e) {
+                    error_log("HearingController::update - Lawyer save error: " . $e->getMessage());
+                    return Response::serverError('Failed to update hearing lawyers: ' . $e->getMessage());
+                }
+            } else {
+                error_log("HearingController::update - No lawyer_ids in request");
             }
 
             // Get the updated hearing
