@@ -7,11 +7,11 @@ test.describe('PDF Export Debug', () => {
     console.log('🔍 Debugging PDF export frontend issues...');
 
     // Capture console logs and errors
-    page.on('console', msg => {
+    page.on('console', (msg) => {
       console.log(`🖥️  Console ${msg.type()}: ${msg.text()}`);
     });
 
-    page.on('pageerror', error => {
+    page.on('pageerror', (error) => {
       console.log(`❌ Page error: ${error.message}`);
     });
 
@@ -44,13 +44,13 @@ test.describe('PDF Export Debug', () => {
 
     // Intercept all network requests
     const networkCalls = [];
-    page.on('request', request => {
+    page.on('request', (request) => {
       if (request.url().includes('/api/')) {
         networkCalls.push(`📡 Request: ${request.method()} ${request.url()}`);
       }
     });
 
-    page.on('response', response => {
+    page.on('response', (response) => {
       if (response.url().includes('/api/')) {
         networkCalls.push(`📡 Response: ${response.status()} ${response.url()}`);
       }
@@ -76,7 +76,7 @@ test.describe('PDF Export Debug', () => {
     await page.waitForTimeout(5000);
 
     console.log('📡 Network calls made:');
-    networkCalls.forEach(call => console.log(call));
+    networkCalls.forEach((call) => console.log(call));
 
     // Check for any toast messages or alerts
     const toastMessages = await page.locator('.toast, .alert, [role="alert"]').count();
@@ -115,9 +115,9 @@ test.describe('PDF Export Debug', () => {
     await page.waitForTimeout(2000);
 
     // Check table data
-    const hasTable = await page.locator('table').count() > 0;
+    const hasTable = (await page.locator('table').count()) > 0;
     const rowCount = await page.locator('tbody tr').count();
-    const hasNoDataMessage = await page.locator(':has-text("لا يوجد عملاء")').count() > 0;
+    const hasNoDataMessage = (await page.locator(':has-text("لا يوجد عملاء")').count()) > 0;
 
     console.log(`📋 Has table: ${hasTable}`);
     console.log(`📊 Row count: ${rowCount}`);

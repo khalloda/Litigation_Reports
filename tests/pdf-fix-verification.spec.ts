@@ -18,7 +18,9 @@ test.describe('PDF Fix Verification - Hearing Columns', () => {
     // Step 3: Open client-specific report modal
     await page.click('button:has-text("تقرير عميل محدد")');
     await page.waitForSelector('.modal', { timeout: 5000 });
-    await page.waitForFunction(() => document.querySelectorAll('.spinner-border').length === 0, { timeout: 10000 });
+    await page.waitForFunction(() => document.querySelectorAll('.spinner-border').length === 0, {
+      timeout: 10000,
+    });
 
     console.log('✅ Modal opened and loaded');
 

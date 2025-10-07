@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Invoices Modal Specific Test', () => {
-  test('Test invoices table in detailed report modal specifically', async ({ page }) => {
+  test('invoices table in detailed report modal specifically', async ({ page }) => {
     console.log('🧪 Testing invoices table in modal specifically');
 
     // Login
@@ -77,7 +77,7 @@ test.describe('Invoices Modal Specific Test', () => {
     if (isTableVisible) {
       // Check headers in the modal table specifically
       const modalHeaders = await page.locator('.modal table thead th').allTextContents();
-      const cleanHeaders = modalHeaders.map(h => h.trim()).filter(Boolean);
+      const cleanHeaders = modalHeaders.map((h) => h.trim()).filter(Boolean);
 
       console.log(`📊 Modal table headers count: ${cleanHeaders.length}`);
       console.log(`📊 Modal table headers: [${cleanHeaders.join(', ')}]`);
@@ -87,8 +87,10 @@ test.describe('Invoices Modal Specific Test', () => {
       console.log(`📊 Data rows: ${dataRows}`);
 
       if (dataRows > 0) {
-        const firstRowCells = await page.locator('.modal table tbody tr:first-child td').allTextContents();
-        console.log(`📊 First row data: [${firstRowCells.map(c => c.trim()).join(', ')}]`);
+        const firstRowCells = await page
+          .locator('.modal table tbody tr:first-child td')
+          .allTextContents();
+        console.log(`📊 First row data: [${firstRowCells.map((c) => c.trim()).join(', ')}]`);
       }
 
       // Verify column filtering worked

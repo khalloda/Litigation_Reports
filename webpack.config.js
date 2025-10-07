@@ -6,22 +6,22 @@ const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = (env, argv) => {
   const isProduction = argv.mode === 'production';
-  
+
   return {
     entry: {
       main: './src/js/main.js',
       admin: './src/js/admin.js',
       dashboard: './src/js/dashboard.js',
-      rtl: './src/scss/rtl.scss'
+      rtl: './src/scss/rtl.scss',
     },
-    
+
     output: {
       path: path.resolve(__dirname, 'public/assets'),
       filename: isProduction ? '[name].[contenthash].js' : '[name].js',
       clean: true,
-      publicPath: '/assets/'
+      publicPath: '/assets/',
     },
-    
+
     module: {
       rules: [
         {
@@ -30,9 +30,9 @@ module.exports = (env, argv) => {
           use: {
             loader: 'babel-loader',
             options: {
-              presets: ['@babel/preset-env']
-            }
-          }
+              presets: ['@babel/preset-env'],
+            },
+          },
         },
         {
           test: /\.scss$/,
@@ -47,14 +47,14 @@ module.exports = (env, argv) => {
                     require('autoprefixer'),
                     require('postcss-rtl')({
                       // RTL plugin for automatic RTL CSS generation
-                      onlyDirection: 'rtl'
-                    })
-                  ]
-                }
-              }
+                      onlyDirection: 'rtl',
+                    }),
+                  ],
+                },
+              },
             },
-            'sass-loader'
-          ]
+            'sass-loader',
+          ],
         },
         {
           test: /\.css$/,
@@ -65,61 +65,61 @@ module.exports = (env, argv) => {
               loader: 'postcss-loader',
               options: {
                 postcssOptions: {
-                  plugins: [require('autoprefixer')]
-                }
-              }
-            }
-          ]
+                  plugins: [require('autoprefixer')],
+                },
+              },
+            },
+          ],
         },
         {
           test: /\.(png|svg|jpg|jpeg|gif|ico)$/i,
           type: 'asset/resource',
           generator: {
-            filename: 'images/[name].[contenthash][ext]'
-          }
+            filename: 'images/[name].[contenthash][ext]',
+          },
         },
         {
           test: /\.(woff|woff2|eot|ttf|otf)$/i,
           type: 'asset/resource',
           generator: {
-            filename: 'fonts/[name].[contenthash][ext]'
-          }
-        }
-      ]
+            filename: 'fonts/[name].[contenthash][ext]',
+          },
+        },
+      ],
     },
-    
+
     plugins: [
       new MiniCssExtractPlugin({
-        filename: isProduction ? '[name].[contenthash].css' : '[name].css'
+        filename: isProduction ? '[name].[contenthash].css' : '[name].css',
       }),
-      
+
       new HtmlWebpackPlugin({
         template: './src/templates/base.html',
         filename: '../templates/compiled/base.html',
         inject: false,
         templateParameters: {
-          isProduction: isProduction
-        }
+          isProduction: isProduction,
+        },
       }),
-      
+
       // RTL-specific CSS extraction
       new MiniCssExtractPlugin({
-        filename: isProduction ? 'rtl.[contenthash].css' : 'rtl.css'
-      })
+        filename: isProduction ? 'rtl.[contenthash].css' : 'rtl.css',
+      }),
     ],
-    
+
     optimization: {
       minimize: isProduction,
       minimizer: [
         new TerserPlugin({
           terserOptions: {
             format: {
-              comments: false
-            }
+              comments: false,
+            },
           },
-          extractComments: false
+          extractComments: false,
         }),
-        new CssMinimizerPlugin()
+        new CssMinimizerPlugin(),
       ],
       splitChunks: {
         chunks: 'all',
@@ -127,15 +127,15 @@ module.exports = (env, argv) => {
           vendor: {
             test: /[\\/]node_modules[\\/]/,
             name: 'vendors',
-            chunks: 'all'
-          }
-        }
-      }
+            chunks: 'all',
+          },
+        },
+      },
     },
-    
+
     devServer: {
       static: {
-        directory: path.join(__dirname, 'public')
+        directory: path.join(__dirname, 'public'),
       },
       compress: true,
       port: 3000,
@@ -145,11 +145,11 @@ module.exports = (env, argv) => {
         '/': {
           target: 'http://lit.local',
           changeOrigin: true,
-          secure: false
-        }
-      }
+          secure: false,
+        },
+      },
     },
-    
+
     resolve: {
       extensions: ['.js', '.scss', '.css'],
       alias: {
@@ -157,16 +157,16 @@ module.exports = (env, argv) => {
         '@js': path.resolve(__dirname, 'src/js'),
         '@scss': path.resolve(__dirname, 'src/scss'),
         '@images': path.resolve(__dirname, 'src/images'),
-        '@fonts': path.resolve(__dirname, 'src/fonts')
-      }
+        '@fonts': path.resolve(__dirname, 'src/fonts'),
+      },
     },
-    
+
     devtool: isProduction ? 'source-map' : 'eval-source-map',
-    
+
     performance: {
       hints: isProduction ? 'warning' : false,
       maxEntrypointSize: 512000,
-      maxAssetSize: 512000
-    }
+      maxAssetSize: 512000,
+    },
   };
 };

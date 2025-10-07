@@ -8,8 +8,11 @@ test.describe('Debug API Response Content', () => {
     const apiResponses: any[] = [];
 
     // Intercept POST requests to capture response data
-    page.on('response', async response => {
-      if (response.url().includes('/api/reports/custom') && response.request().method() === 'POST') {
+    page.on('response', async (response) => {
+      if (
+        response.url().includes('/api/reports/custom') &&
+        response.request().method() === 'POST'
+      ) {
         console.log('📥 Intercepted POST response:', response.status());
         try {
           const data = await response.json();
@@ -31,7 +34,6 @@ test.describe('Debug API Response Content', () => {
           if (data.available_columns) {
             console.log('📋 Available columns:', data.available_columns);
           }
-
         } catch (e) {
           console.log('❌ Failed to parse response:', e);
         }
@@ -98,8 +100,14 @@ test.describe('Debug API Response Content', () => {
 
     // Check if table appears after API response
     await page.waitForTimeout(2000);
-    const tableVisible = await page.locator('table').isVisible().catch(() => false);
-    const modalVisible = await page.locator('[role="dialog"], .modal').isVisible().catch(() => false);
+    const tableVisible = await page
+      .locator('table')
+      .isVisible()
+      .catch(() => false);
+    const modalVisible = await page
+      .locator('[role="dialog"], .modal')
+      .isVisible()
+      .catch(() => false);
 
     console.log('📊 Final UI state:');
     console.log(`   Table visible: ${tableVisible}`);
@@ -107,7 +115,7 @@ test.describe('Debug API Response Content', () => {
 
     if (tableVisible) {
       const headers = await page.locator('table thead th:visible').allTextContents();
-      console.log(`   Headers: ${headers.map(h => h.trim()).filter(Boolean)}`);
+      console.log(`   Headers: ${headers.map((h) => h.trim()).filter(Boolean)}`);
     }
   });
 });

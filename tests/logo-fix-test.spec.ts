@@ -9,11 +9,11 @@ test.describe('Logo Fix Test', () => {
     const testData = [
       {
         id: 1,
-        client_name_ar: "مكتب صارى الدين ومشاركوه للمحاماة",
-        client_type: "company",
-        status: "active",
-        created_at: "2024-01-15"
-      }
+        client_name_ar: 'مكتب صارى الدين ومشاركوه للمحاماة',
+        client_type: 'company',
+        status: 'active',
+        created_at: '2024-01-15',
+      },
     ];
 
     const columns = [
@@ -21,7 +21,7 @@ test.describe('Logo Fix Test', () => {
       { key: 'client_name_ar', label: 'اسم العميل' },
       { key: 'client_type', label: 'نوع العميل' },
       { key: 'status', label: 'الحالة' },
-      { key: 'created_at', label: 'تاريخ الإنشاء' }
+      { key: 'created_at', label: 'تاريخ الإنشاء' },
     ];
 
     const response = await request.post(`${BASE_URL}/api/export/pdf-chrome`, {
@@ -30,8 +30,8 @@ test.describe('Logo Fix Test', () => {
         data: testData,
         columns: columns,
         title: 'اختبار الشعار المُدمج',
-        filename: 'logo_fix_test'
-      }
+        filename: 'logo_fix_test',
+      },
     });
 
     expect(response.status()).toBe(200);
@@ -119,11 +119,11 @@ test.describe('Logo Fix Test', () => {
     const response = await request.post(`${BASE_URL}/api/export/pdf-chrome`, {
       headers: { 'Content-Type': 'application/json' },
       data: {
-        data: [{ test: "اختبار الشعار" }],
+        data: [{ test: 'اختبار الشعار' }],
         columns: [{ key: 'test', label: 'اختبار' }],
         title: 'اختبار وجود الشعار',
-        filename: 'logo_presence_test'
-      }
+        filename: 'logo_presence_test',
+      },
     });
 
     expect(response.status()).toBe(200);

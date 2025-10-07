@@ -252,9 +252,14 @@ const ClientsPage: React.FC = () => {
       }
 
       if (response.success) {
-        const successMsg = modalMode === 'create'
-          ? (currentLanguage === 'ar' ? 'تم إضافة العميل بنجاح' : 'Client created successfully')
-          : (currentLanguage === 'ar' ? 'تم تحديث العميل بنجاح' : 'Client updated successfully');
+        const successMsg =
+          modalMode === 'create'
+            ? currentLanguage === 'ar'
+              ? 'تم إضافة العميل بنجاح'
+              : 'Client created successfully'
+            : currentLanguage === 'ar'
+              ? 'تم تحديث العميل بنجاح'
+              : 'Client updated successfully';
 
         toast.success(successMsg);
         await loadClients(); // Refresh the list
@@ -262,13 +267,21 @@ const ClientsPage: React.FC = () => {
         setSelectedClient(null);
         setError(null); // Clear any previous errors
       } else {
-        const errorMsg = response.error || response.message || (currentLanguage === 'ar' ? 'فشل في حفظ العميل' : 'Failed to save client');
+        const errorMsg =
+          response.error ||
+          response.message ||
+          (currentLanguage === 'ar' ? 'فشل في حفظ العميل' : 'Failed to save client');
         toast.error(errorMsg);
         throw new Error(errorMsg);
       }
     } catch (err) {
       console.error('Error saving client:', err);
-      const errorMsg = err instanceof Error ? err.message : (currentLanguage === 'ar' ? 'خطأ في حفظ العميل' : 'Error saving client');
+      const errorMsg =
+        err instanceof Error
+          ? err.message
+          : currentLanguage === 'ar'
+            ? 'خطأ في حفظ العميل'
+            : 'Error saving client';
       toast.error(errorMsg);
       throw err; // Re-throw to show error in modal
     }
@@ -287,13 +300,17 @@ const ClientsPage: React.FC = () => {
       const response = await api.delete(`/clients/${clientToDelete.id}`);
 
       if (response.success) {
-        toast.success(currentLanguage === 'ar' ? 'تم حذف العميل بنجاح' : 'Client deleted successfully');
+        toast.success(
+          currentLanguage === 'ar' ? 'تم حذف العميل بنجاح' : 'Client deleted successfully'
+        );
         await loadClients(); // Refresh the list
         setShowDeleteModal(false);
         setClientToDelete(null);
         setError(null); // Clear any previous errors
       } else {
-        const errorMsg = response.error || (currentLanguage === 'ar' ? 'فشل في حذف العميل' : 'Failed to delete client');
+        const errorMsg =
+          response.error ||
+          (currentLanguage === 'ar' ? 'فشل في حذف العميل' : 'Failed to delete client');
         toast.error(errorMsg);
         setError(errorMsg);
       }
@@ -660,7 +677,10 @@ const ClientsPage: React.FC = () => {
                           {client.lawyers && client.lawyers.length > 0 ? (
                             <div>
                               {client.lawyers.slice(0, 2).map((lawyer, index) => (
-                                <div key={lawyer.id} className={index > 0 ? 'text-muted small' : ''}>
+                                <div
+                                  key={lawyer.id}
+                                  className={index > 0 ? 'text-muted small' : ''}
+                                >
                                   {lawyer.display_name}
                                   {lawyer.is_primary && (
                                     <small className='text-success ms-1'>(أساسي)</small>

@@ -27,7 +27,9 @@ test.describe('Debug All Browser Logs', () => {
     // Open client-specific report modal
     await page.click('button:has-text("تقرير عميل محدد")');
     await page.waitForSelector('.modal', { timeout: 5000 });
-    await page.waitForFunction(() => document.querySelectorAll('.spinner-border').length === 0, { timeout: 10000 });
+    await page.waitForFunction(() => document.querySelectorAll('.spinner-border').length === 0, {
+      timeout: 10000,
+    });
 
     // Search and select client
     const searchInput = page.locator('input[placeholder*="ابحث عن عميل"]');
@@ -75,7 +77,12 @@ test.describe('Debug All Browser Logs', () => {
 
     console.log('\n📊 === ALL BROWSER LOGS ===');
     allLogs.forEach((log, index) => {
-      if (log.includes('🔍') || log.includes('SENDING') || log.includes('RESPONSE') || log.includes('BULLETPROOF')) {
+      if (
+        log.includes('🔍') ||
+        log.includes('SENDING') ||
+        log.includes('RESPONSE') ||
+        log.includes('BULLETPROOF')
+      ) {
         console.log(`  ${index + 1}. ${log}`);
       }
     });

@@ -11,7 +11,9 @@ test.describe('Working Searchable Client Dropdown', () => {
     await page.waitForTimeout(1000);
     await page.click('button:has-text("تقرير عميل محدد")');
     await page.waitForSelector('.modal', { timeout: 5000 });
-    await page.waitForFunction(() => document.querySelectorAll('.spinner-border').length === 0, { timeout: 10000 });
+    await page.waitForFunction(() => document.querySelectorAll('.spinner-border').length === 0, {
+      timeout: 10000,
+    });
   });
 
   test('should have searchable client selection with dropdown', async ({ page }) => {
@@ -93,7 +95,7 @@ test.describe('Working Searchable Client Dropdown', () => {
 
     // Verify dropdown closes
     const dropdown = page.locator('.position-absolute.w-100.bg-white.border');
-    await expect(dropdown).not.toBeVisible();
+    await expect(dropdown).toBeHidden();
 
     // Verify success indicator appears
     const successBadge = page.locator('.badge.bg-success:has-text("✓")');
@@ -130,7 +132,7 @@ test.describe('Working Searchable Client Dropdown', () => {
     await clearButton.click();
 
     // Verify selection is cleared
-    await expect(successBadge).not.toBeVisible();
+    await expect(successBadge).toBeHidden();
 
     console.log('✅ Client selection cleared successfully');
   });
@@ -153,7 +155,7 @@ test.describe('Working Searchable Client Dropdown', () => {
     const searchInput = page.locator('input[placeholder*="ابحث عن عميل"]');
 
     // Check input text alignment
-    const inputStyle = await searchInput.evaluate(el => window.getComputedStyle(el).textAlign);
+    const inputStyle = await searchInput.evaluate((el) => window.getComputedStyle(el).textAlign);
     expect(inputStyle).toBe('right');
 
     // Open dropdown and check item alignment
@@ -162,7 +164,7 @@ test.describe('Working Searchable Client Dropdown', () => {
     await page.waitForTimeout(500);
 
     const firstItem = page.locator('.list-group-item[style*="cursor: pointer"]').first();
-    const itemStyle = await firstItem.evaluate(el => window.getComputedStyle(el).textAlign);
+    const itemStyle = await firstItem.evaluate((el) => window.getComputedStyle(el).textAlign);
     expect(itemStyle).toBe('right');
 
     console.log('✅ RTL text alignment maintained correctly');

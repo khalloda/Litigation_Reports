@@ -25,13 +25,13 @@ test('Server-side PDF generation with Arabic support', async ({ page }) => {
 
   // Listen for console messages to catch any PDF generation logs
   const consoleMessages: string[] = [];
-  page.on('console', msg => {
+  page.on('console', (msg) => {
     consoleMessages.push(`${msg.type()}: ${msg.text()}`);
   });
 
   // Listen for network requests to the PDF API
   const networkRequests: string[] = [];
-  page.on('request', request => {
+  page.on('request', (request) => {
     if (request.url().includes('pdf-simple.php')) {
       networkRequests.push(`${request.method()}: ${request.url()}`);
       console.log('PDF API request detected:', request.url());
@@ -61,7 +61,9 @@ test('Server-side PDF generation with Arabic support', async ({ page }) => {
       try {
         const download = await Promise.race([
           downloadPromise,
-          new Promise((_, reject) => setTimeout(() => reject(new Error('Download timeout')), 10000))
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Download timeout')), 10000)
+          ),
         ]);
 
         console.log('✓ PDF download initiated successfully!');
@@ -73,7 +75,6 @@ test('Server-side PDF generation with Arabic support', async ({ page }) => {
         } else {
           console.log('ℹ Client-side PDF generation was used (fallback)');
         }
-
       } catch (downloadError) {
         console.log('Download did not start within timeout, checking console logs...');
       }
@@ -82,27 +83,26 @@ test('Server-side PDF generation with Arabic support', async ({ page }) => {
       await page.waitForTimeout(3000);
 
       // Check console logs for PDF generation messages
-      const pdfLogs = consoleMessages.filter(msg =>
-        msg.includes('PDF') || msg.includes('server') || msg.includes('Arabic')
+      const pdfLogs = consoleMessages.filter(
+        (msg) => msg.includes('PDF') || msg.includes('server') || msg.includes('Arabic')
       );
 
       if (pdfLogs.length > 0) {
         console.log('PDF generation logs found:');
-        pdfLogs.forEach(log => console.log('  -', log));
+        pdfLogs.forEach((log) => console.log('  -', log));
       }
 
       // Check for any errors
-      const errorLogs = consoleMessages.filter(msg =>
-        msg.includes('error:') || msg.includes('Error:') || msg.includes('failed')
+      const errorLogs = consoleMessages.filter(
+        (msg) => msg.includes('error:') || msg.includes('Error:') || msg.includes('failed')
       );
 
       if (errorLogs.length > 0) {
         console.log('Error logs found:');
-        errorLogs.forEach(log => console.log('  ERROR:', log));
+        errorLogs.forEach((log) => console.log('  ERROR:', log));
       } else {
         console.log('✓ No error logs found - PDF export appears successful');
       }
-
     } else {
       console.log('✗ PDF option not found in dropdown');
     }

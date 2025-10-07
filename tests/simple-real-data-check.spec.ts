@@ -35,8 +35,9 @@ test.describe('Simple Real Data Verification', () => {
     }
 
     // Look for any navigation or content that indicates we're in the application
-    const hasNavigation = await page.locator('.navbar, .sidebar, nav, [role="navigation"]').count() > 0;
-    const hasContent = await page.locator('h1, h2, .card, .table, .list-group').count() > 0;
+    const hasNavigation =
+      (await page.locator('.navbar, .sidebar, nav, [role="navigation"]').count()) > 0;
+    const hasContent = (await page.locator('h1, h2, .card, .table, .list-group').count()) > 0;
 
     console.log(`📊 Navigation elements found: ${hasNavigation}`);
     console.log(`📄 Content elements found: ${hasContent}`);
@@ -85,7 +86,7 @@ test.describe('Simple Real Data Verification', () => {
       arabic: arabicText,
       mockData: mockPatterns,
       realEmails: hasRealEmails,
-      substantialContent: hasRealContent
+      substantialContent: hasRealContent,
     };
 
     console.log('\n📊 VALIDATION SUMMARY:');
@@ -99,7 +100,9 @@ test.describe('Simple Real Data Verification', () => {
     console.log(`✅ Substantial content: ${hasRealContent}`);
 
     // Assertions for the test to pass
-    expect(hasNavigation || hasContent, 'Application should load with navigation or content').toBe(true);
+    expect(hasNavigation || hasContent, 'Application should load with navigation or content').toBe(
+      true
+    );
     expect(hasRealContent, 'Page should have substantial content').toBe(true);
     expect(mockPatterns, 'Should have minimal mock data patterns').toBeLessThan(10);
 
@@ -127,7 +130,9 @@ test.describe('Simple Real Data Verification', () => {
       expect(apiResponse.success).toBe(true);
     } else {
       console.log('⚠️ API might not be running on localhost:8081');
-      console.log('💡 Make sure to start the API server with: cd backend && php -S localhost:8081 -t api');
+      console.log(
+        '💡 Make sure to start the API server with: cd backend && php -S localhost:8081 -t api'
+      );
     }
   });
 });

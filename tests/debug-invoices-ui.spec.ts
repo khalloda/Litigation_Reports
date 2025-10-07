@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Debug Invoices UI', () => {
   test.use({
-    baseURL: 'http://lit.local:8080'
+    baseURL: 'http://lit.local:8080',
   });
 
   async function loginIfNeeded(page) {
@@ -39,7 +39,7 @@ test.describe('Debug Invoices UI', () => {
 
     for (let i = 0; i < Math.min(allButtons.length, 10); i++) {
       const buttonText = await allButtons[i].textContent();
-      console.log(`   Button ${i+1}: "${buttonText?.trim()}"`);
+      console.log(`   Button ${i + 1}: "${buttonText?.trim()}"`);
     }
 
     // Look for the custom report button specifically
@@ -51,7 +51,7 @@ test.describe('Debug Invoices UI', () => {
     const arabicButtons = await page.locator('button:has-text("تقرير")').all();
     console.log(`🔍 Buttons containing "تقرير": ${arabicButtons.length}`);
 
-    for (let button of arabicButtons) {
+    for (const button of arabicButtons) {
       const text = await button.textContent();
       console.log(`   Arabic button: "${text?.trim()}"`);
     }
@@ -59,7 +59,7 @@ test.describe('Debug Invoices UI', () => {
     // Take screenshot for debugging
     await page.screenshot({
       path: 'test-results/debug-reports-page.png',
-      fullPage: true
+      fullPage: true,
     });
     console.log('📸 Screenshot saved as debug-reports-page.png');
 
@@ -67,7 +67,7 @@ test.describe('Debug Invoices UI', () => {
     const errorMessages = await page.locator('.alert, .error, [class*="error"]').all();
     console.log(`❌ Error messages found: ${errorMessages.length}`);
 
-    for (let error of errorMessages) {
+    for (const error of errorMessages) {
       const errorText = await error.textContent();
       console.log(`   Error: "${errorText?.trim()}"`);
     }

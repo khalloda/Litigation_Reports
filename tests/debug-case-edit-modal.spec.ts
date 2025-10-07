@@ -5,14 +5,14 @@ test.describe('Debug Case Edit Modal', () => {
     console.log('🔍 Debugging case edit modal issue');
 
     // Listen for console errors
-    page.on('console', msg => {
+    page.on('console', (msg) => {
       if (msg.type() === 'error') {
         console.log('❌ Console error:', msg.text());
       }
     });
 
     // Listen for JavaScript errors
-    page.on('pageerror', err => {
+    page.on('pageerror', (err) => {
       console.log('❌ Page error:', err.message);
     });
 
@@ -54,7 +54,11 @@ test.describe('Debug Case Edit Modal', () => {
       console.log(`📊 Modal dialog count: ${anyModalDialog}`);
 
       // Check if modal exists but is not visible
-      const modalExists = await page.locator('.modal').first().isVisible().catch(() => false);
+      const modalExists = await page
+        .locator('.modal')
+        .first()
+        .isVisible()
+        .catch(() => false);
       console.log(`👀 First modal visible: ${modalExists}`);
 
       // Check modal classes and properties
@@ -70,7 +74,10 @@ test.describe('Debug Case Edit Modal', () => {
       await page.screenshot({ path: 'test-results/after-edit-click.png' });
 
       // Look for the CaseModal specifically
-      const caseModalTitle = await page.getByText('تعديل القضية').isVisible().catch(() => false);
+      const caseModalTitle = await page
+        .getByText('تعديل القضية')
+        .isVisible()
+        .catch(() => false);
       console.log(`📄 Case modal title visible: ${caseModalTitle}`);
 
       // Check if there are any Bootstrap modal elements
@@ -79,7 +86,6 @@ test.describe('Debug Case Edit Modal', () => {
 
       const bootstrapShow = await page.locator('.modal.show').count();
       console.log(`✨ Modal with show class: ${bootstrapShow}`);
-
     } else {
       console.log('⚠️ No edit buttons found');
     }

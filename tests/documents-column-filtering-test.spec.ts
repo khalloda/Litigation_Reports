@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Documents Column Filtering Test', () => {
-  test('Test Documents custom report column selection works correctly', async ({ page }) => {
+  test('Documents custom report column selection works correctly', async ({ page }) => {
     console.log('🧪 Testing Documents entity column filtering');
 
     // Login
@@ -76,7 +76,7 @@ test.describe('Documents Column Filtering Test', () => {
     if (isTableVisible) {
       // Check headers in the modal table specifically
       const modalHeaders = await page.locator('.modal table thead th').allTextContents();
-      const cleanHeaders = modalHeaders.map(h => h.trim()).filter(Boolean);
+      const cleanHeaders = modalHeaders.map((h) => h.trim()).filter(Boolean);
 
       console.log(`📊 Documents table headers count: ${cleanHeaders.length}`);
       console.log(`📊 Documents table headers: [${cleanHeaders.join(', ')}]`);
@@ -86,8 +86,10 @@ test.describe('Documents Column Filtering Test', () => {
       console.log(`📊 Data rows: ${dataRows}`);
 
       if (dataRows > 0) {
-        const firstRowCells = await page.locator('.modal table tbody tr:first-child td').allTextContents();
-        console.log(`📊 First row data: [${firstRowCells.map(c => c.trim()).join(', ')}]`);
+        const firstRowCells = await page
+          .locator('.modal table tbody tr:first-child td')
+          .allTextContents();
+        console.log(`📊 First row data: [${firstRowCells.map((c) => c.trim()).join(', ')}]`);
       }
 
       // Verify column filtering worked

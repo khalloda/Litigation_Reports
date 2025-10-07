@@ -5,22 +5,22 @@ test.describe('Debug Timing Issue', () => {
     console.log('🧪 DEBUGGING: API call timing in modal');
 
     // Track API calls with detailed timing
-    const apiCalls: Array<{call: string, time: number}> = [];
+    const apiCalls: Array<{ call: string; time: number }> = [];
     let startTime = 0;
 
-    page.on('request', request => {
+    page.on('request', (request) => {
       if (request.url().includes('/api/clients') || request.url().includes('/api/cases')) {
         const call = `📡 API Request: ${request.method()} ${request.url()}`;
         console.log(call);
-        apiCalls.push({call, time: Date.now() - startTime});
+        apiCalls.push({ call, time: Date.now() - startTime });
       }
     });
 
-    page.on('response', response => {
+    page.on('response', (response) => {
       if (response.url().includes('/api/clients') || response.url().includes('/api/cases')) {
         const call = `📡 API Response: ${response.status()} ${response.url()}`;
         console.log(call);
-        apiCalls.push({call, time: Date.now() - startTime});
+        apiCalls.push({ call, time: Date.now() - startTime });
       }
     });
 
@@ -48,12 +48,22 @@ test.describe('Debug Timing Issue', () => {
     // Check modal visibility immediately
     await page.waitForTimeout(100);
     const modalVisibleImmediately = await page.locator('[role="dialog"]').isVisible();
-    console.log(`📋 Modal visible immediately (100ms): ${modalVisibleImmediately} at ${Date.now() - startTime}ms`);
+    console.log(
+      `📋 Modal visible immediately (100ms): ${modalVisibleImmediately} at ${Date.now() - startTime}ms`
+    );
 
     // Check dropdown options immediately if modal is visible
     if (modalVisibleImmediately) {
-      const clientOptions = await page.locator('[role="dialog"] select').first().locator('option').count();
-      const caseOptions = await page.locator('[role="dialog"] select').nth(1).locator('option').count();
+      const clientOptions = await page
+        .locator('[role="dialog"] select')
+        .first()
+        .locator('option')
+        .count();
+      const caseOptions = await page
+        .locator('[role="dialog"] select')
+        .nth(1)
+        .locator('option')
+        .count();
       console.log(`👥 Client options immediately: ${clientOptions} at ${Date.now() - startTime}ms`);
       console.log(`📁 Case options immediately: ${caseOptions} at ${Date.now() - startTime}ms`);
     }
@@ -61,17 +71,37 @@ test.describe('Debug Timing Issue', () => {
     // Wait a bit more and check again
     await page.waitForTimeout(2000);
     const modalVisibleAfterWait = await page.locator('[role="dialog"]').isVisible();
-    console.log(`📋 Modal visible after 2s wait: ${modalVisibleAfterWait} at ${Date.now() - startTime}ms`);
+    console.log(
+      `📋 Modal visible after 2s wait: ${modalVisibleAfterWait} at ${Date.now() - startTime}ms`
+    );
 
     if (modalVisibleAfterWait) {
-      const clientOptionsAfter = await page.locator('[role="dialog"] select').first().locator('option').count();
-      const caseOptionsAfter = await page.locator('[role="dialog"] select').nth(1).locator('option').count();
-      console.log(`👥 Client options after wait: ${clientOptionsAfter} at ${Date.now() - startTime}ms`);
+      const clientOptionsAfter = await page
+        .locator('[role="dialog"] select')
+        .first()
+        .locator('option')
+        .count();
+      const caseOptionsAfter = await page
+        .locator('[role="dialog"] select')
+        .nth(1)
+        .locator('option')
+        .count();
+      console.log(
+        `👥 Client options after wait: ${clientOptionsAfter} at ${Date.now() - startTime}ms`
+      );
       console.log(`📁 Case options after wait: ${caseOptionsAfter} at ${Date.now() - startTime}ms`);
 
       // Get actual option texts to see what we have
-      const clientTexts = await page.locator('[role="dialog"] select').first().locator('option').allTextContents();
-      const caseTexts = await page.locator('[role="dialog"] select').nth(1).locator('option').allTextContents();
+      const clientTexts = await page
+        .locator('[role="dialog"] select')
+        .first()
+        .locator('option')
+        .allTextContents();
+      const caseTexts = await page
+        .locator('[role="dialog"] select')
+        .nth(1)
+        .locator('option')
+        .allTextContents();
       console.log(`👥 Client option texts: ${clientTexts.slice(0, 3)}`);
       console.log(`📁 Case option texts: ${caseTexts.slice(0, 3)}`);
 

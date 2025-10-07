@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Case Editing Functionality', () => {
   test.use({
-    baseURL: 'http://lit.local:8080'
+    baseURL: 'http://lit.local:8080',
   });
 
   test('Case editing modal opens and works correctly', async ({ page }) => {
@@ -73,7 +73,10 @@ test.describe('Case Editing Functionality', () => {
       await page.waitForTimeout(2000);
 
       // Verify the change was saved by checking if the updated text appears in the table
-      const updatedText = await page.getByText(newValue).isVisible().catch(() => false);
+      const updatedText = await page
+        .getByText(newValue)
+        .isVisible()
+        .catch(() => false);
 
       if (updatedText) {
         console.log('✅ Case update successful - new text visible in table');
@@ -97,20 +100,19 @@ test.describe('Case Editing Functionality', () => {
       expect(createModalTitle).toContain('إضافة قضية جديدة');
 
       // Verify form fields are empty (create mode)
-      const createMatterIdValue = await page.locator('input[placeholder*="رقم القضية"]').inputValue();
-      const createMatterArValue = await page.locator('input[placeholder*="موضوع القضية باللغة العربية"]').inputValue();
+      const createMatterIdValue = page.locator('input[placeholder*="رقم القضية"]');
+      const createMatterArValue = page.locator('input[placeholder*="موضوع القضية باللغة العربية"]');
 
       console.log(`📝 Create mode - Matter ID: "${createMatterIdValue}"`);
       console.log(`📝 Create mode - Matter AR: "${createMatterArValue}"`);
 
-      expect(createMatterIdValue).toBe('');
-      expect(createMatterArValue).toBe('');
+      await expect(createMatterIdValue).toHaveValue('');
+      await expect(createMatterArValue).toHaveValue('');
 
       // Close modal
       await page.getByRole('button', { name: 'إلغاء' }).click();
       await page.waitForSelector('[role="dialog"]', { state: 'detached' });
       console.log('✅ Closed create modal');
-
     } else {
       console.log('⚠️ No cases found to test editing functionality');
 
@@ -146,7 +148,7 @@ test.describe('Case Editing Functionality', () => {
     let placeholderMessageFound = false;
 
     // Set up console listener to catch the old error message if it appears
-    page.on('console', msg => {
+    page.on('console', (msg) => {
       const text = msg.text();
       if (text.includes('وظيفة التعديل قيد التطوير')) {
         placeholderMessageFound = true;

@@ -8,7 +8,7 @@ const EXPECTED_DATA_COUNTS = {
   cases: 6,
   hearings: 2,
   lawyers: 38,
-  invoices: 0
+  invoices: 0,
 };
 
 test.describe('Real Database Data Validation', () => {
@@ -25,7 +25,7 @@ test.describe('Real Database Data Validation', () => {
     console.log('🔐 Testing login functionality...');
 
     // Check if we're already logged in by looking for dashboard elements
-    const loginForm = await page.locator('form').first();
+    const loginForm = page.locator('form').first();
     const isLoginPage = await loginForm.isVisible();
 
     if (isLoginPage) {
@@ -43,8 +43,8 @@ test.describe('Real Database Data Validation', () => {
     }
 
     // Verify we're logged in by checking for navigation elements
-    const navigationExists = await page.locator('.navbar, .sidebar, [role="navigation"]').first().isVisible();
-    expect(navigationExists).toBe(true);
+    const navigationExists = page.locator('.navbar, .sidebar, [role="navigation"]').first();
+    await expect(navigationExists).toBeVisible();
 
     console.log('✅ Login successful!');
   });
@@ -169,7 +169,7 @@ test.describe('Real Database Data Validation', () => {
           apiResponses.push({
             url: response.url(),
             status: response.status(),
-            data: data
+            data: data,
           });
         } catch (e) {
           // Non-JSON response, skip
@@ -185,8 +185,8 @@ test.describe('Real Database Data Validation', () => {
     await page.waitForTimeout(2000);
 
     // Validate API responses
-    const clientsAPI = apiResponses.find(r => r.url.includes('clients'));
-    const casesAPI = apiResponses.find(r => r.url.includes('cases'));
+    const clientsAPI = apiResponses.find((r) => r.url.includes('clients'));
+    const casesAPI = apiResponses.find((r) => r.url.includes('cases'));
 
     if (clientsAPI) {
       expect(clientsAPI.status).toBe(200);
@@ -205,10 +205,13 @@ test.describe('Real Database Data Validation', () => {
 // Helper functions
 async function loginIfNeeded(page: any): Promise<void> {
   // Check if already logged in
-  const isLoggedIn = await page.locator('.navbar, .sidebar, [role="navigation"]').first().isVisible();
+  const isLoggedIn = await page
+    .locator('.navbar, .sidebar, [role="navigation"]')
+    .first()
+    .isVisible();
 
   if (!isLoggedIn) {
-    const loginForm = await page.locator('form').first();
+    const loginForm = page.locator('form').first();
     const hasLoginForm = await loginForm.isVisible();
 
     if (hasLoginForm) {
@@ -222,7 +225,9 @@ async function loginIfNeeded(page: any): Promise<void> {
 
 async function navigateToClientsPage(page: any): Promise<void> {
   // Try multiple ways to navigate to clients
-  const clientsLink = page.locator('a[href*="clients"], a:has-text("Clients"), a:has-text("العملاء")').first();
+  const clientsLink = page
+    .locator('a[href*="clients"], a:has-text("Clients"), a:has-text("العملاء")')
+    .first();
 
   if (await clientsLink.isVisible()) {
     await clientsLink.click();
@@ -235,7 +240,9 @@ async function navigateToClientsPage(page: any): Promise<void> {
 }
 
 async function navigateToCasesPage(page: any): Promise<void> {
-  const casesLink = page.locator('a[href*="cases"], a:has-text("Cases"), a:has-text("القضايا")').first();
+  const casesLink = page
+    .locator('a[href*="cases"], a:has-text("Cases"), a:has-text("القضايا")')
+    .first();
 
   if (await casesLink.isVisible()) {
     await casesLink.click();
@@ -247,7 +254,9 @@ async function navigateToCasesPage(page: any): Promise<void> {
 }
 
 async function navigateToHearingsPage(page: any): Promise<void> {
-  const hearingsLink = page.locator('a[href*="hearings"], a:has-text("Hearings"), a:has-text("الجلسات")').first();
+  const hearingsLink = page
+    .locator('a[href*="hearings"], a:has-text("Hearings"), a:has-text("الجلسات")')
+    .first();
 
   if (await hearingsLink.isVisible()) {
     await hearingsLink.click();
@@ -259,7 +268,9 @@ async function navigateToHearingsPage(page: any): Promise<void> {
 }
 
 async function navigateToLawyersPage(page: any): Promise<void> {
-  const lawyersLink = page.locator('a[href*="lawyers"], a:has-text("Lawyers"), a:has-text("المحامين")').first();
+  const lawyersLink = page
+    .locator('a[href*="lawyers"], a:has-text("Lawyers"), a:has-text("المحامين")')
+    .first();
 
   if (await lawyersLink.isVisible()) {
     await lawyersLink.click();
@@ -271,7 +282,9 @@ async function navigateToLawyersPage(page: any): Promise<void> {
 }
 
 async function navigateToInvoicesPage(page: any): Promise<void> {
-  const invoicesLink = page.locator('a[href*="invoices"], a:has-text("Invoices"), a:has-text("الفواتير")').first();
+  const invoicesLink = page
+    .locator('a[href*="invoices"], a:has-text("Invoices"), a:has-text("الفواتير")')
+    .first();
 
   if (await invoicesLink.isVisible()) {
     await invoicesLink.click();
@@ -285,21 +298,24 @@ async function navigateToInvoicesPage(page: any): Promise<void> {
 async function validateClientsData(page: any): Promise<{ hasRealData: boolean; count: number }> {
   // Look for client data indicators
   const clientRows = await page.locator('tr, .client-item, .card, .list-group-item').count();
-  const clientNames = await page.locator(':text-matches(".*@.*", "i"), :text-matches("\\d{4,}", "i")').count();
+  const clientNames = await page
+    .locator(':text-matches(".*@.*", "i"), :text-matches("\\d{4,}", "i")')
+    .count();
 
   // Check for real data indicators (emails, phone numbers, etc.)
-  const hasEmails = await page.locator('text=@').count() > 0;
-  const hasPhones = await page.locator(':text-matches("\\d{10,}", "i")').count() > 0;
-  const hasRealNames = await page.locator(':text-matches("[A-Za-z]{3,}", "i")').count() > 5;
+  const hasEmails = (await page.locator('text=@').count()) > 0;
+  const hasPhones = (await page.locator(':text-matches("\\d{10,}", "i")').count()) > 0;
+  const hasRealNames = (await page.locator(':text-matches("[A-Za-z]{3,}", "i")').count()) > 5;
 
   // Check against mock data patterns
-  const hasMockData = await page.locator('text="Mock"i, text="Test"i, text="Sample"i').count() > 0;
+  const hasMockData =
+    (await page.locator('text="Mock"i, text="Test"i, text="Sample"i').count()) > 0;
 
   const hasRealData = (hasEmails || hasPhones || hasRealNames) && !hasMockData && clientRows > 0;
 
   return {
     hasRealData,
-    count: Math.max(clientRows, clientNames)
+    count: Math.max(clientRows, clientNames),
   };
 }
 
@@ -310,16 +326,21 @@ async function validateCasesData(page: any): Promise<{ hasRealData: boolean; cou
 
   // Check for real case indicators
   const hasCaseNumbers = caseNumbers > 0;
-  const hasCourtNames = await page.locator(':text-matches("محكمة|court", "i")').count() > 0;
-  const hasRealDates = await page.locator(':text-matches("\\d{4}-\\d{2}-\\d{2}|\\d{2}/\\d{2}/\\d{4}", "i")').count() > 0;
+  const hasCourtNames = (await page.locator(':text-matches("محكمة|court", "i")').count()) > 0;
+  const hasRealDates =
+    (await page
+      .locator(':text-matches("\\d{4}-\\d{2}-\\d{2}|\\d{2}/\\d{2}/\\d{4}", "i")')
+      .count()) > 0;
 
-  const hasMockData = await page.locator('text="Mock"i, text="Test"i, text="Sample"i').count() > 0;
+  const hasMockData =
+    (await page.locator('text="Mock"i, text="Test"i, text="Sample"i').count()) > 0;
 
-  const hasRealData = (hasCaseNumbers || hasCourtNames || hasRealDates) && !hasMockData && caseRows > 0;
+  const hasRealData =
+    (hasCaseNumbers || hasCourtNames || hasRealDates) && !hasMockData && caseRows > 0;
 
   return {
     hasRealData,
-    count: Math.max(caseRows, caseNumbers)
+    count: Math.max(caseRows, caseNumbers),
   };
 }
 
@@ -328,16 +349,20 @@ async function validateHearingsData(page: any): Promise<{ hasRealData: boolean; 
   const hearingRows = await page.locator('tr, .hearing-item, .card, .list-group-item').count();
 
   // Check for real hearing indicators
-  const hasDateTimes = await page.locator(':text-matches("\\d{4}-\\d{2}-\\d{2}|\\d{2}/\\d{2}/\\d{4}", "i")').count() > 0;
-  const hasCourtRooms = await page.locator(':text-matches("قاعة|room|محكمة", "i")').count() > 0;
+  const hasDateTimes =
+    (await page
+      .locator(':text-matches("\\d{4}-\\d{2}-\\d{2}|\\d{2}/\\d{2}/\\d{4}", "i")')
+      .count()) > 0;
+  const hasCourtRooms = (await page.locator(':text-matches("قاعة|room|محكمة", "i")').count()) > 0;
 
-  const hasMockData = await page.locator('text="Mock"i, text="Test"i, text="Sample"i').count() > 0;
+  const hasMockData =
+    (await page.locator('text="Mock"i, text="Test"i, text="Sample"i').count()) > 0;
 
   const hasRealData = (hasDateTimes || hasCourtRooms) && !hasMockData && hearingRows >= 0;
 
   return {
     hasRealData: hasRealData || hearingRows >= 0, // Accept empty if no hearings
-    count: hearingRows
+    count: hearingRows,
   };
 }
 
@@ -346,35 +371,42 @@ async function validateLawyersData(page: any): Promise<{ hasRealData: boolean; c
   const lawyerRows = await page.locator('tr, .lawyer-item, .card, .list-group-item').count();
 
   // Check for real lawyer indicators
-  const hasLawyerNames = await page.locator(':text-matches("[A-Za-z\\u0600-\\u06FF]{3,}", "i")').count() > 3;
-  const hasSpecializations = await page.locator(':text-matches("تخصص|specialization|قانون|law", "i")').count() > 0;
+  const hasLawyerNames =
+    (await page.locator(':text-matches("[A-Za-z\\u0600-\\u06FF]{3,}", "i")').count()) > 3;
+  const hasSpecializations =
+    (await page.locator(':text-matches("تخصص|specialization|قانون|law", "i")').count()) > 0;
 
-  const hasMockData = await page.locator('text="Mock"i, text="Test"i, text="Sample"i').count() > 0;
+  const hasMockData =
+    (await page.locator('text="Mock"i, text="Test"i, text="Sample"i').count()) > 0;
 
   const hasRealData = (hasLawyerNames || hasSpecializations) && !hasMockData && lawyerRows > 0;
 
   return {
     hasRealData,
-    count: lawyerRows
+    count: lawyerRows,
   };
 }
 
-async function validateInvoicesData(page: any): Promise<{ hasRealData: boolean; count: number; pageLoaded: boolean }> {
+async function validateInvoicesData(
+  page: any
+): Promise<{ hasRealData: boolean; count: number; pageLoaded: boolean }> {
   // Look for invoice page indicators
   const invoiceRows = await page.locator('tr, .invoice-item, .card, .list-group-item').count();
   const pageTitle = await page.locator('h1, h2, .page-title').first().textContent();
 
   // Check if page loaded correctly
-  const pageLoaded = pageTitle?.toLowerCase().includes('invoice') ||
-                    pageTitle?.includes('فواتير') ||
-                    await page.locator('text="Invoice"i, text="فواتير"').count() > 0;
+  const pageLoaded =
+    pageTitle?.toLowerCase().includes('invoice') ||
+    pageTitle?.includes('فواتير') ||
+    (await page.locator('text="Invoice"i, text="فواتير"').count()) > 0;
 
   // Since we expect 0 invoices, empty state is acceptable
-  const hasEmptyState = await page.locator('text="No invoices"i, text="لا توجد فواتير"i, text="Empty"i').count() > 0;
+  const hasEmptyState =
+    (await page.locator('text="No invoices"i, text="لا توجد فواتير"i, text="Empty"i').count()) > 0;
 
   return {
     hasRealData: pageLoaded,
     count: invoiceRows,
-    pageLoaded: pageLoaded || hasEmptyState
+    pageLoaded: pageLoaded || hasEmptyState,
   };
 }

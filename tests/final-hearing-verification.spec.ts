@@ -7,20 +7,20 @@ test.describe('Final Hearing Columns Verification', () => {
     // Test API directly to show complete data
     const response = await page.request.post('http://lit.local:8080/api/reports/client-specific', {
       data: {
-        client_id: "315",
-        report_type: "hearings",
+        client_id: '315',
+        report_type: 'hearings',
         columns: [
-          "h.hearing_date",
-          "h.hearing_type",
-          "h.hearing_result",
-          "c.matter_court",
-          "h.court_notes",
-          "h.lawyer_notes",
-          "h.next_hearing"
+          'h.hearing_date',
+          'h.hearing_type',
+          'h.hearing_result',
+          'c.matter_court',
+          'h.court_notes',
+          'h.lawyer_notes',
+          'h.next_hearing',
         ],
-        date_from: "2025-09-01",
-        date_to: "2025-10-31"
-      }
+        date_from: '2025-09-01',
+        date_to: '2025-10-31',
+      },
     });
 
     expect(response.status()).toBe(200);
@@ -29,7 +29,7 @@ test.describe('Final Hearing Columns Verification', () => {
     console.log('\n🎉 ===== FINAL HEARING COLUMNS VERIFICATION =====');
     console.log(`Client: ${data.data.client.client_name_en}`);
     console.log(`Total Hearings: ${data.data.data.length}`);
-    console.log('=' .repeat(60));
+    console.log('='.repeat(60));
 
     // Analyze each hearing
     data.data.data.forEach((hearing: any, index: number) => {
@@ -43,12 +43,12 @@ test.describe('Final Hearing Columns Verification', () => {
         { key: 'matter_court', label: 'المحكمة' },
         { key: 'court_notes', label: 'ملاحظات المحكمة' },
         { key: 'lawyer_notes', label: 'ملاحظات المحامي' },
-        { key: 'next_hearing', label: 'الجلسة القادمة' }
+        { key: 'next_hearing', label: 'الجلسة القادمة' },
       ];
 
-      fields.forEach(field => {
+      fields.forEach((field) => {
         const value = hearing[field.key];
-        const hasData = value && value !== "" && value !== null;
+        const hasData = value && value !== '' && value !== null;
 
         if (hasData) {
           console.log(`  ✅ ${field.label}: ${value}`);
@@ -68,10 +68,10 @@ test.describe('Final Hearing Columns Verification', () => {
       'المحكمة',
       'ملاحظات المحكمة',
       'ملاحظات المحامي',
-      'الجلسة القادمة'
+      'الجلسة القادمة',
     ];
 
-    allFields.forEach(fieldLabel => {
+    allFields.forEach((fieldLabel) => {
       let hasDataInAnyHearing = false;
 
       data.data.data.forEach((hearing: any) => {
@@ -79,14 +79,14 @@ test.describe('Final Hearing Columns Verification', () => {
           'تاريخ الجلسة': 'hearing_date',
           'نوع الجلسة': 'hearing_type',
           'نتيجة الجلسة': 'hearing_result',
-          'المحكمة': 'matter_court',
+          المحكمة: 'matter_court',
           'ملاحظات المحكمة': 'court_notes',
           'ملاحظات المحامي': 'lawyer_notes',
-          'الجلسة القادمة': 'next_hearing'
+          'الجلسة القادمة': 'next_hearing',
         }[fieldLabel];
 
         const value = hearing[fieldKey];
-        if (value && value !== "" && value !== null) {
+        if (value && value !== '' && value !== null) {
           hasDataInAnyHearing = true;
         }
       });
@@ -107,7 +107,7 @@ test.describe('Final Hearing Columns Verification', () => {
     console.log('All columns are working correctly!');
     console.log('Empty fields are normal in legal databases - not every hearing');
     console.log('has every field populated. The system correctly displays data');
-    console.log('when it exists and shows empty when it doesn\'t.');
+    console.log("when it exists and shows empty when it doesn't.");
 
     console.log('\n🎉 ALL HEARING COLUMNS VERIFIED AS WORKING! 🎉');
   });

@@ -49,8 +49,8 @@ test.describe('Modal HTML Capture', () => {
     console.log(`📈 Summary section: ${hasSummarySection}`);
 
     // Also check the page console for any errors
-    const consoleMessages: { type: string, text: string }[] = [];
-    page.on('console', msg => {
+    const consoleMessages: { type: string; text: string }[] = [];
+    page.on('console', (msg) => {
       consoleMessages.push({ type: msg.type(), text: msg.text() });
     });
 
@@ -59,7 +59,7 @@ test.describe('Modal HTML Capture', () => {
 
     if (consoleMessages.length > 0) {
       console.log('📝 Console messages:');
-      consoleMessages.forEach(msg => {
+      consoleMessages.forEach((msg) => {
         console.log(`  [${msg.type.toUpperCase()}] ${msg.text}`);
       });
     }

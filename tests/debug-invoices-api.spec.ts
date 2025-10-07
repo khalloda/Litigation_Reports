@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Debug Invoices API Response', () => {
-  test('Test invoices API response directly', async ({ page, request }) => {
+  test('invoices API response directly', async ({ page, request }) => {
     console.log('🔍 Testing invoices API response directly');
 
     // First login to get session/cookies
@@ -12,15 +12,18 @@ test.describe('Debug Invoices API Response', () => {
     await page.waitForTimeout(3000);
 
     // Now test the API directly
-    const response = await request.post('http://lit.local:8080/backend/api/index.php?action=generate_custom_report', {
-      data: {
-        entity: 'invoices',
-        columns: ['invoice_number', 'amount'], // Select only 2 columns
-        filters: {},
-        limit: 10,
-        page: 1
+    const response = await request.post(
+      'http://lit.local:8080/backend/api/index.php?action=generate_custom_report',
+      {
+        data: {
+          entity: 'invoices',
+          columns: ['invoice_number', 'amount'], // Select only 2 columns
+          filters: {},
+          limit: 10,
+          page: 1,
+        },
       }
-    });
+    );
 
     console.log('📊 API Response Status:', response.status());
 
@@ -43,7 +46,6 @@ test.describe('Debug Invoices API Response', () => {
       if (data.available_columns) {
         console.log('📋 Available columns:', Object.keys(data.available_columns));
       }
-
     } else {
       const errorText = await response.text();
       console.log('❌ API Error:', errorText);

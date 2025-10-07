@@ -23,23 +23,23 @@ test.describe('Reports Export Functionality Test', () => {
     await page.waitForTimeout(1000);
 
     // Check if export modal opened
-    const exportModalVisible = await page.locator('text="خيارات التصدير"').isVisible();
+    const exportModalVisible = page.locator('text="خيارات التصدير"');
     console.log(`📋 Export modal opened: ${exportModalVisible}`);
-    expect(exportModalVisible).toBe(true);
+    await expect(exportModalVisible).toBeVisible();
 
     // Check if CSV and Excel buttons are disabled (no data)
     const csvButton = page.locator('text="CSV"').nth(1); // Second CSV button in the export options
     const excelButton = page.locator('text="Excel"').nth(1);
 
-    const csvDisabled = await csvButton.isDisabled();
-    const excelDisabled = await excelButton.isDisabled();
+    const csvDisabled = csvButton;
+    const excelDisabled = excelButton;
 
     console.log(`📊 CSV button disabled (no data): ${csvDisabled}`);
     console.log(`📊 Excel button disabled (no data): ${excelDisabled}`);
 
     // Should be disabled when no data
-    expect(csvDisabled).toBe(true);
-    expect(excelDisabled).toBe(true);
+    await expect(csvDisabled).toBeDisabled();
+    await expect(excelDisabled).toBeDisabled();
 
     // Check status message
     const statusMessage = page.locator('text="يجب إنشاء تقرير أولاً"');
@@ -121,7 +121,6 @@ test.describe('Reports Export Functionality Test', () => {
         // The modal should close after successful export
         const modalClosed = !(await page.locator('text="خيارات التصدير"').isVisible());
         console.log(`📋 Export modal closed after CSV export: ${modalClosed}`);
-
       } catch (err) {
         console.log('ℹ️ CSV export might use blob download (not detectable by Playwright)');
         // This is expected for blob downloads
@@ -147,7 +146,6 @@ test.describe('Reports Export Functionality Test', () => {
         const filename = download.suggestedFilename();
         console.log(`📥 Excel downloaded: ${filename}`);
         expect(filename).toContain('.xls');
-
       } catch (err) {
         console.log('ℹ️ Excel export might use blob download (not detectable by Playwright)');
         // This is expected for blob downloads

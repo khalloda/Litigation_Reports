@@ -78,18 +78,18 @@ test.describe('Client-Specific Report Simple Test', () => {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-          }
+          },
         });
 
         const data = await response.json();
         return {
           status: response.status,
           success: response.ok,
-          data: data
+          data: data,
         };
       } catch (error) {
         return {
-          error: error.message
+          error: error.message,
         };
       }
     });

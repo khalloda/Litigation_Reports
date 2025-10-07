@@ -56,12 +56,13 @@ test.describe('Reports Modal Specific Tests', () => {
       console.log('📋 Modal table headers:', modalHeaders);
 
       // Check if headers contain client-related terms
-      const hasClientHeaders = modalHeaders.some(header =>
-        header.includes('العميل') ||
-        header.includes('client') ||
-        header.includes('اسم') ||
-        header.includes('النوع') ||
-        header.includes('الحالة')
+      const hasClientHeaders = modalHeaders.some(
+        (header) =>
+          header.includes('العميل') ||
+          header.includes('client') ||
+          header.includes('اسم') ||
+          header.includes('النوع') ||
+          header.includes('الحالة')
       );
 
       console.log(`👤 Has client-related headers: ${hasClientHeaders}`);
@@ -72,17 +73,22 @@ test.describe('Reports Modal Specific Tests', () => {
 
       if (modalRowsCount > 0) {
         // Get first few rows content
-        const firstRowCells = await modalTable.locator('tbody tr').first().locator('td').allTextContents();
+        const firstRowCells = await modalTable
+          .locator('tbody tr')
+          .first()
+          .locator('td')
+          .allTextContents();
         console.log('📝 First row cells in modal:', firstRowCells);
 
         // Check for actual client data
         const modalTableText = await modalTable.textContent();
-        const hasClientData = modalTableText?.includes('Test Direct Upload Client') ||
-                              modalTableText?.includes('Sarie Eldin') ||
-                              modalTableText?.includes('ساري الدين') ||
-                              modalTableText?.includes('company') ||
-                              modalTableText?.includes('individual') ||
-                              modalTableText?.includes('active');
+        const hasClientData =
+          modalTableText?.includes('Test Direct Upload Client') ||
+          modalTableText?.includes('Sarie Eldin') ||
+          modalTableText?.includes('ساري الدين') ||
+          modalTableText?.includes('company') ||
+          modalTableText?.includes('individual') ||
+          modalTableText?.includes('active');
 
         console.log(`👥 Modal has client data: ${hasClientData}`);
         console.log('📊 Modal table content sample:', modalTableText?.substring(0, 200));
@@ -99,11 +105,13 @@ test.describe('Reports Modal Specific Tests', () => {
 
     // Check summary section in modal
     const modalSummary = page.locator('.modal.show h6:has-text("ملخص التقرير")');
-    const hasSummary = await modalSummary.count() > 0;
+    const hasSummary = (await modalSummary.count()) > 0;
     console.log(`📊 Modal has summary section: ${hasSummary}`);
 
     if (hasSummary) {
-      const summaryContent = await page.locator('.modal.show .card-body:has(h6:has-text("ملخص التقرير"))').textContent();
+      const summaryContent = await page
+        .locator('.modal.show .card-body:has(h6:has-text("ملخص التقرير"))')
+        .textContent();
       console.log('📈 Summary content:', summaryContent?.substring(0, 200));
     }
 

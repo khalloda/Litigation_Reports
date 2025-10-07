@@ -50,7 +50,7 @@ test.describe('Document Upload Fix Verification', () => {
 
     // Monitor console errors
     const consoleErrors: string[] = [];
-    page.on('console', msg => {
+    page.on('console', (msg) => {
       if (msg.type() === 'error') {
         consoleErrors.push(msg.text());
       }
@@ -63,7 +63,9 @@ test.describe('Document Upload Fix Verification', () => {
     console.log('📄 Navigated to Documents page');
 
     // Click upload button to open modal
-    const uploadButton = page.locator('button:has-text("رفع مستند جديد"), button:has-text("Upload")').first();
+    const uploadButton = page
+      .locator('button:has-text("رفع مستند جديد"), button:has-text("Upload")')
+      .first();
     await uploadButton.click();
     await page.waitForTimeout(2000);
 
@@ -86,7 +88,9 @@ test.describe('Document Upload Fix Verification', () => {
     console.log('📝 Form filled with test data');
 
     // Submit the form
-    const submitButton = page.locator('.modal button:has-text("رفع المستند"), .modal button:has-text("Upload")');
+    const submitButton = page.locator(
+      '.modal button:has-text("رفع المستند"), .modal button:has-text("Upload")'
+    );
     await submitButton.click();
 
     // Wait for upload to complete
@@ -108,23 +112,25 @@ test.describe('Document Upload Fix Verification', () => {
       console.log('📤 Upload request Content-Type:', uploadRequest.contentType);
 
       // Verify Content-Type includes multipart/form-data with boundary
-      expect(uploadRequest.contentType, 'Should have correct Content-Type with boundary')
-        .toMatch(/^multipart\/form-data; boundary=/);
+      expect(uploadRequest.contentType, 'Should have correct Content-Type with boundary').toMatch(
+        /^multipart\/form-data; boundary=/
+      );
     }
 
     // Check for console errors
     console.log(`❌ Console errors: ${consoleErrors.length}`);
     if (consoleErrors.length > 0) {
       console.log('Console errors found:');
-      consoleErrors.forEach(error => console.log(`  - ${error}`));
+      consoleErrors.forEach((error) => console.log(`  - ${error}`));
     }
 
     // Verify no upload-related errors
-    const hasUploadErrors = consoleErrors.some(error =>
-      error.includes('400') ||
-      error.includes('Bad Request') ||
-      error.includes('Upload error') ||
-      error.includes('multipart/form-data')
+    const hasUploadErrors = consoleErrors.some(
+      (error) =>
+        error.includes('400') ||
+        error.includes('Bad Request') ||
+        error.includes('Upload error') ||
+        error.includes('multipart/form-data')
     );
 
     console.log(`🚨 Upload-related errors: ${hasUploadErrors}`);
@@ -150,12 +156,16 @@ test.describe('Document Upload Fix Verification', () => {
     await page.waitForTimeout(3000);
 
     // Click upload button to open modal
-    const uploadButton = page.locator('button:has-text("رفع مستند جديد"), button:has-text("Upload")').first();
+    const uploadButton = page
+      .locator('button:has-text("رفع مستند جديد"), button:has-text("Upload")')
+      .first();
     await uploadButton.click();
     await page.waitForTimeout(2000);
 
     // Try to submit without title or file
-    const submitButton = page.locator('.modal button:has-text("رفع المستند"), .modal button:has-text("Upload")');
+    const submitButton = page.locator(
+      '.modal button:has-text("رفع المستند"), .modal button:has-text("Upload")'
+    );
     await submitButton.click();
 
     // Should show validation message

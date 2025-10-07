@@ -28,7 +28,7 @@ test.describe('Debug Report Data', () => {
           apiResponses.push({
             url: response.url(),
             status: response.status(),
-            data: responseData
+            data: responseData,
           });
           console.log('📡 API Response received:');
           console.log('URL:', response.url());
@@ -63,7 +63,7 @@ test.describe('Debug Report Data', () => {
     await page.waitForTimeout(5000);
 
     // Debug: Check what's actually in the table HTML
-    const tableExists = await page.locator('.table-responsive table').count() > 0;
+    const tableExists = (await page.locator('.table-responsive table').count()) > 0;
     if (tableExists) {
       console.log('📊 Table HTML structure:');
 
@@ -77,7 +77,11 @@ test.describe('Debug Report Data', () => {
 
       if (rows > 0) {
         // Get first row content
-        const firstRowCells = await page.locator('table tbody tr').first().locator('td').allTextContents();
+        const firstRowCells = await page
+          .locator('table tbody tr')
+          .first()
+          .locator('td')
+          .allTextContents();
         console.log('First row cells:', firstRowCells);
 
         // Get the entire table text
@@ -88,9 +92,11 @@ test.describe('Debug Report Data', () => {
     }
 
     // Debug: Check what's in the summary section
-    const summaryExists = await page.locator('h6:has-text("ملخص التقرير")').count() > 0;
+    const summaryExists = (await page.locator('h6:has-text("ملخص التقرير")').count()) > 0;
     if (summaryExists) {
-      const summarySection = await page.locator('.card-body:has(h6:has-text("ملخص التقرير"))').textContent();
+      const summarySection = await page
+        .locator('.card-body:has(h6:has-text("ملخص التقرير"))')
+        .textContent();
       console.log('📊 Summary section content:');
       console.log(summarySection);
     }
@@ -100,7 +106,7 @@ test.describe('Debug Report Data', () => {
 
     // Log any console errors from the page
     const consoleMessages: string[] = [];
-    page.on('console', msg => {
+    page.on('console', (msg) => {
       if (msg.type() === 'error') {
         consoleMessages.push(msg.text());
       }
@@ -108,7 +114,7 @@ test.describe('Debug Report Data', () => {
 
     if (consoleMessages.length > 0) {
       console.log('❌ Console errors:');
-      consoleMessages.forEach(msg => console.log('  -', msg));
+      consoleMessages.forEach((msg) => console.log('  -', msg));
     }
 
     // Verify we got API response data

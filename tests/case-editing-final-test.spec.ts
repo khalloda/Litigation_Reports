@@ -33,7 +33,9 @@ test.describe('Case Editing - Final Validation', () => {
       expect(editModalTitle).toContain('تعديل القضية');
 
       // Check if any field has data (edit mode should have pre-filled data)
-      const matterArValue = await page.locator('input[placeholder*="موضوع القضية باللغة العربية"]').inputValue();
+      const matterArValue = await page
+        .locator('input[placeholder*="موضوع القضية باللغة العربية"]')
+        .inputValue();
       console.log(`📝 Matter AR field: "${matterArValue}"`);
 
       const hasPreFilledData = matterArValue.length > 0;
@@ -69,9 +71,9 @@ test.describe('Case Editing - Final Validation', () => {
     expect(createModalTitle).toContain('إضافة قضية جديدة');
 
     // Verify empty fields in create mode
-    const createMatterAr = await page.locator('input[placeholder*="موضوع القضية باللغة العربية"]').inputValue();
+    const createMatterAr = page.locator('input[placeholder*="موضوع القضية باللغة العربية"]');
     console.log(`📝 Create mode Matter AR: "${createMatterAr}"`);
-    expect(createMatterAr).toBe('');
+    await expect(createMatterAr).toHaveValue('');
 
     // Test form validation
     console.log('\n🔍 Testing form validation...');
@@ -102,7 +104,7 @@ test.describe('Case Editing - Final Validation', () => {
     let placeholderFound = false;
 
     // Catch any toast or console messages
-    page.on('console', msg => {
+    page.on('console', (msg) => {
       if (msg.text().includes('وظيفة التعديل قيد التطوير')) {
         placeholderFound = true;
         console.log('❌ OLD PLACEHOLDER MESSAGE STILL EXISTS!');

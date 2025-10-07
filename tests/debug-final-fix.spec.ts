@@ -7,9 +7,11 @@ test.describe('Debug Final Fix', () => {
     // Capture all console logs
     const consoleLogs = [];
     page.on('console', (msg) => {
-      if (msg.text().includes('exportToPDF - Final Fix Analysis') ||
-          msg.text().includes('columns') ||
-          msg.text().includes('final exportColumns')) {
+      if (
+        msg.text().includes('exportToPDF - Final Fix Analysis') ||
+        msg.text().includes('columns') ||
+        msg.text().includes('final exportColumns')
+      ) {
         consoleLogs.push(msg.text());
         console.log('BROWSER LOG:', msg.text());
       }
@@ -29,7 +31,9 @@ test.describe('Debug Final Fix', () => {
     // Open client-specific report modal
     await page.click('button:has-text("تقرير عميل محدد")');
     await page.waitForSelector('.modal', { timeout: 5000 });
-    await page.waitForFunction(() => document.querySelectorAll('.spinner-border').length === 0, { timeout: 10000 });
+    await page.waitForFunction(() => document.querySelectorAll('.spinner-border').length === 0, {
+      timeout: 10000,
+    });
 
     // Search and select client
     const searchInput = page.locator('input[placeholder*="ابحث عن عميل"]');

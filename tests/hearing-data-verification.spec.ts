@@ -18,7 +18,9 @@ test.describe('Hearing Data Verification for New Test Client Don', () => {
     // Step 3: Open client-specific report modal
     await page.click('button:has-text("تقرير عميل محدد")');
     await page.waitForSelector('.modal', { timeout: 5000 });
-    await page.waitForFunction(() => document.querySelectorAll('.spinner-border').length === 0, { timeout: 10000 });
+    await page.waitForFunction(() => document.querySelectorAll('.spinner-border').length === 0, {
+      timeout: 10000,
+    });
 
     // Step 4: Search for "New Test Client Don"
     const searchInput = page.locator('input[placeholder*="ابحث عن عميل"]');
@@ -41,13 +43,13 @@ test.describe('Hearing Data Verification for New Test Client Don', () => {
 
       // Step 6: Select all relevant columns
       const targetColumns = [
-        'تاريخ الجلسة',           // h.hearing_date
-        'نوع الجلسة',            // h.hearing_type
-        'نتيجة الجلسة',          // h.hearing_result
-        'المحكمة',               // c.matter_court
-        'ملاحظات المحكمة',       // h.court_notes
-        'ملاحظات المحامي',       // h.lawyer_notes
-        'الجلسة القادمة'         // h.next_hearing
+        'تاريخ الجلسة', // h.hearing_date
+        'نوع الجلسة', // h.hearing_type
+        'نتيجة الجلسة', // h.hearing_result
+        'المحكمة', // c.matter_court
+        'ملاحظات المحكمة', // h.court_notes
+        'ملاحظات المحامي', // h.lawyer_notes
+        'الجلسة القادمة', // h.next_hearing
       ];
 
       console.log('🎯 Selecting all hearing columns...');
@@ -73,7 +75,10 @@ test.describe('Hearing Data Verification for New Test Client Don', () => {
 
       // Step 8: Intercept the API call to see actual data
       page.on('response', async (response) => {
-        if (response.url().includes('/api/reports/client-specific') && response.request().method() === 'POST') {
+        if (
+          response.url().includes('/api/reports/client-specific') &&
+          response.request().method() === 'POST'
+        ) {
           try {
             const responseData = await response.json();
             console.log('📡 API Response intercepted:');
@@ -119,20 +124,20 @@ test.describe('Hearing Data Verification for New Test Client Don', () => {
     // Test API call directly
     const response = await page.request.post('http://lit.local:8080/api/reports/client-specific', {
       data: {
-        client_id: "315",
-        report_type: "hearings",
+        client_id: '315',
+        report_type: 'hearings',
         columns: [
-          "h.hearing_date",
-          "h.hearing_type",
-          "h.hearing_result",
-          "c.matter_court",
-          "h.court_notes",
-          "h.lawyer_notes",
-          "h.next_hearing"
+          'h.hearing_date',
+          'h.hearing_type',
+          'h.hearing_result',
+          'c.matter_court',
+          'h.court_notes',
+          'h.lawyer_notes',
+          'h.next_hearing',
         ],
-        date_from: "2025-09-01",
-        date_to: "2025-09-30"
-      }
+        date_from: '2025-09-01',
+        date_to: '2025-09-30',
+      },
     });
 
     expect(response.status()).toBe(200);
@@ -153,12 +158,12 @@ test.describe('Hearing Data Verification for New Test Client Don', () => {
           { key: 'matter_court', label: 'المحكمة' },
           { key: 'court_notes', label: 'ملاحظات المحكمة' },
           { key: 'lawyer_notes', label: 'ملاحظات المحامي' },
-          { key: 'next_hearing', label: 'الجلسة القادمة' }
+          { key: 'next_hearing', label: 'الجلسة القادمة' },
         ];
 
-        fields.forEach(field => {
+        fields.forEach((field) => {
           const value = hearing[field.key];
-          const hasData = value && value !== "" && value !== null;
+          const hasData = value && value !== '' && value !== null;
           const status = hasData ? '✅ HAS DATA' : '❌ EMPTY';
           const displayValue = hasData ? value : 'NO DATA';
           console.log(`  ${field.label}: ${status} - "${displayValue}"`);

@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 // Simple focused test to verify the column selection fix works
 test.describe('Custom Reports Column Selection - Fix Verification', () => {
   test.use({
-    baseURL: 'http://lit.local:8080'
+    baseURL: 'http://lit.local:8080',
   });
 
   // Helper to login
@@ -86,7 +86,7 @@ test.describe('Custom Reports Column Selection - Fix Verification', () => {
 
     // Check that only the selected columns are displayed
     const headers = await page.locator('table thead th:visible').allTextContents();
-    const trimmedHeaders = headers.map(h => h.trim()).filter(Boolean);
+    const trimmedHeaders = headers.map((h) => h.trim()).filter(Boolean);
 
     console.log('📊 Expected columns:', targetColumns.length);
     console.log('📊 Actual headers:', trimmedHeaders.length);
@@ -160,7 +160,7 @@ test.describe('Custom Reports Column Selection - Fix Verification', () => {
     await page.waitForSelector('table thead th', { timeout: 15000 });
 
     const headers = await page.locator('table thead th:visible').allTextContents();
-    const trimmedHeaders = headers.map(h => h.trim()).filter(Boolean);
+    const trimmedHeaders = headers.map((h) => h.trim()).filter(Boolean);
 
     console.log('📊 Cases - Expected columns:', selectedCount);
     console.log('📊 Cases - Actual headers:', trimmedHeaders.length);

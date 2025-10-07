@@ -25,7 +25,7 @@ test.describe('Documents Page Fix Verification', () => {
 
     // Monitor console errors
     const consoleErrors: string[] = [];
-    page.on('console', msg => {
+    page.on('console', (msg) => {
       if (msg.type() === 'error') {
         consoleErrors.push(msg.text());
       }
@@ -43,13 +43,16 @@ test.describe('Documents Page Fix Verification', () => {
     // Check that the page loaded correctly without the error message
     const pageContent = await page.textContent('body');
     const hasLoadingError = pageContent?.includes('خطأ في تحميل المستندات') || false;
-    const hasDocumentsInterface = pageContent?.includes('رفع مستند جديد') || pageContent?.includes('إدارة الوثائق') || false;
+    const hasDocumentsInterface =
+      pageContent?.includes('رفع مستند جديد') || pageContent?.includes('إدارة الوثائق') || false;
 
     console.log(`❌ Has loading error message: ${hasLoadingError}`);
     console.log(`📄 Has documents interface: ${hasDocumentsInterface}`);
 
     // Check for dashboard elements
-    const uploadButton = await page.locator('button:has-text("رفع مستند جديد"), button:has-text("Upload")').count();
+    const uploadButton = await page
+      .locator('button:has-text("رفع مستند جديد"), button:has-text("Upload")')
+      .count();
     const filterElements = await page.locator('select, .form-select').count();
     const statsCards = await page.locator('.card').count();
 
@@ -61,14 +64,15 @@ test.describe('Documents Page Fix Verification', () => {
     console.log(`❌ Console errors: ${consoleErrors.length}`);
     if (consoleErrors.length > 0) {
       console.log('Console errors found:');
-      consoleErrors.forEach(error => console.log(`  - ${error}`));
+      consoleErrors.forEach((error) => console.log(`  - ${error}`));
     }
 
     // Verify no critical errors that prevent page loading
-    const hasCriticalLoadingErrors = consoleErrors.some(error =>
-      error.includes('Cannot read properties of undefined') ||
-      error.includes('Documents load error') ||
-      error.includes('Failed to fetch documents')
+    const hasCriticalLoadingErrors = consoleErrors.some(
+      (error) =>
+        error.includes('Cannot read properties of undefined') ||
+        error.includes('Documents load error') ||
+        error.includes('Failed to fetch documents')
     );
 
     console.log(`🚨 Critical loading errors: ${hasCriticalLoadingErrors}`);
@@ -100,7 +104,9 @@ test.describe('Documents Page Fix Verification', () => {
     await page.waitForTimeout(3000);
 
     // Click upload button
-    const uploadButton = page.locator('button:has-text("رفع مستند جديد"), button:has-text("Upload")').first();
+    const uploadButton = page
+      .locator('button:has-text("رفع مستند جديد"), button:has-text("Upload")')
+      .first();
 
     if (await uploadButton.isVisible()) {
       await uploadButton.click();
@@ -108,7 +114,9 @@ test.describe('Documents Page Fix Verification', () => {
 
       // Check if modal opened
       const modal = await page.locator('.modal, [role="dialog"]').count();
-      const titleField = await page.locator('input[placeholder*="عنوان"], input[name*="title"]').count();
+      const titleField = await page
+        .locator('input[placeholder*="عنوان"], input[name*="title"]')
+        .count();
 
       console.log(`📋 Modal opened: ${modal > 0}`);
       console.log(`📝 Title field visible: ${titleField > 0}`);

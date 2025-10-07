@@ -52,7 +52,9 @@ test('PDF export with correct login credentials', async ({ page }) => {
     await page.click('button:has-text("تصدير")');
     await page.waitForTimeout(1000);
 
-    const dropdownOptions = await page.locator('.dropdown-menu a, .dropdown-menu button').allTextContents();
+    const dropdownOptions = await page
+      .locator('.dropdown-menu a, .dropdown-menu button')
+      .allTextContents();
     console.log('Available dropdown options:', dropdownOptions);
 
     const pdfOption = await page.locator('a:has-text("تصدير PDF")').count();

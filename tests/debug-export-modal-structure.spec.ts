@@ -22,7 +22,9 @@ test.describe('Debug Export Modal Structure', () => {
     await page.waitForTimeout(2000);
 
     // Check if export modal opened
-    const exportModalVisible = await page.locator('.modal-title:has-text("خيارات التصدير")').isVisible();
+    const exportModalVisible = await page
+      .locator('.modal-title:has-text("خيارات التصدير")')
+      .isVisible();
     console.log(`📋 Export modal opened: ${exportModalVisible}`);
 
     if (exportModalVisible) {

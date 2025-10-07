@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Hearing Editing Functionality', () => {
   test.use({
-    baseURL: 'http://lit.local:8080'
+    baseURL: 'http://lit.local:8080',
   });
 
   test('Hearing editing modal opens and works correctly', async ({ page }) => {
@@ -53,7 +53,6 @@ test.describe('Hearing Editing Functionality', () => {
       await page.getByRole('button', { name: 'إلغاء' }).click();
       await page.waitForSelector('[role="dialog"]', { state: 'detached' });
       console.log('✅ Edit modal closed');
-
     } else {
       console.log('⚠️ No hearings found to test editing functionality');
     }
@@ -74,14 +73,14 @@ test.describe('Hearing Editing Functionality', () => {
     expect(createModalTitle).toContain('إضافة جلسة جديدة');
 
     // Verify form fields are empty (create mode)
-    const createCaseValue = await page.locator('select[required]').first().inputValue();
-    const createTypeValue = await page.locator('select[required]').nth(1).inputValue();
+    const createCaseValue = page.locator('select[required]').first();
+    const createTypeValue = page.locator('select[required]').nth(1);
 
     console.log(`📝 Create mode - Case: "${createCaseValue}"`);
     console.log(`📝 Create mode - Type: "${createTypeValue}"`);
 
-    expect(createCaseValue).toBe('');
-    expect(createTypeValue).toBe('');
+    await expect(createCaseValue).toHaveValue('');
+    await expect(createTypeValue).toHaveValue('');
 
     // Test form validation
     console.log('\n🔍 Testing form validation...');
@@ -111,7 +110,7 @@ test.describe('Hearing Editing Functionality', () => {
     let placeholderFound = false;
 
     // Catch any toast or console messages
-    page.on('console', msg => {
+    page.on('console', (msg) => {
       if (msg.text().includes('وظيفة التعديل قيد التطوير')) {
         placeholderFound = true;
         console.log('❌ OLD PLACEHOLDER MESSAGE STILL EXISTS IN HEARINGS!');

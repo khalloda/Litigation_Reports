@@ -29,9 +29,9 @@ test.describe('Invoice View Functionality - Final Test', () => {
       await page.waitForTimeout(2000);
 
       // Check if view modal opened
-      const modalVisible = await page.locator('[role="dialog"]').isVisible();
+      const modalVisible = page.locator('[role="dialog"]');
       console.log(`📋 Modal visible: ${modalVisible}`);
-      expect(modalVisible).toBe(true);
+      await expect(modalVisible).toBeVisible();
 
       // Check modal title
       const modalTitle = await page.locator('.modal-title').textContent();
@@ -49,35 +49,37 @@ test.describe('Invoice View Functionality - Final Test', () => {
       const textareaCount = await modalTextareas.count();
       const checkboxCount = await modalCheckboxes.count();
 
-      console.log(`📝 Modal form fields - Inputs: ${inputCount}, Selects: ${selectCount}, Textareas: ${textareaCount}, Checkboxes: ${checkboxCount}`);
+      console.log(
+        `📝 Modal form fields - Inputs: ${inputCount}, Selects: ${selectCount}, Textareas: ${textareaCount}, Checkboxes: ${checkboxCount}`
+      );
 
       // Check that form fields are disabled
       if (inputCount > 0) {
         const firstInput = modalInputs.first();
-        const inputDisabled = await firstInput.isDisabled();
+        const inputDisabled = firstInput;
         console.log(`✅ First modal input disabled: ${inputDisabled}`);
-        expect(inputDisabled).toBe(true);
+        await expect(inputDisabled).toBeDisabled();
       }
 
       if (selectCount > 0) {
         const firstSelect = modalSelects.first();
-        const selectDisabled = await firstSelect.isDisabled();
+        const selectDisabled = firstSelect;
         console.log(`✅ First modal select disabled: ${selectDisabled}`);
-        expect(selectDisabled).toBe(true);
+        await expect(selectDisabled).toBeDisabled();
       }
 
       if (textareaCount > 0) {
         const firstTextarea = modalTextareas.first();
-        const textareaDisabled = await firstTextarea.isDisabled();
+        const textareaDisabled = firstTextarea;
         console.log(`✅ First modal textarea disabled: ${textareaDisabled}`);
-        expect(textareaDisabled).toBe(true);
+        await expect(textareaDisabled).toBeDisabled();
       }
 
       if (checkboxCount > 0) {
         const firstCheckbox = modalCheckboxes.first();
-        const checkboxDisabled = await firstCheckbox.isDisabled();
+        const checkboxDisabled = firstCheckbox;
         console.log(`✅ First modal checkbox disabled: ${checkboxDisabled}`);
-        expect(checkboxDisabled).toBe(true);
+        await expect(checkboxDisabled).toBeDisabled();
       }
 
       // Check button states (view mode should show 'إغلاق' not 'إلغاء')
@@ -86,7 +88,7 @@ test.describe('Invoice View Functionality - Final Test', () => {
       const saveButton = page.getByRole('button', { name: 'إضافة الفاتورة' });
       const editSaveButton = page.getByRole('button', { name: 'حفظ التغييرات' });
 
-      const closeVisible = await closeButton.isVisible();
+      const closeVisible = closeButton;
       const cancelVisible = await cancelButton.isVisible().catch(() => false);
       const saveVisible = await saveButton.isVisible().catch(() => false);
       const editSaveVisible = await editSaveButton.isVisible().catch(() => false);
@@ -96,7 +98,7 @@ test.describe('Invoice View Functionality - Final Test', () => {
       console.log(`🔘 Save button visible: ${saveVisible}`);
       console.log(`🔘 Edit save button visible: ${editSaveVisible}`);
 
-      expect(closeVisible).toBe(true);
+      await expect(closeVisible).toBeVisible();
       expect(saveVisible).toBe(false);
       expect(editSaveVisible).toBe(false);
 

@@ -18,7 +18,9 @@ test.describe('Ultimate Fix Test', () => {
     // Open client-specific report modal
     await page.click('button:has-text("تقرير عميل محدد")');
     await page.waitForSelector('.modal', { timeout: 5000 });
-    await page.waitForFunction(() => document.querySelectorAll('.spinner-border').length === 0, { timeout: 10000 });
+    await page.waitForFunction(() => document.querySelectorAll('.spinner-border').length === 0, {
+      timeout: 10000,
+    });
 
     // Search and select client
     const searchInput = page.locator('input[placeholder*="ابحث عن عميل"]');
@@ -77,12 +79,12 @@ test.describe('Ultimate Fix Test', () => {
           if (postData) {
             const pdfData = JSON.parse(postData);
 
-            const columnKeys = pdfData.columns?.map(col => col.key) || [];
+            const columnKeys = pdfData.columns?.map((col) => col.key) || [];
             const dataKeys = pdfData.data?.length > 0 ? Object.keys(pdfData.data[0]) : [];
 
             // Check for perfect matching
-            const perfectMatches = columnKeys.filter(key => dataKeys.includes(key));
-            const missingKeys = columnKeys.filter(key => !dataKeys.includes(key));
+            const perfectMatches = columnKeys.filter((key) => dataKeys.includes(key));
+            const missingKeys = columnKeys.filter((key) => !dataKeys.includes(key));
 
             analysisResult = {
               totalColumns: pdfData.columns?.length || 0,
@@ -91,13 +93,17 @@ test.describe('Ultimate Fix Test', () => {
               perfectMatches: perfectMatches.length,
               missingKeys: missingKeys.length,
               matchRatio: perfectMatches.length / columnKeys.length,
-              isSuccess: perfectMatches.length === columnKeys.length && columnKeys.length === currentSelected
+              isSuccess:
+                perfectMatches.length === columnKeys.length &&
+                columnKeys.length === currentSelected,
             };
 
             console.log('\n📊 ===== ULTIMATE ANALYSIS =====');
             console.log(`📈 Selected in UI: ${currentSelected}`);
             console.log(`📈 Sent to PDF: ${analysisResult.totalColumns}`);
-            console.log(`📈 Perfect matches: ${analysisResult.perfectMatches}/${analysisResult.totalColumns}`);
+            console.log(
+              `📈 Perfect matches: ${analysisResult.perfectMatches}/${analysisResult.totalColumns}`
+            );
             console.log(`📈 Missing keys: ${analysisResult.missingKeys}`);
             console.log(`📈 Match ratio: ${(analysisResult.matchRatio * 100).toFixed(1)}%`);
 
@@ -106,7 +112,9 @@ test.describe('Ultimate Fix Test', () => {
             } else {
               console.log('❌ Issues detected:');
               if (analysisResult.totalColumns !== currentSelected) {
-                console.log(`  - Column count mismatch: sent ${analysisResult.totalColumns}, selected ${currentSelected}`);
+                console.log(
+                  `  - Column count mismatch: sent ${analysisResult.totalColumns}, selected ${currentSelected}`
+                );
               }
               if (analysisResult.missingKeys > 0) {
                 console.log(`  - ${analysisResult.missingKeys} keys don't match data`);

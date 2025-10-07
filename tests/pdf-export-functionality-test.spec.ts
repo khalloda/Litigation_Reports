@@ -99,7 +99,7 @@ test.describe('PDF Export Functionality Test', () => {
     if (tableRows > 0) {
       // Listen for console errors
       const consoleMessages: string[] = [];
-      page.on('console', msg => {
+      page.on('console', (msg) => {
         if (msg.type() === 'error') {
           consoleMessages.push(`Error: ${msg.text()}`);
         }

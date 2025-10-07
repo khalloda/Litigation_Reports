@@ -1,7 +1,9 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('📊 Comprehensive: All Entities Column Filtering Validation', () => {
-  test('🎯 FINAL VALIDATION: All entities (Clients, Cases, Hearings, Invoices, Documents) column filtering works perfectly', async ({ page }) => {
+  test('🎯 FINAL VALIDATION: All entities (Clients, Cases, Hearings, Invoices, Documents) column filtering works perfectly', async ({
+    page,
+  }) => {
     console.log('🎯 COMPREHENSIVE VALIDATION: Testing all entities column filtering');
 
     // Login once
@@ -19,32 +21,32 @@ test.describe('📊 Comprehensive: All Entities Column Filtering Validation', ()
         entity: 'clients',
         name: 'العملاء',
         testColumns: ['client_name_ar', 'client_type'],
-        expectedHeaders: ['اسم العميل (عربي)', 'نوع العميل']
+        expectedHeaders: ['اسم العميل (عربي)', 'نوع العميل'],
       },
       {
         entity: 'cases',
         name: 'القضايا',
         testColumns: ['matter_id', 'matter_status'],
-        expectedHeaders: ['رقم القضية', 'حالة القضية']
+        expectedHeaders: ['رقم القضية', 'حالة القضية'],
       },
       {
         entity: 'hearings',
         name: 'الجلسات',
         testColumns: ['hearing_date', 'hearing_type'],
-        expectedHeaders: ['تاريخ الجلسة', 'نوع الجلسة']
+        expectedHeaders: ['تاريخ الجلسة', 'نوع الجلسة'],
       },
       {
         entity: 'invoices',
         name: 'الفواتير',
         testColumns: ['id', 'invoice_number'],
-        expectedHeaders: ['معرف الفاتورة', 'رقم الفاتورة']
+        expectedHeaders: ['معرف الفاتورة', 'رقم الفاتورة'],
       },
       {
         entity: 'documents',
         name: 'المستندات',
         testColumns: ['title', 'document_type'],
-        expectedHeaders: ['عنوان الوثيقة', 'نوع الوثيقة']
-      }
+        expectedHeaders: ['عنوان الوثيقة', 'نوع الوثيقة'],
+      },
     ];
 
     // Test each entity
@@ -101,7 +103,7 @@ test.describe('📊 Comprehensive: All Entities Column Filtering Validation', ()
 
       if (isTableVisible) {
         const modalHeaders = await page.locator('.modal table thead th').allTextContents();
-        const cleanHeaders = modalHeaders.map(h => h.trim()).filter(Boolean);
+        const cleanHeaders = modalHeaders.map((h) => h.trim()).filter(Boolean);
         const dataRows = await page.locator('.modal table tbody tr').count();
 
         const isSuccess = cleanHeaders.length === selectedCount;
@@ -113,19 +115,22 @@ test.describe('📊 Comprehensive: All Entities Column Filtering Validation', ()
           actualColumns: cleanHeaders.length,
           headers: cleanHeaders,
           dataRows,
-          success: isSuccess
+          success: isSuccess,
         });
 
         if (isSuccess) {
-          console.log(`   ✅ ${config.name}: PERFECT! (${selectedCount} selected, ${cleanHeaders.length} shown)`);
+          console.log(
+            `   ✅ ${config.name}: PERFECT! (${selectedCount} selected, ${cleanHeaders.length} shown)`
+          );
         } else {
-          console.log(`   ⚠️ ${config.name}: ${selectedCount} selected, ${cleanHeaders.length} shown`);
+          console.log(
+            `   ⚠️ ${config.name}: ${selectedCount} selected, ${cleanHeaders.length} shown`
+          );
         }
 
         // Close modal for next test
         await page.getByRole('button', { name: /إغلاق/ }).click();
         await page.waitForTimeout(1000);
-
       } else {
         testResults.push({
           entity: config.entity,
@@ -135,7 +140,7 @@ test.describe('📊 Comprehensive: All Entities Column Filtering Validation', ()
           headers: [],
           dataRows: 0,
           success: false,
-          error: 'Table not visible'
+          error: 'Table not visible',
         });
         console.log(`   ❌ ${config.name}: Table not visible`);
       }
@@ -143,7 +148,7 @@ test.describe('📊 Comprehensive: All Entities Column Filtering Validation', ()
 
     // Final results summary
     console.log('\n📊 COMPREHENSIVE TEST RESULTS:');
-    console.log('=' .repeat(50));
+    console.log('='.repeat(50));
 
     let totalSuccess = 0;
     for (const result of testResults) {
@@ -152,8 +157,10 @@ test.describe('📊 Comprehensive: All Entities Column Filtering Validation', ()
       if (result.success) totalSuccess++;
     }
 
-    console.log('=' .repeat(50));
-    console.log(`🎯 OVERALL RESULT: ${totalSuccess}/${testResults.length} entities working perfectly`);
+    console.log('='.repeat(50));
+    console.log(
+      `🎯 OVERALL RESULT: ${totalSuccess}/${testResults.length} entities working perfectly`
+    );
 
     // Assertions
     for (const result of testResults) {

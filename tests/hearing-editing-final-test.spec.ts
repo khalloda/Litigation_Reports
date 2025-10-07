@@ -39,7 +39,6 @@ test.describe('Hearing Editing - Final Validation', () => {
       await page.getByRole('button', { name: 'إلغاء' }).first().click();
       await page.waitForTimeout(1000);
       console.log('✅ Edit modal closed');
-
     } else {
       console.log('⚠️ No hearings found to test editing functionality');
     }
@@ -59,7 +58,9 @@ test.describe('Hearing Editing - Final Validation', () => {
       // Wait for our custom modal
       await page.waitForSelector('.modal-title:has-text("إضافة جلسة جديدة")', { timeout: 10000 });
 
-      const createModalTitle = await page.locator('.modal-title:has-text("إضافة جلسة جديدة")').textContent();
+      const createModalTitle = await page
+        .locator('.modal-title:has-text("إضافة جلسة جديدة")')
+        .textContent();
       console.log(`📄 Create modal title: "${createModalTitle}"`);
       expect(createModalTitle).toContain('إضافة جلسة جديدة');
 
@@ -81,7 +82,7 @@ test.describe('Hearing Editing - Final Validation', () => {
     let placeholderFound = false;
 
     // Catch any toast or console messages
-    page.on('console', msg => {
+    page.on('console', (msg) => {
       if (msg.text().includes('وظيفة التعديل قيد التطوير')) {
         placeholderFound = true;
         console.log('❌ OLD PLACEHOLDER MESSAGE STILL EXISTS IN HEARINGS!');
@@ -105,7 +106,10 @@ test.describe('Hearing Editing - Final Validation', () => {
       await page.waitForTimeout(2000);
 
       // Some modal should appear (either our custom one or the old one)
-      const anyModalVisible = await page.locator('.modal').isVisible().catch(() => false);
+      const anyModalVisible = await page
+        .locator('.modal')
+        .isVisible()
+        .catch(() => false);
       console.log(`✅ Some modal appears instead of error: ${anyModalVisible}`);
 
       // Close any open modal

@@ -8,27 +8,27 @@ test.describe('Debug Network Requests for Invoices', () => {
     const networkRequests: any[] = [];
 
     // Listen to all network requests
-    page.on('request', request => {
+    page.on('request', (request) => {
       if (request.url().includes('api') || request.url().includes('report')) {
         console.log(`📤 REQUEST: ${request.method()} ${request.url()}`);
         networkRequests.push({
           type: 'request',
           method: request.method(),
           url: request.url(),
-          postData: request.postData()
+          postData: request.postData(),
         });
       }
     });
 
     // Listen to all network responses
-    page.on('response', response => {
+    page.on('response', (response) => {
       if (response.url().includes('api') || response.url().includes('report')) {
         console.log(`📥 RESPONSE: ${response.status()} ${response.url()}`);
         networkRequests.push({
           type: 'response',
           status: response.status(),
           url: response.url(),
-          contentType: response.headers()['content-type']
+          contentType: response.headers()['content-type'],
         });
       }
     });
@@ -98,15 +98,17 @@ test.describe('Debug Network Requests for Invoices', () => {
       }
 
       // Check final result
-      const hasTable = await page.locator('table').isVisible().catch(() => false);
+      const hasTable = await page
+        .locator('table')
+        .isVisible()
+        .catch(() => false);
       console.log(`📊 Table visible: ${hasTable}`);
 
       if (hasTable) {
         const headers = await page.locator('table thead th:visible').allTextContents();
         console.log(`📊 Headers shown: ${headers.length}`);
-        console.log(`📊 Headers: ${headers.map(h => h.trim()).filter(Boolean)}`);
+        console.log(`📊 Headers: ${headers.map((h) => h.trim()).filter(Boolean)}`);
       }
-
     } else {
       console.log('⚠️ Custom report button not found');
     }

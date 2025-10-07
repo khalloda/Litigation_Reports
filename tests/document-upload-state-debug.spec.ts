@@ -23,7 +23,7 @@ test.describe('Document Upload State Debug', () => {
 
     // Capture dialogs
     const dialogs: string[] = [];
-    page.on('dialog', dialog => {
+    page.on('dialog', (dialog) => {
       console.log(`🚨 DIALOG: ${dialog.message()}`);
       dialogs.push(dialog.message());
       dialog.accept();
@@ -76,7 +76,7 @@ test.describe('Document Upload State Debug', () => {
           titleInputValue: titleInput?.value || 'not found',
           fileInputValue: fileInput?.value || 'not found',
           fileInputFiles: fileInput?.files?.length || 0,
-          fileInputFileName: fileInput?.files?.[0]?.name || 'no file'
+          fileInputFileName: fileInput?.files?.[0]?.name || 'no file',
         };
       });
 
@@ -99,7 +99,7 @@ test.describe('Document Upload State Debug', () => {
       await page.waitForTimeout(3000);
 
       console.log(`🚨 Validation dialogs: ${dialogs.length}`);
-      dialogs.forEach(dialog => console.log(`  - ${dialog}`));
+      dialogs.forEach((dialog) => console.log(`  - ${dialog}`));
 
       // Check if we can access React component directly
       const reactInfo = await page.evaluate(() => {
@@ -109,21 +109,22 @@ test.describe('Document Upload State Debug', () => {
         if (titleInput && titleInput._valueTracker) {
           return {
             hasValueTracker: true,
-            value: titleInput.value
+            value: titleInput.value,
           };
         }
 
         // Try to find React components
-        const reactKey = Object.keys(titleInput || {}).find(key => key.startsWith('__reactInternalInstance'));
+        const reactKey = Object.keys(titleInput || {}).find((key) =>
+          key.startsWith('__reactInternalInstance')
+        );
 
         return {
           hasReactKey: !!reactKey,
-          keys: Object.keys(titleInput || {})
+          keys: Object.keys(titleInput || {}),
         };
       });
 
       console.log('🔬 React Info:', reactInfo);
-
     } finally {
       if (fs.existsSync(testFilePath)) {
         fs.unlinkSync(testFilePath);

@@ -148,15 +148,15 @@ export function Documents() {
       // Build params more safely
       const safeFilters = filters || {};
       const validFilters = Object.fromEntries(
-        Object.entries(safeFilters).filter(([_, value]) =>
-          value != null && value !== '' && typeof value === 'string'
+        Object.entries(safeFilters).filter(
+          ([_, value]) => value != null && value !== '' && typeof value === 'string'
         )
       );
 
       const params = new URLSearchParams({
         page: String(currentPage || 1),
         limit: '20',
-        ...validFilters
+        ...validFilters,
       });
 
       console.log('Making API request to:', `/documents?${params}`);
@@ -294,7 +294,7 @@ export function Documents() {
         entity_type: selectedDocument.entity_type,
         entity_id: selectedDocument.entity_id,
         is_public: selectedDocument.is_public,
-        tags: selectedDocument.tags
+        tags: selectedDocument.tags,
       };
 
       const response = await api.put(`/documents/${selectedDocument.id}`, updateData);
@@ -433,11 +433,13 @@ export function Documents() {
                 onChange={(e) => handleFilterChange('document_type', e.target.value)}
               >
                 <option value=''>جميع الأنواع</option>
-                {documentTypes ? Object.entries(documentTypes).map(([key, value]) => (
-                  <option key={key} value={key}>
-                    {value as string}
-                  </option>
-                )) : null}
+                {documentTypes
+                  ? Object.entries(documentTypes).map(([key, value]) => (
+                      <option key={key} value={key}>
+                        {value as string}
+                      </option>
+                    ))
+                  : null}
               </Form.Select>
             </Col>
             <Col md={3}>
@@ -446,11 +448,13 @@ export function Documents() {
                 onChange={(e) => handleFilterChange('entity_type', e.target.value)}
               >
                 <option value=''>جميع الكيانات</option>
-                {entityTypes ? Object.entries(entityTypes).map(([key, value]) => (
-                  <option key={key} value={key}>
-                    {value as string}
-                  </option>
-                )) : null}
+                {entityTypes
+                  ? Object.entries(entityTypes).map(([key, value]) => (
+                      <option key={key} value={key}>
+                        {value as string}
+                      </option>
+                    ))
+                  : null}
               </Form.Select>
             </Col>
           </Row>
@@ -555,7 +559,9 @@ export function Documents() {
                       <td>
                         <div className='d-flex align-items-center'>
                           <Calendar size={14} className='me-1' />
-                          {document.created_at ? new Date(document.created_at).toLocaleDateString('en-GB') : '-'}
+                          {document.created_at
+                            ? new Date(document.created_at).toLocaleDateString('en-GB')
+                            : '-'}
                         </div>
                       </td>
                       <td>
@@ -669,11 +675,13 @@ export function Documents() {
                       setUploadData((prev) => ({ ...prev, document_type: e.target.value }))
                     }
                   >
-                    {documentTypes ? Object.entries(documentTypes).map(([key, value]) => (
-                      <option key={key} value={key}>
-                        {value as string}
-                      </option>
-                    )) : null}
+                    {documentTypes
+                      ? Object.entries(documentTypes).map(([key, value]) => (
+                          <option key={key} value={key}>
+                            {value as string}
+                          </option>
+                        ))
+                      : null}
                   </Form.Select>
                 </Form.Group>
               </Col>
@@ -702,11 +710,13 @@ export function Documents() {
                     }
                   >
                     <option value=''>غير مرتبط</option>
-                    {entityTypes ? Object.entries(entityTypes).map(([key, value]) => (
-                      <option key={key} value={key}>
-                        {value as string}
-                      </option>
-                    )) : null}
+                    {entityTypes
+                      ? Object.entries(entityTypes).map(([key, value]) => (
+                          <option key={key} value={key}>
+                            {value as string}
+                          </option>
+                        ))
+                      : null}
                   </Form.Select>
                 </Form.Group>
               </Col>
@@ -821,9 +831,11 @@ export function Documents() {
                     <Form.Control
                       type='text'
                       value={selectedDocument.title}
-                      onChange={(e) => setSelectedDocument(prev =>
-                        prev ? { ...prev, title: e.target.value } : null
-                      )}
+                      onChange={(e) =>
+                        setSelectedDocument((prev) =>
+                          prev ? { ...prev, title: e.target.value } : null
+                        )
+                      }
                       required
                     />
                   </Form.Group>
@@ -833,15 +845,19 @@ export function Documents() {
                     <Form.Label>نوع المستند *</Form.Label>
                     <Form.Select
                       value={selectedDocument.document_type}
-                      onChange={(e) => setSelectedDocument(prev =>
-                        prev ? { ...prev, document_type: e.target.value } : null
-                      )}
+                      onChange={(e) =>
+                        setSelectedDocument((prev) =>
+                          prev ? { ...prev, document_type: e.target.value } : null
+                        )
+                      }
                     >
-                      {documentTypes ? Object.entries(documentTypes).map(([key, value]) => (
-                        <option key={key} value={key}>
-                          {value as string}
-                        </option>
-                      )) : null}
+                      {documentTypes
+                        ? Object.entries(documentTypes).map(([key, value]) => (
+                            <option key={key} value={key}>
+                              {value as string}
+                            </option>
+                          ))
+                        : null}
                     </Form.Select>
                   </Form.Group>
                 </Col>
@@ -853,9 +869,11 @@ export function Documents() {
                   as='textarea'
                   rows={3}
                   value={selectedDocument.description || ''}
-                  onChange={(e) => setSelectedDocument(prev =>
-                    prev ? { ...prev, description: e.target.value } : null
-                  )}
+                  onChange={(e) =>
+                    setSelectedDocument((prev) =>
+                      prev ? { ...prev, description: e.target.value } : null
+                    )
+                  }
                 />
               </Form.Group>
 
@@ -865,16 +883,20 @@ export function Documents() {
                     <Form.Label>نوع الكيان</Form.Label>
                     <Form.Select
                       value={selectedDocument.entity_type || ''}
-                      onChange={(e) => setSelectedDocument(prev =>
-                        prev ? { ...prev, entity_type: e.target.value || null } : null
-                      )}
+                      onChange={(e) =>
+                        setSelectedDocument((prev) =>
+                          prev ? { ...prev, entity_type: e.target.value || null } : null
+                        )
+                      }
                     >
                       <option value=''>غير مرتبط</option>
-                      {entityTypes ? Object.entries(entityTypes).map(([key, value]) => (
-                        <option key={key} value={key}>
-                          {value as string}
-                        </option>
-                      )) : null}
+                      {entityTypes
+                        ? Object.entries(entityTypes).map(([key, value]) => (
+                            <option key={key} value={key}>
+                              {value as string}
+                            </option>
+                          ))
+                        : null}
                     </Form.Select>
                   </Form.Group>
                 </Col>
@@ -884,9 +906,16 @@ export function Documents() {
                     <Form.Control
                       type='number'
                       value={selectedDocument.entity_id || ''}
-                      onChange={(e) => setSelectedDocument(prev =>
-                        prev ? { ...prev, entity_id: e.target.value ? parseInt(e.target.value) : null } : null
-                      )}
+                      onChange={(e) =>
+                        setSelectedDocument((prev) =>
+                          prev
+                            ? {
+                                ...prev,
+                                entity_id: e.target.value ? parseInt(e.target.value) : null,
+                              }
+                            : null
+                        )
+                      }
                     />
                   </Form.Group>
                 </Col>
@@ -897,9 +926,9 @@ export function Documents() {
                 <Form.Control
                   type='text'
                   value={selectedDocument.tags || ''}
-                  onChange={(e) => setSelectedDocument(prev =>
-                    prev ? { ...prev, tags: e.target.value } : null
-                  )}
+                  onChange={(e) =>
+                    setSelectedDocument((prev) => (prev ? { ...prev, tags: e.target.value } : null))
+                  }
                   placeholder='علامات مفصولة بفواصل'
                 />
               </Form.Group>
@@ -909,9 +938,11 @@ export function Documents() {
                 id='edit-is-public'
                 label='مستند عام'
                 checked={selectedDocument.is_public}
-                onChange={(e) => setSelectedDocument(prev =>
-                  prev ? { ...prev, is_public: e.target.checked } : null
-                )}
+                onChange={(e) =>
+                  setSelectedDocument((prev) =>
+                    prev ? { ...prev, is_public: e.target.checked } : null
+                  )
+                }
               />
             </Form>
           )}

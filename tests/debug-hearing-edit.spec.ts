@@ -25,7 +25,7 @@ test.describe('Debug Hearing Edit Modal', () => {
       console.log('🔧 Clicking first edit button...');
 
       // Listen for any console errors
-      page.on('console', msg => {
+      page.on('console', (msg) => {
         if (msg.type() === 'error') {
           console.log('❌ Console Error:', msg.text());
         }
@@ -65,7 +65,6 @@ test.describe('Debug Hearing Edit Modal', () => {
       // Take a screenshot for debugging
       await page.screenshot({ path: 'debug-hearing-edit.png', fullPage: true });
       console.log('📸 Screenshot saved as debug-hearing-edit.png');
-
     } else {
       console.log('⚠️ No edit buttons found');
     }

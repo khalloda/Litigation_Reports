@@ -2,10 +2,10 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Invoices Column Filtering Test', () => {
   test.use({
-    baseURL: 'http://lit.local:8080'
+    baseURL: 'http://lit.local:8080',
   });
 
-  test('Test Invoices custom report column selection', async ({ page }) => {
+  test('Invoices custom report column selection', async ({ page }) => {
     console.log('🧪 Testing Invoices entity column filtering');
 
     // Navigate to login page
@@ -26,7 +26,7 @@ test.describe('Invoices Column Filtering Test', () => {
     await page.waitForTimeout(2000);
 
     // Try different selectors for the custom report button
-    const customReportButton = await page.locator('button').filter({ hasText: 'تقرير مخصص' }).first();
+    const customReportButton = page.locator('button').filter({ hasText: 'تقرير مخصص' }).first();
     const isButtonVisible = await customReportButton.isVisible().catch(() => false);
 
     if (!isButtonVisible) {
@@ -34,7 +34,7 @@ test.describe('Invoices Column Filtering Test', () => {
       const allButtons = await page.locator('button').all();
       for (let i = 0; i < allButtons.length; i++) {
         const text = await allButtons[i].textContent();
-        console.log(`   Button ${i+1}: "${text?.trim()}"`);
+        console.log(`   Button ${i + 1}: "${text?.trim()}"`);
       }
 
       // Take screenshot for debugging
@@ -78,7 +78,7 @@ test.describe('Invoices Column Filtering Test', () => {
         await checkboxes[i].check();
         await expect(checkboxes[i]).toBeChecked();
         selected++;
-        console.log(`✅ Selected invoice column ${i+1}`);
+        console.log(`✅ Selected invoice column ${i + 1}`);
       }
 
       // Generate report
@@ -87,7 +87,7 @@ test.describe('Invoices Column Filtering Test', () => {
       // Check results
       await page.waitForSelector('table thead th', { timeout: 15000 });
       const headers = await page.locator('table thead th:visible').allTextContents();
-      const cleanHeaders = headers.map(h => h.trim()).filter(Boolean);
+      const cleanHeaders = headers.map((h) => h.trim()).filter(Boolean);
 
       console.log('📊 Invoices test results:');
       console.log(`   Selected columns: ${selected}`);

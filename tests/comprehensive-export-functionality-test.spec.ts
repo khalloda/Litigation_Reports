@@ -137,7 +137,7 @@ test.describe('Comprehensive Export Functionality Test', () => {
 
     // Check if buttons are enabled (they should be if there's report data)
     const reportTable = page.locator('table');
-    const isReportDataPresent = await reportTable.count() > 0;
+    const isReportDataPresent = (await reportTable.count()) > 0;
 
     if (isReportDataPresent) {
       await expect(csvExportBtn).toBeEnabled();
@@ -171,7 +171,7 @@ test.describe('Comprehensive Export Functionality Test', () => {
 
       // Listen for console messages to catch any errors
       const consoleLogs: string[] = [];
-      page.on('console', msg => {
+      page.on('console', (msg) => {
         consoleLogs.push(`${msg.type()}: ${msg.text()}`);
       });
 
@@ -183,7 +183,7 @@ test.describe('Comprehensive Export Functionality Test', () => {
       await page.waitForTimeout(2000);
 
       // Check for success toast or any console errors
-      const hasErrors = consoleLogs.some(log => log.includes('error') || log.includes('Error'));
+      const hasErrors = consoleLogs.some((log) => log.includes('error') || log.includes('Error'));
       expect(hasErrors).toBeFalsy();
 
       console.log('CSV export completed without errors');

@@ -26,14 +26,16 @@ test.describe('Lawyers and Documents Pages Test', () => {
 
     // Monitor console errors
     const consoleErrors: string[] = [];
-    page.on('console', msg => {
+    page.on('console', (msg) => {
       if (msg.type() === 'error') {
         consoleErrors.push(msg.text());
       }
     });
 
     // Navigate to Lawyers page
-    const lawyersLink = page.locator('a[href*="lawyers"], a:has-text("Lawyers"), a:has-text("المحامون")').first();
+    const lawyersLink = page
+      .locator('a[href*="lawyers"], a:has-text("Lawyers"), a:has-text("المحامون")')
+      .first();
 
     if (await lawyersLink.isVisible()) {
       await lawyersLink.click();
@@ -61,8 +63,13 @@ test.describe('Lawyers and Documents Pages Test', () => {
 
     // Check for specific text that indicates the page loaded correctly
     const pageContent = await page.textContent('body');
-    const hasLawyerText = pageContent?.includes('Lawyer') || pageContent?.includes('محامي') || pageContent?.includes('المحامون') || false;
-    const hasNoDataMessage = pageContent?.includes('No lawyers') || pageContent?.includes('لا يوجد محامون') || false;
+    const hasLawyerText =
+      pageContent?.includes('Lawyer') ||
+      pageContent?.includes('محامي') ||
+      pageContent?.includes('المحامون') ||
+      false;
+    const hasNoDataMessage =
+      pageContent?.includes('No lawyers') || pageContent?.includes('لا يوجد محامون') || false;
 
     console.log(`👥 Contains lawyer-related text: ${hasLawyerText}`);
     console.log(`📭 Shows data or no data message: ${hasNoDataMessage || hasLawyerText}`);
@@ -71,16 +78,17 @@ test.describe('Lawyers and Documents Pages Test', () => {
     console.log(`❌ Console errors: ${consoleErrors.length}`);
     if (consoleErrors.length > 0) {
       console.log('Console errors found:');
-      consoleErrors.forEach(error => console.log(`  - ${error}`));
+      consoleErrors.forEach((error) => console.log(`  - ${error}`));
     }
 
     // Verify no critical errors
-    const hasCriticalErrors = consoleErrors.some(error =>
-      error.includes('404') ||
-      error.includes('Failed to load lawyers') ||
-      error.includes('TypeError') ||
-      error.includes('Cannot read properties') ||
-      error.includes('Cannot convert undefined or null to object')
+    const hasCriticalErrors = consoleErrors.some(
+      (error) =>
+        error.includes('404') ||
+        error.includes('Failed to load lawyers') ||
+        error.includes('TypeError') ||
+        error.includes('Cannot read properties') ||
+        error.includes('Cannot convert undefined or null to object')
     );
 
     console.log(`🚨 Critical errors: ${hasCriticalErrors}`);
@@ -98,14 +106,16 @@ test.describe('Lawyers and Documents Pages Test', () => {
 
     // Monitor console errors
     const consoleErrors: string[] = [];
-    page.on('console', msg => {
+    page.on('console', (msg) => {
       if (msg.type() === 'error') {
         consoleErrors.push(msg.text());
       }
     });
 
     // Navigate to Documents page
-    const documentsLink = page.locator('a[href*="documents"], a:has-text("Documents"), a:has-text("الوثائق")').first();
+    const documentsLink = page
+      .locator('a[href*="documents"], a:has-text("Documents"), a:has-text("الوثائق")')
+      .first();
 
     if (await documentsLink.isVisible()) {
       await documentsLink.click();
@@ -135,8 +145,13 @@ test.describe('Lawyers and Documents Pages Test', () => {
 
     // Check for specific text that indicates the page loaded correctly
     const pageContent = await page.textContent('body');
-    const hasDocumentText = pageContent?.includes('Document') || pageContent?.includes('وثيقة') || pageContent?.includes('الوثائق') || false;
-    const hasNoDataMessage = pageContent?.includes('No documents') || pageContent?.includes('لا توجد وثائق') || false;
+    const hasDocumentText =
+      pageContent?.includes('Document') ||
+      pageContent?.includes('وثيقة') ||
+      pageContent?.includes('الوثائق') ||
+      false;
+    const hasNoDataMessage =
+      pageContent?.includes('No documents') || pageContent?.includes('لا توجد وثائق') || false;
 
     console.log(`📄 Contains document-related text: ${hasDocumentText}`);
     console.log(`📭 Shows data or no data message: ${hasNoDataMessage || hasDocumentText}`);
@@ -145,16 +160,17 @@ test.describe('Lawyers and Documents Pages Test', () => {
     console.log(`❌ Console errors: ${consoleErrors.length}`);
     if (consoleErrors.length > 0) {
       console.log('Console errors found:');
-      consoleErrors.forEach(error => console.log(`  - ${error}`));
+      consoleErrors.forEach((error) => console.log(`  - ${error}`));
     }
 
     // Verify no critical errors
-    const hasCriticalErrors = consoleErrors.some(error =>
-      error.includes('404') ||
-      error.includes('Failed to load documents') ||
-      error.includes('TypeError') ||
-      error.includes('Cannot read properties') ||
-      error.includes('Cannot convert undefined or null to object')
+    const hasCriticalErrors = consoleErrors.some(
+      (error) =>
+        error.includes('404') ||
+        error.includes('Failed to load documents') ||
+        error.includes('TypeError') ||
+        error.includes('Cannot read properties') ||
+        error.includes('Cannot convert undefined or null to object')
     );
 
     console.log(`🚨 Critical errors: ${hasCriticalErrors}`);
@@ -175,7 +191,8 @@ test.describe('Lawyers and Documents Pages Test', () => {
     await page.waitForTimeout(3000);
 
     const reportsPageContent = await page.textContent('body');
-    const hasReportsContent = reportsPageContent?.includes('التقارير') || reportsPageContent?.includes('Reports') || false;
+    const hasReportsContent =
+      reportsPageContent?.includes('التقارير') || reportsPageContent?.includes('Reports') || false;
 
     console.log(`📊 Reports page loads correctly: ${hasReportsContent}`);
     expect(hasReportsContent, 'Reports page should load correctly').toBe(true);
@@ -185,7 +202,10 @@ test.describe('Lawyers and Documents Pages Test', () => {
     await page.waitForTimeout(3000);
 
     const invoicesPageContent = await page.textContent('body');
-    const hasInvoicesContent = invoicesPageContent?.includes('الفواتير') || invoicesPageContent?.includes('Invoice') || false;
+    const hasInvoicesContent =
+      invoicesPageContent?.includes('الفواتير') ||
+      invoicesPageContent?.includes('Invoice') ||
+      false;
 
     console.log(`💰 Invoices page loads correctly: ${hasInvoicesContent}`);
     expect(hasInvoicesContent, 'Invoices page should load correctly').toBe(true);

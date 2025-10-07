@@ -83,29 +83,29 @@ test.describe('PDF Export User Workflow - Simplified', () => {
     const testData = [
       {
         id: 1,
-        client_name_ar: "عميل اختبار",
-        client_name_en: "Test Client",
-        client_type: "company",
-        status: "active",
-        created_at: "2024-01-15"
-      }
+        client_name_ar: 'عميل اختبار',
+        client_name_en: 'Test Client',
+        client_type: 'company',
+        status: 'active',
+        created_at: '2024-01-15',
+      },
     ];
 
     // Make direct API call
     const response = await request.post(`${BASE_URL}/api/export/pdf-chrome`, {
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       data: {
         data: testData,
         columns: [
           { key: 'id', label: 'المعرف' },
           { key: 'client_name_ar', label: 'اسم العميل' },
-          { key: 'client_type', label: 'النوع' }
+          { key: 'client_type', label: 'النوع' },
         ],
         title: 'تقرير العملاء',
-        filename: 'clients_test_export'
-      }
+        filename: 'clients_test_export',
+      },
     });
 
     expect(response.status()).toBe(200);

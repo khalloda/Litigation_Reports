@@ -1,13 +1,12 @@
 const { test, expect } = require('@playwright/test');
 
 test.describe('Quick Page Verification', () => {
-
   test('All requested pages should load successfully', async ({ page }) => {
     const testUrls = [
       { url: 'http://lit.local/clients', name: 'Clients' },
       { url: 'http://lit.local/cases', name: 'Cases' },
       { url: 'http://lit.local/hearings', name: 'Hearings' },
-      { url: 'http://lit.local/reports', name: 'Reports' }
+      { url: 'http://lit.local/reports', name: 'Reports' },
     ];
 
     const results = [];
@@ -19,7 +18,7 @@ test.describe('Quick Page Verification', () => {
         // Navigate to page
         const response = await page.goto(url, {
           waitUntil: 'domcontentloaded',
-          timeout: 30000
+          timeout: 30000,
         });
 
         // Check if page loaded (HTTP 200)
@@ -30,16 +29,22 @@ test.describe('Quick Page Verification', () => {
         await page.waitForTimeout(2000);
 
         // Check for "Coming Soon" (should not exist)
-        const hasComingSoon = await page.locator('text=Coming Soon').isVisible().catch(() => false);
+        const hasComingSoon = await page
+          .locator('text=Coming Soon')
+          .isVisible()
+          .catch(() => false);
 
         // Check for main heading
-        const hasHeading = await page.locator('h1, h2').count() > 0;
+        const hasHeading = (await page.locator('h1, h2').count()) > 0;
 
         // Check for page content
         const hasContent = await page.locator('body').textContent();
-        const hasArabic = hasContent.includes('إدارة') || hasContent.includes('العملاء') ||
-                         hasContent.includes('القضايا') || hasContent.includes('الجلسات') ||
-                         hasContent.includes('التقارير');
+        const hasArabic =
+          hasContent.includes('إدارة') ||
+          hasContent.includes('العملاء') ||
+          hasContent.includes('القضايا') ||
+          hasContent.includes('الجلسات') ||
+          hasContent.includes('التقارير');
 
         const result = {
           name,
@@ -49,7 +54,7 @@ test.describe('Quick Page Verification', () => {
           noComingSoon: !hasComingSoon,
           hasHeading,
           hasArabicContent: hasArabic,
-          success: success && !hasComingSoon && hasHeading
+          success: success && !hasComingSoon && hasHeading,
         };
 
         results.push(result);
@@ -62,26 +67,25 @@ test.describe('Quick Page Verification', () => {
           console.log(`   Has "Coming Soon": ${hasComingSoon}`);
           console.log(`   Has Heading: ${hasHeading}`);
         }
-
       } catch (error) {
         console.log(`❌ ${name} page: ERROR - ${error.message}`);
         results.push({
           name,
           url,
           success: false,
-          error: error.message
+          error: error.message,
         });
       }
     }
 
     // Summary
-    const successCount = results.filter(r => r.success).length;
+    const successCount = results.filter((r) => r.success).length;
     const totalCount = results.length;
 
     console.log('\n=== SUMMARY ===');
     console.log(`Successful pages: ${successCount}/${totalCount}`);
 
-    results.forEach(result => {
+    results.forEach((result) => {
       const status = result.success ? '✅' : '❌';
       console.log(`${status} ${result.name}: ${result.url}`);
     });

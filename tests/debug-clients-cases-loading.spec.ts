@@ -7,7 +7,7 @@ test.describe('Debug Clients and Cases Loading', () => {
     // Intercept API calls to see what's happening
     const apiCalls: string[] = [];
 
-    page.on('request', request => {
+    page.on('request', (request) => {
       if (request.url().includes('/api/clients') || request.url().includes('/api/cases')) {
         const call = `📡 API Request: ${request.method()} ${request.url()}`;
         console.log(call);
@@ -15,7 +15,7 @@ test.describe('Debug Clients and Cases Loading', () => {
       }
     });
 
-    page.on('response', response => {
+    page.on('response', (response) => {
       if (response.url().includes('/api/clients') || response.url().includes('/api/cases')) {
         const call = `📡 API Response: ${response.status()} ${response.url()}`;
         console.log(call);
@@ -87,8 +87,10 @@ test.describe('Debug Clients and Cases Loading', () => {
     }
 
     console.log('\\n🔍 Summary:');
-    console.log(`   • Clients API called: ${apiCalls.some(call => call.includes('/api/clients'))}`);
-    console.log(`   • Cases API called: ${apiCalls.some(call => call.includes('/api/cases'))}`);
+    console.log(
+      `   • Clients API called: ${apiCalls.some((call) => call.includes('/api/clients'))}`
+    );
+    console.log(`   • Cases API called: ${apiCalls.some((call) => call.includes('/api/cases'))}`);
 
     console.log('\\n📊 DEBUG COMPLETE');
   });

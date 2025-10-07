@@ -8,7 +8,12 @@ test.describe('Debug Filtering Logic', () => {
     const frontendLogs = [];
     page.on('console', (msg) => {
       const text = msg.text();
-      if (text.includes('🔍') || text.includes('❌') || text.includes('🎯') || text.includes('✅')) {
+      if (
+        text.includes('🔍') ||
+        text.includes('❌') ||
+        text.includes('🎯') ||
+        text.includes('✅')
+      ) {
         frontendLogs.push(text);
         console.log('FRONTEND:', text);
       }
@@ -28,7 +33,9 @@ test.describe('Debug Filtering Logic', () => {
     // Open client-specific report modal
     await page.click('button:has-text("تقرير عميل محدد")');
     await page.waitForSelector('.modal', { timeout: 5000 });
-    await page.waitForFunction(() => document.querySelectorAll('.spinner-border').length === 0, { timeout: 10000 });
+    await page.waitForFunction(() => document.querySelectorAll('.spinner-border').length === 0, {
+      timeout: 10000,
+    });
 
     // Search and select client
     const searchInput = page.locator('input[placeholder*="ابحث عن عميل"]');

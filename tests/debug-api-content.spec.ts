@@ -14,14 +14,17 @@ test.describe('Debug API Content', () => {
     console.log('✅ Logged in via browser');
 
     // Use the browser context for API request to maintain cookies
-    const response = await page.request.post('/backend/api/index.php?action=generate_custom_report', {
-      data: {
-        entity: 'invoices',
-        columns: ['invoice_number', 'amount'],
-        filters: {},
-        limit: 5
+    const response = await page.request.post(
+      '/backend/api/index.php?action=generate_custom_report',
+      {
+        data: {
+          entity: 'invoices',
+          columns: ['invoice_number', 'amount'],
+          filters: {},
+          limit: 5,
+        },
       }
-    });
+    );
 
     console.log('📊 Status:', response.status());
 
@@ -46,7 +49,6 @@ test.describe('Debug API Content', () => {
         if (data.config) {
           console.log('⚙️ Config columns:', data.config.columns);
         }
-
       } catch (e) {
         console.log('❌ JSON parse error:', e.message);
       }

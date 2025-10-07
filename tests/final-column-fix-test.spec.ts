@@ -1,7 +1,9 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Final Column Fix Test', () => {
-  test('should generate PDF with only selected columns and all data populated', async ({ page }) => {
+  test('should generate PDF with only selected columns and all data populated', async ({
+    page,
+  }) => {
     console.log('🎯 FINAL TEST: Column duplication fix');
 
     // Login
@@ -18,7 +20,9 @@ test.describe('Final Column Fix Test', () => {
     // Open client-specific report modal
     await page.click('button:has-text("تقرير عميل محدد")');
     await page.waitForSelector('.modal', { timeout: 5000 });
-    await page.waitForFunction(() => document.querySelectorAll('.spinner-border').length === 0, { timeout: 10000 });
+    await page.waitForFunction(() => document.querySelectorAll('.spinner-border').length === 0, {
+      timeout: 10000,
+    });
 
     // Search and select client
     const searchInput = page.locator('input[placeholder*="ابحث عن عميل"]');
@@ -65,11 +69,11 @@ test.describe('Final Column Fix Test', () => {
             if (pdfRequestData.columns) {
               console.log('\n📋 Columns being sent to PDF:');
               pdfRequestData.columns.forEach((col, i) => {
-                console.log(`  ${i+1}. "${col.key}" -> "${col.label}"`);
+                console.log(`  ${i + 1}. "${col.key}" -> "${col.label}"`);
               });
 
               // Check for duplicates
-              const keys = pdfRequestData.columns.map(col => col.key);
+              const keys = pdfRequestData.columns.map((col) => col.key);
               const uniqueKeys = [...new Set(keys)];
               if (keys.length !== uniqueKeys.length) {
                 console.log('❌ DUPLICATE COLUMNS DETECTED!');
@@ -86,10 +90,16 @@ test.describe('Final Column Fix Test', () => {
               // Check column-data key matching
               console.log('\n🔗 Column-Data Matching:');
               const missingKeys = [];
-              pdfRequestData.columns.forEach(col => {
+              pdfRequestData.columns.forEach((col) => {
                 const hasKey = Object.keys(firstData).includes(col.key);
-                const hasValue = hasKey && firstData[col.key] !== null && firstData[col.key] !== undefined && firstData[col.key] !== '';
-                console.log(`  "${col.key}": ${hasKey ? '✅ KEY' : '❌ MISSING'} ${hasValue ? '✅ DATA' : '⚪ EMPTY'}`);
+                const hasValue =
+                  hasKey &&
+                  firstData[col.key] !== null &&
+                  firstData[col.key] !== undefined &&
+                  firstData[col.key] !== '';
+                console.log(
+                  `  "${col.key}": ${hasKey ? '✅ KEY' : '❌ MISSING'} ${hasValue ? '✅ DATA' : '⚪ EMPTY'}`
+                );
                 if (!hasKey) missingKeys.push(col.key);
               });
 

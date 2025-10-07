@@ -18,7 +18,9 @@ test.describe('Hearing Report Columns Fix Verification', () => {
     // Step 3: Open client-specific report modal
     await page.click('button:has-text("تقرير عميل محدد")');
     await page.waitForSelector('.modal', { timeout: 5000 });
-    await page.waitForFunction(() => document.querySelectorAll('.spinner-border').length === 0, { timeout: 10000 });
+    await page.waitForFunction(() => document.querySelectorAll('.spinner-border').length === 0, {
+      timeout: 10000,
+    });
 
     console.log('✅ Modal opened and loaded');
 
@@ -50,13 +52,13 @@ test.describe('Hearing Report Columns Fix Verification', () => {
 
       // Step 7: Verify all hearing column options are available
       const expectedColumns = [
-        'تاريخ الجلسة',      // h.hearing_date
-        'نوع الجلسة',       // h.hearing_type
-        'نتيجة الجلسة',     // h.hearing_result
-        'المحكمة',          // c.matter_court
-        'ملاحظات المحكمة',  // h.court_notes
-        'ملاحظات المحامي',  // h.lawyer_notes
-        'الجلسة القادمة'    // h.next_hearing
+        'تاريخ الجلسة', // h.hearing_date
+        'نوع الجلسة', // h.hearing_type
+        'نتيجة الجلسة', // h.hearing_result
+        'المحكمة', // c.matter_court
+        'ملاحظات المحكمة', // h.court_notes
+        'ملاحظات المحامي', // h.lawyer_notes
+        'الجلسة القادمة', // h.next_hearing
       ];
 
       const checkboxes = page.locator('input[type="checkbox"]');
@@ -66,8 +68,10 @@ test.describe('Hearing Report Columns Fix Verification', () => {
       // Verify specific columns exist
       for (const columnLabel of expectedColumns) {
         const columnCheckbox = page.locator(`label:has-text("${columnLabel}")`);
-        const exists = await columnCheckbox.count() > 0;
-        console.log(`${exists ? '✅' : '❌'} Column "${columnLabel}": ${exists ? 'Found' : 'Missing'}`);
+        const exists = (await columnCheckbox.count()) > 0;
+        console.log(
+          `${exists ? '✅' : '❌'} Column "${columnLabel}": ${exists ? 'Found' : 'Missing'}`
+        );
       }
 
       // Step 8: Select first few columns (simplified approach)
@@ -127,7 +131,9 @@ test.describe('Hearing Report Columns Fix Verification', () => {
     console.log('🔧 Testing hearing columns via API');
 
     // Test GET endpoint for hearing column options
-    const optionsResponse = await page.request.get('http://lit.local:8080/api/reports/client-specific');
+    const optionsResponse = await page.request.get(
+      'http://lit.local:8080/api/reports/client-specific'
+    );
     expect(optionsResponse.status()).toBe(200);
 
     const optionsData = await optionsResponse.json();
@@ -146,32 +152,37 @@ test.describe('Hearing Report Columns Fix Verification', () => {
       'c.matter_court',
       'h.court_notes',
       'h.lawyer_notes',
-      'h.next_hearing'
+      'h.next_hearing',
     ];
 
     const actualKeys = hearingColumns.map((col: any) => col.key);
 
     for (const expectedKey of expectedKeys) {
       const exists = actualKeys.includes(expectedKey);
-      console.log(`${exists ? '✅' : '❌'} API Column "${expectedKey}": ${exists ? 'Found' : 'Missing'}`);
+      console.log(
+        `${exists ? '✅' : '❌'} API Column "${expectedKey}": ${exists ? 'Found' : 'Missing'}`
+      );
       expect(exists).toBe(true);
     }
 
     // Test POST endpoint with New Test Client Don
-    const reportResponse = await page.request.post('http://lit.local:8080/api/reports/client-specific', {
-      data: {
-        client_id: "315",
-        report_type: "hearings",
-        columns: [
-          "h.hearing_date",
-          "h.hearing_type",
-          "h.hearing_result",
-          "c.matter_court",
-          "h.court_notes",
-          "h.next_hearing"
-        ]
+    const reportResponse = await page.request.post(
+      'http://lit.local:8080/api/reports/client-specific',
+      {
+        data: {
+          client_id: '315',
+          report_type: 'hearings',
+          columns: [
+            'h.hearing_date',
+            'h.hearing_type',
+            'h.hearing_result',
+            'c.matter_court',
+            'h.court_notes',
+            'h.next_hearing',
+          ],
+        },
       }
-    });
+    );
 
     expect(reportResponse.status()).toBe(200);
     const reportData = await reportResponse.json();

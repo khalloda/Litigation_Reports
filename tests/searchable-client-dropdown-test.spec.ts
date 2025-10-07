@@ -18,10 +18,13 @@ test.describe('Searchable Client Dropdown Enhancement', () => {
     await page.waitForSelector('.modal', { timeout: 5000 });
 
     // Wait for API data to load
-    await page.waitForFunction(() => {
-      const spinners = document.querySelectorAll('.spinner-border');
-      return spinners.length === 0;
-    }, { timeout: 10000 });
+    await page.waitForFunction(
+      () => {
+        const spinners = document.querySelectorAll('.spinner-border');
+        return spinners.length === 0;
+      },
+      { timeout: 10000 }
+    );
   });
 
   test('should display searchable input instead of basic dropdown', async ({ page }) => {
@@ -31,7 +34,7 @@ test.describe('Searchable Client Dropdown Enhancement', () => {
 
     // Verify old select dropdown doesn't exist
     const oldSelect = page.locator('select');
-    await expect(oldSelect).not.toBeVisible();
+    await expect(oldSelect).toBeHidden();
 
     // Verify dropdown toggle button exists
     const dropdownButton = page.locator('button:has-text("▼")');
@@ -131,7 +134,7 @@ test.describe('Searchable Client Dropdown Enhancement', () => {
 
     // Verify dropdown closes
     const dropdown = page.locator('.position-absolute.w-100.bg-white.border');
-    await expect(dropdown).not.toBeVisible();
+    await expect(dropdown).toBeHidden();
 
     // Verify success badge appears
     const successBadge = page.locator('.badge.bg-success:has-text("✓")');
@@ -149,8 +152,8 @@ test.describe('Searchable Client Dropdown Enhancement', () => {
     await clearButton.click();
 
     // Verify selection is cleared
-    await expect(successBadge).not.toBeVisible();
-    await expect(selectedDisplay).not.toBeVisible();
+    await expect(successBadge).toBeHidden();
+    await expect(selectedDisplay).toBeHidden();
 
     console.log('✅ Client selection cleared successfully');
   });
@@ -188,7 +191,7 @@ test.describe('Searchable Client Dropdown Enhancement', () => {
     await page.waitForTimeout(300);
 
     // Verify dropdown closes
-    await expect(dropdown).not.toBeVisible();
+    await expect(dropdown).toBeHidden();
 
     console.log('✅ Dropdown closes when clicking outside');
   });
@@ -229,12 +232,12 @@ test.describe('Searchable Client Dropdown Enhancement', () => {
     const firstItem = clientItems.first();
 
     // Verify RTL styling
-    const textAlign = await firstItem.evaluate(el => window.getComputedStyle(el).textAlign);
+    const textAlign = await firstItem.evaluate((el) => window.getComputedStyle(el).textAlign);
     console.log(`✅ Text alignment in dropdown: ${textAlign}`);
 
     // Verify search input has RTL alignment
     const searchInput = page.locator('input[placeholder*="ابحث عن عميل"]');
-    const inputAlign = await searchInput.evaluate(el => window.getComputedStyle(el).textAlign);
+    const inputAlign = await searchInput.evaluate((el) => window.getComputedStyle(el).textAlign);
     console.log(`✅ Search input alignment: ${inputAlign}`);
 
     // Both should be 'right' for RTL

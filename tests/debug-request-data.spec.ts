@@ -32,7 +32,9 @@ test.describe('Debug Request Data', () => {
               console.log('\n🔍 Matching Analysis:');
               requestData.columns?.forEach((col, index) => {
                 const matches = dataKeys.includes(col.key);
-                console.log(`  ${index + 1}. "${col.key}" → ${matches ? '✅ MATCH' : '❌ NO MATCH'}`);
+                console.log(
+                  `  ${index + 1}. "${col.key}" → ${matches ? '✅ MATCH' : '❌ NO MATCH'}`
+                );
               });
             }
           }
@@ -56,7 +58,9 @@ test.describe('Debug Request Data', () => {
     // Open client-specific report modal
     await page.click('button:has-text("تقرير عميل محدد")');
     await page.waitForSelector('.modal', { timeout: 5000 });
-    await page.waitForFunction(() => document.querySelectorAll('.spinner-border').length === 0, { timeout: 10000 });
+    await page.waitForFunction(() => document.querySelectorAll('.spinner-border').length === 0, {
+      timeout: 10000,
+    });
 
     // Search and select client
     const searchInput = page.locator('input[placeholder*="ابحث عن عميل"]');

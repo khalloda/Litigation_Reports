@@ -160,7 +160,9 @@ export const ClientModal: React.FC<ClientModalProps> = ({
     // At least one lawyer is required
     if (!selectedLawyers || selectedLawyers.length === 0) {
       newErrors.contact_lawyer =
-        currentLanguage === 'ar' ? 'يجب اختيار محامي واحد على الأقل' : 'At least one lawyer is required';
+        currentLanguage === 'ar'
+          ? 'يجب اختيار محامي واحد على الأقل'
+          : 'At least one lawyer is required';
     }
 
     setErrors(newErrors);
@@ -184,7 +186,7 @@ export const ClientModal: React.FC<ClientModalProps> = ({
       // Prepare form data with lawyer IDs
       const submitData = {
         ...formData,
-        lawyer_ids: selectedLawyers.map(lawyer => lawyer.value)
+        lawyer_ids: selectedLawyers.map((lawyer) => lawyer.value),
       };
       await onSave(submitData);
       onHide();
@@ -571,7 +573,9 @@ export const ClientModal: React.FC<ClientModalProps> = ({
                       value={selectedLawyers}
                       onChange={setSelectedLawyers}
                       placeholder={
-                        currentLanguage === 'ar' ? 'اختر المحامين المسؤولين...' : 'Select contact lawyers...'
+                        currentLanguage === 'ar'
+                          ? 'اختر المحامين المسؤولين...'
+                          : 'Select contact lawyers...'
                       }
                       isDisabled={isViewMode}
                       error={errors.contact_lawyer}

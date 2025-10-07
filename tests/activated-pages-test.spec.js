@@ -30,7 +30,7 @@ test.describe('Activated Pages Tests', () => {
     await expect(page.locator('input[placeholder*="البحث"]')).toBeVisible();
 
     // Verify no "Coming Soon" message
-    await expect(page.locator('text=Coming Soon')).not.toBeVisible();
+    await expect(page.locator('text=Coming Soon')).toBeHidden();
 
     console.log('✅ Clients page loaded successfully');
   });
@@ -48,7 +48,7 @@ test.describe('Activated Pages Tests', () => {
     await expect(page.locator('button')).toContainText('إضافة قضية جديدة');
 
     // Verify no "Coming Soon" message
-    await expect(page.locator('text=Coming Soon')).not.toBeVisible();
+    await expect(page.locator('text=Coming Soon')).toBeHidden();
 
     console.log('✅ Cases page loaded successfully');
   });
@@ -66,7 +66,7 @@ test.describe('Activated Pages Tests', () => {
     await expect(page.locator('button')).toContainText('إضافة جلسة جديدة');
 
     // Verify no "Coming Soon" message
-    await expect(page.locator('text=Coming Soon')).not.toBeVisible();
+    await expect(page.locator('text=Coming Soon')).toBeHidden();
 
     console.log('✅ Hearings page loaded successfully');
   });
@@ -88,7 +88,7 @@ test.describe('Activated Pages Tests', () => {
     await expect(page.locator('button')).toContainText('تصفية');
 
     // Verify no "Coming Soon" message
-    await expect(page.locator('text=Coming Soon')).not.toBeVisible();
+    await expect(page.locator('text=Coming Soon')).toBeHidden();
 
     console.log('✅ Reports page loaded successfully');
   });
@@ -102,7 +102,7 @@ test.describe('Activated Pages Tests', () => {
       { path: '/clients', title: 'إدارة العملاء' },
       { path: '/cases', title: 'إدارة القضايا' },
       { path: '/hearings', title: 'إدارة الجلسات' },
-      { path: '/reports', title: 'التقارير والإحصائيات' }
+      { path: '/reports', title: 'التقارير والإحصائيات' },
     ];
 
     for (const { path, title } of pages) {
@@ -111,7 +111,7 @@ test.describe('Activated Pages Tests', () => {
 
       // Verify page loaded correctly
       await expect(page.locator('h2')).toContainText(title);
-      await expect(page.locator('text=Coming Soon')).not.toBeVisible();
+      await expect(page.locator('text=Coming Soon')).toBeHidden();
 
       console.log(`✅ Navigation to ${path} successful`);
     }
@@ -120,14 +120,14 @@ test.describe('Activated Pages Tests', () => {
   test('should verify all pages load without errors', async ({ page }) => {
     // Listen for console errors
     const errors = [];
-    page.on('console', msg => {
+    page.on('console', (msg) => {
       if (msg.type() === 'error') {
         errors.push(msg.text());
       }
     });
 
     // Listen for page errors
-    page.on('pageerror', error => {
+    page.on('pageerror', (error) => {
       errors.push(error.message);
     });
 
@@ -135,7 +135,7 @@ test.describe('Activated Pages Tests', () => {
       'http://lit.local/clients',
       'http://lit.local/cases',
       'http://lit.local/hearings',
-      'http://lit.local/reports'
+      'http://lit.local/reports',
     ];
 
     for (const url of testPages) {
@@ -160,14 +160,14 @@ test.describe('Activated Pages Tests', () => {
     const viewports = [
       { width: 1920, height: 1080, name: 'Desktop' },
       { width: 768, height: 1024, name: 'Tablet' },
-      { width: 375, height: 667, name: 'Mobile' }
+      { width: 375, height: 667, name: 'Mobile' },
     ];
 
     const testPages = [
       'http://lit.local/clients',
       'http://lit.local/cases',
       'http://lit.local/hearings',
-      'http://lit.local/reports'
+      'http://lit.local/reports',
     ];
 
     for (const viewport of viewports) {

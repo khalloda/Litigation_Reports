@@ -27,11 +27,11 @@ test.describe('Reports Core Functionality Tests', () => {
       clients: null,
       cases: null,
       hearings: null,
-      custom: null
+      custom: null,
     };
 
     // Monitor successful API responses
-    page.on('response', response => {
+    page.on('response', (response) => {
       const url = response.url();
       if (url.includes('/api/reports/clients') && response.status() === 200) {
         apiResponses.clients = response;
@@ -61,14 +61,13 @@ test.describe('Reports Core Functionality Tests', () => {
 
         // Close any existing modals first
         const modalClose = page.locator('.modal .btn-close, .modal [data-bs-dismiss="modal"]');
-        if (await modalClose.count() > 0) {
+        if ((await modalClose.count()) > 0) {
           await modalClose.first().click();
           await page.waitForTimeout(500);
         }
 
         await viewButtons.nth(i).click();
         await page.waitForTimeout(3000);
-
       } catch (error) {
         console.log(`⚠️ Button ${i + 1} click failed: ${error.message}`);
         continue;
@@ -76,14 +75,18 @@ test.describe('Reports Core Functionality Tests', () => {
     }
 
     // Verify at least some API calls were successful
-    const successfulCalls = Object.values(apiResponses).filter(response => response !== null).length;
+    const successfulCalls = Object.values(apiResponses).filter(
+      (response) => response !== null
+    ).length;
     console.log(`📊 Successful API calls: ${successfulCalls}/4`);
 
     // Take screenshot of final state
     await page.screenshot({ path: 'test-results/reports-api-verification.png', fullPage: true });
 
     // Assertions
-    expect(successfulCalls, 'At least 2 report API endpoints should work').toBeGreaterThanOrEqual(2);
+    expect(successfulCalls, 'At least 2 report API endpoints should work').toBeGreaterThanOrEqual(
+      2
+    );
 
     if (apiResponses.clients) {
       console.log('✅ Clients endpoint verified');
@@ -108,7 +111,7 @@ test.describe('Reports Core Functionality Tests', () => {
     let apiCallMade = false;
 
     // Monitor API calls
-    page.on('response', response => {
+    page.on('response', (response) => {
       if (response.url().includes('/api/reports/') && response.status() === 200) {
         apiCallMade = true;
         console.log(`📡 API call detected: ${response.url()}`);
@@ -118,7 +121,7 @@ test.describe('Reports Core Functionality Tests', () => {
     // Try the first available view button
     const firstViewButton = page.locator('button:has-text("عرض"), button:has-text("View")').first();
 
-    if (await firstViewButton.count() > 0) {
+    if ((await firstViewButton.count()) > 0) {
       try {
         await firstViewButton.click();
         console.log('🖱️ Clicked first view button');
@@ -128,11 +131,13 @@ test.describe('Reports Core Functionality Tests', () => {
         const pageContent = await page.textContent('body');
 
         // Check for actual data indicators
-        const hasClientData = pageContent?.includes('Sarie Eldin') || pageContent?.includes('ساري الدين');
+        const hasClientData =
+          pageContent?.includes('Sarie Eldin') || pageContent?.includes('ساري الدين');
         const hasCaseData = pageContent?.includes('2025-') || pageContent?.includes('قضية');
         const hasHearingData = pageContent?.includes('pending') || pageContent?.includes('expert');
-        const hasTableData = await page.locator('table tbody tr, .list-group-item, .data-row').count() > 0;
-        const hasCards = await page.locator('.card').count() > 5;
+        const hasTableData =
+          (await page.locator('table tbody tr, .list-group-item, .data-row').count()) > 0;
+        const hasCards = (await page.locator('.card').count()) > 5;
 
         dataDisplayed = hasClientData || hasCaseData || hasHearingData || hasTableData || hasCards;
 
@@ -142,7 +147,6 @@ test.describe('Reports Core Functionality Tests', () => {
         console.log(`📋 Table data visible: ${hasTableData}`);
         console.log(`🃏 Cards displayed: ${hasCards}`);
         console.log(`📊 Overall data displayed: ${dataDisplayed}`);
-
       } catch (error) {
         console.log(`⚠️ Error during test: ${error.message}`);
       }
@@ -165,7 +169,7 @@ test.describe('Reports Core Functionality Tests', () => {
     const consoleErrors: string[] = [];
 
     // Monitor for 404 errors
-    page.on('response', response => {
+    page.on('response', (response) => {
       if (response.url().includes('/api/reports/') && response.status() === 404) {
         api404Errors.push(response.url());
         console.log(`❌ 404 Error: ${response.url()}`);
@@ -173,7 +177,7 @@ test.describe('Reports Core Functionality Tests', () => {
     });
 
     // Monitor console errors
-    page.on('console', msg => {
+    page.on('console', (msg) => {
       if (msg.type() === 'error' && msg.text().includes('404')) {
         consoleErrors.push(msg.text());
       }
@@ -190,7 +194,7 @@ test.describe('Reports Core Functionality Tests', () => {
 
         // Close any modals
         const modalClose = page.locator('.modal .btn-close, .modal [data-bs-dismiss="modal"]');
-        if (await modalClose.count() > 0) {
+        if ((await modalClose.count()) > 0) {
           await modalClose.first().click();
           await page.waitForTimeout(500);
         }
@@ -204,7 +208,7 @@ test.describe('Reports Core Functionality Tests', () => {
 
     if (api404Errors.length > 0) {
       console.log('404 API errors:');
-      api404Errors.forEach(url => console.log(`  - ${url}`));
+      api404Errors.forEach((url) => console.log(`  - ${url}`));
     }
 
     // Main assertion - no 404 errors should occur

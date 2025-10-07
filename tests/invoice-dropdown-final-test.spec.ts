@@ -25,9 +25,9 @@ test.describe('Invoice Dropdown Final Test', () => {
     await page.waitForTimeout(1000); // Give time for data to load
 
     // Check if modal is visible
-    const modalVisible = await page.locator('[role="dialog"]').isVisible();
+    const modalVisible = page.locator('[role="dialog"]');
     console.log(`📋 Modal visible: ${modalVisible}`);
-    expect(modalVisible).toBe(true);
+    await expect(modalVisible).toBeVisible();
 
     // Check client dropdown options
     const clientSelect = page.locator('[role="dialog"] select').first();
@@ -68,8 +68,16 @@ test.describe('Invoice Dropdown Final Test', () => {
     console.log(`📋 Edit modal visible: ${editModalVisible}`);
 
     if (editModalVisible) {
-      const editClientOptions = await page.locator('[role="dialog"] select').first().locator('option').count();
-      const editCaseOptions = await page.locator('[role="dialog"] select').nth(1).locator('option').count();
+      const editClientOptions = await page
+        .locator('[role="dialog"] select')
+        .first()
+        .locator('option')
+        .count();
+      const editCaseOptions = await page
+        .locator('[role="dialog"] select')
+        .nth(1)
+        .locator('option')
+        .count();
 
       console.log(`👥 Edit modal client options: ${editClientOptions}`);
       console.log(`📁 Edit modal case options: ${editCaseOptions}`);
@@ -94,8 +102,16 @@ test.describe('Invoice Dropdown Final Test', () => {
     console.log(`📋 Create modal visible: ${createModalVisible}`);
 
     if (createModalVisible) {
-      const createClientOptions = await page.locator('[role="dialog"] select').first().locator('option').count();
-      const createCaseOptions = await page.locator('[role="dialog"] select').nth(1).locator('option').count();
+      const createClientOptions = await page
+        .locator('[role="dialog"] select')
+        .first()
+        .locator('option')
+        .count();
+      const createCaseOptions = await page
+        .locator('[role="dialog"] select')
+        .nth(1)
+        .locator('option')
+        .count();
 
       console.log(`👥 Create modal client options: ${createClientOptions}`);
       console.log(`📁 Create modal case options: ${createCaseOptions}`);

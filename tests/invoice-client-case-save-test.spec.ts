@@ -29,9 +29,9 @@ test.describe('Invoice Client and Case Save Test', () => {
       await page.waitForTimeout(2000);
 
       // Check if edit modal opened
-      const modalVisible = await page.locator('[role="dialog"]').isVisible();
+      const modalVisible = page.locator('[role="dialog"]');
       console.log(`📋 Modal visible: ${modalVisible}`);
-      expect(modalVisible).toBe(true);
+      await expect(modalVisible).toBeVisible();
 
       // Select a client
       const clientSelect = page.locator('[role="dialog"] select').first(); // Assuming client select is first
@@ -58,14 +58,16 @@ test.describe('Invoice Client and Case Save Test', () => {
       }
 
       // Listen for network requests to check API calls
-      const requestPromise = page.waitForRequest(request =>
-        request.url().includes('/api/invoices/') &&
-        (request.method() === 'PUT' || request.method() === 'PATCH')
+      const requestPromise = page.waitForRequest(
+        (request) =>
+          request.url().includes('/api/invoices/') &&
+          (request.method() === 'PUT' || request.method() === 'PATCH')
       );
 
-      const responsePromise = page.waitForResponse(response =>
-        response.url().includes('/api/invoices/') &&
-        (response.request().method() === 'PUT' || response.request().method() === 'PATCH')
+      const responsePromise = page.waitForResponse(
+        (response) =>
+          response.url().includes('/api/invoices/') &&
+          (response.request().method() === 'PUT' || response.request().method() === 'PATCH')
       );
 
       // Click save button

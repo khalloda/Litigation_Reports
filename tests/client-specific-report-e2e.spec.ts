@@ -14,7 +14,9 @@ test.describe('Client-Specific Report End-to-End Test', () => {
     await page.waitForTimeout(1000);
   });
 
-  test('should complete full client-specific report workflow with searchable dropdown', async ({ page }) => {
+  test('should complete full client-specific report workflow with searchable dropdown', async ({
+    page,
+  }) => {
     console.log('🎯 Starting complete client-specific report workflow test');
 
     // Step 1: Open client-specific report modal
@@ -23,10 +25,13 @@ test.describe('Client-Specific Report End-to-End Test', () => {
     await page.waitForSelector('.modal', { timeout: 5000 });
 
     // Wait for data loading
-    await page.waitForFunction(() => {
-      const spinners = document.querySelectorAll('.spinner-border');
-      return spinners.length === 0;
-    }, { timeout: 10000 });
+    await page.waitForFunction(
+      () => {
+        const spinners = document.querySelectorAll('.spinner-border');
+        return spinners.length === 0;
+      },
+      { timeout: 10000 }
+    );
 
     console.log('✅ Modal opened and data loaded');
 
@@ -69,7 +74,7 @@ test.describe('Client-Specific Report End-to-End Test', () => {
 
     // Verify dropdown closes and selection is confirmed
     const dropdown = page.locator('.position-absolute.w-100.bg-white.border');
-    await expect(dropdown).not.toBeVisible();
+    await expect(dropdown).toBeHidden();
 
     const successBadge = page.locator('.badge.bg-success:has-text("✓")');
     await expect(successBadge).toBeVisible();
@@ -111,14 +116,17 @@ test.describe('Client-Specific Report End-to-End Test', () => {
 
     // Check for loading state
     const loadingSpinner = page.locator('.spinner-border');
-    if (await loadingSpinner.count() > 0) {
+    if ((await loadingSpinner.count()) > 0) {
       console.log('✅ Loading state detected');
 
       // Wait for completion (modal should close on success)
-      await page.waitForFunction(() => {
-        const modals = document.querySelectorAll('.modal.show');
-        return modals.length === 0;
-      }, { timeout: 30000 });
+      await page.waitForFunction(
+        () => {
+          const modals = document.querySelectorAll('.modal.show');
+          return modals.length === 0;
+        },
+        { timeout: 30000 }
+      );
 
       console.log('✅ Report generation completed - modal closed');
     } else {
@@ -134,7 +142,9 @@ test.describe('Client-Specific Report End-to-End Test', () => {
     // Open modal
     await page.click('button:has-text("تقرير عميل محدد")');
     await page.waitForSelector('.modal', { timeout: 5000 });
-    await page.waitForFunction(() => document.querySelectorAll('.spinner-border').length === 0, { timeout: 10000 });
+    await page.waitForFunction(() => document.querySelectorAll('.spinner-border').length === 0, {
+      timeout: 10000,
+    });
 
     const searchInput = page.locator('input[placeholder*="ابحث عن عميل"]');
 
@@ -181,11 +191,13 @@ test.describe('Client-Specific Report End-to-End Test', () => {
     // Open modal
     await page.click('button:has-text("تقرير عميل محدد")');
     await page.waitForSelector('.modal', { timeout: 5000 });
-    await page.waitForFunction(() => document.querySelectorAll('.spinner-border').length === 0, { timeout: 10000 });
+    await page.waitForFunction(() => document.querySelectorAll('.spinner-border').length === 0, {
+      timeout: 10000,
+    });
 
     // Check search input alignment
     const searchInput = page.locator('input[placeholder*="ابحث عن عميل"]');
-    const inputAlign = await searchInput.evaluate(el => window.getComputedStyle(el).textAlign);
+    const inputAlign = await searchInput.evaluate((el) => window.getComputedStyle(el).textAlign);
     console.log(`✅ Search input text alignment: ${inputAlign}`);
     expect(inputAlign).toBe('right');
 
@@ -195,7 +207,7 @@ test.describe('Client-Specific Report End-to-End Test', () => {
     await page.waitForTimeout(500);
 
     const firstItem = page.locator('.list-group-item[style*="cursor: pointer"]').first();
-    const itemAlign = await firstItem.evaluate(el => window.getComputedStyle(el).textAlign);
+    const itemAlign = await firstItem.evaluate((el) => window.getComputedStyle(el).textAlign);
     console.log(`✅ Dropdown item text alignment: ${itemAlign}`);
     expect(itemAlign).toBe('right');
 

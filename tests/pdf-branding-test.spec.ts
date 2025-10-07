@@ -10,24 +10,24 @@ test.describe('PDF Branding and Theme Test', () => {
     const testData = [
       {
         id: 1,
-        client_name_ar: "عميل اختبار التصميم",
-        client_name_en: "Branding Test Client",
-        client_type: "company",
-        status: "active",
-        phone: "01234567890",
-        email: "test@example.com",
-        created_at: "2024-01-15"
+        client_name_ar: 'عميل اختبار التصميم',
+        client_name_en: 'Branding Test Client',
+        client_type: 'company',
+        status: 'active',
+        phone: '01234567890',
+        email: 'test@example.com',
+        created_at: '2024-01-15',
       },
       {
         id: 2,
-        client_name_ar: "عميل آخر للاختبار",
-        client_name_en: "Another Test Client",
-        client_type: "individual",
-        status: "inactive",
-        phone: "09876543210",
-        email: "test2@example.com",
-        created_at: "2024-01-20"
-      }
+        client_name_ar: 'عميل آخر للاختبار',
+        client_name_en: 'Another Test Client',
+        client_type: 'individual',
+        status: 'inactive',
+        phone: '09876543210',
+        email: 'test2@example.com',
+        created_at: '2024-01-20',
+      },
     ];
 
     const columns = [
@@ -38,19 +38,19 @@ test.describe('PDF Branding and Theme Test', () => {
       { key: 'status', label: 'الحالة' },
       { key: 'phone', label: 'رقم الهاتف' },
       { key: 'email', label: 'البريد الإلكتروني' },
-      { key: 'created_at', label: 'تاريخ الإنشاء' }
+      { key: 'created_at', label: 'تاريخ الإنشاء' },
     ];
 
     const response = await request.post(`${BASE_URL}/api/export/pdf-chrome`, {
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       data: {
         data: testData,
         columns: columns,
         title: 'اختبار التصميم الجديد - الأخضر والذهبي',
-        filename: 'branding_test'
-      }
+        filename: 'branding_test',
+      },
     });
 
     expect(response.status()).toBe(200);
@@ -137,20 +137,22 @@ test.describe('PDF Branding and Theme Test', () => {
     console.log('🧪 Testing many columns with green/gold responsive theme...');
 
     // Create data with many columns to test responsive styling
-    const testDataManyColumns = [{
-      id: 1,
-      client_name_ar: "عميل كثير الأعمدة",
-      client_name_en: "Many Columns Client",
-      type: "company",
-      status: "active",
-      phone: "01234567890",
-      email: "many@columns.com",
-      address: "عنوان طويل جداً",
-      lawyer: "محامي مسؤول",
-      date: "2024-01-15",
-      cases: 10,
-      revenue: "50000 EGP"
-    }];
+    const testDataManyColumns = [
+      {
+        id: 1,
+        client_name_ar: 'عميل كثير الأعمدة',
+        client_name_en: 'Many Columns Client',
+        type: 'company',
+        status: 'active',
+        phone: '01234567890',
+        email: 'many@columns.com',
+        address: 'عنوان طويل جداً',
+        lawyer: 'محامي مسؤول',
+        date: '2024-01-15',
+        cases: 10,
+        revenue: '50000 EGP',
+      },
+    ];
 
     const manyColumns = [
       { key: 'id', label: 'ID' },
@@ -164,19 +166,19 @@ test.describe('PDF Branding and Theme Test', () => {
       { key: 'lawyer', label: 'المحامي' },
       { key: 'date', label: 'التاريخ' },
       { key: 'cases', label: 'القضايا' },
-      { key: 'revenue', label: 'الإيرادات' }
+      { key: 'revenue', label: 'الإيرادات' },
     ];
 
     const response = await request.post(`${BASE_URL}/api/export/pdf-chrome`, {
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       data: {
         data: testDataManyColumns,
         columns: manyColumns,
         title: 'اختبار الأعمدة الكثيرة - التصميم الأخضر والذهبي',
-        filename: 'many_columns_green_gold_test'
-      }
+        filename: 'many_columns_green_gold_test',
+      },
     });
 
     expect(response.status()).toBe(200);

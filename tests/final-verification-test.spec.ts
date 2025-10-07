@@ -18,7 +18,9 @@ test.describe('Final Verification Test', () => {
     // Open client-specific report modal
     await page.click('button:has-text("تقرير عميل محدد")');
     await page.waitForSelector('.modal', { timeout: 5000 });
-    await page.waitForFunction(() => document.querySelectorAll('.spinner-border').length === 0, { timeout: 10000 });
+    await page.waitForFunction(() => document.querySelectorAll('.spinner-border').length === 0, {
+      timeout: 10000,
+    });
 
     // Search and select client
     const searchInput = page.locator('input[placeholder*="ابحث عن عميل"]');
@@ -69,11 +71,11 @@ test.describe('Final Verification Test', () => {
               finalAnalysis = {
                 totalColumns: pdfData.columns?.length || 0,
                 dataObjects: pdfData.data?.length || 0,
-                columnKeys: pdfData.columns?.map(col => col.key) || [],
+                columnKeys: pdfData.columns?.map((col) => col.key) || [],
                 dataKeys: pdfData.data?.length > 0 ? Object.keys(pdfData.data[0]) : [],
                 duplicateColumns: false,
                 keyMatches: 0,
-                missingKeys: []
+                missingKeys: [],
               };
 
               // Check for duplicates
@@ -84,8 +86,8 @@ test.describe('Final Verification Test', () => {
               // Check key matching
               if (pdfData.data && pdfData.data.length > 0) {
                 const dataKeys = Object.keys(pdfData.data[0]);
-                finalAnalysis.keyMatches = keys.filter(key => dataKeys.includes(key)).length;
-                finalAnalysis.missingKeys = keys.filter(key => !dataKeys.includes(key));
+                finalAnalysis.keyMatches = keys.filter((key) => dataKeys.includes(key)).length;
+                finalAnalysis.missingKeys = keys.filter((key) => !dataKeys.includes(key));
               }
             }
           } catch (e) {
@@ -128,11 +130,15 @@ test.describe('Final Verification Test', () => {
         console.log(`📈 Metrics:`);
         console.log(`  - Total columns sent: ${finalAnalysis.totalColumns}`);
         console.log(`  - Data objects: ${finalAnalysis.dataObjects}`);
-        console.log(`  - Duplicate columns: ${finalAnalysis.duplicateColumns ? '❌ YES' : '✅ NO'}`);
+        console.log(
+          `  - Duplicate columns: ${finalAnalysis.duplicateColumns ? '❌ YES' : '✅ NO'}`
+        );
         console.log(`  - Key matches: ${finalAnalysis.keyMatches}/${finalAnalysis.totalColumns}`);
 
         if (finalAnalysis.missingKeys.length > 0) {
-          console.log(`  - Missing keys: ${finalAnalysis.missingKeys.slice(0, 3).join(', ')}${finalAnalysis.missingKeys.length > 3 ? '...' : ''}`);
+          console.log(
+            `  - Missing keys: ${finalAnalysis.missingKeys.slice(0, 3).join(', ')}${finalAnalysis.missingKeys.length > 3 ? '...' : ''}`
+          );
         }
 
         // Success criteria
@@ -163,7 +169,6 @@ test.describe('Final Verification Test', () => {
       console.log('  - ملاحظات المحكمة (Court Notes): populated');
       console.log('  - ملاحظات المحامي (Lawyer Notes): populated');
       console.log('  - الجلسة القادمة (Next Hearing): populated');
-
     } else {
       console.log('❌ Could not find New Test Client Don');
     }

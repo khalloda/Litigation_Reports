@@ -22,12 +22,14 @@ test.describe('Documents Page Comprehensive Test', () => {
     console.log('✅ Logged in successfully');
   });
 
-  test('should load Documents page without loading errors and test all functionality', async ({ page }) => {
+  test('should load Documents page without loading errors and test all functionality', async ({
+    page,
+  }) => {
     console.log('📄 Testing complete Documents page functionality...');
 
     // Monitor console errors
     const consoleErrors: string[] = [];
-    page.on('console', msg => {
+    page.on('console', (msg) => {
       if (msg.type() === 'error') {
         consoleErrors.push(msg.text());
       }
@@ -45,7 +47,8 @@ test.describe('Documents Page Comprehensive Test', () => {
     // Check that the page loads without the error message
     const pageContent = await page.textContent('body');
     const hasLoadingError = pageContent?.includes('خطأ في تحميل المستندات') || false;
-    const hasDocumentsInterface = pageContent?.includes('رفع مستند جديد') || pageContent?.includes('إدارة الوثائق') || false;
+    const hasDocumentsInterface =
+      pageContent?.includes('رفع مستند جديد') || pageContent?.includes('إدارة الوثائق') || false;
 
     console.log(`❌ Has loading error message: ${hasLoadingError}`);
     console.log(`📄 Has documents interface: ${hasDocumentsInterface}`);
@@ -58,12 +61,18 @@ test.describe('Documents Page Comprehensive Test', () => {
     if (documentRows > 0) {
       console.log('🔽 Testing download functionality...');
 
-      const firstActionButton = page.locator('tbody tr').first().locator('.dropdown-toggle').first();
+      const firstActionButton = page
+        .locator('tbody tr')
+        .first()
+        .locator('.dropdown-toggle')
+        .first();
       if (await firstActionButton.isVisible()) {
         await firstActionButton.click();
         await page.waitForTimeout(1000);
 
-        const downloadButton = page.locator('a:has-text("تحميل"), button:has-text("تحميل")').first();
+        const downloadButton = page
+          .locator('a:has-text("تحميل"), button:has-text("تحميل")')
+          .first();
         if (await downloadButton.isVisible()) {
           console.log('✅ Download button is accessible');
         }
@@ -93,7 +102,9 @@ test.describe('Documents Page Comprehensive Test', () => {
 
     // Test upload functionality
     console.log('📤 Testing upload functionality...');
-    const uploadButton = page.locator('button:has-text("رفع مستند جديد"), button:has-text("Upload")').first();
+    const uploadButton = page
+      .locator('button:has-text("رفع مستند جديد"), button:has-text("Upload")')
+      .first();
 
     if (await uploadButton.isVisible()) {
       await uploadButton.click();
@@ -138,15 +149,16 @@ test.describe('Documents Page Comprehensive Test', () => {
     console.log(`❌ Console errors: ${consoleErrors.length}`);
     if (consoleErrors.length > 0) {
       console.log('Console errors found:');
-      consoleErrors.forEach(error => console.log(`  - ${error}`));
+      consoleErrors.forEach((error) => console.log(`  - ${error}`));
     }
 
     // Verify no critical errors that prevent functionality
-    const hasCriticalLoadingErrors = consoleErrors.some(error =>
-      error.includes('Cannot read properties of undefined') ||
-      error.includes('Documents load error') ||
-      error.includes('Failed to fetch documents') ||
-      error.includes('TypeError: Cannot convert undefined or null to object')
+    const hasCriticalLoadingErrors = consoleErrors.some(
+      (error) =>
+        error.includes('Cannot read properties of undefined') ||
+        error.includes('Documents load error') ||
+        error.includes('Failed to fetch documents') ||
+        error.includes('TypeError: Cannot convert undefined or null to object')
     );
 
     console.log(`🚨 Critical loading errors: ${hasCriticalLoadingErrors}`);
@@ -167,7 +179,8 @@ test.describe('Documents Page Comprehensive Test', () => {
     await page.waitForTimeout(3000);
 
     const reportsPageContent = await page.textContent('body');
-    const hasReportsContent = reportsPageContent?.includes('التقارير') || reportsPageContent?.includes('Reports') || false;
+    const hasReportsContent =
+      reportsPageContent?.includes('التقارير') || reportsPageContent?.includes('Reports') || false;
 
     console.log(`📊 Reports page loads correctly: ${hasReportsContent}`);
     expect(hasReportsContent, 'Reports page should load correctly').toBe(true);
@@ -177,7 +190,10 @@ test.describe('Documents Page Comprehensive Test', () => {
     await page.waitForTimeout(3000);
 
     const invoicesPageContent = await page.textContent('body');
-    const hasInvoicesContent = invoicesPageContent?.includes('الفواتير') || invoicesPageContent?.includes('Invoice') || false;
+    const hasInvoicesContent =
+      invoicesPageContent?.includes('الفواتير') ||
+      invoicesPageContent?.includes('Invoice') ||
+      false;
 
     console.log(`💰 Invoices page loads correctly: ${hasInvoicesContent}`);
     expect(hasInvoicesContent, 'Invoices page should load correctly').toBe(true);
@@ -187,7 +203,8 @@ test.describe('Documents Page Comprehensive Test', () => {
     await page.waitForTimeout(3000);
 
     const lawyersPageContent = await page.textContent('body');
-    const hasLawyersContent = lawyersPageContent?.includes('المحامون') || lawyersPageContent?.includes('Lawyer') || false;
+    const hasLawyersContent =
+      lawyersPageContent?.includes('المحامون') || lawyersPageContent?.includes('Lawyer') || false;
 
     console.log(`👥 Lawyers page loads correctly: ${hasLawyersContent}`);
     expect(hasLawyersContent, 'Lawyers page should load correctly').toBe(true);

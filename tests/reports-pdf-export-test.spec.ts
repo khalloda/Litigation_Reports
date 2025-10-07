@@ -92,17 +92,17 @@ test.describe('Reports Page PDF Export - Fixed', () => {
     const testDataManyColumns = [
       {
         id: 1,
-        client_name_ar: "عميل طويل الاسم جداً",
-        client_name_en: "Very Long Client Name",
-        client_type: "company",
-        status: "active",
-        phone: "01234567890",
-        email: "client@example.com",
-        address_ar: "عنوان طويل في مصر",
-        contact_lawyer: "محامي مسؤول",
-        created_at: "2024-01-15",
-        cases_count: 5
-      }
+        client_name_ar: 'عميل طويل الاسم جداً',
+        client_name_en: 'Very Long Client Name',
+        client_type: 'company',
+        status: 'active',
+        phone: '01234567890',
+        email: 'client@example.com',
+        address_ar: 'عنوان طويل في مصر',
+        contact_lawyer: 'محامي مسؤول',
+        created_at: '2024-01-15',
+        cases_count: 5,
+      },
     ];
 
     // Test with many columns (should trigger responsive formatting)
@@ -117,19 +117,19 @@ test.describe('Reports Page PDF Export - Fixed', () => {
       { key: 'address_ar', label: 'العنوان' },
       { key: 'contact_lawyer', label: 'المحامي المسؤول' },
       { key: 'created_at', label: 'تاريخ الإنشاء' },
-      { key: 'cases_count', label: 'عدد القضايا' }
+      { key: 'cases_count', label: 'عدد القضايا' },
     ];
 
     const response = await request.post(`${BASE_URL}/api/export/pdf-chrome`, {
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       data: {
         data: testDataManyColumns,
         columns: manyColumns,
         title: 'اختبار التنسيق - أعمدة كثيرة',
-        filename: 'table_formatting_test'
-      }
+        filename: 'table_formatting_test',
+      },
     });
 
     expect(response.status()).toBe(200);
@@ -152,12 +152,12 @@ test.describe('Reports Page PDF Export - Fixed', () => {
     const testDataMediumColumns = [
       {
         id: 1,
-        client_name_ar: "عميل تجريبي",
-        client_type: "individual",
-        status: "active",
-        phone: "01234567890",
-        created_at: "2024-01-15"
-      }
+        client_name_ar: 'عميل تجريبي',
+        client_type: 'individual',
+        status: 'active',
+        phone: '01234567890',
+        created_at: '2024-01-15',
+      },
     ];
 
     // Test with medium number of columns (6 columns)
@@ -167,19 +167,19 @@ test.describe('Reports Page PDF Export - Fixed', () => {
       { key: 'client_type', label: 'النوع' },
       { key: 'status', label: 'الحالة' },
       { key: 'phone', label: 'الهاتف' },
-      { key: 'created_at', label: 'التاريخ' }
+      { key: 'created_at', label: 'التاريخ' },
     ];
 
     const response = await request.post(`${BASE_URL}/api/export/pdf-chrome`, {
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       data: {
         data: testDataMediumColumns,
         columns: mediumColumns,
         title: 'اختبار التنسيق - أعمدة متوسطة',
-        filename: 'medium_columns_test'
-      }
+        filename: 'medium_columns_test',
+      },
     });
 
     expect(response.status()).toBe(200);

@@ -5,7 +5,7 @@ async function expectTableHeadersExactly(page, expectedHeaders: string[]) {
   await page.waitForSelector('table thead th', { timeout: 10000 });
 
   const headers = await page.locator('table thead th:visible').allTextContents();
-  const trimmed = headers.map(h => h.trim()).filter(Boolean);
+  const trimmed = headers.map((h) => h.trim()).filter(Boolean);
 
   console.log('Expected headers:', expectedHeaders);
   console.log('Actual headers:', trimmed);
@@ -59,10 +59,12 @@ async function loginIfNeeded(page) {
 test.describe('Custom Reports — Column Selection Bug Reproduction and Fix', () => {
   // Use the correct base URL for the reports
   test.use({
-    baseURL: 'http://lit.local:8080'
+    baseURL: 'http://lit.local:8080',
   });
 
-  test.skip('BUG REPRODUCTION: Selecting 2-3 columns still shows ALL columns (Clients)', async ({ page }) => {
+  test.skip('BUG REPRODUCTION: Selecting 2-3 columns still shows ALL columns (Clients)', async ({
+    page,
+  }) => {
     console.log('🧪 Starting test: BUG REPRODUCTION for Clients custom reports');
 
     // Navigate to reports and login if needed
@@ -115,8 +117,10 @@ test.describe('Custom Reports — Column Selection Bug Reproduction and Fix', ()
         console.log(`⚠️ Column not found: ${columnLabel}, trying alternative selectors`);
 
         // Try alternative approaches for finding the checkbox
-        const alternativeCheckbox = page.locator(`input[type="checkbox"]`).locator(`xpath=..//*[contains(text(), "${columnLabel}")]/../input`);
-        if (await alternativeCheckbox.count() > 0) {
+        const alternativeCheckbox = page
+          .locator(`input[type="checkbox"]`)
+          .locator(`xpath=..//*[contains(text(), "${columnLabel}")]/../input`);
+        if ((await alternativeCheckbox.count()) > 0) {
           await alternativeCheckbox.check();
           console.log(`✅ Selected column (alternative): ${columnLabel}`);
         }
@@ -132,7 +136,7 @@ test.describe('Custom Reports — Column Selection Bug Reproduction and Fix', ()
 
     // 6) Check if bug exists: verify that ALL columns are shown instead of just selected ones
     const actualHeaders = await page.locator('table thead th:visible').allTextContents();
-    const trimmedHeaders = actualHeaders.map(h => h.trim()).filter(Boolean);
+    const trimmedHeaders = actualHeaders.map((h) => h.trim()).filter(Boolean);
 
     console.log('🔍 BUG CHECK - Expected only selected columns:', selectedColumns);
     console.log('🔍 BUG CHECK - Actual headers shown:', trimmedHeaders);
@@ -148,7 +152,7 @@ test.describe('Custom Reports — Column Selection Bug Reproduction and Fix', ()
       // Take a screenshot for documentation
       await page.screenshot({
         path: 'test-results/bug-reproduction-clients-columns.png',
-        fullPage: true
+        fullPage: true,
       });
 
       // This assertion will fail, proving the bug exists
@@ -158,7 +162,9 @@ test.describe('Custom Reports — Column Selection Bug Reproduction and Fix', ()
     }
   });
 
-  test.skip('BUG REPRODUCTION: Column selection issue affects ALL report categories (Cases)', async ({ page }) => {
+  test.skip('BUG REPRODUCTION: Column selection issue affects ALL report categories (Cases)', async ({
+    page,
+  }) => {
     console.log('🧪 Starting test: BUG REPRODUCTION for Cases custom reports');
 
     await loginIfNeeded(page);
@@ -204,7 +210,7 @@ test.describe('Custom Reports — Column Selection Bug Reproduction and Fix', ()
 
     // Verify bug exists for cases too
     const actualHeaders = await page.locator('table thead th:visible').allTextContents();
-    const trimmedHeaders = actualHeaders.map(h => h.trim()).filter(Boolean);
+    const trimmedHeaders = actualHeaders.map((h) => h.trim()).filter(Boolean);
 
     console.log('🔍 CASES BUG CHECK - Expected:', selectedCaseColumns);
     console.log('🔍 CASES BUG CHECK - Actual:', trimmedHeaders);
@@ -215,14 +221,16 @@ test.describe('Custom Reports — Column Selection Bug Reproduction and Fix', ()
       console.log('🐛 BUG CONFIRMED in Cases: More columns shown than selected!');
       await page.screenshot({
         path: 'test-results/bug-reproduction-cases-columns.png',
-        fullPage: true
+        fullPage: true,
       });
 
       expect(trimmedHeaders.length).toBe(selectedCaseColumns.length);
     }
   });
 
-  test.skip('BUG REPRODUCTION: Column selection issue affects Hearings reports too', async ({ page }) => {
+  test.skip('BUG REPRODUCTION: Column selection issue affects Hearings reports too', async ({
+    page,
+  }) => {
     console.log('🧪 Starting test: BUG REPRODUCTION for Hearings custom reports');
 
     await loginIfNeeded(page);
@@ -264,7 +272,7 @@ test.describe('Custom Reports — Column Selection Bug Reproduction and Fix', ()
     await page.waitForSelector('table thead th', { timeout: 15000 });
 
     const actualHeaders = await page.locator('table thead th:visible').allTextContents();
-    const trimmedHeaders = actualHeaders.map(h => h.trim()).filter(Boolean);
+    const trimmedHeaders = actualHeaders.map((h) => h.trim()).filter(Boolean);
 
     console.log('🔍 HEARINGS BUG CHECK - Expected:', selectedHearingColumns);
     console.log('🔍 HEARINGS BUG CHECK - Actual:', trimmedHeaders);
@@ -275,7 +283,7 @@ test.describe('Custom Reports — Column Selection Bug Reproduction and Fix', ()
       console.log('🐛 BUG CONFIRMED in Hearings: More columns shown than selected!');
       await page.screenshot({
         path: 'test-results/bug-reproduction-hearings-columns.png',
-        fullPage: true
+        fullPage: true,
       });
 
       expect(trimmedHeaders.length).toBe(selectedHearingColumns.length);

@@ -102,7 +102,7 @@ export const LawyerMultiSelect: React.FC<LawyerMultiSelectProps> = ({
   error,
   required = false,
   name,
-  className
+  className,
 }) => {
   const { currentLanguage } = useLanguage();
   const [lawyers, setLawyers] = useState<LawyerOption[]>([]);
@@ -119,13 +119,42 @@ export const LawyerMultiSelect: React.FC<LawyerMultiSelectProps> = ({
       const response = await api.get('/lawyers?limit=1000&is_active=1');
 
       if (response.success && response.data.data) {
-        const lawyerOptions: LawyerOption[] = response.data.data.map((lawyer: Lawyer) => ({
-          value: lawyer.id,
-          label: currentLanguage === 'ar'
-            ? `${lawyer.lawyer_name_ar}${lawyer.lawyer_name_en ? ` - ${lawyer.lawyer_name_en}` : ''}`
-            : `${lawyer.lawyer_name_en || lawyer.lawyer_name_ar}`,
-          data: lawyer
-        }));
+        const lawyerOptions: LawyerOption[] = response.data.data.map((lawyer: Lawyer) => {
+          // Helper function to check if text contains corrupted characters
+          const isCorruptedText = (text: string): boolean => {
+            return !text || text.includes('????') || text.trim() === '' || /^\s*\?\?\?\?\s*/.test(text);
+          };
+
+          // Get the best available name
+          const getDisplayName = (): string => {
+            const arName = lawyer.lawyer_name_ar;
+            const enName = lawyer.lawyer_name_en;
+
+            if (currentLanguage === 'ar') {
+              if (!isCorruptedText(arName)) {
+                return enName && !isCorruptedText(enName) ? `${arName} - ${enName}` : arName;
+              } else if (!isCorruptedText(enName)) {
+                return enName;
+              } else {
+                return `محامي ${lawyer.id}`;
+              }
+            } else {
+              if (!isCorruptedText(enName)) {
+                return enName;
+              } else if (!isCorruptedText(arName)) {
+                return arName;
+              } else {
+                return `Lawyer ${lawyer.id}`;
+              }
+            }
+          };
+
+          return {
+            value: lawyer.id,
+            label: getDisplayName(),
+            data: lawyer,
+          };
+        });
 
         setLawyers(lawyerOptions);
       }
@@ -138,34 +167,37 @@ export const LawyerMultiSelect: React.FC<LawyerMultiSelectProps> = ({
   };
 
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const selectedIds = Array.from(event.target.selectedOptions, option => parseInt(option.value));
-    const selectedLawyers = lawyers.filter(lawyer => selectedIds.includes(lawyer.value));
+    const selectedIds = Array.from(event.target.selectedOptions, (option) =>
+      parseInt(option.value)
+    );
+    const selectedLawyers = lawyers.filter((lawyer) => selectedIds.includes(lawyer.value));
     onChange(selectedLawyers);
   };
 
   const removeLawyer = (lawyerId: number) => {
-    const updatedSelection = value.filter(lawyer => lawyer.value !== lawyerId);
+    const updatedSelection = value.filter((lawyer) => lawyer.value !== lawyerId);
     onChange(updatedSelection);
   };
 
-  const defaultPlaceholder = currentLanguage === 'ar'
-    ? 'اختر المحامين الحاضرين في الجلسة...'
-    : 'Select lawyers attending the hearing...';
+  const defaultPlaceholder =
+    currentLanguage === 'ar'
+      ? 'اختر المحامين الحاضرين في الجلسة...'
+      : 'Select lawyers attending the hearing...';
 
   return (
     <div className={className}>
       <style>{selectStyles}</style>
 
       {loading ? (
-        <div className="text-center p-3">
+        <div className='text-center p-3'>
           <span>{currentLanguage === 'ar' ? 'جاري تحميل المحامين...' : 'Loading lawyers...'}</span>
         </div>
       ) : (
         <>
           <select
-            className="lawyer-multiselect form-control"
+            className='lawyer-multiselect form-control'
             multiple
-            value={value.map(v => v.value.toString())}
+            value={value.map((v) => v.value.toString())}
             onChange={handleSelectChange}
             disabled={isDisabled}
             name={name}
@@ -176,7 +208,7 @@ export const LawyerMultiSelect: React.FC<LawyerMultiSelectProps> = ({
                 {currentLanguage === 'ar' ? 'لا توجد محامين متاحين' : 'No lawyers available'}
               </option>
             ) : (
-              lawyers.map(lawyer => (
+              lawyers.map((lawyer) => (
                 <option key={lawyer.value} value={lawyer.value}>
                   {lawyer.label}
                 </option>
@@ -186,16 +218,16 @@ export const LawyerMultiSelect: React.FC<LawyerMultiSelectProps> = ({
 
           {/* Selected Lawyers Display */}
           {value.length > 0 && (
-            <div className="selected-lawyers">
-              <small className="text-muted">
+            <div className='selected-lawyers'>
+              <small className='text-muted'>
                 {currentLanguage === 'ar' ? 'المحامون المختارون:' : 'Selected lawyers:'}
               </small>
-              <div className="mt-2">
-                {value.map(lawyer => (
-                  <span key={lawyer.value} className="selected-lawyer-tag">
+              <div className='mt-2'>
+                {value.map((lawyer) => (
+                  <span key={lawyer.value} className='selected-lawyer-tag'>
                     {lawyer.label}
                     <span
-                      className="selected-lawyer-remove"
+                      className='selected-lawyer-remove'
                       onClick={() => removeLawyer(lawyer.value)}
                       title={currentLanguage === 'ar' ? 'إزالة' : 'Remove'}
                     >
@@ -211,14 +243,14 @@ export const LawyerMultiSelect: React.FC<LawyerMultiSelectProps> = ({
 
       {/* Error Display */}
       {error && (
-        <Form.Control.Feedback type="invalid" className="d-block">
+        <Form.Control.Feedback type='invalid' className='d-block'>
           {error}
         </Form.Control.Feedback>
       )}
 
       {/* Required Indicator */}
       {required && !value?.length && (
-        <Form.Text className="text-danger small">
+        <Form.Text className='text-danger small'>
           {currentLanguage === 'ar' ? 'هذا الحقل مطلوب' : 'This field is required'}
         </Form.Text>
       )}

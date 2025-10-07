@@ -18,7 +18,9 @@ test.describe('PDF Data Flow Debug', () => {
     // Open client-specific report modal
     await page.click('button:has-text("تقرير عميل محدد")');
     await page.waitForSelector('.modal', { timeout: 5000 });
-    await page.waitForFunction(() => document.querySelectorAll('.spinner-border').length === 0, { timeout: 10000 });
+    await page.waitForFunction(() => document.querySelectorAll('.spinner-border').length === 0, {
+      timeout: 10000,
+    });
 
     // Search and select client
     const searchInput = page.locator('input[placeholder*="ابحث عن عميل"]');
@@ -72,10 +74,12 @@ test.describe('PDF Data Flow Debug', () => {
               const firstHearing = pdfRequestData.data[0];
               console.log('Keys in data:', Object.keys(firstHearing));
 
-              Object.keys(firstHearing).forEach(key => {
+              Object.keys(firstHearing).forEach((key) => {
                 const value = firstHearing[key];
                 const hasValue = value !== null && value !== undefined && value !== '';
-                console.log(`  ${key}: ${hasValue ? '"' + String(value).substring(0, 30) + (String(value).length > 30 ? '...' : '') + '"' : 'EMPTY'}`);
+                console.log(
+                  `  ${key}: ${hasValue ? '"' + String(value).substring(0, 30) + (String(value).length > 30 ? '...' : '') + '"' : 'EMPTY'}`
+                );
               });
             }
 
@@ -90,17 +94,21 @@ test.describe('PDF Data Flow Debug', () => {
             if (pdfRequestData.data && pdfRequestData.data.length > 0 && pdfRequestData.columns) {
               console.log('\n🔗 KEY MATCHING ANALYSIS:');
               const dataKeys = Object.keys(pdfRequestData.data[0]);
-              const columnKeys = pdfRequestData.columns.map(col => col.key);
+              const columnKeys = pdfRequestData.columns.map((col) => col.key);
 
-              columnKeys.forEach(colKey => {
+              columnKeys.forEach((colKey) => {
                 const hasDataKey = dataKeys.includes(colKey);
                 const dataValue = pdfRequestData.data[0][colKey];
                 const hasValue = dataValue !== null && dataValue !== undefined && dataValue !== '';
 
-                console.log(`  "${colKey}": ${hasDataKey ? '✅ KEY MATCH' : '❌ KEY MISSING'} ${hasValue ? '✅ HAS DATA' : '⚪ EMPTY'}`);
+                console.log(
+                  `  "${colKey}": ${hasDataKey ? '✅ KEY MATCH' : '❌ KEY MISSING'} ${hasValue ? '✅ HAS DATA' : '⚪ EMPTY'}`
+                );
 
                 if (hasDataKey && hasValue) {
-                  console.log(`    Value: "${String(dataValue).substring(0, 50)}${String(dataValue).length > 50 ? '...' : ''}"`);
+                  console.log(
+                    `    Value: "${String(dataValue).substring(0, 50)}${String(dataValue).length > 50 ? '...' : ''}"`
+                  );
                 } else if (!hasDataKey) {
                   console.log(`    Available keys: ${dataKeys.join(', ')}`);
                 }
@@ -122,10 +130,18 @@ test.describe('PDF Data Flow Debug', () => {
       console.log('\n🎯 ===== DIAGNOSIS =====');
       if (pdfRequestData.data && pdfRequestData.data.length > 0) {
         const firstData = pdfRequestData.data[0];
-        const expectedColumns = ['hearing_date', 'hearing_type', 'hearing_result', 'matter_court', 'court_notes', 'lawyer_notes', 'next_hearing'];
+        const expectedColumns = [
+          'hearing_date',
+          'hearing_type',
+          'hearing_result',
+          'matter_court',
+          'court_notes',
+          'lawyer_notes',
+          'next_hearing',
+        ];
 
         console.log('Expected columns vs actual data:');
-        expectedColumns.forEach(expected => {
+        expectedColumns.forEach((expected) => {
           const hasKey = Object.keys(firstData).includes(expected);
           const value = firstData[expected];
           const hasValue = value !== null && value !== undefined && value !== '';
@@ -135,7 +151,9 @@ test.describe('PDF Data Flow Debug', () => {
           } else if (!hasValue) {
             console.log(`⚪ EMPTY: "${expected}" exists but has no value`);
           } else {
-            console.log(`✅ GOOD: "${expected}" has value "${String(value).substring(0, 30)}${String(value).length > 30 ? '...' : ''}"`);
+            console.log(
+              `✅ GOOD: "${expected}" has value "${String(value).substring(0, 30)}${String(value).length > 30 ? '...' : ''}"`
+            );
           }
         });
       }

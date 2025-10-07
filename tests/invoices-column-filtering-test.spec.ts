@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Invoices Custom Reports Column Filtering Test', () => {
   test.use({
-    baseURL: 'http://lit.local:8080'
+    baseURL: 'http://lit.local:8080',
   });
 
   // Helper to login if needed
@@ -75,7 +75,9 @@ test.describe('Invoices Custom Reports Column Filtering Test', () => {
       }
     }
 
-    console.log(`Selected ${selectedCount} invoice columns out of ${targetInvoiceColumns.length} target columns`);
+    console.log(
+      `Selected ${selectedCount} invoice columns out of ${targetInvoiceColumns.length} target columns`
+    );
 
     // Generate the report
     await page.getByRole('button', { name: /إنشاء التقرير|تطبيق|اعتماد|عرض التقرير/i }).click();
@@ -85,7 +87,7 @@ test.describe('Invoices Custom Reports Column Filtering Test', () => {
 
     // Check that only the selected columns are displayed
     const headers = await page.locator('table thead th:visible').allTextContents();
-    const trimmedHeaders = headers.map(h => h.trim()).filter(Boolean);
+    const trimmedHeaders = headers.map((h) => h.trim()).filter(Boolean);
 
     console.log('📊 Invoices - Expected columns:', selectedCount);
     console.log('📊 Invoices - Actual headers:', trimmedHeaders.length);

@@ -107,13 +107,7 @@ const defaultFormData: CaseFormData = {
   contract_id: '',
 };
 
-const CaseModal: React.FC<CaseModalProps> = ({
-  show,
-  onHide,
-  onSave,
-  caseData,
-  mode,
-}) => {
+const CaseModal: React.FC<CaseModalProps> = ({ show, onHide, onSave, caseData, mode }) => {
   const [formData, setFormData] = useState<CaseFormData>(defaultFormData);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -135,7 +129,7 @@ const CaseModal: React.FC<CaseModalProps> = ({
         setFormData({
           ...defaultFormData,
           ...caseData,
-          client_id: String(caseData.client_id || '')
+          client_id: String(caseData.client_id || ''),
         });
 
         // Handle lawyer data if available
@@ -210,7 +204,7 @@ const CaseModal: React.FC<CaseModalProps> = ({
       // Prepare form data with lawyer IDs
       const submitData = {
         ...formData,
-        lawyer_ids: selectedLawyers.map(lawyer => lawyer.value)
+        lawyer_ids: selectedLawyers.map((lawyer) => lawyer.value),
       };
 
       let response;
@@ -237,31 +231,32 @@ const CaseModal: React.FC<CaseModalProps> = ({
     }
   };
 
-  const modalTitle = mode === 'create' ? 'إضافة قضية جديدة' : mode === 'edit' ? 'تعديل القضية' : 'تفاصيل القضية';
+  const modalTitle =
+    mode === 'create' ? 'إضافة قضية جديدة' : mode === 'edit' ? 'تعديل القضية' : 'تفاصيل القضية';
 
   return (
-    <Modal show={show} onHide={onHide} size="xl" backdrop="static">
+    <Modal show={show} onHide={onHide} size='xl' backdrop='static'>
       <Modal.Header closeButton>
         <Modal.Title>
-          <Gavel className="me-2" size={20} />
+          <Gavel className='me-2' size={20} />
           {modalTitle}
         </Modal.Title>
       </Modal.Header>
 
       <Form onSubmit={handleSubmit}>
         <Modal.Body style={{ maxHeight: '70vh', overflowY: 'auto' }}>
-          {error && <Alert variant="danger">{error}</Alert>}
+          {error && <Alert variant='danger'>{error}</Alert>}
 
           <Row>
             {/* Basic Information */}
-            <Col md={12} className="mb-4">
-              <h5 className="border-bottom pb-2 mb-3">
-                <FileText className="me-2" size={18} />
+            <Col md={12} className='mb-4'>
+              <h5 className='border-bottom pb-2 mb-3'>
+                <FileText className='me-2' size={18} />
                 المعلومات الأساسية
               </h5>
             </Col>
 
-            <Col md={6} className="mb-3">
+            <Col md={6} className='mb-3'>
               <Form.Group>
                 <Form.Label>العميل *</Form.Label>
                 <Form.Select
@@ -270,22 +265,23 @@ const CaseModal: React.FC<CaseModalProps> = ({
                   disabled={mode === 'view'}
                   required
                 >
-                  <option value="">اختر العميل</option>
+                  <option value=''>اختر العميل</option>
                   {clients.map((client) => (
                     <option key={client.id} value={client.id}>
-                      {client.client_name_ar} {client.client_name_en && `(${client.client_name_en})`}
+                      {client.client_name_ar}{' '}
+                      {client.client_name_en && `(${client.client_name_en})`}
                     </option>
                   ))}
                 </Form.Select>
               </Form.Group>
             </Col>
 
-            <Col md={6} className="mb-3">
+            <Col md={6} className='mb-3'>
               <Form.Group>
                 <Form.Label>رقم القضية *</Form.Label>
                 <Form.Control
-                  type="text"
-                  placeholder="أدخل رقم القضية"
+                  type='text'
+                  placeholder='أدخل رقم القضية'
                   value={formData.matter_id}
                   onChange={(e) => handleInputChange('matter_id', e.target.value)}
                   disabled={mode === 'view'}
@@ -294,12 +290,12 @@ const CaseModal: React.FC<CaseModalProps> = ({
               </Form.Group>
             </Col>
 
-            <Col md={6} className="mb-3">
+            <Col md={6} className='mb-3'>
               <Form.Group>
                 <Form.Label>موضوع القضية (عربي) *</Form.Label>
                 <Form.Control
-                  type="text"
-                  placeholder="أدخل موضوع القضية باللغة العربية"
+                  type='text'
+                  placeholder='أدخل موضوع القضية باللغة العربية'
                   value={formData.matter_ar}
                   onChange={(e) => handleInputChange('matter_ar', e.target.value)}
                   disabled={mode === 'view'}
@@ -308,12 +304,12 @@ const CaseModal: React.FC<CaseModalProps> = ({
               </Form.Group>
             </Col>
 
-            <Col md={6} className="mb-3">
+            <Col md={6} className='mb-3'>
               <Form.Group>
                 <Form.Label>موضوع القضية (إنجليزي)</Form.Label>
                 <Form.Control
-                  type="text"
-                  placeholder="Enter case subject in English"
+                  type='text'
+                  placeholder='Enter case subject in English'
                   value={formData.matter_en}
                   onChange={(e) => handleInputChange('matter_en', e.target.value)}
                   disabled={mode === 'view'}
@@ -321,7 +317,7 @@ const CaseModal: React.FC<CaseModalProps> = ({
               </Form.Group>
             </Col>
 
-            <Col md={6} className="mb-3">
+            <Col md={6} className='mb-3'>
               <Form.Group>
                 <Form.Label>حالة القضية</Form.Label>
                 <Form.Select
@@ -330,13 +326,15 @@ const CaseModal: React.FC<CaseModalProps> = ({
                   disabled={mode === 'view'}
                 >
                   {Object.entries(options.status).map(([key, value]) => (
-                    <option key={key} value={key}>{value}</option>
+                    <option key={key} value={key}>
+                      {value}
+                    </option>
                   ))}
                 </Form.Select>
               </Form.Group>
             </Col>
 
-            <Col md={6} className="mb-3">
+            <Col md={6} className='mb-3'>
               <Form.Group>
                 <Form.Label>نوع القضية</Form.Label>
                 <Form.Select
@@ -344,15 +342,17 @@ const CaseModal: React.FC<CaseModalProps> = ({
                   onChange={(e) => handleInputChange('matter_category', e.target.value)}
                   disabled={mode === 'view'}
                 >
-                  <option value="">اختر نوع القضية</option>
+                  <option value=''>اختر نوع القضية</option>
                   {Object.entries(options.category).map(([key, value]) => (
-                    <option key={key} value={key}>{value}</option>
+                    <option key={key} value={key}>
+                      {value}
+                    </option>
                   ))}
                 </Form.Select>
               </Form.Group>
             </Col>
 
-            <Col md={6} className="mb-3">
+            <Col md={6} className='mb-3'>
               <Form.Group>
                 <Form.Label>أهمية القضية</Form.Label>
                 <Form.Select
@@ -361,13 +361,15 @@ const CaseModal: React.FC<CaseModalProps> = ({
                   disabled={mode === 'view'}
                 >
                   {Object.entries(options.importance).map(([key, value]) => (
-                    <option key={key} value={key}>{value}</option>
+                    <option key={key} value={key}>
+                      {value}
+                    </option>
                   ))}
                 </Form.Select>
               </Form.Group>
             </Col>
 
-            <Col md={6} className="mb-3">
+            <Col md={6} className='mb-3'>
               <Form.Group>
                 <Form.Label>درجة القضية</Form.Label>
                 <Form.Select
@@ -375,27 +377,29 @@ const CaseModal: React.FC<CaseModalProps> = ({
                   onChange={(e) => handleInputChange('matter_degree', e.target.value)}
                   disabled={mode === 'view'}
                 >
-                  <option value="">اختر درجة القضية</option>
+                  <option value=''>اختر درجة القضية</option>
                   {Object.entries(options.degree).map(([key, value]) => (
-                    <option key={key} value={key}>{value}</option>
+                    <option key={key} value={key}>
+                      {value}
+                    </option>
                   ))}
                 </Form.Select>
               </Form.Group>
             </Col>
 
             {/* Dates Section */}
-            <Col md={12} className="mb-4 mt-4">
-              <h5 className="border-bottom pb-2 mb-3">
-                <Calendar className="me-2" size={18} />
+            <Col md={12} className='mb-4 mt-4'>
+              <h5 className='border-bottom pb-2 mb-3'>
+                <Calendar className='me-2' size={18} />
                 التواريخ
               </h5>
             </Col>
 
-            <Col md={6} className="mb-3">
+            <Col md={6} className='mb-3'>
               <Form.Group>
                 <Form.Label>تاريخ بداية القضية</Form.Label>
                 <Form.Control
-                  type="date"
+                  type='date'
                   value={formData.matter_start_date}
                   onChange={(e) => handleInputChange('matter_start_date', e.target.value)}
                   disabled={mode === 'view'}
@@ -403,11 +407,11 @@ const CaseModal: React.FC<CaseModalProps> = ({
               </Form.Group>
             </Col>
 
-            <Col md={6} className="mb-3">
+            <Col md={6} className='mb-3'>
               <Form.Group>
                 <Form.Label>تاريخ انتهاء القضية</Form.Label>
                 <Form.Control
-                  type="date"
+                  type='date'
                   value={formData.matter_end_date}
                   onChange={(e) => handleInputChange('matter_end_date', e.target.value)}
                   disabled={mode === 'view'}
@@ -416,19 +420,19 @@ const CaseModal: React.FC<CaseModalProps> = ({
             </Col>
 
             {/* Court Information */}
-            <Col md={12} className="mb-4 mt-4">
-              <h5 className="border-bottom pb-2 mb-3">
-                <Building className="me-2" size={18} />
+            <Col md={12} className='mb-4 mt-4'>
+              <h5 className='border-bottom pb-2 mb-3'>
+                <Building className='me-2' size={18} />
                 معلومات المحكمة
               </h5>
             </Col>
 
-            <Col md={6} className="mb-3">
+            <Col md={6} className='mb-3'>
               <Form.Group>
                 <Form.Label>اسم المحكمة</Form.Label>
                 <Form.Control
-                  type="text"
-                  placeholder="أدخل اسم المحكمة"
+                  type='text'
+                  placeholder='أدخل اسم المحكمة'
                   value={formData.matter_court}
                   onChange={(e) => handleInputChange('matter_court', e.target.value)}
                   disabled={mode === 'view'}
@@ -436,12 +440,12 @@ const CaseModal: React.FC<CaseModalProps> = ({
               </Form.Group>
             </Col>
 
-            <Col md={6} className="mb-3">
+            <Col md={6} className='mb-3'>
               <Form.Group>
                 <Form.Label>رقم الدائرة</Form.Label>
                 <Form.Control
-                  type="text"
-                  placeholder="أدخل رقم الدائرة"
+                  type='text'
+                  placeholder='أدخل رقم الدائرة'
                   value={formData.matter_circuit}
                   onChange={(e) => handleInputChange('matter_circuit', e.target.value)}
                   disabled={mode === 'view'}
@@ -449,12 +453,12 @@ const CaseModal: React.FC<CaseModalProps> = ({
               </Form.Group>
             </Col>
 
-            <Col md={6} className="mb-3">
+            <Col md={6} className='mb-3'>
               <Form.Group>
                 <Form.Label>طابق المحكمة</Form.Label>
                 <Form.Control
-                  type="text"
-                  placeholder="أدخل طابق المحكمة"
+                  type='text'
+                  placeholder='أدخل طابق المحكمة'
                   value={formData.court_floor}
                   onChange={(e) => handleInputChange('court_floor', e.target.value)}
                   disabled={mode === 'view'}
@@ -462,12 +466,12 @@ const CaseModal: React.FC<CaseModalProps> = ({
               </Form.Group>
             </Col>
 
-            <Col md={6} className="mb-3">
+            <Col md={6} className='mb-3'>
               <Form.Group>
                 <Form.Label>رقم القاعة</Form.Label>
                 <Form.Control
-                  type="text"
-                  placeholder="أدخل رقم القاعة"
+                  type='text'
+                  placeholder='أدخل رقم القاعة'
                   value={formData.court_hall}
                   onChange={(e) => handleInputChange('court_hall', e.target.value)}
                   disabled={mode === 'view'}
@@ -476,20 +480,20 @@ const CaseModal: React.FC<CaseModalProps> = ({
             </Col>
 
             {/* Financial Information */}
-            <Col md={12} className="mb-4 mt-4">
-              <h5 className="border-bottom pb-2 mb-3">
-                <DollarSign className="me-2" size={18} />
+            <Col md={12} className='mb-4 mt-4'>
+              <h5 className='border-bottom pb-2 mb-3'>
+                <DollarSign className='me-2' size={18} />
                 المعلومات المالية
               </h5>
             </Col>
 
-            <Col md={6} className="mb-3">
+            <Col md={6} className='mb-3'>
               <Form.Group>
                 <Form.Label>المبلغ المطلوب</Form.Label>
                 <Form.Control
-                  type="number"
-                  step="0.01"
-                  placeholder="0.00"
+                  type='number'
+                  step='0.01'
+                  placeholder='0.00'
                   value={formData.matter_asked_amount}
                   onChange={(e) => handleInputChange('matter_asked_amount', e.target.value)}
                   disabled={mode === 'view'}
@@ -497,13 +501,13 @@ const CaseModal: React.FC<CaseModalProps> = ({
               </Form.Group>
             </Col>
 
-            <Col md={6} className="mb-3">
+            <Col md={6} className='mb-3'>
               <Form.Group>
                 <Form.Label>المبلغ المحكوم به</Form.Label>
                 <Form.Control
-                  type="number"
-                  step="0.01"
-                  placeholder="0.00"
+                  type='number'
+                  step='0.01'
+                  placeholder='0.00'
                   value={formData.matter_judged_amount}
                   onChange={(e) => handleInputChange('matter_judged_amount', e.target.value)}
                   disabled={mode === 'view'}
@@ -512,19 +516,19 @@ const CaseModal: React.FC<CaseModalProps> = ({
             </Col>
 
             {/* Parties Information */}
-            <Col md={12} className="mb-4 mt-4">
-              <h5 className="border-bottom pb-2 mb-3">
-                <Users className="me-2" size={18} />
+            <Col md={12} className='mb-4 mt-4'>
+              <h5 className='border-bottom pb-2 mb-3'>
+                <Users className='me-2' size={18} />
                 الأطراف
               </h5>
             </Col>
 
-            <Col md={6} className="mb-3">
+            <Col md={6} className='mb-3'>
               <Form.Group>
                 <Form.Label>صفة الموكل</Form.Label>
                 <Form.Control
-                  type="text"
-                  placeholder="أدخل صفة الموكل"
+                  type='text'
+                  placeholder='أدخل صفة الموكل'
                   value={formData.client_capacity}
                   onChange={(e) => handleInputChange('client_capacity', e.target.value)}
                   disabled={mode === 'view'}
@@ -532,12 +536,12 @@ const CaseModal: React.FC<CaseModalProps> = ({
               </Form.Group>
             </Col>
 
-            <Col md={6} className="mb-3">
+            <Col md={6} className='mb-3'>
               <Form.Group>
                 <Form.Label>صفة المخصم</Form.Label>
                 <Form.Control
-                  type="text"
-                  placeholder="أدخل صفة المخصم"
+                  type='text'
+                  placeholder='أدخل صفة المخصم'
                   value={formData.opponent_capacity}
                   onChange={(e) => handleInputChange('opponent_capacity', e.target.value)}
                   disabled={mode === 'view'}
@@ -545,34 +549,34 @@ const CaseModal: React.FC<CaseModalProps> = ({
               </Form.Group>
             </Col>
 
-            <Col md={12} className="mb-3">
+            <Col md={12} className='mb-3'>
               <Form.Group>
                 <Form.Label>
-                  <Users className="me-2" size={16} />
+                  <Users className='me-2' size={16} />
                   المحامون المكلفون بالقضية
                 </Form.Label>
                 <LawyerMultiSelect
                   value={selectedLawyers}
                   onChange={setSelectedLawyers}
-                  placeholder="اختر المحامين المكلفين بالقضية..."
+                  placeholder='اختر المحامين المكلفين بالقضية...'
                   isDisabled={mode === 'view'}
-                  className="mt-2"
+                  className='mt-2'
                 />
               </Form.Group>
             </Col>
 
             {/* Notes */}
-            <Col md={12} className="mb-4 mt-4">
-              <h5 className="border-bottom pb-2 mb-3">الملاحظات</h5>
+            <Col md={12} className='mb-4 mt-4'>
+              <h5 className='border-bottom pb-2 mb-3'>الملاحظات</h5>
             </Col>
 
-            <Col md={12} className="mb-3">
+            <Col md={12} className='mb-3'>
               <Form.Group>
                 <Form.Label>موضوع القضية</Form.Label>
                 <Form.Control
-                  as="textarea"
+                  as='textarea'
                   rows={3}
-                  placeholder="أدخل تفاصيل موضوع القضية"
+                  placeholder='أدخل تفاصيل موضوع القضية'
                   value={formData.matter_subject}
                   onChange={(e) => handleInputChange('matter_subject', e.target.value)}
                   disabled={mode === 'view'}
@@ -580,13 +584,13 @@ const CaseModal: React.FC<CaseModalProps> = ({
               </Form.Group>
             </Col>
 
-            <Col md={6} className="mb-3">
+            <Col md={6} className='mb-3'>
               <Form.Group>
                 <Form.Label>ملاحظات إضافية 1</Form.Label>
                 <Form.Control
-                  as="textarea"
+                  as='textarea'
                   rows={3}
-                  placeholder="ملاحظات إضافية..."
+                  placeholder='ملاحظات إضافية...'
                   value={formData.matter_notes1}
                   onChange={(e) => handleInputChange('matter_notes1', e.target.value)}
                   disabled={mode === 'view'}
@@ -594,13 +598,13 @@ const CaseModal: React.FC<CaseModalProps> = ({
               </Form.Group>
             </Col>
 
-            <Col md={6} className="mb-3">
+            <Col md={6} className='mb-3'>
               <Form.Group>
                 <Form.Label>ملاحظات إضافية 2</Form.Label>
                 <Form.Control
-                  as="textarea"
+                  as='textarea'
                   rows={3}
-                  placeholder="ملاحظات إضافية..."
+                  placeholder='ملاحظات إضافية...'
                   value={formData.matter_notes2}
                   onChange={(e) => handleInputChange('matter_notes2', e.target.value)}
                   disabled={mode === 'view'}
@@ -611,16 +615,16 @@ const CaseModal: React.FC<CaseModalProps> = ({
         </Modal.Body>
 
         <Modal.Footer>
-          <Button variant="secondary" onClick={onHide} disabled={saving}>
-            <X className="me-1" size={16} />
+          <Button variant='secondary' onClick={onHide} disabled={saving}>
+            <X className='me-1' size={16} />
             إلغاء
           </Button>
           {mode !== 'view' && (
-            <Button type="submit" variant="primary" disabled={saving}>
+            <Button type='submit' variant='primary' disabled={saving}>
               {saving ? (
-                <Spinner animation="border" size="sm" className="me-1" />
+                <Spinner animation='border' size='sm' className='me-1' />
               ) : (
-                <Save className="me-1" size={16} />
+                <Save className='me-1' size={16} />
               )}
               {saving ? 'جاري الحفظ...' : mode === 'edit' ? 'تحديث' : 'حفظ'}
             </Button>

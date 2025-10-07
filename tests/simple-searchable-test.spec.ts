@@ -18,10 +18,13 @@ test.describe('Simple Searchable Dropdown Test', () => {
     await page.waitForSelector('.modal', { timeout: 5000 });
 
     // Wait for loading
-    await page.waitForFunction(() => {
-      const spinners = document.querySelectorAll('.spinner-border');
-      return spinners.length === 0;
-    }, { timeout: 10000 });
+    await page.waitForFunction(
+      () => {
+        const spinners = document.querySelectorAll('.spinner-border');
+        return spinners.length === 0;
+      },
+      { timeout: 10000 }
+    );
 
     // Check if searchable input exists
     const searchInput = page.locator('input[placeholder*="ابحث عن عميل"]');

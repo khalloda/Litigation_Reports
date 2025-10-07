@@ -539,11 +539,12 @@ const HearingsPage: React.FC = () => {
                   onChange={(e) => handleFilterChange('hearing_result', e.target.value)}
                 >
                   <option value=''>جميع النتائج</option>
-                  {options.result && Object.entries(options.result).map(([key, value]) => (
-                    <option key={key} value={key}>
-                      {value}
-                    </option>
-                  ))}
+                  {options.result &&
+                    Object.entries(options.result).map(([key, value]) => (
+                      <option key={key} value={key}>
+                        {value}
+                      </option>
+                    ))}
                 </Form.Select>
               </Form.Group>
             </Col>
@@ -555,11 +556,12 @@ const HearingsPage: React.FC = () => {
                   onChange={(e) => handleFilterChange('hearing_type', e.target.value)}
                 >
                   <option value=''>جميع الأنواع</option>
-                  {options.type && Object.entries(options.type).map(([key, value]) => (
-                    <option key={key} value={key}>
-                      {value}
-                    </option>
-                  ))}
+                  {options.type &&
+                    Object.entries(options.type).map(([key, value]) => (
+                      <option key={key} value={key}>
+                        {value}
+                      </option>
+                    ))}
                 </Form.Select>
               </Form.Group>
             </Col>
@@ -666,7 +668,10 @@ const HearingsPage: React.FC = () => {
                           {hearing.lawyers && hearing.lawyers.length > 0 ? (
                             <div>
                               {hearing.lawyers.slice(0, 2).map((lawyer, index) => (
-                                <div key={lawyer.id} className={index > 0 ? 'text-muted small' : ''}>
+                                <div
+                                  key={lawyer.id}
+                                  className={index > 0 ? 'text-muted small' : ''}
+                                >
                                   {lawyer.display_name}
                                 </div>
                               ))}
@@ -840,11 +845,12 @@ const HearingsPage: React.FC = () => {
                     data-testid='hearing-type-select'
                   >
                     <option value=''>اختر النوع</option>
-                    {options.type && Object.entries(options.type).map(([key, value]) => (
-                      <option key={key} value={key}>
-                        {value}
-                      </option>
-                    ))}
+                    {options.type &&
+                      Object.entries(options.type).map(([key, value]) => (
+                        <option key={key} value={key}>
+                          {value}
+                        </option>
+                      ))}
                   </Form.Select>
                   <Form.Control.Feedback type='invalid'>
                     {formErrors.hearing_type}
@@ -861,11 +867,12 @@ const HearingsPage: React.FC = () => {
                     data-testid='hearing-result-select'
                   >
                     <option value=''>اختر النتيجة</option>
-                    {options.result && Object.entries(options.result).map(([key, value]) => (
-                      <option key={key} value={key}>
-                        {value}
-                      </option>
-                    ))}
+                    {options.result &&
+                      Object.entries(options.result).map(([key, value]) => (
+                        <option key={key} value={key}>
+                          {value}
+                        </option>
+                      ))}
                   </Form.Select>
                   <Form.Control.Feedback type='invalid'>
                     {formErrors.hearing_result}
@@ -882,11 +889,12 @@ const HearingsPage: React.FC = () => {
                     data-testid='hearing-duration-select'
                   >
                     <option value=''>اختر المدة</option>
-                    {options.duration && Object.entries(options.duration).map(([key, value]) => (
-                      <option key={key} value={key}>
-                        {value}
-                      </option>
-                    ))}
+                    {options.duration &&
+                      Object.entries(options.duration).map(([key, value]) => (
+                        <option key={key} value={key}>
+                          {value}
+                        </option>
+                      ))}
                   </Form.Select>
                   <Form.Control.Feedback type='invalid'>
                     {formErrors.hearing_duration}

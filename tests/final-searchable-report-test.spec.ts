@@ -18,7 +18,9 @@ test.describe('Final Client-Specific Report with Searchable Dropdown', () => {
     // Step 3: Open client-specific report modal
     await page.click('button:has-text("تقرير عميل محدد")');
     await page.waitForSelector('.modal', { timeout: 5000 });
-    await page.waitForFunction(() => document.querySelectorAll('.spinner-border').length === 0, { timeout: 10000 });
+    await page.waitForFunction(() => document.querySelectorAll('.spinner-border').length === 0, {
+      timeout: 10000,
+    });
 
     console.log('✅ Modal opened and loaded');
 
@@ -116,7 +118,9 @@ test.describe('Final Client-Specific Report with Searchable Dropdown', () => {
     console.log('🔧 Testing API functionality directly');
 
     // Test the GET endpoint for options
-    const optionsResponse = await page.request.get('http://lit.local:8080/api/reports/client-specific');
+    const optionsResponse = await page.request.get(
+      'http://lit.local:8080/api/reports/client-specific'
+    );
     expect(optionsResponse.status()).toBe(200);
 
     const optionsData = await optionsResponse.json();
@@ -127,13 +131,16 @@ test.describe('Final Client-Specific Report with Searchable Dropdown', () => {
     console.log(`✅ GET API returned ${optionsData.data.clients.length} clients`);
 
     // Test the POST endpoint for report generation
-    const reportResponse = await page.request.post('http://lit.local:8080/api/reports/client-specific', {
-      data: {
-        client_id: "1",
-        report_type: "cases",
-        columns: ["matter_id", "matter_ar", "matter_status"]
+    const reportResponse = await page.request.post(
+      'http://lit.local:8080/api/reports/client-specific',
+      {
+        data: {
+          client_id: '1',
+          report_type: 'cases',
+          columns: ['matter_id', 'matter_ar', 'matter_status'],
+        },
       }
-    });
+    );
 
     expect(reportResponse.status()).toBe(200);
     console.log('✅ POST API completed successfully');

@@ -28,7 +28,11 @@ test.describe('Debug Modal State', () => {
 
     if (modalVisible) {
       // Read the debug information from the specific debug div
-      const debugInfo = await page.locator('div').filter({ hasText: 'Debug Info:' }).last().textContent();
+      const debugInfo = await page
+        .locator('div')
+        .filter({ hasText: 'Debug Info:' })
+        .last()
+        .textContent();
       console.log(`🔍 Debug Information: ${debugInfo}`);
 
       // Extract modalMode from debug info

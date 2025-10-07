@@ -9,19 +9,19 @@ test.describe('Document Upload Debug', () => {
     console.log('🔍 Debugging document upload functionality...');
 
     // Enable verbose console logging
-    page.on('console', msg => {
+    page.on('console', (msg) => {
       console.log(`[${msg.type()}] ${msg.text()}`);
     });
 
     // Monitor all network requests
-    page.on('request', request => {
+    page.on('request', (request) => {
       if (request.url().includes('/api')) {
         console.log(`📤 API Request: ${request.method()} ${request.url()}`);
         console.log(`   Headers:`, request.headers());
       }
     });
 
-    page.on('response', response => {
+    page.on('response', (response) => {
       if (response.url().includes('/api')) {
         console.log(`📥 API Response: ${response.status()} ${response.url()}`);
       }
@@ -47,7 +47,10 @@ test.describe('Document Upload Debug', () => {
 
     // Check page content
     const pageContent = await page.textContent('body');
-    console.log('📄 Page contains upload button:', pageContent?.includes('رفع مستند جديد') || pageContent?.includes('Upload'));
+    console.log(
+      '📄 Page contains upload button:',
+      pageContent?.includes('رفع مستند جديد') || pageContent?.includes('Upload')
+    );
 
     // Look for upload button
     const uploadButtons = await page.locator('button').all();
@@ -59,7 +62,9 @@ test.describe('Document Upload Debug', () => {
     }
 
     // Click upload button
-    const uploadButton = page.locator('button:has-text("رفع مستند جديد"), button:has-text("Upload")').first();
+    const uploadButton = page
+      .locator('button:has-text("رفع مستند جديد"), button:has-text("Upload")')
+      .first();
     const uploadButtonVisible = await uploadButton.isVisible();
     console.log(`📤 Upload button visible: ${uploadButtonVisible}`);
 
@@ -78,7 +83,9 @@ test.describe('Document Upload Debug', () => {
         fs.writeFileSync(testFilePath, 'Debug test file content');
 
         // Fill form
-        const titleInput = page.locator('input[placeholder*="عنوان"], input[name*="title"]').first();
+        const titleInput = page
+          .locator('input[placeholder*="عنوان"], input[name*="title"]')
+          .first();
         const titleVisible = await titleInput.isVisible();
         console.log(`📝 Title input visible: ${titleVisible}`);
 
@@ -106,7 +113,9 @@ test.describe('Document Upload Debug', () => {
           console.log(`  Modal Button ${i}: "${buttonText}"`);
         }
 
-        const submitButton = page.locator('.modal button:has-text("رفع"), .modal button:has-text("Upload")');
+        const submitButton = page.locator(
+          '.modal button:has-text("رفع"), .modal button:has-text("Upload")'
+        );
         const submitButtonVisible = await submitButton.isVisible();
         console.log(`📤 Submit button visible: ${submitButtonVisible}`);
 

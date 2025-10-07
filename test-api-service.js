@@ -2,23 +2,23 @@ import { chromium } from 'playwright';
 
 async function testAPIService() {
   console.log('🔧 Testing API Service Methods...\n');
-  
+
   const browser = await chromium.launch({ headless: false });
   const context = await browser.newContext();
   const page = await context.newPage();
-  
+
   try {
     // Navigate to the frontend
     console.log('1. Navigating to frontend...');
     await page.goto('http://lit.local:3004');
     await page.waitForLoadState('networkidle');
-    
+
     // Clear any existing session
     console.log('2. Clearing session...');
     await context.clearCookies();
     await page.reload();
     await page.waitForLoadState('networkidle');
-    
+
     // Login
     console.log('3. Logging in...');
     const loginForm = await page.locator('form').first();
@@ -30,16 +30,16 @@ async function testAPIService() {
       await page.waitForTimeout(3000);
       console.log('   ✅ Login successful');
     }
-    
+
     // Test API service methods directly
     console.log('\n4. Testing API service methods...');
-    
+
     // Test if apiService is available
     const apiServiceAvailable = await page.evaluate(() => {
       return typeof window.apiService !== 'undefined';
     });
     console.log(`   📊 API Service available: ${apiServiceAvailable}`);
-    
+
     // Test token storage
     const tokenInStorage = await page.evaluate(() => {
       return localStorage.getItem('auth_token');
@@ -48,28 +48,29 @@ async function testAPIService() {
     if (tokenInStorage) {
       console.log(`   🔑 Token preview: ${tokenInStorage.substring(0, 20)}...`);
     }
-    
+
     // Test API service methods
     const apiMethods = await page.evaluate(() => {
       if (typeof window.apiService !== 'undefined') {
-        return Object.getOwnPropertyNames(Object.getPrototypeOf(window.apiService))
-          .filter(name => name !== 'constructor' && typeof window.apiService[name] === 'function');
+        return Object.getOwnPropertyNames(Object.getPrototypeOf(window.apiService)).filter(
+          (name) => name !== 'constructor' && typeof window.apiService[name] === 'function'
+        );
       }
       return [];
     });
     console.log(`   📊 Available API methods: ${apiMethods.join(', ')}`);
-    
+
     // Test specific methods
     const hasGetMethod = await page.evaluate(() => {
       return typeof window.apiService?.get === 'function';
     });
     console.log(`   📊 Has get method: ${hasGetMethod}`);
-    
+
     const hasPostMethod = await page.evaluate(() => {
       return typeof window.apiService?.post === 'function';
     });
     console.log(`   📊 Has post method: ${hasPostMethod}`);
-    
+
     // Test API call with authentication
     console.log('\n5. Testing authenticated API call...');
     try {
@@ -80,32 +81,34 @@ async function testAPIService() {
             return {
               success: true,
               status: 'OK',
-              data: response
+              data: response,
             };
           } catch (error) {
             return {
               success: false,
-              error: error.message
+              error: error.message,
             };
           }
         } else {
           return {
             success: false,
-            error: 'API service get method not available'
+            error: 'API service get method not available',
           };
         }
       });
-      
+
       if (apiResponse.success) {
         console.log('   ✅ API call successful');
-        console.log(`   📊 Response data: ${JSON.stringify(apiResponse.data).substring(0, 100)}...`);
+        console.log(
+          `   📊 Response data: ${JSON.stringify(apiResponse.data).substring(0, 100)}...`
+        );
       } else {
         console.log(`   ❌ API call failed: ${apiResponse.error}`);
       }
     } catch (error) {
       console.log(`   ❌ API call error: ${error.message}`);
     }
-    
+
     // Test direct fetch with token
     console.log('\n6. Testing direct fetch with token...');
     try {
@@ -115,30 +118,30 @@ async function testAPIService() {
           try {
             const response = await fetch('/api/cases', {
               headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-              }
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
             });
             const data = await response.json();
             return {
               success: true,
               status: response.status,
-              data: data
+              data: data,
             };
           } catch (error) {
             return {
               success: false,
-              error: error.message
+              error: error.message,
             };
           }
         } else {
           return {
             success: false,
-            error: 'No token found'
+            error: 'No token found',
           };
         }
       });
-      
+
       if (fetchResponse.success) {
         console.log(`   ✅ Direct fetch successful - Status: ${fetchResponse.status}`);
         if (fetchResponse.data && fetchResponse.data.success) {
@@ -150,20 +153,18 @@ async function testAPIService() {
     } catch (error) {
       console.log(`   ❌ Direct fetch error: ${error.message}`);
     }
-    
+
     // Take screenshot
     console.log('\n7. Taking screenshot...');
     await page.screenshot({ path: 'api-service-test.png', fullPage: true });
     console.log('   ✅ Screenshot saved as api-service-test.png');
-    
   } catch (error) {
     console.error('❌ Error during testing:', error.message);
   } finally {
     await browser.close();
   }
-  
+
   console.log('\n🎉 API Service testing completed!');
 }
 
 testAPIService().catch(console.error);
-

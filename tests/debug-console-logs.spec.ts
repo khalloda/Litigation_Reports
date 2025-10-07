@@ -5,12 +5,12 @@ const BASE_URL = process.env.BASE_URL || 'http://lit.local:8080';
 test.describe('Debug Console Logs', () => {
   test('should capture console logs during report generation', async ({ page }) => {
     // Capture console messages
-    const consoleMessages: { type: string, text: string, timestamp: number }[] = [];
-    page.on('console', msg => {
+    const consoleMessages: { type: string; text: string; timestamp: number }[] = [];
+    page.on('console', (msg) => {
       consoleMessages.push({
         type: msg.type(),
         text: msg.text(),
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
     });
 
@@ -52,35 +52,37 @@ test.describe('Debug Console Logs', () => {
     console.log('='.repeat(80));
 
     // Filter for our debug messages
-    const debugMessages = consoleMessages.filter(msg =>
-      msg.text.includes('🔍') ||
-      msg.text.includes('📡') ||
-      msg.text.includes('✅') ||
-      msg.text.includes('❌') ||
-      msg.text.includes('🔄')
+    const debugMessages = consoleMessages.filter(
+      (msg) =>
+        msg.text.includes('🔍') ||
+        msg.text.includes('📡') ||
+        msg.text.includes('✅') ||
+        msg.text.includes('❌') ||
+        msg.text.includes('🔄')
     );
 
     console.log(`🔍 Debug messages: ${debugMessages.length}`);
-    debugMessages.forEach(msg => {
+    debugMessages.forEach((msg) => {
       console.log(`  [${msg.type}] ${msg.text}`);
     });
 
     // Check for API response messages
-    const apiMessages = consoleMessages.filter(msg =>
-      msg.text.includes('API response') ||
-      msg.text.includes('Response data length') ||
-      msg.text.includes('Setting reportData')
+    const apiMessages = consoleMessages.filter(
+      (msg) =>
+        msg.text.includes('API response') ||
+        msg.text.includes('Response data length') ||
+        msg.text.includes('Setting reportData')
     );
 
     console.log(`📡 API-related messages: ${apiMessages.length}`);
-    apiMessages.forEach(msg => {
+    apiMessages.forEach((msg) => {
       console.log(`  [${msg.type}] ${msg.text}`);
     });
 
     // Check for errors
-    const errorMessages = consoleMessages.filter(msg => msg.type === 'error');
+    const errorMessages = consoleMessages.filter((msg) => msg.type === 'error');
     console.log(`❌ Error messages: ${errorMessages.length}`);
-    errorMessages.forEach(msg => {
+    errorMessages.forEach((msg) => {
       console.log(`  [ERROR] ${msg.text}`);
     });
 
@@ -88,7 +90,10 @@ test.describe('Debug Console Logs', () => {
     await page.screenshot({ path: 'test-results/debug-console-logs.png', fullPage: true });
 
     // We expect to see debug messages if our changes are applied
-    expect(debugMessages.length, 'Should have debug messages from generateDetailedReport').toBeGreaterThan(0);
+    expect(
+      debugMessages.length,
+      'Should have debug messages from generateDetailedReport'
+    ).toBeGreaterThan(0);
 
     console.log('✅ Console log capture completed');
   });

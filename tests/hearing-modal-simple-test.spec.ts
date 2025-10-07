@@ -23,7 +23,7 @@ test.describe('Hearing Modal Simple Test', () => {
 
     // Monitor console for errors
     let hasErrors = false;
-    page.on('console', msg => {
+    page.on('console', (msg) => {
       if (msg.type() === 'error') {
         console.log('❌ Console Error:', msg.text());
         if (msg.text().includes('Object.entries')) {
@@ -48,7 +48,10 @@ test.describe('Hearing Modal Simple Test', () => {
       console.log(`📋 Any modal visible: ${anyModal}`);
 
       if (anyModal) {
-        const modalTitle = await page.locator('.modal-title, .modal .modal-title').first().textContent();
+        const modalTitle = await page
+          .locator('.modal-title, .modal .modal-title')
+          .first()
+          .textContent();
         console.log(`📄 Modal title found: "${modalTitle}"`);
 
         // Success if we got this far without Object.entries errors

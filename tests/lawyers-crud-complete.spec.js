@@ -15,7 +15,7 @@ test.describe('Lawyers CRUD - Complete Functionality Test', () => {
     licenseNumber: 'LIC987654321',
     yearsOfExperience: '15',
     hourlyRate: '500',
-    bio: 'Experienced corporate lawyer with expertise in mergers and acquisitions'
+    bio: 'Experienced corporate lawyer with expertise in mergers and acquisitions',
   };
 
   const updatedLawyer = {
@@ -28,7 +28,7 @@ test.describe('Lawyers CRUD - Complete Functionality Test', () => {
     licenseNumber: 'LIC987654321',
     yearsOfExperience: '18',
     hourlyRate: '650',
-    bio: 'Senior lawyer with extensive experience in criminal and corporate law'
+    bio: 'Senior lawyer with extensive experience in criminal and corporate law',
   };
 
   test.beforeAll(async ({ browser }) => {
@@ -206,7 +206,9 @@ test.describe('Lawyers CRUD - Complete Functionality Test', () => {
     await page.waitForLoadState('networkidle');
 
     // Check if statistics cards are displayed
-    const statsCards = await page.locator('.card .text-primary, .card .text-success, .card .text-info').count();
+    const statsCards = await page
+      .locator('.card .text-primary, .card .text-success, .card .text-info')
+      .count();
     expect(statsCards).toBeGreaterThan(0);
     console.log('✓ Lawyer statistics are displayed');
 
@@ -273,8 +275,8 @@ test.describe('Lawyers CRUD - Complete Functionality Test', () => {
     await page.click('button:has-text("حفظ المحامي")');
 
     // Check for validation error (email format)
-    const emailInput = await page.locator('input[type="email"]');
-    const validationMessage = await emailInput.evaluate(el => el.validationMessage);
+    const emailInput = page.locator('input[type="email"]');
+    const validationMessage = await emailInput.evaluate((el) => el.validationMessage);
     expect(validationMessage).toBeTruthy();
     console.log('✓ Email validation works correctly');
 
@@ -320,7 +322,7 @@ test.describe('Lawyers CRUD - Complete Functionality Test', () => {
     await expect(page.locator('h2:has-text("إدارة المحامين")')).toBeVisible();
 
     // Check if mobile navigation works
-    const addButton = await page.locator('button:has-text("إضافة محامي جديد")');
+    const addButton = page.locator('button:has-text("إضافة محامي جديد")');
     await expect(addButton).toBeVisible();
 
     // Reset viewport
@@ -349,7 +351,7 @@ test.describe('Lawyers CRUD - Edge Cases', () => {
     const arabicLawyer = {
       name: 'محمد عبدالله الأحمدي',
       email: 'mohammed.arabic@test.com',
-      specialization: 'قانون الأحوال الشخصية والمعاملات المدنية'
+      specialization: 'قانون الأحوال الشخصية والمعاملات المدنية',
     };
 
     await page.click('button:has-text("إضافة محامي جديد")');

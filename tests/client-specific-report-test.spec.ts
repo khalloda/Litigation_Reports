@@ -58,10 +58,13 @@ test.describe('Client-Specific Report Feature', () => {
     await page.waitForSelector('.modal', { timeout: 5000 });
 
     // Wait for clients to load (check if loading spinner disappears)
-    await page.waitForFunction(() => {
-      const spinners = document.querySelectorAll('.spinner-border');
-      return spinners.length === 0;
-    }, { timeout: 10000 });
+    await page.waitForFunction(
+      () => {
+        const spinners = document.querySelectorAll('.spinner-border');
+        return spinners.length === 0;
+      },
+      { timeout: 10000 }
+    );
 
     // Check if clients are loaded in dropdown
     const clientSelect = page.locator('select').first();
@@ -102,10 +105,13 @@ test.describe('Client-Specific Report Feature', () => {
     await page.waitForSelector('.modal', { timeout: 5000 });
 
     // Wait for loading to complete
-    await page.waitForFunction(() => {
-      const spinners = document.querySelectorAll('.spinner-border');
-      return spinners.length === 0;
-    }, { timeout: 10000 });
+    await page.waitForFunction(
+      () => {
+        const spinners = document.querySelectorAll('.spinner-border');
+        return spinners.length === 0;
+      },
+      { timeout: 10000 }
+    );
 
     // Switch to hearings report type
     const reportTypeSelect = page.locator('select').nth(1);
@@ -127,8 +133,8 @@ test.describe('Client-Specific Report Feature', () => {
 
     // Switch back to cases and verify date fields hide
     await reportTypeSelect.selectOption('cases');
-    await expect(dateFromInput).not.toBeVisible();
-    await expect(dateToInput).not.toBeVisible();
+    await expect(dateFromInput).toBeHidden();
+    await expect(dateToInput).toBeHidden();
 
     console.log('✅ Report type switching works correctly');
   });
@@ -142,10 +148,13 @@ test.describe('Client-Specific Report Feature', () => {
     await page.waitForSelector('.modal', { timeout: 5000 });
 
     // Wait for loading to complete
-    await page.waitForFunction(() => {
-      const spinners = document.querySelectorAll('.spinner-border');
-      return spinners.length === 0;
-    }, { timeout: 10000 });
+    await page.waitForFunction(
+      () => {
+        const spinners = document.querySelectorAll('.spinner-border');
+        return spinners.length === 0;
+      },
+      { timeout: 10000 }
+    );
 
     // Select first client
     const clientSelect = page.locator('select').first();
@@ -187,10 +196,13 @@ test.describe('Client-Specific Report Feature', () => {
     await page.waitForSelector('.modal', { timeout: 5000 });
 
     // Wait for loading to complete
-    await page.waitForFunction(() => {
-      const spinners = document.querySelectorAll('.spinner-border');
-      return spinners.length === 0;
-    }, { timeout: 10000 });
+    await page.waitForFunction(
+      () => {
+        const spinners = document.querySelectorAll('.spinner-border');
+        return spinners.length === 0;
+      },
+      { timeout: 10000 }
+    );
 
     // Select first client
     const clientSelect = page.locator('select').first();
@@ -236,10 +248,13 @@ test.describe('Client-Specific Report Feature', () => {
     await page.waitForSelector('.modal', { timeout: 5000 });
 
     // Wait for loading to complete
-    await page.waitForFunction(() => {
-      const spinners = document.querySelectorAll('.spinner-border');
-      return spinners.length === 0;
-    }, { timeout: 10000 });
+    await page.waitForFunction(
+      () => {
+        const spinners = document.querySelectorAll('.spinner-border');
+        return spinners.length === 0;
+      },
+      { timeout: 10000 }
+    );
 
     // Try to generate without selecting client
     const generateButton = page.locator('button:has-text("إنشاء التقرير")');
@@ -283,7 +298,7 @@ test.describe('Client-Specific Report Feature', () => {
 
     // Setup download handling
     let downloadPath = '';
-    page.on('download', async download => {
+    page.on('download', async (download) => {
       const tempDir = path.join(__dirname, '..', 'temp');
       if (!fs.existsSync(tempDir)) {
         fs.mkdirSync(tempDir, { recursive: true });
@@ -297,10 +312,13 @@ test.describe('Client-Specific Report Feature', () => {
     await page.waitForSelector('.modal', { timeout: 5000 });
 
     // Wait for loading to complete
-    await page.waitForFunction(() => {
-      const spinners = document.querySelectorAll('.spinner-border');
-      return spinners.length === 0;
-    }, { timeout: 10000 });
+    await page.waitForFunction(
+      () => {
+        const spinners = document.querySelectorAll('.spinner-border');
+        return spinners.length === 0;
+      },
+      { timeout: 10000 }
+    );
 
     // Fill form and generate
     const clientSelect = page.locator('select').first();
@@ -326,7 +344,9 @@ test.describe('Client-Specific Report Feature', () => {
       // Check file size indicates branding (should be > 200KB with logo)
       expect(stats.size).toBeGreaterThan(200000);
 
-      console.log(`✅ PDF file generated with size: ${Math.round(stats.size / 1024)}KB (indicates professional branding)`);
+      console.log(
+        `✅ PDF file generated with size: ${Math.round(stats.size / 1024)}KB (indicates professional branding)`
+      );
 
       // Clean up
       fs.unlinkSync(downloadPath);

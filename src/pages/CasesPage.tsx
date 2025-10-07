@@ -14,7 +14,19 @@ import {
 } from 'react-bootstrap';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import { Plus, Search, Filter, Eye, Edit, Trash, Calendar, User, Gavel, Download, Users } from 'lucide-react';
+import {
+  Plus,
+  Search,
+  Filter,
+  Eye,
+  Edit,
+  Trash,
+  Calendar,
+  User,
+  Gavel,
+  Download,
+  Users,
+} from 'lucide-react';
 import { apiService as api } from '../services/api';
 import CaseModal from '../components/modals/CaseModal';
 import { exportToCSV, exportToExcel, exportToPDF, EXPORT_COLUMNS } from '../utils/exportUtils';
@@ -456,7 +468,10 @@ const CasesPage: React.FC = () => {
                           {caseItem.lawyers && caseItem.lawyers.length > 0 ? (
                             <div>
                               {caseItem.lawyers.slice(0, 2).map((lawyer, index) => (
-                                <div key={lawyer.id} className={index > 0 ? 'text-muted small' : ''}>
+                                <div
+                                  key={lawyer.id}
+                                  className={index > 0 ? 'text-muted small' : ''}
+                                >
                                   {lawyer.display_name}
                                   {lawyer.role && (
                                     <small className='text-info ms-1'>({lawyer.role})</small>

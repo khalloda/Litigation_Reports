@@ -50,10 +50,7 @@ interface ClientSpecificReportModalProps {
   onHide: () => void;
 }
 
-const ClientSpecificReportModal: React.FC<ClientSpecificReportModalProps> = ({
-  show,
-  onHide,
-}) => {
+const ClientSpecificReportModal: React.FC<ClientSpecificReportModalProps> = ({ show, onHide }) => {
   const { t } = useTranslation();
 
   // Form state
@@ -92,14 +89,13 @@ const ClientSpecificReportModal: React.FC<ClientSpecificReportModalProps> = ({
   useEffect(() => {
     if (options && reportType) {
       // Pre-select commonly used columns from actual available columns
-      const availableColumns = reportType === 'cases'
-        ? options.availableColumns.cases
-        : options.availableColumns.hearings;
+      const availableColumns =
+        reportType === 'cases' ? options.availableColumns.cases : options.availableColumns.hearings;
 
       // Select the first few most commonly used columns
       const defaultColumnKeys = availableColumns
         .slice(0, 4) // Take first 4 columns
-        .map(col => col.key);
+        .map((col) => col.key);
 
       setSelectedColumns(defaultColumnKeys);
     }
@@ -148,14 +144,14 @@ const ClientSpecificReportModal: React.FC<ClientSpecificReportModalProps> = ({
     }
 
     // Filter by both Arabic and English names
-    const filtered = options.clients.filter(client => {
+    const filtered = options.clients.filter((client) => {
       const nameAr = (client.client_name_ar || '').toLowerCase();
       const nameEn = (client.client_name_en || '').toLowerCase();
       const id = client.id.toString();
 
-      return nameAr.includes(searchLower) ||
-             nameEn.includes(searchLower) ||
-             id.includes(searchLower);
+      return (
+        nameAr.includes(searchLower) || nameEn.includes(searchLower) || id.includes(searchLower)
+      );
     });
 
     // Limit results to 50 for performance
@@ -184,10 +180,8 @@ const ClientSpecificReportModal: React.FC<ClientSpecificReportModalProps> = ({
   };
 
   const handleColumnToggle = (columnKey: string) => {
-    setSelectedColumns(prev =>
-      prev.includes(columnKey)
-        ? prev.filter(col => col !== columnKey)
-        : [...prev, columnKey]
+    setSelectedColumns((prev) =>
+      prev.includes(columnKey) ? prev.filter((col) => col !== columnKey) : [...prev, columnKey]
     );
   };
 
@@ -220,7 +214,7 @@ const ClientSpecificReportModal: React.FC<ClientSpecificReportModalProps> = ({
         ...(reportType === 'hearings' && {
           date_from: dateFrom,
           date_to: dateTo,
-        })
+        }),
       };
 
       // Generate report
@@ -231,8 +225,9 @@ const ClientSpecificReportModal: React.FC<ClientSpecificReportModalProps> = ({
       if (response.success) {
         console.log('🔍 RESPONSE SUCCESS - entering bulletproof filtering');
         // Get client name for report title
-        const selectedClient = options?.clients.find(c => c.id.toString() === selectedClientId);
-        const clientName = selectedClient?.client_name_ar || selectedClient?.client_name_en || 'Unknown Client';
+        const selectedClient = options?.clients.find((c) => c.id.toString() === selectedClientId);
+        const clientName =
+          selectedClient?.client_name_ar || selectedClient?.client_name_en || 'Unknown Client';
 
         // BULLETPROOF: Ensure perfect column-data matching
         const dataKeys = response.data.data.length > 0 ? Object.keys(response.data.data[0]) : [];
@@ -241,12 +236,13 @@ const ClientSpecificReportModal: React.FC<ClientSpecificReportModalProps> = ({
 
         // Create export columns with validation - NO DUPLICATION
         const exportColumns = selectedColumns
-          .map(colKey => {
-            const allColumns = reportType === 'cases'
-              ? options?.availableColumns.cases
-              : options?.availableColumns.hearings;
+          .map((colKey) => {
+            const allColumns =
+              reportType === 'cases'
+                ? options?.availableColumns.cases
+                : options?.availableColumns.hearings;
 
-            const column = allColumns?.find(col => col.key === colKey);
+            const column = allColumns?.find((col) => col.key === colKey);
             const cleanKey = colKey.split('.').pop() || colKey;
 
             console.log(`🔍 Processing column: "${colKey}" → clean: "${cleanKey}"`);
@@ -260,29 +256,31 @@ const ClientSpecificReportModal: React.FC<ClientSpecificReportModalProps> = ({
             console.log(`✅ BULLETPROOF KEEP: ${colKey} (clean: ${cleanKey}) - has matching data`);
             return {
               key: cleanKey, // Always use clean key for PDF
-              label: column?.label || colKey
+              label: column?.label || colKey,
             };
           })
-          .filter(col => col !== null); // Remove null entries
+          .filter((col) => col !== null); // Remove null entries
 
         console.log('🎯 BULLETPROOF FINAL: Export columns ready for PDF:', exportColumns);
-        console.log('✅ BULLETPROOF SUCCESS: All', exportColumns.length, 'columns have perfect data match');
+        console.log(
+          '✅ BULLETPROOF SUCCESS: All',
+          exportColumns.length,
+          'columns have perfect data match'
+        );
 
         // Export to PDF with professional branding
         await exportToPDF(response.data.data, {
           filename: `client_specific_report_${selectedClientId}_${reportType}_${Date.now()}`,
           columns: exportColumns,
-          title: `تقرير ${reportType === 'cases' ? 'القضايا' : 'الجلسات'} - ${clientName}`
+          title: `تقرير ${reportType === 'cases' ? 'القضايا' : 'الجلسات'} - ${clientName}`,
         });
 
         // Success - close modal
         onHide();
-
       } else {
         console.log('🔍 RESPONSE FAILED - response.success is false:', response);
         setError(response.message || 'Failed to generate report');
       }
-
     } catch (err) {
       console.error('Error generating client specific report:', err);
       setError('خطأ في إنشاء التقرير');
@@ -293,34 +291,35 @@ const ClientSpecificReportModal: React.FC<ClientSpecificReportModalProps> = ({
 
   if (loading) {
     return (
-      <Modal show={show} onHide={onHide} size="lg">
+      <Modal show={show} onHide={onHide} size='lg'>
         <Modal.Header closeButton>
           <Modal.Title>تقرير عميل محدد</Modal.Title>
         </Modal.Header>
-        <Modal.Body className="text-center py-5">
-          <Spinner animation="border" />
-          <p className="mt-2">جاري تحميل الخيارات...</p>
+        <Modal.Body className='text-center py-5'>
+          <Spinner animation='border' />
+          <p className='mt-2'>جاري تحميل الخيارات...</p>
         </Modal.Body>
       </Modal>
     );
   }
 
-  const availableColumns = reportType === 'cases'
-    ? options?.availableColumns.cases || []
-    : options?.availableColumns.hearings || [];
+  const availableColumns =
+    reportType === 'cases'
+      ? options?.availableColumns.cases || []
+      : options?.availableColumns.hearings || [];
 
   return (
-    <Modal show={show} onHide={onHide} size="lg">
+    <Modal show={show} onHide={onHide} size='lg'>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FileText className="me-2" size={20} />
+          <FileText className='me-2' size={20} />
           تقرير عميل محدد
         </Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
         {error && (
-          <Alert variant="danger" className="mb-3">
+          <Alert variant='danger' className='mb-3'>
             {error}
           </Alert>
         )}
@@ -328,17 +327,19 @@ const ClientSpecificReportModal: React.FC<ClientSpecificReportModalProps> = ({
         <Row>
           {/* Client Selection */}
           <Col md={6}>
-            <Form.Group className="mb-3">
-              <Form.Label className="fw-bold">
-                <Badge bg="primary" className="me-2">1</Badge>
+            <Form.Group className='mb-3'>
+              <Form.Label className='fw-bold'>
+                <Badge bg='primary' className='me-2'>
+                  1
+                </Badge>
                 اختر العميل
               </Form.Label>
 
-              <div className="position-relative">
+              <div className='position-relative'>
                 <InputGroup>
                   <Form.Control
-                    type="text"
-                    placeholder={selectedClientName || "ابحث عن عميل أو اكتب الاسم..."}
+                    type='text'
+                    placeholder={selectedClientName || 'ابحث عن عميل أو اكتب الاسم...'}
                     value={clientSearchTerm}
                     onChange={handleSearchChange}
                     onFocus={() => setShowClientDropdown(true)}
@@ -346,7 +347,7 @@ const ClientSpecificReportModal: React.FC<ClientSpecificReportModalProps> = ({
                     style={{ textAlign: 'right' }}
                   />
                   <Button
-                    variant="outline-secondary"
+                    variant='outline-secondary'
                     onClick={() => setShowClientDropdown(!showClientDropdown)}
                     disabled={generating}
                   >
@@ -356,13 +357,15 @@ const ClientSpecificReportModal: React.FC<ClientSpecificReportModalProps> = ({
 
                 {/* Selected Client Display */}
                 {selectedClientName && !showClientDropdown && (
-                  <div className="mt-1">
-                    <Badge bg="success" className="me-2">✓</Badge>
-                    <small className="text-success">{selectedClientName}</small>
+                  <div className='mt-1'>
+                    <Badge bg='success' className='me-2'>
+                      ✓
+                    </Badge>
+                    <small className='text-success'>{selectedClientName}</small>
                     <Button
-                      variant="link"
-                      size="sm"
-                      className="p-0 ms-2 text-danger"
+                      variant='link'
+                      size='sm'
+                      className='p-0 ms-2 text-danger'
                       onClick={() => {
                         setSelectedClientId('');
                         setSelectedClientName('');
@@ -378,18 +381,18 @@ const ClientSpecificReportModal: React.FC<ClientSpecificReportModalProps> = ({
                 {/* Dropdown Menu */}
                 {showClientDropdown && (
                   <div
-                    className="position-absolute w-100 bg-white border rounded shadow-lg"
+                    className='position-absolute w-100 bg-white border rounded shadow-lg'
                     style={{
                       zIndex: 1050,
                       maxHeight: '300px',
                       overflowY: 'auto',
-                      top: '100%'
+                      top: '100%',
                     }}
                   >
                     {filteredClients.length > 0 ? (
-                      <ListGroup variant="flush">
+                      <ListGroup variant='flush'>
                         {clientSearchTerm.trim() === '' && (
-                          <ListGroup.Item className="text-muted text-center py-2">
+                          <ListGroup.Item className='text-muted text-center py-2'>
                             <small>عرض أول 20 عميل - ابحث للعثور على المزيد</small>
                           </ListGroup.Item>
                         )}
@@ -398,26 +401,29 @@ const ClientSpecificReportModal: React.FC<ClientSpecificReportModalProps> = ({
                             key={client.id}
                             action
                             onClick={() => handleClientSelect(client)}
-                            className="d-flex justify-content-between align-items-center"
+                            className='d-flex justify-content-between align-items-center'
                             style={{ cursor: 'pointer', textAlign: 'right' }}
                           >
                             <span>
                               <strong>{client.client_name_ar || client.client_name_en}</strong>
                               {client.client_name_ar && client.client_name_en && (
-                                <><br/><small className="text-muted">{client.client_name_en}</small></>
+                                <>
+                                  <br />
+                                  <small className='text-muted'>{client.client_name_en}</small>
+                                </>
                               )}
                             </span>
-                            <Badge bg="secondary">#{client.id}</Badge>
+                            <Badge bg='secondary'>#{client.id}</Badge>
                           </ListGroup.Item>
                         ))}
                         {filteredClients.length === 50 && (
-                          <ListGroup.Item className="text-muted text-center py-2">
+                          <ListGroup.Item className='text-muted text-center py-2'>
                             <small>عرض أول 50 نتيجة - كن أكثر تحديداً في البحث</small>
                           </ListGroup.Item>
                         )}
                       </ListGroup>
                     ) : (
-                      <div className="p-3 text-center text-muted">
+                      <div className='p-3 text-center text-muted'>
                         🔍 لا توجد نتائج للبحث "{clientSearchTerm}"
                       </div>
                     )}
@@ -428,13 +434,13 @@ const ClientSpecificReportModal: React.FC<ClientSpecificReportModalProps> = ({
               {/* Click outside to close dropdown */}
               {showClientDropdown && (
                 <div
-                  className="position-fixed"
+                  className='position-fixed'
                   style={{
                     top: 0,
                     left: 0,
                     right: 0,
                     bottom: 0,
-                    zIndex: 1040
+                    zIndex: 1040,
                   }}
                   onClick={() => setShowClientDropdown(false)}
                 />
@@ -444,9 +450,11 @@ const ClientSpecificReportModal: React.FC<ClientSpecificReportModalProps> = ({
 
           {/* Report Type Selection */}
           <Col md={6}>
-            <Form.Group className="mb-3">
-              <Form.Label className="fw-bold">
-                <Badge bg="success" className="me-2">2</Badge>
+            <Form.Group className='mb-3'>
+              <Form.Label className='fw-bold'>
+                <Badge bg='success' className='me-2'>
+                  2
+                </Badge>
                 نوع التقرير
               </Form.Label>
               <Form.Select
@@ -468,13 +476,13 @@ const ClientSpecificReportModal: React.FC<ClientSpecificReportModalProps> = ({
         {reportType === 'hearings' && (
           <Row>
             <Col md={6}>
-              <Form.Group className="mb-3">
-                <Form.Label className="fw-bold">
-                  <Calendar className="me-2" size={16} />
+              <Form.Group className='mb-3'>
+                <Form.Label className='fw-bold'>
+                  <Calendar className='me-2' size={16} />
                   من تاريخ
                 </Form.Label>
                 <Form.Control
-                  type="date"
+                  type='date'
                   value={dateFrom}
                   onChange={(e) => setDateFrom(e.target.value)}
                   disabled={generating}
@@ -482,13 +490,13 @@ const ClientSpecificReportModal: React.FC<ClientSpecificReportModalProps> = ({
               </Form.Group>
             </Col>
             <Col md={6}>
-              <Form.Group className="mb-3">
-                <Form.Label className="fw-bold">
-                  <Calendar className="me-2" size={16} />
+              <Form.Group className='mb-3'>
+                <Form.Label className='fw-bold'>
+                  <Calendar className='me-2' size={16} />
                   إلى تاريخ
                 </Form.Label>
                 <Form.Control
-                  type="date"
+                  type='date'
                   value={dateTo}
                   onChange={(e) => setDateTo(e.target.value)}
                   disabled={generating}
@@ -499,19 +507,21 @@ const ClientSpecificReportModal: React.FC<ClientSpecificReportModalProps> = ({
         )}
 
         {/* Column Selection */}
-        <Form.Group className="mb-3">
-          <Form.Label className="fw-bold">
-            <Badge bg="warning" className="me-2">3</Badge>
-            <CheckSquare className="me-2" size={16} />
+        <Form.Group className='mb-3'>
+          <Form.Label className='fw-bold'>
+            <Badge bg='warning' className='me-2'>
+              3
+            </Badge>
+            <CheckSquare className='me-2' size={16} />
             اختر الحقول المطلوبة
           </Form.Label>
-          <Card className="mt-2">
+          <Card className='mt-2'>
             <Card.Body>
               <Row>
                 {availableColumns.map((column) => (
-                  <Col md={6} key={column.key} className="mb-2">
+                  <Col md={6} key={column.key} className='mb-2'>
                     <Form.Check
-                      type="checkbox"
+                      type='checkbox'
                       id={`column-${column.key}`}
                       label={column.label}
                       checked={selectedColumns.includes(column.key)}
@@ -522,10 +532,8 @@ const ClientSpecificReportModal: React.FC<ClientSpecificReportModalProps> = ({
                 ))}
               </Row>
               {selectedColumns.length > 0 && (
-                <div className="mt-3 pt-3 border-top">
-                  <small className="text-muted">
-                    تم اختيار {selectedColumns.length} حقل
-                  </small>
+                <div className='mt-3 pt-3 border-top'>
+                  <small className='text-muted'>تم اختيار {selectedColumns.length} حقل</small>
                 </div>
               )}
             </Card.Body>
@@ -534,32 +542,22 @@ const ClientSpecificReportModal: React.FC<ClientSpecificReportModalProps> = ({
       </Modal.Body>
 
       <Modal.Footer>
-        <Button
-          variant="secondary"
-          onClick={onHide}
-          disabled={generating}
-        >
+        <Button variant='secondary' onClick={onHide} disabled={generating}>
           إلغاء
         </Button>
         <Button
-          variant="primary"
+          variant='primary'
           onClick={handleGenerateReport}
           disabled={generating || !selectedClientId || selectedColumns.length === 0}
         >
           {generating ? (
             <>
-              <Spinner
-                as="span"
-                animation="border"
-                size="sm"
-                role="status"
-                className="me-2"
-              />
+              <Spinner as='span' animation='border' size='sm' role='status' className='me-2' />
               جاري الإنشاء...
             </>
           ) : (
             <>
-              <FileText className="me-2" size={16} />
+              <FileText className='me-2' size={16} />
               إنشاء التقرير
             </>
           )}

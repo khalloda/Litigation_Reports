@@ -10,14 +10,14 @@ test.describe('Document Upload Alert Debug', () => {
 
     // Capture all dialogs/alerts
     const dialogs: string[] = [];
-    page.on('dialog', dialog => {
+    page.on('dialog', (dialog) => {
       console.log(`🚨 ALERT/DIALOG: ${dialog.type()} - ${dialog.message()}`);
       dialogs.push(`${dialog.type()}: ${dialog.message()}`);
       dialog.accept(); // Accept the dialog to continue
     });
 
     // Capture console errors
-    page.on('console', msg => {
+    page.on('console', (msg) => {
       if (msg.type() === 'error') {
         console.log(`❌ CONSOLE ERROR: ${msg.text()}`);
       }
@@ -54,7 +54,7 @@ test.describe('Document Upload Alert Debug', () => {
       await page.waitForTimeout(2000);
 
       console.log(`🚨 Dialogs after empty submit: ${dialogs.length}`);
-      dialogs.forEach(dialog => console.log(`  - ${dialog}`));
+      dialogs.forEach((dialog) => console.log(`  - ${dialog}`));
 
       // Test 2: Fill title only (no file)
       console.log('🧪 Test 2: Fill title only, no file (should show validation alert)');
@@ -66,7 +66,7 @@ test.describe('Document Upload Alert Debug', () => {
       await page.waitForTimeout(2000);
 
       console.log(`🚨 Dialogs after title-only submit: ${dialogs.length}`);
-      dialogs.forEach(dialog => console.log(`  - ${dialog}`));
+      dialogs.forEach((dialog) => console.log(`  - ${dialog}`));
 
       // Test 3: Fill file only (no title)
       console.log('🧪 Test 3: Clear title, add file only (should show validation alert)');
@@ -81,7 +81,7 @@ test.describe('Document Upload Alert Debug', () => {
       await page.waitForTimeout(2000);
 
       console.log(`🚨 Dialogs after file-only submit: ${dialogs.length}`);
-      dialogs.forEach(dialog => console.log(`  - ${dialog}`));
+      dialogs.forEach((dialog) => console.log(`  - ${dialog}`));
 
       // Test 4: Fill both title and file (should work)
       console.log('🧪 Test 4: Fill both title and file (should work)');
@@ -99,12 +99,11 @@ test.describe('Document Upload Alert Debug', () => {
       await page.waitForTimeout(5000);
 
       console.log(`🚨 Total dialogs during all tests: ${dialogs.length}`);
-      dialogs.forEach(dialog => console.log(`  - ${dialog}`));
+      dialogs.forEach((dialog) => console.log(`  - ${dialog}`));
 
       // Check if modal is still open
       const modalOpen = await page.locator('.modal:visible').count();
       console.log(`📋 Modal still open after complete form: ${modalOpen > 0}`);
-
     } finally {
       // Clean up
       if (fs.existsSync(testFilePath)) {

@@ -111,9 +111,9 @@ const ReportsPage: React.FC = () => {
   // Report data states
   const [reportTemplates, setReportTemplates] = useState<ReportTemplate[]>([]);
   const [customReportOptions, setCustomReportOptions] = useState<any>(null);
-  const [currentReportType, setCurrentReportType] = useState<'clients' | 'cases' | 'hearings' | 'invoices' | 'documents'>(
-    'clients'
-  );
+  const [currentReportType, setCurrentReportType] = useState<
+    'clients' | 'cases' | 'hearings' | 'invoices' | 'documents'
+  >('clients');
   const [reportConfig, setReportConfig] = useState<CustomReportConfig>({
     entity: 'clients',
     filters: {},
@@ -302,9 +302,9 @@ const ReportsPage: React.FC = () => {
       const title = `تقرير ${currentReportType === 'clients' ? 'العملاء' : currentReportType === 'cases' ? 'القضايا' : currentReportType === 'hearings' ? 'الجلسات' : 'البيانات'}`;
 
       // Create columns mapping for export
-      const exportColumns = Object.keys(reportData.data[0]).map(key => ({
+      const exportColumns = Object.keys(reportData.data[0]).map((key) => ({
         key,
-        label: reportData.available_columns?.[key] || key
+        label: reportData.available_columns?.[key] || key,
       }));
 
       if (format === 'csv') {
@@ -321,7 +321,6 @@ const ReportsPage: React.FC = () => {
       alert('خطأ في التصدير: ' + (err instanceof Error ? err.message : 'خطأ غير معروف'));
     }
   };
-
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('ar-EG', {
@@ -559,7 +558,8 @@ const ReportsPage: React.FC = () => {
                   </h5>
                 </Card.Header>
                 <Card.Body>
-                  {!dashboardData.recent_activities || dashboardData.recent_activities.length === 0 ? (
+                  {!dashboardData.recent_activities ||
+                  dashboardData.recent_activities.length === 0 ? (
                     <p className='text-muted text-center'>لا توجد أنشطة حديثة</p>
                   ) : (
                     <div className='table-responsive'>
@@ -599,7 +599,8 @@ const ReportsPage: React.FC = () => {
                   </h5>
                 </Card.Header>
                 <Card.Body>
-                  {!dashboardData.upcoming_hearings || dashboardData.upcoming_hearings.length === 0 ? (
+                  {!dashboardData.upcoming_hearings ||
+                  dashboardData.upcoming_hearings.length === 0 ? (
                     <p className='text-muted text-center'>لا توجد جلسات قادمة</p>
                   ) : (
                     <div className='table-responsive'>
@@ -967,7 +968,6 @@ const ReportsPage: React.FC = () => {
 
           {reportData && (
             <>
-
               {/* Summary */}
               <Card className='mb-3'>
                 <Card.Body>
@@ -984,41 +984,44 @@ const ReportsPage: React.FC = () => {
               </Card>
 
               {/* Data Table */}
-              {reportData.data && reportData.data.length > 0 && (() => {
-                // 🔧 FIX: Respect selected columns from report configuration
-                // If columns were specifically selected in the report config, use only those
-                // Otherwise, fall back to all available columns from the data
-                const selectedColumns = reportData.config?.columns && reportData.config.columns.length > 0
-                  ? reportData.config.columns
-                  : Object.keys(reportData.data[0]);
+              {reportData.data &&
+                reportData.data.length > 0 &&
+                (() => {
+                  // 🔧 FIX: Respect selected columns from report configuration
+                  // If columns were specifically selected in the report config, use only those
+                  // Otherwise, fall back to all available columns from the data
+                  const selectedColumns =
+                    reportData.config?.columns && reportData.config.columns.length > 0
+                      ? reportData.config.columns
+                      : Object.keys(reportData.data[0]);
 
-                return (
-                  <div className='table-responsive'>
-                    <Table striped hover>
-                      <thead>
-                        <tr>
-                          {selectedColumns.map((key) => (
-                            <th key={key}>{reportData.available_columns?.[key] || key}</th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {reportData.data.map((row: any, index: number) => (
-                          <tr key={index}>
+                  return (
+                    <div className='table-responsive'>
+                      <Table striped hover>
+                        <thead>
+                          <tr>
                             {selectedColumns.map((key) => (
-                              <td key={key}>
-                                {key.includes('date') && row[key]
-                                  ? formatDate(row[key])
-                                  : row[key] || '-'}
-                              </td>
+                              <th key={key}>{reportData.available_columns?.[key] || key}</th>
                             ))}
                           </tr>
-                        ))}
-                      </tbody>
-                    </Table>
-                  </div>
-                );
-              })()}
+                        </thead>
+                        <tbody>
+                          {reportData.data.map((row: any, index: number) => (
+                            <tr key={index}>
+                              {selectedColumns.map((key) => (
+                                <td key={key}>
+                                  {key.includes('date') && row[key]
+                                    ? formatDate(row[key])
+                                    : row[key] || '-'}
+                                </td>
+                              ))}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </Table>
+                    </div>
+                  );
+                })()}
               {reportData.data && reportData.data.length === 0 && (
                 <p className='text-center text-muted py-4'>لا توجد بيانات لعرضها</p>
               )}
@@ -1073,7 +1076,9 @@ const ReportsPage: React.FC = () => {
                 <Card.Body className='text-center'>
                   <Download size={48} className='text-secondary mb-3' />
                   <h5>تصدير البيانات الحالية</h5>
-                  <p className='text-muted mb-3'>تصدير البيانات المعروضة حالياً كـ PDF أو CSV أو Excel</p>
+                  <p className='text-muted mb-3'>
+                    تصدير البيانات المعروضة حالياً كـ PDF أو CSV أو Excel
+                  </p>
                   <div className='d-grid gap-2'>
                     <Button
                       variant='outline-danger'
@@ -1104,7 +1109,9 @@ const ReportsPage: React.FC = () => {
                     <small className='text-muted'>يجب إنشاء تقرير أولاً</small>
                   )}
                   {reportData?.data && reportData.data.length > 0 && (
-                    <small className='text-success'>جاهز للتصدير - {reportData.data.length} سجل</small>
+                    <small className='text-success'>
+                      جاهز للتصدير - {reportData.data.length} سجل
+                    </small>
                   )}
                 </Card.Body>
               </Card>

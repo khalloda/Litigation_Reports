@@ -10,7 +10,7 @@ test.describe('Document Upload Corrected Test', () => {
 
     // Track API requests to /api/documents POST
     const uploadRequests: any[] = [];
-    page.on('request', request => {
+    page.on('request', (request) => {
       if (request.url().includes('/api/documents') && request.method() === 'POST') {
         uploadRequests.push({
           url: request.url(),
@@ -26,26 +26,37 @@ test.describe('Document Upload Corrected Test', () => {
 
     // Track upload responses
     let uploadResponse: any = null;
-    page.on('response', response => {
+    page.on('response', (response) => {
       if (response.url().includes('/api/documents') && response.request().method() === 'POST') {
         console.log('📥 UPLOAD RESPONSE:', response.status());
-        response.json().then(data => {
-          uploadResponse = data;
-          console.log('📥 UPLOAD RESPONSE DATA:', data.success ? 'SUCCESS' : 'FAILED');
-        }).catch(() => {});
+        response
+          .json()
+          .then((data) => {
+            uploadResponse = data;
+            console.log('📥 UPLOAD RESPONSE DATA:', data.success ? 'SUCCESS' : 'FAILED');
+          })
+          .catch(() => {});
       }
     });
 
     // Capture console logs from our debug statements
-    page.on('console', msg => {
+    page.on('console', (msg) => {
       const text = msg.text();
-      if (text.includes('🚀') || text.includes('📝') || text.includes('📎') || text.includes('✅') || text.includes('❌') || text.includes('📤') || text.includes('📥')) {
+      if (
+        text.includes('🚀') ||
+        text.includes('📝') ||
+        text.includes('📎') ||
+        text.includes('✅') ||
+        text.includes('❌') ||
+        text.includes('📤') ||
+        text.includes('📥')
+      ) {
         console.log(`[DEBUG] ${text}`);
       }
     });
 
     // Handle dialogs
-    page.on('dialog', dialog => {
+    page.on('dialog', (dialog) => {
       console.log(`🚨 DIALOG: ${dialog.message()}`);
       dialog.accept();
     });
@@ -116,8 +127,10 @@ test.describe('Document Upload Corrected Test', () => {
         console.log('📤 Upload request Content-Type:', request.contentType);
 
         // Verify Content-Type
-        expect(request.contentType, 'Content-Type should include multipart/form-data with boundary')
-          .toMatch(/^multipart\/form-data; boundary=/);
+        expect(
+          request.contentType,
+          'Content-Type should include multipart/form-data with boundary'
+        ).toMatch(/^multipart\/form-data; boundary=/);
 
         console.log('✅ Content-Type header is correct!');
       }
@@ -137,7 +150,6 @@ test.describe('Document Upload Corrected Test', () => {
       expect(modalAfterUpload, 'Modal should close after successful upload').toBe(0);
 
       console.log('✅ Upload test completed successfully!');
-
     } finally {
       // Clean up test file
       if (fs.existsSync(testFilePath)) {

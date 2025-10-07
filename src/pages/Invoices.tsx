@@ -216,7 +216,11 @@ export function Invoices() {
 
     if (clientId) {
       // Filter cases by selected client
-      const clientCases = cases.filter(case_item => case_item.client_name_ar === clients.find(c => c.id.toString() === clientId)?.client_name_ar);
+      const clientCases = cases.filter(
+        (case_item) =>
+          case_item.client_name_ar ===
+          clients.find((c) => c.id.toString() === clientId)?.client_name_ar
+      );
       setFilteredCases(clientCases);
     } else {
       // Show all cases if no client selected
@@ -244,7 +248,7 @@ export function Invoices() {
 
       const [clientsResponse, casesResponse] = await Promise.all([
         api.get('/clients?limit=100'),
-        api.get('/cases?limit=100')
+        api.get('/cases?limit=100'),
       ]);
 
       console.log('📡 Clients API response:', clientsResponse);
@@ -270,7 +274,6 @@ export function Invoices() {
         console.log('⏰ Showing modal after timeout');
         setShowModal(true);
       }, 500);
-
     } catch (error) {
       console.error('❌ Error loading clients/cases:', error);
       // Still show modal even if API calls fail
@@ -307,7 +310,7 @@ export function Invoices() {
 
       const [clientsResponse, casesResponse] = await Promise.all([
         api.get('/clients?limit=100'),
-        api.get('/cases?limit=100')
+        api.get('/cases?limit=100'),
       ]);
 
       console.log('📡 Clients API response:', clientsResponse);
@@ -333,7 +336,6 @@ export function Invoices() {
         console.log('⏰ Showing modal after timeout');
         setShowModal(true);
       }, 500);
-
     } catch (error) {
       console.error('❌ Error loading clients/cases:', error);
       // Still show modal even if API calls fail
@@ -370,7 +372,7 @@ export function Invoices() {
 
       const [clientsResponse, casesResponse] = await Promise.all([
         api.get('/clients?limit=100'),
-        api.get('/cases?limit=100')
+        api.get('/cases?limit=100'),
       ]);
 
       console.log('📡 Clients API response:', clientsResponse);
@@ -396,7 +398,6 @@ export function Invoices() {
         console.log('⏰ Showing modal after timeout');
         setShowModal(true);
       }, 500);
-
     } catch (error) {
       console.error('❌ Error loading clients/cases:', error);
       // Still show modal even if API calls fail
@@ -650,11 +651,13 @@ export function Invoices() {
                   onChange={(e) => handleFilterChange('invoice_status', e.target.value)}
                 >
                   <option value=''>جميع الحالات</option>
-                  {options.status ? Object.entries(options.status).map(([key, value]) => (
-                    <option key={key} value={key}>
-                      {value}
-                    </option>
-                  )) : null}
+                  {options.status
+                    ? Object.entries(options.status).map(([key, value]) => (
+                        <option key={key} value={key}>
+                          {value}
+                        </option>
+                      ))
+                    : null}
                 </Form.Select>
               </Form.Group>
             </Col>
@@ -666,11 +669,13 @@ export function Invoices() {
                   onChange={(e) => handleFilterChange('invoice_type', e.target.value)}
                 >
                   <option value=''>جميع الأنواع</option>
-                  {options.type ? Object.entries(options.type).map(([key, value]) => (
-                    <option key={key} value={key}>
-                      {value}
-                    </option>
-                  )) : null}
+                  {options.type
+                    ? Object.entries(options.type).map(([key, value]) => (
+                        <option key={key} value={key}>
+                          {value}
+                        </option>
+                      ))
+                    : null}
                 </Form.Select>
               </Form.Group>
             </Col>
@@ -682,11 +687,13 @@ export function Invoices() {
                   onChange={(e) => handleFilterChange('currency', e.target.value)}
                 >
                   <option value=''>جميع العملات</option>
-                  {options.currency ? Object.entries(options.currency).map(([key, value]) => (
-                    <option key={key} value={key}>
-                      {value}
-                    </option>
-                  )) : null}
+                  {options.currency
+                    ? Object.entries(options.currency).map(([key, value]) => (
+                        <option key={key} value={key}>
+                          {value}
+                        </option>
+                      ))
+                    : null}
                 </Form.Select>
               </Form.Group>
             </Col>
@@ -873,9 +880,11 @@ export function Invoices() {
       <Modal show={showModal} onHide={() => setShowModal(false)} size='xl'>
         <Modal.Header closeButton>
           <Modal.Title>
-            {modalMode === 'create' ? 'إضافة فاتورة جديدة' :
-             modalMode === 'edit' ? 'تعديل الفاتورة' :
-             'تفاصيل الفاتورة'}
+            {modalMode === 'create'
+              ? 'إضافة فاتورة جديدة'
+              : modalMode === 'edit'
+                ? 'تعديل الفاتورة'
+                : 'تفاصيل الفاتورة'}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -940,7 +949,8 @@ export function Invoices() {
                     <option value=''>اختر العميل</option>
                     {clients.map((client) => (
                       <option key={client.id} value={client.id}>
-                        {client.client_name_ar} {client.client_name_en && `(${client.client_name_en})`}
+                        {client.client_name_ar}{' '}
+                        {client.client_name_en && `(${client.client_name_en})`}
                       </option>
                     ))}
                   </Form.Select>
@@ -993,11 +1003,13 @@ export function Invoices() {
                     onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
                     disabled={modalMode === 'view'}
                   >
-                    {options.currency ? Object.entries(options.currency).map(([key, value]) => (
-                      <option key={key} value={key}>
-                        {value}
-                      </option>
-                    )) : null}
+                    {options.currency
+                      ? Object.entries(options.currency).map(([key, value]) => (
+                          <option key={key} value={key}>
+                            {value}
+                          </option>
+                        ))
+                      : null}
                   </Form.Select>
                 </Form.Group>
               </Col>
@@ -1025,11 +1037,13 @@ export function Invoices() {
                     onChange={(e) => setFormData({ ...formData, invoice_type: e.target.value })}
                     disabled={modalMode === 'view'}
                   >
-                    {options.type ? Object.entries(options.type).map(([key, value]) => (
-                      <option key={key} value={key}>
-                        {value}
-                      </option>
-                    )) : null}
+                    {options.type
+                      ? Object.entries(options.type).map(([key, value]) => (
+                          <option key={key} value={key}>
+                            {value}
+                          </option>
+                        ))
+                      : null}
                   </Form.Select>
                 </Form.Group>
               </Col>
@@ -1041,11 +1055,13 @@ export function Invoices() {
                     onChange={(e) => setFormData({ ...formData, invoice_status: e.target.value })}
                     disabled={modalMode === 'view'}
                   >
-                    {options.status ? Object.entries(options.status).map(([key, value]) => (
-                      <option key={key} value={key}>
-                        {value}
-                      </option>
-                    )) : null}
+                    {options.status
+                      ? Object.entries(options.status).map(([key, value]) => (
+                          <option key={key} value={key}>
+                            {value}
+                          </option>
+                        ))
+                      : null}
                   </Form.Select>
                 </Form.Group>
               </Col>

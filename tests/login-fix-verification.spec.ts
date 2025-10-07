@@ -33,14 +33,14 @@ test.describe('Login Fix Verification', () => {
 
     // Monitor network requests to see API calls
     const apiRequests: string[] = [];
-    page.on('request', request => {
+    page.on('request', (request) => {
       if (request.url().includes('/api/')) {
         apiRequests.push(`${request.method()} ${request.url()}`);
         console.log(`📡 API Request: ${request.method()} ${request.url()}`);
       }
     });
 
-    page.on('response', response => {
+    page.on('response', (response) => {
       if (response.url().includes('/api/')) {
         console.log(`📡 API Response: ${response.status()} ${response.url()}`);
       }
@@ -58,8 +58,9 @@ test.describe('Login Fix Verification', () => {
     await page.screenshot({ path: 'test-results/login-fix-03-after-login.png' });
 
     // Check for success indicators
-    const hasNavigation = await page.locator('.navbar, .sidebar, nav, [role="navigation"]').count() > 0;
-    const hasErrorMessage = await page.locator('.alert-danger, .error, .text-danger').count() > 0;
+    const hasNavigation =
+      (await page.locator('.navbar, .sidebar, nav, [role="navigation"]').count()) > 0;
+    const hasErrorMessage = (await page.locator('.alert-danger, .error, .text-danger').count()) > 0;
     const hasLoginForm = await emailInput.isVisible();
 
     console.log(`🧭 Navigation found: ${hasNavigation}`);
@@ -68,7 +69,7 @@ test.describe('Login Fix Verification', () => {
 
     // Check API requests
     console.log(`📡 Total API requests made: ${apiRequests.length}`);
-    apiRequests.forEach(req => console.log(`   - ${req}`));
+    apiRequests.forEach((req) => console.log(`   - ${req}`));
 
     // Verify login success
     if (hasNavigation && !hasLoginForm) {
@@ -81,20 +82,25 @@ test.describe('Login Fix Verification', () => {
         await page.waitForTimeout(3000);
 
         // Take screenshot of clients page
-        await page.screenshot({ path: 'test-results/login-fix-04-clients-page.png', fullPage: true });
+        await page.screenshot({
+          path: 'test-results/login-fix-04-clients-page.png',
+          fullPage: true,
+        });
 
         // Check if we see real data
-        const hasData = await page.locator('table, .card, .list-group-item').count() > 0;
+        const hasData = (await page.locator('table, .card, .list-group-item').count()) > 0;
         console.log(`📊 Data elements found: ${hasData}`);
 
         if (hasData) {
           console.log('✅ Real data is loading in the application');
         }
       }
-
     } else if (hasErrorMessage) {
       console.log('❌ Login failed with error message');
-      const errorText = await page.locator('.alert-danger, .error, .text-danger').first().textContent();
+      const errorText = await page
+        .locator('.alert-danger, .error, .text-danger')
+        .first()
+        .textContent();
       console.log(`Error: ${errorText}`);
     } else if (hasLoginForm) {
       console.log('⚠️ Still showing login form - login may have failed silently');

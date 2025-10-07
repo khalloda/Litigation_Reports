@@ -29,9 +29,9 @@ test.describe('Invoice Edit Save Test', () => {
       await page.waitForTimeout(2000);
 
       // Check if edit modal opened
-      const modalVisible = await page.locator('[role="dialog"]').isVisible();
+      const modalVisible = page.locator('[role="dialog"]');
       console.log(`📋 Modal visible: ${modalVisible}`);
-      expect(modalVisible).toBe(true);
+      await expect(modalVisible).toBeVisible();
 
       // Check modal title for edit mode
       const modalTitle = await page.locator('.modal-title').textContent();
@@ -46,14 +46,16 @@ test.describe('Invoice Edit Save Test', () => {
       console.log('✅ Modified amount field');
 
       // Listen for network requests to check API calls
-      const requestPromise = page.waitForRequest(request =>
-        request.url().includes('/api/invoices/') &&
-        (request.method() === 'PUT' || request.method() === 'PATCH')
+      const requestPromise = page.waitForRequest(
+        (request) =>
+          request.url().includes('/api/invoices/') &&
+          (request.method() === 'PUT' || request.method() === 'PATCH')
       );
 
-      const responsePromise = page.waitForResponse(response =>
-        response.url().includes('/api/invoices/') &&
-        (response.request().method() === 'PUT' || response.request().method() === 'PATCH')
+      const responsePromise = page.waitForResponse(
+        (response) =>
+          response.url().includes('/api/invoices/') &&
+          (response.request().method() === 'PUT' || response.request().method() === 'PATCH')
       );
 
       // Click save button

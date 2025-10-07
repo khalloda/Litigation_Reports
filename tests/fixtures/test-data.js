@@ -10,20 +10,20 @@ const testData = {
       email: 'admin@test.com',
       password: 'admin123',
       name: 'Admin User',
-      role: 'admin'
+      role: 'admin',
     },
     lawyer: {
       email: 'lawyer@test.com',
       password: 'lawyer123',
       name: 'Lawyer User',
-      role: 'lawyer'
+      role: 'lawyer',
     },
     staff: {
       email: 'staff@test.com',
       password: 'staff123',
       name: 'Staff User',
-      role: 'staff'
-    }
+      role: 'staff',
+    },
   },
 
   // Arabic user data
@@ -32,20 +32,20 @@ const testData = {
       email: 'admin@test.com',
       password: 'admin123',
       name: 'المدير العام',
-      role: 'admin'
+      role: 'admin',
     },
     lawyer: {
       email: 'lawyer@test.com',
       password: 'lawyer123',
       name: 'المحامي ناجي',
-      role: 'lawyer'
+      role: 'lawyer',
     },
     staff: {
       email: 'staff@test.com',
       password: 'staff123',
       name: 'موظف المكتب',
-      role: 'staff'
-    }
+      role: 'staff',
+    },
   },
 
   // Client data for testing
@@ -64,7 +64,7 @@ const testData = {
       arabicIdNumber: '1234567890',
       birthDate: '1990-01-01',
       notes: 'Important client with multiple cases',
-      arabicNotes: 'عميل مهم لديه عدة قضايا'
+      arabicNotes: 'عميل مهم لديه عدة قضايا',
     },
     invalid: {
       name: '',
@@ -73,7 +73,7 @@ const testData = {
       address: '',
       nationality: '',
       idNumber: '',
-      birthDate: 'invalid-date'
+      birthDate: 'invalid-date',
     },
     mixedContent: {
       name: 'ناجي Smith',
@@ -81,8 +81,8 @@ const testData = {
       phone: '+966501234567',
       address: 'شارع الملك فهد، الرياض / King Fahd Street, Riyadh',
       nationality: 'سعودي / Saudi',
-      notes: 'Mixed content client / عميل محتوى مختلط'
-    }
+      notes: 'Mixed content client / عميل محتوى مختلط',
+    },
   },
 
   // Case data for testing
@@ -111,7 +111,7 @@ const testData = {
       opposingLawyer: 'Jane Doe',
       arabicOpposingLawyer: 'فاطمة محمد',
       notes: 'Important case requiring attention',
-      arabicNotes: 'قضية مهمة تتطلب الاهتمام'
+      arabicNotes: 'قضية مهمة تتطلب الاهتمام',
     },
     invalid: {
       caseNumber: '',
@@ -120,8 +120,8 @@ const testData = {
       caseType: '',
       status: '',
       startDate: 'invalid-date',
-      expectedEndDate: 'invalid-date'
-    }
+      expectedEndDate: 'invalid-date',
+    },
   },
 
   // Hearing data for testing
@@ -138,7 +138,7 @@ const testData = {
       status: 'Scheduled',
       arabicStatus: 'مجدولة',
       notes: 'Important hearing',
-      arabicNotes: 'جلسة مهمة'
+      arabicNotes: 'جلسة مهمة',
     },
     invalid: {
       hearingDate: '',
@@ -146,8 +146,8 @@ const testData = {
       hearingType: '',
       location: '',
       description: '',
-      status: ''
-    }
+      status: '',
+    },
   },
 
   // Invoice data for testing
@@ -167,7 +167,7 @@ const testData = {
       status: 'Pending',
       arabicStatus: 'معلق',
       notes: 'Payment due within 30 days',
-      arabicNotes: 'الدفع مستحق خلال 30 يوماً'
+      arabicNotes: 'الدفع مستحق خلال 30 يوماً',
     },
     invalid: {
       invoiceNumber: '',
@@ -176,8 +176,8 @@ const testData = {
       currency: '',
       description: '',
       issueDate: '',
-      dueDate: ''
-    }
+      dueDate: '',
+    },
   },
 
   // Document data for testing
@@ -194,7 +194,7 @@ const testData = {
       status: 'Active',
       arabicStatus: 'نشط',
       notes: 'Important legal document',
-      arabicNotes: 'وثيقة قانونية مهمة'
+      arabicNotes: 'وثيقة قانونية مهمة',
     },
     invalid: {
       title: '',
@@ -202,8 +202,8 @@ const testData = {
       documentType: '',
       uploadDate: '',
       version: '',
-      status: ''
-    }
+      status: '',
+    },
   },
 
   // Search terms for testing
@@ -216,30 +216,11 @@ const testData = {
       'Hearing',
       'Document',
       'Lawyer',
-      'Client'
+      'Client',
     ],
-    arabic: [
-      'ناجي رمضان',
-      'عقد',
-      'قضية',
-      'فاتورة',
-      'جلسة',
-      'وثيقة',
-      'محامي',
-      'عميل'
-    ],
-    mixed: [
-      'John ناجي',
-      'Contract عقد',
-      'Case قضية',
-      'Invoice فاتورة'
-    ],
-    specialCharacters: [
-      'Test@#$%',
-      'Test123!@#',
-      'Test-Name_123',
-      'Test.Name+123'
-    ]
+    arabic: ['ناجي رمضان', 'عقد', 'قضية', 'فاتورة', 'جلسة', 'وثيقة', 'محامي', 'عميل'],
+    mixed: ['John ناجي', 'Contract عقد', 'Case قضية', 'Invoice فاتورة'],
+    specialCharacters: ['Test@#$%', 'Test123!@#', 'Test-Name_123', 'Test.Name+123'],
   },
 
   // File upload test data
@@ -248,36 +229,36 @@ const testData = {
       pdf: {
         name: 'test-document.pdf',
         type: 'application/pdf',
-        size: 1024 * 1024 // 1MB
+        size: 1024 * 1024, // 1MB
       },
       image: {
         name: 'test-image.jpg',
         type: 'image/jpeg',
-        size: 512 * 1024 // 512KB
+        size: 512 * 1024, // 512KB
       },
       document: {
         name: 'test-document.docx',
         type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        size: 2 * 1024 * 1024 // 2MB
-      }
+        size: 2 * 1024 * 1024, // 2MB
+      },
     },
     invalid: {
       tooLarge: {
         name: 'large-file.pdf',
         type: 'application/pdf',
-        size: 10 * 1024 * 1024 // 10MB
+        size: 10 * 1024 * 1024, // 10MB
       },
       wrongType: {
         name: 'test-file.exe',
         type: 'application/x-msdownload',
-        size: 1024 * 1024 // 1MB
+        size: 1024 * 1024, // 1MB
       },
       corrupted: {
         name: 'corrupted-file.pdf',
         type: 'application/pdf',
-        size: 0
-      }
-    }
+        size: 0,
+      },
+    },
   },
 
   // Date formats for testing
@@ -286,14 +267,14 @@ const testData = {
       short: '12/31/2024',
       long: 'December 31, 2024',
       iso: '2024-12-31',
-      time: '2024-12-31 10:30:00'
+      time: '2024-12-31 10:30:00',
     },
     arabic: {
       short: '31/12/2024',
       long: '31 ديسمبر 2024',
       iso: '2024-12-31',
-      time: '2024-12-31 10:30:00'
-    }
+      time: '2024-12-31 10:30:00',
+    },
   },
 
   // Currency formats for testing
@@ -302,14 +283,14 @@ const testData = {
       symbol: '$',
       code: 'USD',
       format: '1,234.56',
-      arabicFormat: '1,234.56 دولار'
+      arabicFormat: '1,234.56 دولار',
     },
     sar: {
       symbol: 'ر.س',
       code: 'SAR',
       format: '1,234.56',
-      arabicFormat: '1,234.56 ريال'
-    }
+      arabicFormat: '1,234.56 ريال',
+    },
   },
 
   // Error messages for testing
@@ -322,7 +303,7 @@ const testData = {
       number: 'Please enter a valid number',
       file: 'Please select a valid file',
       password: 'Password must be at least 8 characters',
-      confirmPassword: 'Passwords do not match'
+      confirmPassword: 'Passwords do not match',
     },
     arabic: {
       required: 'هذا الحقل مطلوب',
@@ -332,8 +313,8 @@ const testData = {
       number: 'يرجى إدخال رقم صحيح',
       file: 'يرجى اختيار ملف صحيح',
       password: 'كلمة المرور يجب أن تكون 8 أحرف على الأقل',
-      confirmPassword: 'كلمات المرور غير متطابقة'
-    }
+      confirmPassword: 'كلمات المرور غير متطابقة',
+    },
   },
 
   // Performance test data
@@ -343,31 +324,31 @@ const testData = {
       cases: 5000,
       hearings: 10000,
       invoices: 2000,
-      documents: 5000
+      documents: 5000,
     },
     loadTest: {
       concurrentUsers: 50,
       duration: 300, // 5 minutes
-      rampUp: 60 // 1 minute
-    }
+      rampUp: 60, // 1 minute
+    },
   },
 
   // Accessibility test data
   accessibility: {
     colorContrast: {
       high: '#000000', // Black
-      low: '#CCCCCC'   // Light gray
+      low: '#CCCCCC', // Light gray
     },
     fontSize: {
       minimum: '14px',
       recommended: '16px',
-      large: '18px'
+      large: '18px',
     },
     focusIndicator: {
       visible: '2px solid #007bff',
-      hidden: 'none'
-    }
-  }
+      hidden: 'none',
+    },
+  },
 };
 
 // Helper functions for test data
@@ -379,7 +360,7 @@ const testDataHelpers = {
       ...testData.clients.valid,
       name: `Client ${randomId}`,
       email: `client${randomId}@example.com`,
-      phone: `+1234567${randomId.toString().padStart(3, '0')}`
+      phone: `+1234567${randomId.toString().padStart(3, '0')}`,
     };
   },
 
@@ -389,7 +370,7 @@ const testDataHelpers = {
     return {
       ...testData.cases.valid,
       caseNumber: `CASE-2024-${randomId.toString().padStart(3, '0')}`,
-      title: `Case ${randomId}`
+      title: `Case ${randomId}`,
     };
   },
 
@@ -399,7 +380,7 @@ const testDataHelpers = {
     return {
       ...testData.invoices.valid,
       invoiceNumber: `INV-2024-${randomId.toString().padStart(3, '0')}`,
-      amount: (Math.random() * 10000).toFixed(2)
+      amount: (Math.random() * 10000).toFixed(2),
     };
   },
 
@@ -409,7 +390,7 @@ const testDataHelpers = {
       name: 'ناجي Smith',
       email: 'naji.smith@example.com',
       address: 'شارع الملك فهد / King Fahd Street',
-      notes: 'Mixed content / محتوى مختلط'
+      notes: 'Mixed content / محتوى مختلط',
     };
     return mixedData[field] || '';
   },
@@ -420,7 +401,7 @@ const testDataHelpers = {
       name: 'ناجي رمضان',
       email: 'naji@example.com',
       address: 'شارع الملك فهد، الرياض',
-      notes: 'محتوى باللغة العربية'
+      notes: 'محتوى باللغة العربية',
     };
     return arabicData[field] || '';
   },
@@ -431,13 +412,13 @@ const testDataHelpers = {
       name: 'John Smith',
       email: 'john@example.com',
       address: '123 Main Street, New York',
-      notes: 'English content'
+      notes: 'English content',
     };
     return englishData[field] || '';
-  }
+  },
 };
 
 module.exports = {
   testData,
-  testDataHelpers
+  testDataHelpers,
 };

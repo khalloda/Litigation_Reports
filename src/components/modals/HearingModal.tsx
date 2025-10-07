@@ -1,16 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Form, Button, Row, Col, Alert, Spinner } from 'react-bootstrap';
 import toast from 'react-hot-toast';
-import {
-  Save,
-  X,
-  Calendar,
-  Clock,
-  Gavel,
-  FileText,
-  Users,
-  Building,
-} from 'lucide-react';
+import { Save, X, Calendar, Clock, Gavel, FileText, Users, Building } from 'lucide-react';
 import { apiService as api } from '../../services/api';
 import LawyerMultiSelect, { LawyerOption } from '../forms/LawyerMultiSelect';
 
@@ -81,13 +72,7 @@ const defaultFormData: HearingFormData = {
   short_decision: '',
 };
 
-const HearingModal: React.FC<HearingModalProps> = ({
-  show,
-  onHide,
-  onSave,
-  hearingData,
-  mode,
-}) => {
+const HearingModal: React.FC<HearingModalProps> = ({ show, onHide, onSave, hearingData, mode }) => {
   const [formData, setFormData] = useState<HearingFormData>(defaultFormData);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -122,7 +107,7 @@ const HearingModal: React.FC<HearingModalProps> = ({
             label: lawyer.lawyer_name_ar
               ? `${lawyer.lawyer_name_ar}${lawyer.lawyer_name_en ? ` - ${lawyer.lawyer_name_en}` : ''}`
               : lawyer.lawyer_name_en || `Lawyer ${lawyer.id}`,
-            data: lawyer
+            data: lawyer,
           }));
           console.log('HearingModal: Transformed lawyers:', transformedLawyers);
           setSelectedLawyers(transformedLawyers);
@@ -162,7 +147,7 @@ const HearingModal: React.FC<HearingModalProps> = ({
             '2hours': 'ساعتان',
             '3hours': 'ثلاث ساعات',
             '4hours': 'أربع ساعات',
-            'fullday': 'يوم كامل'
+            fullday: 'يوم كامل',
           },
         });
       }
@@ -171,21 +156,21 @@ const HearingModal: React.FC<HearingModalProps> = ({
       // Set default options if API fails
       setOptions({
         hearing_type: {
-          'initial': 'أولى',
-          'procedural': 'إجرائية',
-          'evidence': 'بينات',
-          'witness': 'شهود',
-          'expert': 'خبراء',
-          'final': 'نهائية',
-          'appeal': 'استئناف',
-          'execution': 'تنفيذ',
+          initial: 'أولى',
+          procedural: 'إجرائية',
+          evidence: 'بينات',
+          witness: 'شهود',
+          expert: 'خبراء',
+          final: 'نهائية',
+          appeal: 'استئناف',
+          execution: 'تنفيذ',
         },
         hearing_result: {
-          'won': 'لصالح',
-          'lost': 'ضد',
-          'postponed': 'مؤجلة',
-          'pending': 'معلقة',
-          'settled': 'تسوية'
+          won: 'لصالح',
+          lost: 'ضد',
+          postponed: 'مؤجلة',
+          pending: 'معلقة',
+          settled: 'تسوية',
         },
         hearing_duration: {
           '30min': '30 دقيقة',
@@ -193,8 +178,8 @@ const HearingModal: React.FC<HearingModalProps> = ({
           '2hours': 'ساعتان',
           '3hours': 'ثلاث ساعات',
           '4hours': 'أربع ساعات',
-          'fullday': 'يوم كامل'
-        }
+          fullday: 'يوم كامل',
+        },
       });
     }
   };
@@ -237,10 +222,24 @@ const HearingModal: React.FC<HearingModalProps> = ({
     setSaving(true);
 
     try {
-      // Prepare form data with lawyer IDs
+      // Helper function to convert Arabic values back to English keys
+      const convertArabicToEnglish = (value: string, optionsObj: Record<string, string>): string => {
+        for (const [englishKey, arabicValue] of Object.entries(optionsObj)) {
+          if (arabicValue === value) {
+            return englishKey;
+          }
+        }
+        return value; // Return original if no match found
+      };
+
+      // Prepare form data with lawyer IDs and proper data type conversion
       const submitData = {
         ...formData,
-        lawyer_ids: selectedLawyers.map(lawyer => lawyer.value)
+        case_id: parseInt(formData.case_id), // Convert to integer as backend expects
+        hearing_type: convertArabicToEnglish(formData.hearing_type, options.hearing_type),
+        hearing_result: formData.hearing_result ? convertArabicToEnglish(formData.hearing_result, options.hearing_result) : 'pending',
+        hearing_duration: convertArabicToEnglish(formData.hearing_duration, options.hearing_duration),
+        lawyer_ids: selectedLawyers.map((lawyer) => lawyer.value)
       };
 
       console.log('HearingModal: Submitting data:', {
@@ -248,7 +247,7 @@ const HearingModal: React.FC<HearingModalProps> = ({
         formData,
         selectedLawyers,
         submitData,
-        lawyerIds: submitData.lawyer_ids
+        lawyerIds: submitData.lawyer_ids,
       });
 
       let response;
@@ -279,31 +278,32 @@ const HearingModal: React.FC<HearingModalProps> = ({
     }
   };
 
-  const modalTitle = mode === 'create' ? 'إضافة جلسة جديدة' : mode === 'edit' ? 'تعديل الجلسة' : 'تفاصيل الجلسة';
+  const modalTitle =
+    mode === 'create' ? 'إضافة جلسة جديدة' : mode === 'edit' ? 'تعديل الجلسة' : 'تفاصيل الجلسة';
 
   return (
-    <Modal show={show} onHide={onHide} size="xl" backdrop="static">
+    <Modal show={show} onHide={onHide} size='xl' backdrop='static'>
       <Modal.Header closeButton>
         <Modal.Title>
-          <Gavel className="me-2" size={20} />
+          <Gavel className='me-2' size={20} />
           {modalTitle}
         </Modal.Title>
       </Modal.Header>
 
       <Form onSubmit={handleSubmit}>
         <Modal.Body style={{ maxHeight: '70vh', overflowY: 'auto' }}>
-          {error && <Alert variant="danger">{error}</Alert>}
+          {error && <Alert variant='danger'>{error}</Alert>}
 
           <Row>
             {/* Basic Information */}
-            <Col md={12} className="mb-4">
-              <h5 className="border-bottom pb-2 mb-3">
-                <FileText className="me-2" size={18} />
+            <Col md={12} className='mb-4'>
+              <h5 className='border-bottom pb-2 mb-3'>
+                <FileText className='me-2' size={18} />
                 المعلومات الأساسية
               </h5>
             </Col>
 
-            <Col md={6} className="mb-3">
+            <Col md={6} className='mb-3'>
               <Form.Group>
                 <Form.Label>القضية *</Form.Label>
                 <Form.Select
@@ -312,7 +312,7 @@ const HearingModal: React.FC<HearingModalProps> = ({
                   disabled={mode === 'view'}
                   required
                 >
-                  <option value="">اختر القضية</option>
+                  <option value=''>اختر القضية</option>
                   {cases.map((caseItem) => (
                     <option key={caseItem.id} value={caseItem.id}>
                       {caseItem.matter_id} - {caseItem.matter_ar}
@@ -322,11 +322,11 @@ const HearingModal: React.FC<HearingModalProps> = ({
               </Form.Group>
             </Col>
 
-            <Col md={6} className="mb-3">
+            <Col md={6} className='mb-3'>
               <Form.Group>
                 <Form.Label>تاريخ الجلسة *</Form.Label>
                 <Form.Control
-                  type="datetime-local"
+                  type='datetime-local'
                   value={formData.hearing_date}
                   onChange={(e) => handleInputChange('hearing_date', e.target.value)}
                   disabled={mode === 'view'}
@@ -335,7 +335,7 @@ const HearingModal: React.FC<HearingModalProps> = ({
               </Form.Group>
             </Col>
 
-            <Col md={6} className="mb-3">
+            <Col md={6} className='mb-3'>
               <Form.Group>
                 <Form.Label>نوع الجلسة *</Form.Label>
                 <Form.Select
@@ -344,15 +344,17 @@ const HearingModal: React.FC<HearingModalProps> = ({
                   disabled={mode === 'view'}
                   required
                 >
-                  <option value="">اختر نوع الجلسة</option>
+                  <option value=''>اختر نوع الجلسة</option>
                   {Object.entries(options.hearing_type).map(([value, label]) => (
-                    <option key={value} value={value}>{label}</option>
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
                   ))}
                 </Form.Select>
               </Form.Group>
             </Col>
 
-            <Col md={6} className="mb-3">
+            <Col md={6} className='mb-3'>
               <Form.Group>
                 <Form.Label>نتيجة الجلسة</Form.Label>
                 <Form.Select
@@ -360,31 +362,33 @@ const HearingModal: React.FC<HearingModalProps> = ({
                   onChange={(e) => handleInputChange('hearing_result', e.target.value)}
                   disabled={mode === 'view'}
                 >
-                  <option value="">اختر نتيجة الجلسة</option>
+                  <option value=''>اختر نتيجة الجلسة</option>
                   {Object.entries(options.hearing_result).map(([value, label]) => (
-                    <option key={value} value={value}>{label}</option>
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
                   ))}
                 </Form.Select>
               </Form.Group>
             </Col>
 
-            <Col md={12} className="mb-3">
+            <Col md={12} className='mb-3'>
               <Form.Group>
                 <Form.Label>
-                  <Users className="me-2" size={16} />
+                  <Users className='me-2' size={16} />
                   المحامون الحاضرون
                 </Form.Label>
                 <LawyerMultiSelect
                   value={selectedLawyers}
                   onChange={setSelectedLawyers}
-                  placeholder="اختر المحامين الحاضرين في الجلسة..."
+                  placeholder='اختر المحامين الحاضرين في الجلسة...'
                   isDisabled={mode === 'view'}
-                  className="mt-2"
+                  className='mt-2'
                 />
               </Form.Group>
             </Col>
 
-            <Col md={6} className="mb-3">
+            <Col md={6} className='mb-3'>
               <Form.Group>
                 <Form.Label>مدة الجلسة *</Form.Label>
                 <Form.Select
@@ -393,19 +397,21 @@ const HearingModal: React.FC<HearingModalProps> = ({
                   disabled={mode === 'view'}
                   required
                 >
-                  <option value="">اختر مدة الجلسة</option>
+                  <option value=''>اختر مدة الجلسة</option>
                   {Object.entries(options.hearing_duration).map(([value, label]) => (
-                    <option key={value} value={value}>{label}</option>
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
                   ))}
                 </Form.Select>
               </Form.Group>
             </Col>
 
-            <Col md={6} className="mb-3">
+            <Col md={6} className='mb-3'>
               <Form.Group>
                 <Form.Label>تاريخ الجلسة القادمة</Form.Label>
                 <Form.Control
-                  type="datetime-local"
+                  type='datetime-local'
                   value={formData.next_hearing}
                   onChange={(e) => handleInputChange('next_hearing', e.target.value)}
                   disabled={mode === 'view'}
@@ -414,20 +420,20 @@ const HearingModal: React.FC<HearingModalProps> = ({
             </Col>
 
             {/* Decisions and Notes Section */}
-            <Col md={12} className="mb-4 mt-4">
-              <h5 className="border-bottom pb-2 mb-3">
-                <Building className="me-2" size={18} />
+            <Col md={12} className='mb-4 mt-4'>
+              <h5 className='border-bottom pb-2 mb-3'>
+                <Building className='me-2' size={18} />
                 القرارات والملاحظات
               </h5>
             </Col>
 
-            <Col md={12} className="mb-3">
+            <Col md={12} className='mb-3'>
               <Form.Group>
                 <Form.Label>قرار الجلسة</Form.Label>
                 <Form.Control
-                  as="textarea"
+                  as='textarea'
                   rows={3}
-                  placeholder="أدخل قرار الجلسة..."
+                  placeholder='أدخل قرار الجلسة...'
                   value={formData.hearing_decision}
                   onChange={(e) => handleInputChange('hearing_decision', e.target.value)}
                   disabled={mode === 'view'}
@@ -435,13 +441,13 @@ const HearingModal: React.FC<HearingModalProps> = ({
               </Form.Group>
             </Col>
 
-            <Col md={12} className="mb-3">
+            <Col md={12} className='mb-3'>
               <Form.Group>
                 <Form.Label>القرار المختصر</Form.Label>
                 <Form.Control
-                  as="textarea"
+                  as='textarea'
                   rows={2}
-                  placeholder="ملخص مختصر للقرار..."
+                  placeholder='ملخص مختصر للقرار...'
                   value={formData.short_decision}
                   onChange={(e) => handleInputChange('short_decision', e.target.value)}
                   disabled={mode === 'view'}
@@ -449,13 +455,13 @@ const HearingModal: React.FC<HearingModalProps> = ({
               </Form.Group>
             </Col>
 
-            <Col md={6} className="mb-3">
+            <Col md={6} className='mb-3'>
               <Form.Group>
                 <Form.Label>ملاحظات المحكمة</Form.Label>
                 <Form.Control
-                  as="textarea"
+                  as='textarea'
                   rows={4}
-                  placeholder="ملاحظات المحكمة..."
+                  placeholder='ملاحظات المحكمة...'
                   value={formData.court_notes}
                   onChange={(e) => handleInputChange('court_notes', e.target.value)}
                   disabled={mode === 'view'}
@@ -463,13 +469,13 @@ const HearingModal: React.FC<HearingModalProps> = ({
               </Form.Group>
             </Col>
 
-            <Col md={6} className="mb-3">
+            <Col md={6} className='mb-3'>
               <Form.Group>
                 <Form.Label>ملاحظات المحامي</Form.Label>
                 <Form.Control
-                  as="textarea"
+                  as='textarea'
                   rows={4}
-                  placeholder="ملاحظات المحامي..."
+                  placeholder='ملاحظات المحامي...'
                   value={formData.lawyer_notes}
                   onChange={(e) => handleInputChange('lawyer_notes', e.target.value)}
                   disabled={mode === 'view'}
@@ -477,13 +483,13 @@ const HearingModal: React.FC<HearingModalProps> = ({
               </Form.Group>
             </Col>
 
-            <Col md={12} className="mb-3">
+            <Col md={12} className='mb-3'>
               <Form.Group>
                 <Form.Label>ملاحظات الخبير</Form.Label>
                 <Form.Control
-                  as="textarea"
+                  as='textarea'
                   rows={3}
-                  placeholder="ملاحظات الخبير إن وجد..."
+                  placeholder='ملاحظات الخبير إن وجد...'
                   value={formData.expert_notes}
                   onChange={(e) => handleInputChange('expert_notes', e.target.value)}
                   disabled={mode === 'view'}
@@ -494,16 +500,16 @@ const HearingModal: React.FC<HearingModalProps> = ({
         </Modal.Body>
 
         <Modal.Footer>
-          <Button variant="secondary" onClick={onHide} disabled={saving}>
-            <X className="me-1" size={16} />
+          <Button variant='secondary' onClick={onHide} disabled={saving}>
+            <X className='me-1' size={16} />
             إلغاء
           </Button>
           {mode !== 'view' && (
-            <Button type="submit" variant="primary" disabled={saving}>
+            <Button type='submit' variant='primary' disabled={saving}>
               {saving ? (
-                <Spinner animation="border" size="sm" className="me-1" />
+                <Spinner animation='border' size='sm' className='me-1' />
               ) : (
-                <Save className="me-1" size={16} />
+                <Save className='me-1' size={16} />
               )}
               {saving ? 'جاري الحفظ...' : mode === 'edit' ? 'تحديث' : 'حفظ'}
             </Button>

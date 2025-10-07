@@ -29,9 +29,9 @@ test.describe('Invoice View Client and Case Display Test', () => {
       await page.waitForTimeout(3000); // Wait for clients and cases to load
 
       // Check if view modal opened
-      const modalVisible = await page.locator('[role="dialog"]').isVisible();
+      const modalVisible = page.locator('[role="dialog"]');
       console.log(`📋 Modal visible: ${modalVisible}`);
-      expect(modalVisible).toBe(true);
+      await expect(modalVisible).toBeVisible();
 
       // Check modal title for view mode
       const modalTitle = await page.locator('.modal-title').textContent();
@@ -44,18 +44,20 @@ test.describe('Invoice View Client and Case Display Test', () => {
       // Check if client dropdown has options and shows selected value
       const clientSelect = page.locator('[role="dialog"] select').first();
       const clientOptions = await clientSelect.locator('option').count();
-      const clientValue = await clientSelect.inputValue();
-      console.log(`👥 Client dropdown - Options: ${clientOptions}, Selected value: "${clientValue}"`);
+      const clientValue = clientSelect;
+      console.log(
+        `👥 Client dropdown - Options: ${clientOptions}, Selected value: "${clientValue}"`
+      );
 
       // Check if case dropdown has options and shows selected value
       const caseSelect = page.locator('[role="dialog"] select').nth(1);
       const caseOptions = await caseSelect.locator('option').count();
-      const caseValue = await caseSelect.inputValue();
+      const caseValue = caseSelect;
       console.log(`📁 Case dropdown - Options: ${caseOptions}, Selected value: "${caseValue}"`);
 
       // Verify that client and case values are not empty (should show DB values)
-      expect(clientValue).not.toBe('');
-      expect(caseValue).not.toBe('');
+      await expect(clientValue).not.toHaveValue('');
+      await expect(caseValue).not.toHaveValue('');
       console.log(`✅ Client value: ${clientValue}, Case value: ${caseValue}`);
 
       // Check invoice number field

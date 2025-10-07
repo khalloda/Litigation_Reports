@@ -9,16 +9,14 @@ test.describe('Final Logo Verification', () => {
     const response = await request.post(`${BASE_URL}/api/export/pdf-chrome`, {
       headers: { 'Content-Type': 'application/json' },
       data: {
-        data: [
-          { name: "مكتب صارى الدين ومشاركوه للمحاماة", status: "نشط" }
-        ],
+        data: [{ name: 'مكتب صارى الدين ومشاركوه للمحاماة', status: 'نشط' }],
         columns: [
           { key: 'name', label: 'اسم المكتب' },
-          { key: 'status', label: 'الحالة' }
+          { key: 'status', label: 'الحالة' },
         ],
         title: 'تقرير نهائي - مع الشعار الكامل',
-        filename: 'final_logo_verification'
-      }
+        filename: 'final_logo_verification',
+      },
     });
 
     expect(response.status()).toBe(200);

@@ -25,14 +25,16 @@ test.describe('Reports Page Fix Verification', () => {
 
     // Monitor console errors
     const consoleErrors: string[] = [];
-    page.on('console', msg => {
+    page.on('console', (msg) => {
       if (msg.type() === 'error') {
         consoleErrors.push(msg.text());
       }
     });
 
     // Navigate to Reports page
-    const reportsLink = page.locator('a[href*="reports"], a:has-text("Reports"), a:has-text("التقارير")').first();
+    const reportsLink = page
+      .locator('a[href*="reports"], a:has-text("Reports"), a:has-text("التقارير")')
+      .first();
 
     if (await reportsLink.isVisible()) {
       await reportsLink.click();
@@ -50,7 +52,9 @@ test.describe('Reports Page Fix Verification', () => {
     await page.screenshot({ path: 'test-results/reports-page-fixed.png', fullPage: true });
 
     // Check for dashboard elements
-    const dashboardTitle = await page.locator('h2:has-text("التقارير"), h2:has-text("Reports")').count();
+    const dashboardTitle = await page
+      .locator('h2:has-text("التقارير"), h2:has-text("Reports")')
+      .count();
     const statisticsCards = await page.locator('.card').count();
     const chartElements = await page.locator('[class*="chart"], canvas').count();
     const dataElements = await page.locator('table, .badge, .list-group-item').count();
@@ -73,14 +77,15 @@ test.describe('Reports Page Fix Verification', () => {
     console.log(`❌ Console errors: ${consoleErrors.length}`);
     if (consoleErrors.length > 0) {
       console.log('Console errors found:');
-      consoleErrors.forEach(error => console.log(`  - ${error}`));
+      consoleErrors.forEach((error) => console.log(`  - ${error}`));
     }
 
     // Verify no critical errors
-    const hasCriticalErrors = consoleErrors.some(error =>
-      error.includes('Cannot convert undefined or null to object') ||
-      error.includes('Object.entries') ||
-      error.includes('TypeError')
+    const hasCriticalErrors = consoleErrors.some(
+      (error) =>
+        error.includes('Cannot convert undefined or null to object') ||
+        error.includes('Object.entries') ||
+        error.includes('TypeError')
     );
 
     console.log(`🚨 Critical errors: ${hasCriticalErrors}`);

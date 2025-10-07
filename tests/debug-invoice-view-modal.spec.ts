@@ -16,7 +16,7 @@ test.describe('Debug Invoice View Modal', () => {
     console.log('✅ Navigated to invoices page');
 
     // Monitor console for any errors
-    page.on('console', msg => {
+    page.on('console', (msg) => {
       if (msg.type() === 'error') {
         console.log('❌ Console Error:', msg.text());
       } else if (msg.type() === 'log') {
@@ -34,7 +34,10 @@ test.describe('Debug Invoice View Modal', () => {
     const viewButtons = await page.locator('button[title="View"]').all();
     console.log(`👁️ View buttons found: ${viewButtons.length}`);
 
-    const eyeButtons = await page.locator('button').filter({ has: page.locator('svg') }).all();
+    const eyeButtons = await page
+      .locator('button')
+      .filter({ has: page.locator('svg') })
+      .all();
     console.log(`👁️ Buttons with icons: ${eyeButtons.length}`);
 
     if (viewButtons.length > 0) {
@@ -67,8 +70,8 @@ test.describe('Debug Invoice View Modal', () => {
         for (let i = 0; i < Math.min(5, allInputs.length); i++) {
           const field = allInputs[i];
           const isDisabled = await field.isDisabled();
-          const tagName = await field.evaluate(el => el.tagName);
-          const type = await field.evaluate(el => el.type || el.tagName);
+          const tagName = await field.evaluate((el) => el.tagName);
+          const type = await field.evaluate((el) => el.type || el.tagName);
           console.log(`📝 Field ${i + 1} (${tagName}/${type}): disabled=${isDisabled}`);
         }
 

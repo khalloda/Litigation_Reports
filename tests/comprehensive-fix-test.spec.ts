@@ -6,23 +6,26 @@ test.describe('Comprehensive Fix Test - Column Keys', () => {
 
     // Step 1: Test API directly to verify clean keys
     console.log('\n📡 STEP 1: Testing API Response Keys');
-    const apiResponse = await page.request.post('http://lit.local:8080/api/reports/client-specific', {
-      data: {
-        client_id: "315",
-        report_type: "hearings",
-        columns: [
-          "h.hearing_date",
-          "h.hearing_type",
-          "h.hearing_result",
-          "c.matter_court",
-          "h.court_notes",
-          "h.lawyer_notes",
-          "h.next_hearing"
-        ],
-        date_from: "2025-09-01",
-        date_to: "2025-10-31"
+    const apiResponse = await page.request.post(
+      'http://lit.local:8080/api/reports/client-specific',
+      {
+        data: {
+          client_id: '315',
+          report_type: 'hearings',
+          columns: [
+            'h.hearing_date',
+            'h.hearing_type',
+            'h.hearing_result',
+            'c.matter_court',
+            'h.court_notes',
+            'h.lawyer_notes',
+            'h.next_hearing',
+          ],
+          date_from: '2025-09-01',
+          date_to: '2025-10-31',
+        },
       }
-    });
+    );
 
     expect(apiResponse.status()).toBe(200);
     const apiData = await apiResponse.json();
@@ -36,21 +39,30 @@ test.describe('Comprehensive Fix Test - Column Keys', () => {
 
       // Check for clean keys (without SQL prefixes)
       const expectedCleanKeys = [
-        'hearing_date', 'hearing_type', 'hearing_result',
-        'matter_court', 'court_notes', 'lawyer_notes', 'next_hearing'
+        'hearing_date',
+        'hearing_type',
+        'hearing_result',
+        'matter_court',
+        'court_notes',
+        'lawyer_notes',
+        'next_hearing',
       ];
 
       const actualKeys = Object.keys(firstHearing);
 
-      expectedCleanKeys.forEach(expectedKey => {
+      expectedCleanKeys.forEach((expectedKey) => {
         const hasKey = actualKeys.includes(expectedKey);
         const value = firstHearing[expectedKey];
         const hasValue = value !== null && value !== undefined && value !== '';
 
-        console.log(`  ${expectedKey}: ${hasKey ? '✅ KEY FOUND' : '❌ KEY MISSING'} ${hasValue ? '✅ HAS DATA' : '⚪ EMPTY'}`);
+        console.log(
+          `  ${expectedKey}: ${hasKey ? '✅ KEY FOUND' : '❌ KEY MISSING'} ${hasValue ? '✅ HAS DATA' : '⚪ EMPTY'}`
+        );
 
         if (hasKey && hasValue) {
-          console.log(`    Value: "${String(value).substring(0, 50)}${String(value).length > 50 ? '...' : ''}"`);
+          console.log(
+            `    Value: "${String(value).substring(0, 50)}${String(value).length > 50 ? '...' : ''}"`
+          );
         }
       });
 
@@ -71,7 +83,9 @@ test.describe('Comprehensive Fix Test - Column Keys', () => {
       // Open client-specific report modal
       await page.click('button:has-text("تقرير عميل محدد")');
       await page.waitForSelector('.modal', { timeout: 5000 });
-      await page.waitForFunction(() => document.querySelectorAll('.spinner-border').length === 0, { timeout: 10000 });
+      await page.waitForFunction(() => document.querySelectorAll('.spinner-border').length === 0, {
+        timeout: 10000,
+      });
 
       // Search and select "New Test Client Don"
       const searchInput = page.locator('input[placeholder*="ابحث عن عميل"]');
@@ -137,7 +151,9 @@ test.describe('Comprehensive Fix Test - Column Keys', () => {
         const modalCount = await modal.count();
 
         if (modalCount === 0 && pdfDownloaded) {
-          console.log('🎉 SUCCESS: PDF generated and modal closed - columns should now be populated!');
+          console.log(
+            '🎉 SUCCESS: PDF generated and modal closed - columns should now be populated!'
+          );
         } else if (modalCount > 0) {
           const errorAlert = page.locator('.alert-danger');
           const errorCount = await errorAlert.count();
@@ -160,7 +176,6 @@ test.describe('Comprehensive Fix Test - Column Keys', () => {
           console.log('   - ملاحظات المحامي (Lawyer Notes)');
           console.log('   - الجلسة القادمة (Next Hearing)');
         }
-
       } else {
         console.log('❌ Could not find New Test Client Don');
       }

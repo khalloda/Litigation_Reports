@@ -40,9 +40,9 @@ test.describe('Invoice View Button Test', () => {
 
         // Check if form fields are disabled (view mode)
         const firstInput = page.locator('input[type="text"]').first();
-        const isDisabled = await firstInput.isDisabled();
+        const isDisabled = firstInput;
         console.log(`✅ First input field disabled: ${isDisabled}`);
-        expect(isDisabled).toBe(true);
+        await expect(isDisabled).toBeDisabled();
 
         // Check if only close button exists (no save button)
         const saveButton = page.getByRole('button', { name: 'إضافة الفاتورة' });
@@ -51,7 +51,7 @@ test.describe('Invoice View Button Test', () => {
 
         const saveVisible = await saveButton.isVisible().catch(() => false);
         const editVisible = await editButton.isVisible().catch(() => false);
-        const closeVisible = await closeButton.isVisible();
+        const closeVisible = closeButton;
 
         console.log(`✅ Save button visible: ${saveVisible}`);
         console.log(`✅ Edit button visible: ${editVisible}`);
@@ -59,7 +59,7 @@ test.describe('Invoice View Button Test', () => {
 
         expect(saveVisible).toBe(false);
         expect(editVisible).toBe(false);
-        expect(closeVisible).toBe(true);
+        await expect(closeVisible).toBeVisible();
 
         // Close the modal
         await closeButton.click();

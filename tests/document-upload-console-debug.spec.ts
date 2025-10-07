@@ -9,12 +9,12 @@ test.describe('Document Upload Console Debug', () => {
     console.log('🔍 Debugging upload with console logs...');
 
     // Capture all console messages
-    page.on('console', msg => {
+    page.on('console', (msg) => {
       console.log(`[${msg.type()}] ${msg.text()}`);
     });
 
     // Capture dialogs
-    page.on('dialog', dialog => {
+    page.on('dialog', (dialog) => {
       console.log(`🚨 DIALOG: ${dialog.message()}`);
       dialog.accept();
     });
@@ -61,7 +61,6 @@ test.describe('Document Upload Console Debug', () => {
       await page.waitForTimeout(5000);
 
       console.log('✅ Upload attempt completed');
-
     } finally {
       if (fs.existsSync(testFilePath)) {
         fs.unlinkSync(testFilePath);

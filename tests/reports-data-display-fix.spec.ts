@@ -20,7 +20,9 @@ test.describe('Reports Data Display Fix Verification', () => {
     await page.waitForTimeout(2000);
   });
 
-  test('should display actual clients data in table after clicking View button', async ({ page }) => {
+  test('should display actual clients data in table after clicking View button', async ({
+    page,
+  }) => {
     console.log('📋 Testing Clients data display in table...');
 
     // Find and click the Clients View button (first one)
@@ -44,7 +46,7 @@ test.describe('Reports Data Display Fix Verification', () => {
     console.log('✅ Summary section found');
 
     // Check for actual data in table
-    const tableExists = await page.locator('.table-responsive table').count() > 0;
+    const tableExists = (await page.locator('.table-responsive table').count()) > 0;
     console.log(`📊 Table exists: ${tableExists}`);
 
     if (tableExists) {
@@ -58,8 +60,10 @@ test.describe('Reports Data Display Fix Verification', () => {
 
       // Check for specific client data
       const tableContent = await page.locator('table').textContent();
-      const hasClientNames = tableContent?.includes('Sarie Eldin') || tableContent?.includes('ساري الدين');
-      const hasClientTypes = tableContent?.includes('company') || tableContent?.includes('individual');
+      const hasClientNames =
+        tableContent?.includes('Sarie Eldin') || tableContent?.includes('ساري الدين');
+      const hasClientTypes =
+        tableContent?.includes('company') || tableContent?.includes('individual');
       const hasActiveStatus = tableContent?.includes('active') || tableContent?.includes('نشط');
 
       console.log(`👤 Client names in table: ${hasClientNames}`);
@@ -69,7 +73,10 @@ test.describe('Reports Data Display Fix Verification', () => {
       // Assertions
       expect(headerCount, 'Should have table headers').toBeGreaterThan(3);
       expect(dataRows, 'Should have data rows').toBeGreaterThan(0);
-      expect(hasClientNames || hasClientTypes || hasActiveStatus, 'Should show actual client data').toBe(true);
+      expect(
+        hasClientNames || hasClientTypes || hasActiveStatus,
+        'Should show actual client data'
+      ).toBe(true);
     }
 
     // Take screenshot for verification
@@ -96,7 +103,7 @@ test.describe('Reports Data Display Fix Verification', () => {
     expect(modalTitle).toContain('القضايا');
 
     // Check for table with data
-    const tableExists = await page.locator('.table-responsive table').count() > 0;
+    const tableExists = (await page.locator('.table-responsive table').count()) > 0;
     console.log(`📊 Table exists: ${tableExists}`);
 
     if (tableExists) {
@@ -114,7 +121,9 @@ test.describe('Reports Data Display Fix Verification', () => {
       console.log(`📝 Case types in table: ${hasCaseTypes}`);
 
       expect(dataRows, 'Should have case data rows').toBeGreaterThan(0);
-      expect(hasCaseNumbers || hasCourtNames || hasCaseTypes, 'Should show actual case data').toBe(true);
+      expect(hasCaseNumbers || hasCourtNames || hasCaseTypes, 'Should show actual case data').toBe(
+        true
+      );
     }
 
     await page.screenshot({ path: 'test-results/cases-data-display-fixed.png', fullPage: true });
@@ -139,7 +148,7 @@ test.describe('Reports Data Display Fix Verification', () => {
     expect(modalTitle).toContain('الجلسات');
 
     // Check for table with data
-    const tableExists = await page.locator('.table-responsive table').count() > 0;
+    const tableExists = (await page.locator('.table-responsive table').count()) > 0;
     console.log(`📊 Table exists: ${tableExists}`);
 
     if (tableExists) {
@@ -157,7 +166,10 @@ test.describe('Reports Data Display Fix Verification', () => {
       console.log(`📊 Hearing results in table: ${hasHearingResults}`);
 
       expect(dataRows, 'Should have hearing data rows').toBeGreaterThan(0);
-      expect(hasHearingDates || hasHearingTypes || hasHearingResults, 'Should show actual hearing data').toBe(true);
+      expect(
+        hasHearingDates || hasHearingTypes || hasHearingResults,
+        'Should show actual hearing data'
+      ).toBe(true);
     }
 
     await page.screenshot({ path: 'test-results/hearings-data-display-fixed.png', fullPage: true });
@@ -185,7 +197,9 @@ test.describe('Reports Data Display Fix Verification', () => {
       for (let i = 0; i < Math.min(summaryCount, 3); i++) {
         const cardText = await summaryCards.nth(i).textContent();
         const hasValue = cardText && cardText.trim() !== '' && !cardText.includes('undefined');
-        console.log(`📊 Summary card ${i + 1}: ${hasValue ? 'Has value' : 'Empty'} - "${cardText?.trim()}"`);
+        console.log(
+          `📊 Summary card ${i + 1}: ${hasValue ? 'Has value' : 'Empty'} - "${cardText?.trim()}"`
+        );
       }
 
       expect(summaryCount, 'Should have summary statistics').toBeGreaterThan(0);

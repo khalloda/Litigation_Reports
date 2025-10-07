@@ -23,9 +23,9 @@ test.describe('Invoice Auto Number Generation Test', () => {
     await page.waitForTimeout(2000);
 
     // Check if create modal opened
-    const modalVisible = await page.locator('[role="dialog"]').isVisible();
+    const modalVisible = page.locator('[role="dialog"]');
     console.log(`📋 Modal visible: ${modalVisible}`);
-    expect(modalVisible).toBe(true);
+    await expect(modalVisible).toBeVisible();
 
     // Check modal title for create mode
     const modalTitle = await page.locator('.modal-title').textContent();
@@ -44,14 +44,13 @@ test.describe('Invoice Auto Number Generation Test', () => {
     console.log('📝 Filled required fields (date and amount), left invoice number empty');
 
     // Listen for network requests to check API calls
-    const requestPromise = page.waitForRequest(request =>
-      request.url().includes('/api/invoices') &&
-      request.method() === 'POST'
+    const requestPromise = page.waitForRequest(
+      (request) => request.url().includes('/api/invoices') && request.method() === 'POST'
     );
 
-    const responsePromise = page.waitForResponse(response =>
-      response.url().includes('/api/invoices') &&
-      response.request().method() === 'POST'
+    const responsePromise = page.waitForResponse(
+      (response) =>
+        response.url().includes('/api/invoices') && response.request().method() === 'POST'
     );
 
     // Click create button

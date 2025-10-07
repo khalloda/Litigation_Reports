@@ -10,7 +10,7 @@ test.describe('Document Upload Final Test', () => {
 
     // Track console messages
     const consoleLogs: string[] = [];
-    page.on('console', msg => {
+    page.on('console', (msg) => {
       const message = `[${msg.type()}] ${msg.text()}`;
       consoleLogs.push(message);
       if (msg.type() === 'error' || message.includes('Upload') || message.includes('API')) {
@@ -20,7 +20,7 @@ test.describe('Document Upload Final Test', () => {
 
     // Track API requests to /api/documents POST
     const uploadRequests: any[] = [];
-    page.on('request', request => {
+    page.on('request', (request) => {
       if (request.url().includes('/api/documents') && request.method() === 'POST') {
         uploadRequests.push({
           url: request.url(),
@@ -38,13 +38,16 @@ test.describe('Document Upload Final Test', () => {
 
     // Track API responses
     let uploadResponse: any = null;
-    page.on('response', response => {
+    page.on('response', (response) => {
       if (response.url().includes('/api/documents') && response.request().method() === 'POST') {
         console.log('📥 UPLOAD RESPONSE:', response.status(), response.url());
-        response.json().then(data => {
-          uploadResponse = data;
-          console.log('📥 UPLOAD RESPONSE DATA:', data);
-        }).catch(() => {});
+        response
+          .json()
+          .then((data) => {
+            uploadResponse = data;
+            console.log('📥 UPLOAD RESPONSE DATA:', data);
+          })
+          .catch(() => {});
       }
     });
 
@@ -85,7 +88,9 @@ test.describe('Document Upload Final Test', () => {
 
       // Fill description
       const descriptionTextarea = page.locator('textarea').first();
-      await descriptionTextarea.fill('This is a test upload to verify the functionality is working');
+      await descriptionTextarea.fill(
+        'This is a test upload to verify the functionality is working'
+      );
       console.log('📝 Description filled');
 
       // Select file
@@ -117,8 +122,10 @@ test.describe('Document Upload Final Test', () => {
         console.log('📤 Upload request details:', request);
 
         // Verify Content-Type
-        expect(request.contentType, 'Content-Type should include multipart/form-data with boundary')
-          .toMatch(/^multipart\/form-data; boundary=/);
+        expect(
+          request.contentType,
+          'Content-Type should include multipart/form-data with boundary'
+        ).toMatch(/^multipart\/form-data; boundary=/);
 
         console.log('✅ Content-Type header is correct!');
       } else {
@@ -126,7 +133,7 @@ test.describe('Document Upload Final Test', () => {
 
         // Print console logs to debug
         console.log('Console logs for debugging:');
-        consoleLogs.forEach(log => {
+        consoleLogs.forEach((log) => {
           if (log.includes('Upload') || log.includes('error') || log.includes('alert')) {
             console.log('  ', log);
           }
@@ -149,7 +156,6 @@ test.describe('Document Upload Final Test', () => {
         expect(uploadResponse.success, 'Upload should be successful').toBe(true);
       }
       expect(modalAfterUpload, 'Modal should close after successful upload').toBe(0);
-
     } finally {
       // Clean up test file
       if (fs.existsSync(testFilePath)) {

@@ -169,7 +169,7 @@ test.describe('Export Functionality Verification', () => {
     const csvExportBtn = page.locator('#exportCSVBtn');
     const excelExportBtn = page.locator('#exportExcelBtn');
 
-    if (await csvExportBtn.count() > 0) {
+    if ((await csvExportBtn.count()) > 0) {
       await expect(csvExportBtn).toBeVisible();
       await expect(excelExportBtn).toBeVisible();
 
@@ -204,7 +204,7 @@ test.describe('Export Functionality Verification', () => {
 
       // Listen for console errors
       const consoleMessages: string[] = [];
-      page.on('console', msg => {
+      page.on('console', (msg) => {
         if (msg.type() === 'error') {
           consoleMessages.push(`Error: ${msg.text()}`);
         }

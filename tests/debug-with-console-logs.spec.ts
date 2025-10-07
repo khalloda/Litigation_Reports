@@ -6,12 +6,12 @@ test.describe('Debug with Console Logs', () => {
 
     // Capture console messages
     const consoleMessages: string[] = [];
-    page.on('console', msg => {
+    page.on('console', (msg) => {
       consoleMessages.push(`${msg.type()}: ${msg.text()}`);
     });
 
     // Capture uncaught errors
-    page.on('pageerror', error => {
+    page.on('pageerror', (error) => {
       console.log(`❌ Page error: ${error.message}`);
     });
 

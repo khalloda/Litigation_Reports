@@ -9,18 +9,18 @@ test.describe('PDF Branding - Simple Test', () => {
     const testData = [
       {
         id: 1,
-        client_name_ar: "مكتب صارى الدين ومشاركوه",
-        client_type: "company",
-        status: "active",
-        created_at: "2024-01-15"
+        client_name_ar: 'مكتب صارى الدين ومشاركوه',
+        client_type: 'company',
+        status: 'active',
+        created_at: '2024-01-15',
       },
       {
         id: 2,
-        client_name_ar: "عميل اختبار التصميم",
-        client_type: "individual",
-        status: "inactive",
-        created_at: "2024-01-20"
-      }
+        client_name_ar: 'عميل اختبار التصميم',
+        client_type: 'individual',
+        status: 'inactive',
+        created_at: '2024-01-20',
+      },
     ];
 
     const columns = [
@@ -28,7 +28,7 @@ test.describe('PDF Branding - Simple Test', () => {
       { key: 'client_name_ar', label: 'اسم العميل' },
       { key: 'client_type', label: 'نوع العميل' },
       { key: 'status', label: 'الحالة' },
-      { key: 'created_at', label: 'تاريخ الإنشاء' }
+      { key: 'created_at', label: 'تاريخ الإنشاء' },
     ];
 
     const response = await request.post(`${BASE_URL}/api/export/pdf-chrome`, {
@@ -37,8 +37,8 @@ test.describe('PDF Branding - Simple Test', () => {
         data: testData,
         columns: columns,
         title: 'تقرير العملاء - التصميم الجديد',
-        filename: 'green_gold_branding_test'
-      }
+        filename: 'green_gold_branding_test',
+      },
     });
 
     expect(response.status()).toBe(200);
@@ -57,18 +57,28 @@ test.describe('PDF Branding - Simple Test', () => {
     console.log('   ✓ Border accents: Green theme throughout');
   });
 
-  test('Test Responsive Styling with Many Columns', async ({ request }) => {
+  test('Responsive Styling with Many Columns', async ({ request }) => {
     console.log('📊 Testing responsive styling with many columns...');
 
-    const testData = [{
-      col1: "بيانات1", col2: "بيانات2", col3: "بيانات3", col4: "بيانات4",
-      col5: "بيانات5", col6: "بيانات6", col7: "بيانات7", col8: "بيانات8",
-      col9: "بيانات9", col10: "بيانات10", col11: "بيانات11"
-    }];
+    const testData = [
+      {
+        col1: 'بيانات1',
+        col2: 'بيانات2',
+        col3: 'بيانات3',
+        col4: 'بيانات4',
+        col5: 'بيانات5',
+        col6: 'بيانات6',
+        col7: 'بيانات7',
+        col8: 'بيانات8',
+        col9: 'بيانات9',
+        col10: 'بيانات10',
+        col11: 'بيانات11',
+      },
+    ];
 
-    const manyColumns = Array.from({length: 11}, (_, i) => ({
-      key: `col${i+1}`,
-      label: `العمود ${i+1}`
+    const manyColumns = Array.from({ length: 11 }, (_, i) => ({
+      key: `col${i + 1}`,
+      label: `العمود ${i + 1}`,
     }));
 
     const response = await request.post(`${BASE_URL}/api/export/pdf-chrome`, {
@@ -77,8 +87,8 @@ test.describe('PDF Branding - Simple Test', () => {
         data: testData,
         columns: manyColumns,
         title: 'اختبار الأعمدة الكثيرة',
-        filename: 'responsive_columns_test'
-      }
+        filename: 'responsive_columns_test',
+      },
     });
 
     expect(response.status()).toBe(200);
@@ -100,17 +110,15 @@ test.describe('PDF Branding - Simple Test', () => {
     const response = await request.post(`${BASE_URL}/api/export/pdf-chrome`, {
       headers: { 'Content-Type': 'application/json' },
       data: {
-        data: [
-          { name: "اختبار التصميم", status: "نشط", type: "تجريبي" }
-        ],
+        data: [{ name: 'اختبار التصميم', status: 'نشط', type: 'تجريبي' }],
         columns: [
           { key: 'name', label: 'الاسم' },
           { key: 'status', label: 'الحالة' },
-          { key: 'type', label: 'النوع' }
+          { key: 'type', label: 'النوع' },
         ],
         title: 'اختبار نهائي للتصميم الأخضر والذهبي',
-        filename: 'final_branding_test'
-      }
+        filename: 'final_branding_test',
+      },
     });
 
     expect(response.status()).toBe(200);

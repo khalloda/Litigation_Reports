@@ -6,14 +6,14 @@ test.describe('Debug Button Click', () => {
 
     // Capture all console messages
     const consoleMessages: string[] = [];
-    page.on('console', msg => {
+    page.on('console', (msg) => {
       const message = `${msg.type()}: ${msg.text()}`;
       console.log(`📋 Console: ${message}`);
       consoleMessages.push(message);
     });
 
     // Capture page errors
-    page.on('pageerror', error => {
+    page.on('pageerror', (error) => {
       console.log(`❌ Page error: ${error.message}`);
       console.log(`❌ Stack: ${error.stack}`);
     });
@@ -57,13 +57,11 @@ test.describe('Debug Button Click', () => {
           console.log(`📋 Modal appeared: ${modalVisible}`);
 
           // Check for console logs that contain our debug messages
-          const debugLogs = consoleMessages.filter(msg =>
-            msg.includes('handleViewInvoice called') ||
-            msg.includes('Making API calls')
+          const debugLogs = consoleMessages.filter(
+            (msg) => msg.includes('handleViewInvoice called') || msg.includes('Making API calls')
           );
           console.log(`🔍 Found ${debugLogs.length} debug logs`);
-          debugLogs.forEach(log => console.log(`   ${log}`));
-
+          debugLogs.forEach((log) => console.log(`   ${log}`));
         } else {
           console.log('❌ View button not visible');
         }

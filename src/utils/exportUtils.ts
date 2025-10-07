@@ -29,7 +29,7 @@ export const exportToCSV = (data: any[], options: ExportOptions = {}) => {
   const { filename = `export_${new Date().toISOString().split('T')[0]}`, columns, title } = options;
 
   // Determine columns to export
-  const exportColumns = columns || Object.keys(data[0]).map(key => ({ key, label: key }));
+  const exportColumns = columns || Object.keys(data[0]).map((key) => ({ key, label: key }));
 
   // Build CSV content with proper Arabic text handling
   const csvRows: string[] = [];
@@ -41,12 +41,12 @@ export const exportToCSV = (data: any[], options: ExportOptions = {}) => {
   }
 
   // Add headers
-  const headers = exportColumns.map(col => `"${col.label}"`);
+  const headers = exportColumns.map((col) => `"${col.label}"`);
   csvRows.push(headers.join(','));
 
   // Add data rows
-  data.forEach(row => {
-    const values = exportColumns.map(col => {
+  data.forEach((row) => {
+    const values = exportColumns.map((col) => {
       let value = row[col.key];
 
       // Apply transformation if provided
@@ -73,7 +73,7 @@ export const exportToCSV = (data: any[], options: ExportOptions = {}) => {
 
   // Create blob with UTF-8 BOM for proper Arabic text display
   const blob = new Blob(['\uFEFF' + csvContent], {
-    type: 'text/csv;charset=utf-8;'
+    type: 'text/csv;charset=utf-8;',
   });
 
   const link = document.createElement('a');
@@ -99,7 +99,7 @@ export const exportToExcel = (data: any[], options: ExportOptions = {}) => {
   const { filename = `export_${new Date().toISOString().split('T')[0]}`, columns, title } = options;
 
   // Determine columns to export
-  const exportColumns = columns || Object.keys(data[0]).map(key => ({ key, label: key }));
+  const exportColumns = columns || Object.keys(data[0]).map((key) => ({ key, label: key }));
 
   try {
     // Build Excel content with proper Arabic text handling
@@ -112,12 +112,12 @@ export const exportToExcel = (data: any[], options: ExportOptions = {}) => {
     }
 
     // Add headers
-    const headers = exportColumns.map(col => col.label);
+    const headers = exportColumns.map((col) => col.label);
     excelRows.push(headers.join('\t'));
 
     // Add data rows
-    data.forEach(row => {
-      const values = exportColumns.map(col => {
+    data.forEach((row) => {
+      const values = exportColumns.map((col) => {
         let value = row[col.key];
 
         // Apply transformation if provided
@@ -141,7 +141,7 @@ export const exportToExcel = (data: any[], options: ExportOptions = {}) => {
 
     // Create blob with UTF-8 BOM for proper Arabic text display
     const blob = new Blob(['\uFEFF' + excelContent], {
-      type: 'application/vnd.ms-excel;charset=utf-8;'
+      type: 'application/vnd.ms-excel;charset=utf-8;',
     });
 
     const link = document.createElement('a');
@@ -153,7 +153,6 @@ export const exportToExcel = (data: any[], options: ExportOptions = {}) => {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-
   } catch (err) {
     console.error('Excel export error:', err);
     // Fallback to CSV if Excel export fails
@@ -202,16 +201,18 @@ export const formatBooleanForExport = (value: boolean): string => {
 export const formatLawyersForExport = (lawyers: any[]): string => {
   if (!lawyers || !Array.isArray(lawyers) || lawyers.length === 0) return '';
 
-  return lawyers.map(lawyer => {
-    let name = lawyer.display_name || lawyer.name_ar || lawyer.lawyer_name_ar || '';
-    if (lawyer.role && lawyer.role !== 'primary') {
-      name += ` (${lawyer.role})`;
-    }
-    if (lawyer.is_primary) {
-      name += ' (أساسي)';
-    }
-    return name;
-  }).join(', ');
+  return lawyers
+    .map((lawyer) => {
+      let name = lawyer.display_name || lawyer.name_ar || lawyer.lawyer_name_ar || '';
+      if (lawyer.role && lawyer.role !== 'primary') {
+        name += ` (${lawyer.role})`;
+      }
+      if (lawyer.is_primary) {
+        name += ' (أساسي)';
+      }
+      return name;
+    })
+    .join(', ');
 };
 
 /**
@@ -239,7 +240,7 @@ export const exportToPDF = async (data: any[], options: ExportOptions = {}) => {
       data: data,
       columns: exportColumns,
       title: title || 'تقرير',
-      filename: filename
+      filename: filename,
     };
 
     console.log('Generating PDF with Chrome Headless for perfect Arabic support...');
@@ -250,7 +251,7 @@ export const exportToPDF = async (data: any[], options: ExportOptions = {}) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(pdfData)
+      body: JSON.stringify(pdfData),
     });
 
     if (!response.ok) {
@@ -279,7 +280,6 @@ export const exportToPDF = async (data: any[], options: ExportOptions = {}) => {
     window.URL.revokeObjectURL(url);
 
     console.log('PDF export completed successfully with Chrome Headless');
-
   } catch (err) {
     console.error('Chrome PDF export error:', err);
 
@@ -301,13 +301,13 @@ export const exportToPDF = async (data: any[], options: ExportOptions = {}) => {
  */
 const exportToPDFClientSide = async (data: any[], options: ExportOptions = {}) => {
   const { filename = `export_${new Date().toISOString().split('T')[0]}`, columns, title } = options;
-  const exportColumns = columns || Object.keys(data[0]).map(key => ({ key, label: key }));
+  const exportColumns = columns || Object.keys(data[0]).map((key) => ({ key, label: key }));
 
   // Create new PDF document
   const doc = new jsPDF({
     orientation: exportColumns.length > 4 ? 'landscape' : 'portrait',
     unit: 'mm',
-    format: 'a4'
+    format: 'a4',
   });
 
   // Add title if provided
@@ -317,14 +317,14 @@ const exportToPDFClientSide = async (data: any[], options: ExportOptions = {}) =
     const pageWidth = doc.internal.pageSize.width;
     doc.text(String(title), pageWidth / 2, 20, {
       align: 'center',
-      maxWidth: pageWidth - 40
+      maxWidth: pageWidth - 40,
     });
   }
 
   // Prepare table data
-  const tableHeaders = exportColumns.map(col => String(col.label));
-  const tableData = data.map(row =>
-    exportColumns.map(col => {
+  const tableHeaders = exportColumns.map((col) => String(col.label));
+  const tableData = data.map((row) =>
+    exportColumns.map((col) => {
       let value = row[col.key];
 
       // Apply transformation if provided
@@ -354,20 +354,20 @@ const exportToPDFClientSide = async (data: any[], options: ExportOptions = {}) =
       textColor: [0, 0, 0],
       fillColor: [255, 255, 255],
       lineColor: [200, 200, 200],
-      lineWidth: 0.1
+      lineWidth: 0.1,
     },
     headStyles: {
       fillColor: [66, 139, 202],
       textColor: [255, 255, 255],
       fontStyle: 'bold',
       halign: 'center',
-      fontSize: 10
+      fontSize: 10,
     },
     alternateRowStyles: {
-      fillColor: [248, 249, 250]
+      fillColor: [248, 249, 250],
     },
     margin: { top: 15, right: 15, bottom: 20, left: 15 },
-    theme: 'striped'
+    theme: 'striped',
   });
 
   // Save the PDF
@@ -415,7 +415,11 @@ export const EXPORT_COLUMNS = {
     { key: 'id', label: 'المعرف' },
     { key: 'invoice_number', label: 'رقم الفاتورة' },
     { key: 'invoice_date', label: 'تاريخ الفاتورة', transform: formatDateForExport },
-    { key: 'amount', label: 'المبلغ', transform: (value: number) => formatCurrencyForExport(value) },
+    {
+      key: 'amount',
+      label: 'المبلغ',
+      transform: (value: number) => formatCurrencyForExport(value),
+    },
     { key: 'currency', label: 'العملة' },
     { key: 'invoice_type', label: 'نوع الفاتورة' },
     { key: 'invoice_status', label: 'حالة الفاتورة' },

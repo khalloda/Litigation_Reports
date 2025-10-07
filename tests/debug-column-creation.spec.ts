@@ -6,10 +6,12 @@ test.describe('Debug Column Creation', () => {
 
     // Monitor browser console
     page.on('console', (msg) => {
-      if (msg.text().includes('ClientSpecificReportModal Debug') ||
-          msg.text().includes('Processing:') ||
-          msg.text().includes('selectedColumns') ||
-          msg.text().includes('exportColumns')) {
+      if (
+        msg.text().includes('ClientSpecificReportModal Debug') ||
+        msg.text().includes('Processing:') ||
+        msg.text().includes('selectedColumns') ||
+        msg.text().includes('exportColumns')
+      ) {
         console.log('BROWSER:', msg.text());
       }
     });
@@ -28,7 +30,9 @@ test.describe('Debug Column Creation', () => {
     // Open client-specific report modal
     await page.click('button:has-text("تقرير عميل محدد")');
     await page.waitForSelector('.modal', { timeout: 5000 });
-    await page.waitForFunction(() => document.querySelectorAll('.spinner-border').length === 0, { timeout: 10000 });
+    await page.waitForFunction(() => document.querySelectorAll('.spinner-border').length === 0, {
+      timeout: 10000,
+    });
 
     // Search and select client
     const searchInput = page.locator('input[placeholder*="ابحث عن عميل"]');
