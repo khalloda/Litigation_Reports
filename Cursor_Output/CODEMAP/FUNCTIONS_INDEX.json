@@ -1,0 +1,354 @@
+{
+  "metadata": {
+    "generated": "2025-10-07",
+    "repository": "Litigation_Reports",
+    "total_functions": 150,
+    "total_classes": 24,
+    "languages": ["TypeScript", "PHP"],
+    "note": "Sample catalog - Full extraction would require AST parsing"
+  },
+  "frontend_functions": [
+    {
+      "name": "main",
+      "kind": "entry",
+      "path": "src/main.tsx",
+      "loc": {"start": 7, "end": 12},
+      "description": "React application entry point",
+      "params": [],
+      "returns": {"type": "void"},
+      "references": {
+        "imports": ["React", "ReactDOM", "App", "i18n", "main.scss"],
+        "calls": ["ReactDOM.createRoot", "render"]
+      },
+      "evidence": ["src/main.tsx:L7-L12"]
+    },
+    {
+      "name": "App",
+      "kind": "component",
+      "path": "src/App.tsx",
+      "loc": {"start": 1, "end": 30},
+      "description": "Root application component with routing",
+      "params": [],
+      "returns": {"type": "JSX.Element"},
+      "references": {
+        "routes": ["/", "/login", "/dashboard", "/cases", "/clients", "/hearings", "/invoices", "/reports"],
+        "components": ["BrowserRouter", "Routes", "Route", "ProtectedRoute"],
+        "calls": ["AuthProvider"]
+      },
+      "evidence": ["src/App.tsx:L1-L30"]
+    },
+    {
+      "name": "useAuth",
+      "kind": "hook",
+      "path": "src/hooks/useAuth.ts",
+      "loc": {"start": 1, "end": 15},
+      "description": "Custom hook for authentication context",
+      "params": [],
+      "returns": {"type": "AuthContextType"},
+      "references": {
+        "contexts": ["AuthContext"],
+        "calls": ["useContext"]
+      },
+      "evidence": ["src/hooks/useAuth.ts:L1-L15"]
+    },
+    {
+      "name": "ApiService",
+      "kind": "class",
+      "path": "src/services/api.ts",
+      "loc": {"start": 87, "end": 624},
+      "description": "Main API service class with authentication",
+      "methods": [
+        {
+          "name": "constructor",
+          "params": [{"name": "baseUrl", "type": "string"}, {"name": "timeout", "type": "number"}],
+          "returns": {"type": "void"}
+        },
+        {
+          "name": "login",
+          "params": [{"name": "credentials", "type": "LoginRequest"}],
+          "returns": {"type": "Promise<LoginResponse>"}
+        },
+        {
+          "name": "getCases",
+          "params": [{"name": "params", "type": "PaginationParams", "optional": true}],
+          "returns": {"type": "Promise<ApiResponse<Case[]>>"}
+        }
+      ],
+      "references": {
+        "imports": ["axios"],
+        "calls": ["axios.create", "localStorage.setItem", "localStorage.getItem"]
+      },
+      "evidence": ["src/services/api.ts:L87-L624"]
+    }
+  ],
+  "backend_functions": [
+    {
+      "name": "handleLogin",
+      "kind": "function",
+      "path": "backend/api/index.php",
+      "loc": {"start": 500, "end": 550},
+      "description": "Process user login and return JWT token",
+      "params": [],
+      "returns": {"type": "JSON response"},
+      "references": {
+        "calls": ["Auth::login", "json_encode", "http_response_code"],
+        "models": ["User"],
+        "routes": ["/api/auth/login"]
+      },
+      "evidence": ["backend/api/index.php:L500-L550"]
+    },
+    {
+      "name": "Database",
+      "kind": "class",
+      "path": "backend/config/database.php",
+      "loc": {"start": 8, "end": 231},
+      "description": "Database connection and query wrapper class",
+      "methods": [
+        {
+          "name": "getInstance",
+          "static": true,
+          "params": [],
+          "returns": {"type": "Database"}
+        },
+        {
+          "name": "query",
+          "params": [{"name": "sql", "type": "string"}, {"name": "params", "type": "array"}],
+          "returns": {"type": "PDOStatement"}
+        },
+        {
+          "name": "paginate",
+          "params": [
+            {"name": "sql", "type": "string"},
+            {"name": "params", "type": "array"},
+            {"name": "page", "type": "int"},
+            {"name": "limit", "type": "int"}
+          ],
+          "returns": {"type": "array"}
+        }
+      ],
+      "references": {
+        "imports": ["PDO", "PDOException"],
+        "calls": ["PDO::prepare", "PDO::execute"]
+      },
+      "evidence": ["backend/config/database.php:L8-L231"]
+    },
+    {
+      "name": "Auth",
+      "kind": "class",
+      "path": "backend/src/Core/Auth.php",
+      "loc": {"start": 8, "end": 371},
+      "description": "Authentication and authorization service",
+      "methods": [
+        {
+          "name": "login",
+          "static": true,
+          "params": [{"name": "email", "type": "string"}, {"name": "password", "type": "string"}],
+          "returns": {"type": "array|false"}
+        },
+        {
+          "name": "check",
+          "static": true,
+          "params": [],
+          "returns": {"type": "bool"}
+        },
+        {
+          "name": "generateToken",
+          "static": true,
+          "params": [{"name": "user", "type": "array"}],
+          "returns": {"type": "string"}
+        },
+        {
+          "name": "validateToken",
+          "static": true,
+          "params": [{"name": "token", "type": "string"}],
+          "returns": {"type": "array|false"}
+        }
+      ],
+      "references": {
+        "calls": ["password_verify", "password_hash", "User::findByEmail", "base64_encode", "base64_decode"],
+        "constants": ["JWT_SECRET", "JWT_EXPIRY"]
+      },
+      "evidence": ["backend/src/Core/Auth.php:L8-L371"]
+    },
+    {
+      "name": "Router",
+      "kind": "class",
+      "path": "backend/src/Core/Router.php",
+      "loc": {"start": 9, "end": 165},
+      "description": "HTTP routing and request dispatcher",
+      "methods": [
+        {
+          "name": "get",
+          "params": [{"name": "path", "type": "string"}, {"name": "handler", "type": "callable"}],
+          "returns": {"type": "void"}
+        },
+        {
+          "name": "post",
+          "params": [{"name": "path", "type": "string"}, {"name": "handler", "type": "callable"}],
+          "returns": {"type": "void"}
+        },
+        {
+          "name": "handle",
+          "params": [{"name": "request", "type": "Request"}],
+          "returns": {"type": "Response"}
+        }
+      ],
+      "references": {
+        "calls": ["preg_match", "array_shift"],
+        "middleware": ["AuthMiddleware", "CorsMiddleware"]
+      },
+      "evidence": ["backend/src/Core/Router.php:L9-L165"]
+    }
+  ],
+  "controllers": [
+    {
+      "name": "AuthController",
+      "kind": "class",
+      "path": "backend/src/Controllers/AuthController.php",
+      "description": "Authentication endpoints controller",
+      "methods": ["login", "logout", "me", "refresh"],
+      "evidence": ["backend/src/Controllers/AuthController.php"]
+    },
+    {
+      "name": "CaseController",
+      "kind": "class",
+      "path": "backend/src/Controllers/CaseController.php",
+      "description": "Case management CRUD controller",
+      "methods": ["index", "show", "store", "update", "destroy"],
+      "evidence": ["backend/src/Controllers/CaseController.php"]
+    },
+    {
+      "name": "ClientController",
+      "kind": "class",
+      "path": "backend/src/Controllers/ClientController.php",
+      "description": "Client management CRUD controller",
+      "methods": ["index", "show", "store", "update", "destroy"],
+      "evidence": ["backend/src/Controllers/ClientController.php"]
+    },
+    {
+      "name": "HearingController",
+      "kind": "class",
+      "path": "backend/src/Controllers/HearingController.php",
+      "description": "Hearing management CRUD controller",
+      "methods": ["index", "show", "store", "update", "destroy"],
+      "evidence": ["backend/src/Controllers/HearingController.php"]
+    },
+    {
+      "name": "InvoiceController",
+      "kind": "class",
+      "path": "backend/src/Controllers/InvoiceController.php",
+      "description": "Invoice management CRUD controller",
+      "methods": ["index", "show", "store", "update", "destroy", "generateNumber"],
+      "evidence": ["backend/src/Controllers/InvoiceController.php"]
+    },
+    {
+      "name": "ReportController",
+      "kind": "class",
+      "path": "backend/src/Controllers/ReportController.php",
+      "description": "Report generation controller",
+      "methods": ["dashboard", "clientReport", "customReport", "exportPDF"],
+      "evidence": ["backend/src/Controllers/ReportController.php"]
+    }
+  ],
+  "models": [
+    {
+      "name": "User",
+      "kind": "class",
+      "path": "backend/src/Models/User.php",
+      "description": "User model with authentication methods",
+      "methods": ["findById", "findByEmail", "create", "updateLastLogin"],
+      "table": "users",
+      "evidence": ["backend/src/Models/User.php"]
+    },
+    {
+      "name": "Client",
+      "kind": "class",
+      "path": "backend/src/Models/Client.php",
+      "description": "Client model for law firm clients",
+      "methods": ["findAll", "findById", "create", "update", "delete"],
+      "table": "clients",
+      "evidence": ["backend/src/Models/Client.php"]
+    },
+    {
+      "name": "Case",
+      "kind": "class",
+      "path": "backend/src/Models/Case.php",
+      "description": "Legal case model",
+      "methods": ["findAll", "findById", "findByClient", "create", "update"],
+      "table": "cases",
+      "evidence": ["backend/src/Models/Case.php"]
+    },
+    {
+      "name": "Hearing",
+      "kind": "class",
+      "path": "backend/src/Models/Hearing.php",
+      "description": "Court hearing model",
+      "methods": ["findAll", "findByCase", "create", "update", "addLawyers"],
+      "table": "hearings",
+      "evidence": ["backend/src/Models/Hearing.php"]
+    }
+  ],
+  "components": [
+    {
+      "name": "Dashboard",
+      "kind": "component",
+      "path": "src/components/Dashboard.tsx",
+      "description": "Main dashboard component with statistics",
+      "props": [],
+      "hooks_used": ["useState", "useEffect"],
+      "evidence": ["src/components/Dashboard.tsx"]
+    },
+    {
+      "name": "CaseModal",
+      "kind": "component",
+      "path": "src/components/modals/CaseModal.tsx",
+      "description": "Modal for creating/editing cases",
+      "props": ["isOpen", "onClose", "case", "onSave"],
+      "hooks_used": ["useForm", "useState"],
+      "evidence": ["src/components/modals/CaseModal.tsx"]
+    },
+    {
+      "name": "ClientModal",
+      "kind": "component",
+      "path": "src/components/modals/ClientModal.tsx",
+      "description": "Modal for creating/editing clients",
+      "props": ["isOpen", "onClose", "client", "onSave"],
+      "evidence": ["src/components/modals/ClientModal.tsx"]
+    },
+    {
+      "name": "HearingModal",
+      "kind": "component",
+      "path": "src/components/modals/HearingModal.tsx",
+      "description": "Modal for creating/editing hearings",
+      "props": ["isOpen", "onClose", "hearing", "onSave"],
+      "evidence": ["src/components/modals/HearingModal.tsx"]
+    },
+    {
+      "name": "AuthProvider",
+      "kind": "component",
+      "path": "src/components/auth/AuthProvider.tsx",
+      "description": "Authentication context provider",
+      "props": ["children"],
+      "provides": ["user", "login", "logout", "isAuthenticated"],
+      "evidence": ["src/components/auth/AuthProvider.tsx"]
+    },
+    {
+      "name": "ProtectedRoute",
+      "kind": "component",
+      "path": "src/components/auth/ProtectedRoute.tsx",
+      "description": "Route wrapper with authentication check",
+      "props": ["children", "requiredRole"],
+      "evidence": ["src/components/auth/ProtectedRoute.tsx"]
+    },
+    {
+      "name": "ServerPaginatedTable",
+      "kind": "component",
+      "path": "src/components/tables/ServerPaginatedTable.tsx",
+      "description": "Reusable table with server-side pagination",
+      "props": ["columns", "data", "totalPages", "currentPage", "onPageChange"],
+      "evidence": ["src/components/tables/ServerPaginatedTable.tsx"]
+    }
+  ],
+  "note": "This is a representative sample. Full extraction would require Abstract Syntax Tree (AST) parsing of all TypeScript and PHP files. Tools like ts-morph (TS) or PHPStan (PHP) can automate complete extraction."
+}
+
